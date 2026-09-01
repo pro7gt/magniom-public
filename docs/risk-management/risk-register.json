@@ -1,0 +1,110 @@
+{
+  "version": "1.0.0",
+  "hazards": [
+    {
+      "id": "HAZ-001",
+      "title": "Automation Bias Leading to Unreviewed Target Approval",
+      "severityInitial": "Serious",
+      "probabilityInitial": "Probable",
+      "initialRiskLevel": "Medium",
+      "mitigations": [
+        {
+          "requirementId": "MAG-UX-031",
+          "description": "User interface prohibits preselecting default target candidate."
+        },
+        {
+          "requirementId": "MAG-CLI-002",
+          "description": "System enforces human clinician as sole prescriptive authority."
+        }
+      ],
+      "verificationMethod": "human_factors",
+      "severityResidual": "Serious",
+      "probabilityResidual": "Remote",
+      "residualRiskLevel": "Acceptable"
+    },
+    {
+      "id": "HAZ-002",
+      "title": "Coordinate Space Mismatch in Target Export",
+      "severityInitial": "Serious",
+      "probabilityInitial": "Occasional",
+      "initialRiskLevel": "Medium",
+      "mitigations": [
+        {
+          "requirementId": "MAG-DAT-004",
+          "description": "Explicit coordinate space metadata and validation checksums."
+        },
+        {
+          "requirementId": "MAG-TGT-001",
+          "description": "Deterministic spatial bounds checking in Target Engine."
+        }
+      ],
+      "verificationMethod": "unit_test",
+      "severityResidual": "Serious",
+      "probabilityResidual": "Improbable",
+      "residualRiskLevel": "Acceptable"
+    },
+    {
+      "id": "HAZ-003",
+      "title": "Corrupted Connectome Guidance Due to Excessive Motion or Low SNR",
+      "severityInitial": "Minor",
+      "probabilityInitial": "Probable",
+      "initialRiskLevel": "Medium",
+      "mitigations": [
+        {
+          "requirementId": "MAG-IMG-001",
+          "description": "Automated motion QC filtering and fallback to evidence priors."
+        },
+        {
+          "requirementId": "MAG-EVD-001",
+          "description": "Strict evidence ceiling bounds."
+        }
+      ],
+      "verificationMethod": "golden_case",
+      "severityResidual": "Minor",
+      "probabilityResidual": "Remote",
+      "residualRiskLevel": "Acceptable"
+    },
+    {
+      "id": "HAZ-004",
+      "title": "Target Generation Based on Stale or Inappropriate Clinical Phenotype",
+      "severityInitial": "Minor",
+      "probabilityInitial": "Probable",
+      "initialRiskLevel": "Medium",
+      "mitigations": [
+        {
+          "requirementId": "MAG-CLI-001",
+          "description": "Immutable phenotype snapshot required prior to targeting."
+        },
+        {
+          "requirementId": "MAG-PHE-001",
+          "description": "Formal phenotype ontology validation."
+        }
+      ],
+      "verificationMethod": "integration_test",
+      "severityResidual": "Minor",
+      "probabilityResidual": "Remote",
+      "residualRiskLevel": "Acceptable"
+    },
+    {
+      "id": "HAZ-005",
+      "title": "Cross-Tenant Medical Data Breach via Broken Authorization",
+      "severityInitial": "Serious",
+      "probabilityInitial": "Occasional",
+      "initialRiskLevel": "Medium",
+      "mitigations": [
+        {
+          "requirementId": "MAG-SEC-012",
+          "description": "Database-level Row Level Security isolation across organizations."
+        },
+        {
+          "requirementId": "MAG-AUD-001",
+          "description": "Immutable audit logging of all clinical record access."
+        }
+      ],
+      "verificationMethod": "security_test",
+      "severityResidual": "Serious",
+      "probabilityResidual": "Improbable",
+      "residualRiskLevel": "Acceptable"
+    }
+  ]
+}

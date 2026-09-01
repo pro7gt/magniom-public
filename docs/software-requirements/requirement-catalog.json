@@ -1,0 +1,172 @@
+{
+  "$schema": "./requirement-schema.json",
+  "version": "1.0.0",
+  "lastUpdated": "2026-09-01T12:00:00.000Z",
+  "requirements": [
+    {
+      "id": "MAG-SYS-001",
+      "domain": "SYS",
+      "statement": "The system shall provide a deterministic target candidate slate comprising up to 3 Primary Candidates and up to 2 Additional Candidates.",
+      "sourceSpecification": ["MAGNIOM-Technical Architecture v1.0", "MAGNIOM-Canonical Target Data Specification v1.0"],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "unit_test",
+      "riskControlIds": ["HAZ-001"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-CLI-001",
+      "domain": "CLI",
+      "statement": "A confirmed and immutable PhenotypeSnapshot shall be required before any target slate generation is permitted.",
+      "sourceSpecification": ["MAGNIOM-Clinical Phenotype & Symptom-to-Circuit Ontology v1.0"],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "integration_test",
+      "riskControlIds": ["HAZ-004"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-CLI-002",
+      "domain": "CLI",
+      "statement": "The final target selection authority shall rest solely with an authorized human clinician. Software shall never automatically prescribe a treatment target.",
+      "sourceSpecification": ["MAGNIOM-Clinical & Scientific Specification v1.0", "MAGNIOM-Technical Architecture v1.0"],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "human_factors",
+      "riskControlIds": ["HAZ-001"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-PHE-001",
+      "domain": "PHE",
+      "statement": "The phenotype subsystem shall structure DSM-5 depression criteria and dimensional symptom scores into an immutable PhenotypeSnapshot.",
+      "sourceSpecification": ["MAGNIOM-Clinical Phenotype & Symptom-to-Circuit Ontology v1.0"],
+      "safetyClass": "major",
+      "appliesToMode": "all",
+      "verificationMethod": "unit_test",
+      "riskControlIds": ["HAZ-004"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-EVD-001",
+      "domain": "EVD",
+      "statement": "Every nominated target candidate shall be bounded by an evidence ceiling derived from an approved Evidence Library release.",
+      "sourceSpecification": ["MAGNIOM-Evidence Knowledge Graph & Therapeutic Circuit Library v1.0"],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "unit_test",
+      "riskControlIds": ["HAZ-003"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-POL-001",
+      "domain": "POL",
+      "statement": "No clinical target candidate generation shall execute without a pinned, approved ScientificPolicyRelease manifest.",
+      "sourceSpecification": ["MAGNIOM-Scientific Policy & Algorithm Configuration Specification v1.0"],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "unit_test",
+      "riskControlIds": ["HAZ-003"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-IMG-001",
+      "domain": "IMG",
+      "statement": "Patient functional connectomics shall require quality control qualification (mean framewise displacement < 0.25 mm, retained duration >= 10 min) before influencing candidate refinement.",
+      "sourceSpecification": ["MAGNIOM-Neuroimaging & Functional Connectomics Pipeline Specification v1.0"],
+      "safetyClass": "critical",
+      "appliesToMode": "clinical",
+      "verificationMethod": "golden_case",
+      "riskControlIds": ["HAZ-003"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-TGT-001",
+      "domain": "TGT",
+      "statement": "The Target Engine shall execute deterministically offline without database, UI, or internet dependencies.",
+      "sourceSpecification": ["MAGNIOM-Target Engine & Ranking Algorithm Specification v1.0"],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "unit_test",
+      "riskControlIds": ["HAZ-002"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-UX-031",
+      "domain": "UX",
+      "statement": "The clinician workspace user interface shall not preselect any target candidate by default, preventing automation bias.",
+      "sourceSpecification": ["MAGNIOM-Clinician Workspace & UX Specification v1.0", "MAGNIOM-Implementation & Validation Roadmap v1.0"],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "human_factors",
+      "riskControlIds": ["HAZ-001"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-DAT-004",
+      "domain": "DAT",
+      "statement": "All coordinate representations shall explicitly specify coordinate space metadata (MNI152NLin2009cAsym or fsLR_32k) and validation checksums.",
+      "sourceSpecification": ["MAGNIOM-Canonical Target Data Specification v1.0"],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "unit_test",
+      "riskControlIds": ["HAZ-002"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-SEC-012",
+      "domain": "SEC",
+      "statement": "Cross-organization clinical data access shall be strictly prohibited by PostgreSQL Row Level Security (RLS) policies.",
+      "sourceSpecification": ["MAGNIOM-Supabase Database & Security Specification v1.0"],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "security_test",
+      "riskControlIds": ["HAZ-005"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-WFL-001",
+      "domain": "WFL",
+      "statement": "State transitions across clinical cases shall follow strict state machines enforced by database triggers.",
+      "sourceSpecification": ["MAGNIOM-Supabase Database & Security Specification v1.0"],
+      "safetyClass": "major",
+      "appliesToMode": "all",
+      "verificationMethod": "integration_test",
+      "riskControlIds": ["HAZ-004"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-AUD-001",
+      "domain": "AUD",
+      "statement": "All clinician actions, target evaluations, and sign-offs shall produce append-only immutable audit logs with cryptographic hash integrity.",
+      "sourceSpecification": ["MAGNIOM-Supabase Database & Security Specification v1.0"],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "integration_test",
+      "riskControlIds": ["HAZ-001", "HAZ-005"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-REL-001",
+      "domain": "REL",
+      "statement": "Scientific policy and evidence releases shall be versioned immutably and verified via cryptographic manifest hashes.",
+      "sourceSpecification": ["MAGNIOM-Scientific Policy & Algorithm Configuration Specification v1.0"],
+      "safetyClass": "major",
+      "appliesToMode": "all",
+      "verificationMethod": "unit_test",
+      "riskControlIds": ["HAZ-003"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-VAL-001",
+      "domain": "VAL",
+      "statement": "The system shall execute synthetic Golden Cases G01 through G05 as automated regression gates during CI builds.",
+      "sourceSpecification": ["MAGNIOM-Synthetic Vertical Slice Implementation Specification v1.0"],
+      "safetyClass": "major",
+      "appliesToMode": "all",
+      "verificationMethod": "golden_case",
+      "riskControlIds": ["HAZ-002", "HAZ-003"],
+      "status": "approved"
+    }
+  ]
+}

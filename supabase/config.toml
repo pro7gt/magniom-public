@@ -1,0 +1,39 @@
+# Supabase Local Configuration for Magniom
+# Conforms to MAGNIOM-Supabase Database & Security Specification v1.0
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "identity", "clinical", "phenotype", "targeting", "evidence", "audit"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 15
+
+[auth]
+enabled = true
+site_url = "http://127.0.0.1:3000"
+additional_redirect_urls = ["https://127.0.0.1:3000"]
+jwt_expiry = 3600
+enable_signup = false
+
+[storage]
+enabled = true
+file_size_limit = "500MiB"
+
+[realtime]
+enabled = true
+port = 54323
+
+[studio]
+enabled = true
+port = 54324
+
+[inbucket]
+enabled = true
+port = 54325
+smtp_port = 54326
+pop3_port = 54327

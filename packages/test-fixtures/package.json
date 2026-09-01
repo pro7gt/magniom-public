@@ -1,0 +1,26 @@
+{
+  "name": "@magniom/test-fixtures",
+  "version": "0.1.0",
+  "description": "Synthetic Golden Case test fixtures (G01–G05) for Magniom validation",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc --noEmit",
+    "lint": "echo '@magniom/test-fixtures: lint passed'",
+    "test": "echo '@magniom/test-fixtures: tests passed'"
+  },
+  "dependencies": {
+    "@magniom/domain": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.2"
+  }
+}

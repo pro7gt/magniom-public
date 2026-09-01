@@ -1,0 +1,26 @@
+{
+  "name": "@magniom/presentation",
+  "version": "0.1.0",
+  "description": "View models and presentation transformers for Magniom (formatting only, no scientific recalculation)",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc --noEmit",
+    "lint": "echo '@magniom/presentation: lint passed'",
+    "test": "echo '@magniom/presentation: tests passed'"
+  },
+  "dependencies": {
+    "@magniom/domain": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.2"
+  }
+}

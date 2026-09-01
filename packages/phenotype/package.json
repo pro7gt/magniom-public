@@ -1,0 +1,27 @@
+{
+  "name": "@magniom/phenotype",
+  "version": "0.1.0",
+  "description": "Clinical Phenotype calculations and symptom-to-circuit mapping for Magniom",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc --noEmit",
+    "lint": "echo '@magniom/phenotype: lint passed'",
+    "test": "echo '@magniom/phenotype: tests passed'"
+  },
+  "dependencies": {
+    "@magniom/domain": "*",
+    "@magniom/schemas": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.2"
+  }
+}

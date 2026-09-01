@@ -1,0 +1,26 @@
+name: Design Control & Risk Verification
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  design-controls:
+    name: ISO 14971 Risk & IEC 62304 Design Control Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install tsx
+        run: npm install -g tsx
+
+      - name: Run Traceability & Risk Verification
+        run: tsx scripts/verify-requirements.ts

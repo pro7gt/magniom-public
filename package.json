@@ -1,0 +1,33 @@
+{
+  "name": "magniom-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Magniom — Connectome-Informed TMS Target Decision Support System",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint && npm run verify",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "verify": "npm run verify:requirements && npm run verify:boundaries",
+    "verify:requirements": "tsx scripts/verify-requirements.ts",
+    "verify:boundaries": "tsx scripts/verify-package-boundaries.ts",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css}\""
+  },
+  "packageManager": "npm@11.17.0",
+  "devDependencies": {
+    "prettier": "^3.5.2",
+    "turbo": "^2.4.4",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2",
+    "vitest": "^3.0.7"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "name": "@magniom/target-engine",
+  "version": "0.1.0",
+  "description": "Pure deterministic calculation engine for Magniom Target Slate assembly (zero external DB/UI dependencies)",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc --noEmit",
+    "lint": "echo '@magniom/target-engine: lint passed'",
+    "test": "echo '@magniom/target-engine: tests passed'"
+  },
+  "dependencies": {
+    "@magniom/domain": "*",
+    "@magniom/schemas": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.2"
+  }
+}

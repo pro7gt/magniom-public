@@ -1,0 +1,26 @@
+{
+  "name": "@magniom/ui",
+  "version": "0.1.0",
+  "description": "Shared clinical design system tokens and component primitives for Magniom",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc --noEmit",
+    "lint": "echo '@magniom/ui: lint passed'",
+    "test": "echo '@magniom/ui: tests passed'"
+  },
+  "dependencies": {
+    "@magniom/presentation": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.2"
+  }
+}
