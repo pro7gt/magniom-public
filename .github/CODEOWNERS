@@ -1,0 +1,27 @@
+# Magniom Code Ownership & Safety Domain Mapping
+# Aligned with MAGNIOM-Enterprise Verification, Testing & CI/CD Specification v1.0 (Section 13)
+
+# Core Target Engine & Deterministic Ranking
+/packages/target-engine/             @target-engine @clinical-science
+
+# Scientific Configurations & Thresholds
+/scientific-config/                  @clinical-science @quality
+
+# Evidence Knowledge Graph & Circuit Library
+/evidence/                           @evidence-governance
+
+# Neuroimaging & Functional Connectomics Pipeline
+/services/neurocompute/              @neuroimaging
+
+# Database Schemas, Migrations & RLS Policies
+/supabase/migrations/                @backend @database-security
+/supabase/tests/                     @backend @quality
+
+# Clinical Decision Workspace & Human Factors
+/apps/web/src/app/cases/*/decision/  @frontend @clinical-human-factors
+/apps/web/src/components/            @frontend @clinical-human-factors
+/packages/ui/                        @frontend
+
+# Infrastructure & CI/CD Workflows
+/infra/                              @platform-security
+/.github/workflows/                  @platform-security @quality

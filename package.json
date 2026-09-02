@@ -10,7 +10,8 @@
   ],
   "scripts": {
     "dev": "turbo run dev",
-    "build": "turbo run build",
+    "build": "turbo run build && npm run build:cloudflare -w @magniom/web",
+    "build:packages": "turbo run build",
     "lint": "turbo run lint && npm run verify",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
@@ -45,9 +46,9 @@
     "security:probe": "tsx scripts/security/pentest-readiness-probe.ts",
     "security:secrets": "tsx scripts/security/verify-secret-hygiene.ts",
     "security:backup-drill": "tsx scripts/security/backup-restore-drill.ts",
-    "build:cloudflare": "turbo run build && npm run build:cloudflare -w @magniom/web",
+    "build:cloudflare": "npm run build",
     "deploy": "wrangler deploy",
-    "deploy:cloudflare": "npm run build:cloudflare && wrangler deploy",
+    "deploy:cloudflare": "npm run build && wrangler deploy",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css}\""
   },
