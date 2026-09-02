@@ -1,0 +1,28 @@
+name: Stage 0 — PR Policy & Automated Change Classification
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  pr-policy:
+    name: PR Policy & Scientific Change Classification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Evaluate PR Policy & Classify Changes
+        run: |
+          npx tsx scripts/ci/classify-change.ts

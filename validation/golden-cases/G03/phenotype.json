@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "1.0",
+  "ontologyVersion": "MAGNIOM-PHENOTYPE-1.0.0",
+  "primaryDiagnosis": {
+    "code": "MDD",
+    "display": "Major Depressive Disorder",
+    "status": "confirmed"
+  },
+  "episode": {
+    "active": true,
+    "severity": "severe"
+  },
+  "safety": {
+    "clearance": "cleared"
+  },
+  "priorities": [
+    {
+      "domainCode": "DOMAIN-MDD-DYSPHORIC-001",
+      "priorityRank": 1,
+      "clinicianWeight": 0.85,
+      "evidenceMappability": "direct",
+      "rationale": "Dysphoric depression symptoms."
+    }
+  ],
+  "phenotypeConfidence": "high",
+  "clinicianSummary": "Synthetic MDD case with reliable FC but insufficient incremental gain (+0.06 vs min +0.10 threshold)."
+}

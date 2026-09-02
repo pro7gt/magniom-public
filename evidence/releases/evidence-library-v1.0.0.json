@@ -1,0 +1,154 @@
+{
+  "$schema": "https://magniom.org/schemas/evidence-library-v1.0.json",
+  "id": "70000000-0000-0000-0000-000000000001",
+  "version": "MAGNIOM-EVIDENCE-1.0.0",
+  "semanticVersion": "1.0.0",
+  "status": "FROZEN",
+  "releasedAt": "2026-09-02T00:00:00.000Z",
+  "title": "Canonical Magniom Evidence Knowledge Graph & Therapeutic Circuit Library v1.0",
+  "description": "Frozen canonical evidence release containing GRADE-evaluated efficacy and safety claims, therapeutic circuits, canonical seed coordinates, and literature sources.",
+  "circuits": [
+    {
+      "id": "30000000-0000-0000-0000-000000000001",
+      "code": "CIRCUIT-MDD-SGACC-LDLPFC",
+      "name": "Subgenual Cingulate - Left DLPFC Anti-correlation Circuit",
+      "indication": "MDD",
+      "targetFamilyId": "40000000-0000-0000-0000-000000000001",
+      "seedCoordinates": {
+        "space": "MNI152NLin2009cAsym",
+        "hemisphere": "L",
+        "x": 0.0,
+        "y": 26.0,
+        "z": -10.0,
+        "description": "Fox 2012 / Cash 2019 canonical sgACC seed"
+      },
+      "evidenceTier": "T1",
+      "claimIds": [
+        "20000000-0000-0000-0000-000000000001",
+        "20000000-0000-0000-0000-000000000002"
+      ]
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000002",
+      "code": "CIRCUIT-MDD-DLPFC-FPI",
+      "name": "Frontoparietal / Executive Control Network Circuit",
+      "indication": "MDD",
+      "targetFamilyId": "40000000-0000-0000-0000-000000000002",
+      "seedCoordinates": {
+        "space": "MNI152NLin2009cAsym",
+        "hemisphere": "L",
+        "x": -44.0,
+        "y": 38.0,
+        "z": 32.0,
+        "description": "BA9/46 DLPFC FPN node"
+      },
+      "evidenceTier": "T2",
+      "claimIds": ["20000000-0000-0000-0000-000000000003"]
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000003",
+      "code": "CIRCUIT-MDD-DACC-SALIENCE",
+      "name": "Dorsal Anterior Cingulate / Salience Network Circuit",
+      "indication": "MDD",
+      "targetFamilyId": "40000000-0000-0000-0000-000000000003",
+      "seedCoordinates": {
+        "space": "MNI152NLin2009cAsym",
+        "hemisphere": "L",
+        "x": -6.0,
+        "y": 18.0,
+        "z": 40.0,
+        "description": "dACC hub"
+      },
+      "evidenceTier": "T2",
+      "claimIds": ["20000000-0000-0000-0000-000000000004"]
+    },
+    {
+      "id": "30000000-0000-0000-0000-000000000004",
+      "code": "CIRCUIT-ANXIETY-RDLPFC",
+      "name": "Right DLPFC Hyperarousal Circuit",
+      "indication": "MDD",
+      "targetFamilyId": "40000000-0000-0000-0000-000000000004",
+      "seedCoordinates": {
+        "space": "MNI152NLin2009cAsym",
+        "hemisphere": "R",
+        "x": 42.0,
+        "y": 42.0,
+        "z": 30.0,
+        "description": "Right DLPFC 1Hz inhibitory target node"
+      },
+      "evidenceTier": "T2",
+      "claimIds": ["20000000-0000-0000-0000-000000000005"]
+    }
+  ],
+  "targetFamilies": [
+    {
+      "id": "40000000-0000-0000-0000-000000000001",
+      "code": "TGT-FAM-LEFT-DLPFC-SGACC",
+      "name": "Left DLPFC Anti-correlated with sgACC",
+      "hemisphere": "L",
+      "anatomicalStructure": "Dorsolateral Prefrontal Cortex (BA9/46)",
+      "evidenceTier": "T1",
+      "canonicalCoordinate": {
+        "space": "MNI152NLin2009cAsym",
+        "hemisphere": "L",
+        "x": -42.0,
+        "y": 44.0,
+        "z": 30.0
+      },
+      "evidenceCeiling": 1.0,
+      "mode": "CLINICAL"
+    },
+    {
+      "id": "40000000-0000-0000-0000-000000000002",
+      "code": "TGT-FAM-LEFT-DLPFC-FPI",
+      "name": "Left DLPFC Frontoparietal Hub",
+      "hemisphere": "L",
+      "anatomicalStructure": "Dorsolateral Prefrontal Cortex (BA9/46)",
+      "evidenceTier": "T2",
+      "canonicalCoordinate": {
+        "space": "MNI152NLin2009cAsym",
+        "hemisphere": "L",
+        "x": -44.0,
+        "y": 38.0,
+        "z": 32.0
+      },
+      "evidenceCeiling": 0.85,
+      "mode": "CLINICAL"
+    },
+    {
+      "id": "40000000-0000-0000-0000-000000000003",
+      "code": "TGT-FAM-DMPFC-DACC",
+      "name": "Dorsomedial Prefrontal / dACC Node",
+      "hemisphere": "L",
+      "anatomicalStructure": "Dorsomedial Prefrontal Cortex (BA8/9/32)",
+      "evidenceTier": "T2",
+      "canonicalCoordinate": {
+        "space": "MNI152NLin2009cAsym",
+        "hemisphere": "L",
+        "x": -6.0,
+        "y": 28.0,
+        "z": 48.0
+      },
+      "evidenceCeiling": 0.80,
+      "mode": "CLINICAL"
+    },
+    {
+      "id": "40000000-0000-0000-0000-000000000004",
+      "code": "TGT-FAM-RIGHT-DLPFC-1HZ",
+      "name": "Right DLPFC Low-Frequency Inhibitory",
+      "hemisphere": "R",
+      "anatomicalStructure": "Right Dorsolateral Prefrontal Cortex",
+      "evidenceTier": "T2",
+      "canonicalCoordinate": {
+        "space": "MNI152NLin2009cAsym",
+        "hemisphere": "R",
+        "x": 42.0,
+        "y": 42.0,
+        "z": 30.0
+      },
+      "evidenceCeiling": 0.80,
+      "mode": "CLINICAL"
+    }
+  ],
+  "verificationSignature": "MAGNIOM-EVIDENCE-SEAL-20260902-v1.0.0"
+}

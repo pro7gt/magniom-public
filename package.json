@@ -5,7 +5,8 @@
   "description": "Magniom — Connectome-Informed TMS Target Decision Support System",
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "services/*"
   ],
   "scripts": {
     "dev": "turbo run dev",
@@ -13,21 +14,46 @@
     "lint": "turbo run lint && npm run verify",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
-    "verify": "npm run verify:requirements && npm run verify:boundaries",
+    "verify": "npm run verify:requirements && npm run verify:boundaries && npm run verify:static-rules",
     "verify:requirements": "tsx scripts/verify-requirements.ts",
     "verify:boundaries": "tsx scripts/verify-package-boundaries.ts",
+    "verify:static-rules": "tsx scripts/verification/lint-target-engine-rules.ts",
+    "verify:properties": "vitest run packages/target-engine/tests/property-based-invariants.test.ts",
+    "verify:scientific-impact": "tsx scripts/scientific/evaluate-scientific-impact.ts",
+    "verify:db:from-zero": "tsx scripts/verification/verify-database-from-zero.ts",
+    "verify:exit-criteria": "tsx scripts/verification/validate-exit-criteria.ts",
+    "verify:sprint14": "tsx scripts/verify-sprint14.ts",
+    "verify:sprint15": "tsx scripts/verify-sprint15-build-m3.ts",
+    "release:manifest": "tsx scripts/release/generate-release-manifest.ts",
+    "release:affected-cases": "tsx scripts/release/affected-case-index.ts",
+    "postdeploy:smoke": "tsx scripts/release/post-deploy-golden-smoke.ts",
+    "sbom:generate": "tsx scripts/security/generate-sbom.ts",
+    "sbom:verify": "tsx scripts/security/verify-sbom-and-cve.ts",
+    "security:probe": "tsx scripts/security/pentest-readiness-probe.ts",
+    "security:secrets": "tsx scripts/security/verify-secret-hygiene.ts",
+    "security:backup-drill": "tsx scripts/security/backup-restore-drill.ts",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css}\""
   },
   "packageManager": "npm@11.17.0",
   "devDependencies": {
+    "fast-check": "^4.9.0",
     "prettier": "^3.5.2",
-    "turbo": "^2.4.4",
     "tsx": "^4.19.3",
+    "turbo": "^2.4.4",
     "typescript": "^5.8.2",
     "vitest": "^3.0.7"
   },
   "engines": {
     "node": ">=20.0.0"
+  },
+  "overrides": {
+    "next": {
+      "postcss": "^8.5.26"
+    },
+    "postcss": "^8.5.26"
+  },
+  "allowScripts": {
+    "esbuild": true
   }
 }

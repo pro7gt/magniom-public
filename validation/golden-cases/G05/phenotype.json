@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "1.0",
+  "ontologyVersion": "MAGNIOM-PHENOTYPE-1.0.0",
+  "primaryDiagnosis": {
+    "code": "MDD",
+    "display": "Major Depressive Disorder with Anxious Distress Specifier",
+    "status": "confirmed"
+  },
+  "episode": {
+    "active": true,
+    "severity": "severe"
+  },
+  "safety": {
+    "clearance": "cleared"
+  },
+  "priorities": [
+    {
+      "domainCode": "DOMAIN-MDD-ANXIOSOMATIC-001",
+      "priorityRank": 1,
+      "clinicianWeight": 1.0,
+      "evidenceMappability": "direct",
+      "rationale": "Severe debilitating anxious somatic distress is the primary clinical objective."
+    },
+    {
+      "domainCode": "DOMAIN-MDD-DYSPHORIC-001",
+      "priorityRank": 2,
+      "clinicianWeight": 0.7,
+      "evidenceMappability": "direct",
+      "rationale": "Concurrent severe dysphoric depression."
+    }
+  ],
+  "phenotypeConfidence": "high",
+  "clinicianSummary": "Synthetic MDD case where anxiosomatic distress is dominant over dysphoria."
+}

@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "1.0",
+  "ontologyVersion": "MAGNIOM-PHENOTYPE-1.0.0",
+  "primaryDiagnosis": {
+    "code": "MDD",
+    "display": "Major Depressive Disorder",
+    "status": "confirmed"
+  },
+  "episode": {
+    "active": true,
+    "severity": "severe"
+  },
+  "safety": {
+    "clearance": "cleared"
+  },
+  "priorities": [
+    {
+      "domainCode": "DOMAIN-MDD-DYSPHORIC-001",
+      "priorityRank": 1,
+      "clinicianWeight": 0.9,
+      "evidenceMappability": "direct",
+      "rationale": "Dysphoric burden is dominant."
+    }
+  ],
+  "phenotypeConfidence": "high",
+  "clinicianSummary": "Synthetic severe MDD case with high-quality resting-state fMRI."
+}

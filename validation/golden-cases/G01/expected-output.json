@@ -1,0 +1,40 @@
+{
+  "id": "slate-golden-01",
+  "caseId": "case-golden-01",
+  "phenotypeSnapshotId": "snap-golden-01",
+  "scientificPolicyVersion": "MAGNIOM-POLICY-MDD-1.0.0",
+  "evidenceReleaseVersion": "MAGNIOM-EVIDENCE-1.0.0",
+  "generatedAt": "2026-09-01T10:05:00.000Z",
+  "mode": "CLINICAL",
+  "primaryCandidates": [
+    {
+      "id": "cand-g01-evidence-ldlpfc",
+      "familyId": "TF-MDD-LDLPFC-EST-001",
+      "circuitId": "CIRCUIT-MDD-LDLPFC-001",
+      "role": "PRIMARY_1",
+      "method": "EVIDENCE_ONLY_PRIOR",
+      "evidenceTier": "T1",
+      "mniCoordinate": {
+        "space": "MNI152NLin2009cAsym",
+        "x": -38,
+        "y": 44,
+        "z": 30,
+        "unit": "mm"
+      },
+      "evidenceScore": 0.95,
+      "phenotypeConcordanceScore": 0.92,
+      "overallScore": 0.93,
+      "rationale": "Standard evidence-based left prefrontal depression anchor (no connectome available).",
+      "contraindicationsOrConflicts": [],
+      "isSuppressedOrRedundant": false
+    }
+  ],
+  "additionalCandidates": [],
+  "suppressedCandidates": [],
+  "personalisationQualification": "not_available",
+  "clinicalCoverageProfile": {
+    "primaryDomainCovered": "DOMAIN-MDD-DYSPHORIC-001",
+    "secondaryDomainsCovered": [],
+    "overallClinicalCoverageScore": 0.92
+  }
+}

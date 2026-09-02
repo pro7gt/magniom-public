@@ -1,0 +1,7 @@
+{
+  "caseId": "case-golden-01",
+  "patientId": "synth-pat-g01",
+  "title": "G01 — Evidence Only MDD Target Selection",
+  "mode": "CLINICAL",
+  "status": "active"
+}

@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: Magniom Continuous Verification & CI Pipeline
 
 on:
   push:
@@ -6,9 +6,12 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
-  lint-and-verify:
-    name: Lint, Boundaries & Requirements Verification
+  stage1-static-verification:
+    name: Stage 1 — Static Verification & Target Engine Rules
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -23,17 +26,45 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Verify Architectural Boundaries
+      - name: Verify Architectural Package Boundaries
         run: npm run verify:boundaries
+
+      - name: Verify Target Engine Static Rules (Determinism & Purity)
+        run: npm run verify:static-rules
+
+      - name: TypeScript Strict Typecheck
+        run: npm run typecheck
+
+      - name: Prettier Format Check
+        run: npm run format:check
+
+  stage2-and-stage3-tests:
+    name: Stage 2 & 3 — Unit, Traceability & Property-Based Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
 
       - name: Verify Requirements Traceability
         run: npm run verify:requirements
 
-      - name: Run Format Check
-        run: npm run format:check
+      - name: Run Monorepo Unit Tests (Vitest)
+        run: npm test
 
-  typecheck-and-test:
-    name: Typecheck & Vitest Unit Tests
+      - name: Run Property-Based Invariant Tests (fast-check)
+        run: npm run verify:properties
+
+  stage4-database-and-rls:
+    name: Stage 4 — Zero-State DB Rebuild & 11-Domain RLS
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -48,16 +79,62 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Run TypeScript Typecheck
-        run: npm run typecheck
+      - name: Verify Database Zero-State Rebuild & RLS Matrix
+        run: npm run verify:db:from-zero
 
-      - name: Run Unit Tests
-        run: npm test
-
-  reproducible-build:
-    name: Reproducible Monorepo Build
+  stage6-scientific-validation:
+    name: Stage 6 — Scientific Validation & Golden Cases (G01–G05)
     runs-on: ubuntu-latest
-    needs: [lint-and-verify, typecheck-and-test]
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Golden Cases Suite & Scientific Impact Evaluation
+        run: npm run verify:scientific-impact
+
+  stage7-security-and-supply-chain:
+    name: Stage 7 — Security, SBOM, Secrets & Penetration Readiness
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Generate & Verify SBOM
+        run: npm run sbom:generate && npm run sbom:verify
+
+      - name: Verify Secret Hygiene
+        run: npm run security:secrets
+
+      - name: Execute Penetration Testing Readiness Probe
+        run: npm run security:probe
+
+  stage9-reproducible-build:
+    name: Stage 9 — Reproducible Monorepo Build & Verification Manifest
+    runs-on: ubuntu-latest
+    needs:
+      - stage1-static-verification
+      - stage2-and-stage3-tests
+      - stage4-database-and-rls
+      - stage6-scientific-validation
+      - stage7-security-and-supply-chain
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -73,3 +150,6 @@ jobs:
 
       - name: Build All Monorepo Workspaces
         run: npm run build
+
+      - name: Generate & Seal Release Qualification Manifest
+        run: npm run release:manifest

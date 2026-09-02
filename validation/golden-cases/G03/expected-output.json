@@ -1,0 +1,69 @@
+{
+  "id": "slate-golden-03",
+  "caseId": "case-golden-03",
+  "phenotypeSnapshotId": "snap-golden-03",
+  "scientificPolicyVersion": "MAGNIOM-POLICY-MDD-1.0.0",
+  "evidenceReleaseVersion": "MAGNIOM-EVIDENCE-1.0.0",
+  "generatedAt": "2026-09-01T10:15:00.000Z",
+  "mode": "CLINICAL",
+  "primaryCandidates": [
+    {
+      "id": "cand-g03-evidence-ldlpfc",
+      "familyId": "TF-MDD-LDLPFC-EST-001",
+      "circuitId": "CIRCUIT-MDD-LDLPFC-001",
+      "role": "PRIMARY_1",
+      "method": "EVIDENCE_ONLY_PRIOR",
+      "evidenceTier": "T1",
+      "mniCoordinate": {
+        "space": "MNI152NLin2009cAsym",
+        "x": -38,
+        "y": 44,
+        "z": 30,
+        "unit": "mm"
+      },
+      "evidenceScore": 0.95,
+      "phenotypeConcordanceScore": 0.9,
+      "overallScore": 0.92,
+      "rationale": "Standard evidence-based prior adopted because FC incremental gain (+0.06) fell below clinical qualification threshold (0.10).",
+      "contraindicationsOrConflicts": [],
+      "isSuppressedOrRedundant": false
+    }
+  ],
+  "additionalCandidates": [],
+  "suppressedCandidates": [
+    {
+      "id": "cand-g03-low-gain-fc",
+      "familyId": "TF-MDD-CONVERGENT-LDLPFC-001",
+      "circuitId": "CIRCUIT-MDD-CONVERGENT-001",
+      "role": "RESERVE",
+      "method": "CONNECTOME_REFINED",
+      "evidenceTier": "T1",
+      "mniCoordinate": {
+        "space": "MNI152NLin2009cAsym",
+        "x": -42,
+        "y": 42,
+        "z": 32,
+        "unit": "mm"
+      },
+      "evidenceScore": 0.95,
+      "phenotypeConcordanceScore": 0.9,
+      "connectomeRefinementScore": 0.76,
+      "overallScore": 0.82,
+      "rationale": "Suppressed due to insufficient incremental value over evidence baseline (+0.06 vs required >= 0.10).",
+      "contraindicationsOrConflicts": [],
+      "isSuppressedOrRedundant": true,
+      "suppressionReason": "LOW_INCREMENTAL_VALUE",
+      "convergenceProfile": {
+        "distanceToEvidenceBaselineMm": 5.2,
+        "convergenceClassification": "high",
+        "incrementalGainOverBaseline": 0.06
+      }
+    }
+  ],
+  "personalisationQualification": "limited",
+  "clinicalCoverageProfile": {
+    "primaryDomainCovered": "DOMAIN-MDD-DYSPHORIC-001",
+    "secondaryDomainsCovered": [],
+    "overallClinicalCoverageScore": 0.92
+  }
+}

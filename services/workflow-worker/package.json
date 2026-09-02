@@ -1,0 +1,34 @@
+{
+  "name": "@magniom/workflow-worker",
+  "version": "0.1.0",
+  "description": "Background worker service processing durable queue tasks, orchestrating MRI analysis, and invoking target slate generation",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc --noEmit",
+    "lint": "echo '@magniom/workflow-worker: lint passed'",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@magniom/domain": "*",
+    "@magniom/evidence": "*",
+    "@magniom/phenotype": "*",
+    "@magniom/schemas": "*",
+    "@magniom/scientific-policy": "*",
+    "@magniom/target-engine": "*"
+  },
+  "devDependencies": {
+    "@magniom/test-fixtures": "*",
+    "typescript": "^5.8.2",
+    "vitest": "^3.0.7"
+  }
+}

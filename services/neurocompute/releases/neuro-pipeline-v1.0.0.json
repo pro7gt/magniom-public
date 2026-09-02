@@ -1,0 +1,66 @@
+{
+  "$schema": "https://magniom.org/schemas/neuro-pipeline-v1.0.json",
+  "pipelineVersion": "MAGNIOM-NEURO-1.0.0",
+  "semanticVersion": "1.0.0",
+  "status": "FROZEN",
+  "releaseTimestamp": "2026-09-02T00:00:00.000Z",
+  "title": "Magniom Neuroimaging & Connectomics Pipeline Specification v1.0",
+  "description": "Frozen containerized neuroimaging processing pipeline specifications, atlas hashes, container tool pins, and coordinate laterality verification rules.",
+  "softwarePins": {
+    "bidsVersion": "1.11.1",
+    "fmriprepVersion": "25.2.5",
+    "tedanaVersion": "26.0.1",
+    "freesurferVersion": "7.4.1",
+    "antsVersion": "2.5.0",
+    "workbenchVersion": "1.5.0",
+    "pythonVersion": "3.11.8"
+  },
+  "atlases": [
+    {
+      "name": "HCP-MMP 1.0 (Glasser 2016)",
+      "version": "1.0",
+      "space": "fsLR_32k",
+      "hash": "a8f34bc8912d0918efbc77198a0021bdfa8910bc490123ef89a01234567890ab"
+    },
+    {
+      "name": "Tian Subcortical Atlas",
+      "version": "S2",
+      "space": "MNI152NLin2009cAsym",
+      "hash": "b90123456789abcdef0123456789abcdef0123456789abcdef0123456789abcd"
+    },
+    {
+      "name": "Harvard-Oxford Subcortical Structural Atlas",
+      "version": "2.0",
+      "space": "MNI152NLin2009cAsym",
+      "hash": "c0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+    }
+  ],
+  "canonicalSeeds": [
+    {
+      "seedName": "sgACC_Fox2012",
+      "coordinates": { "x": 0.0, "y": 26.0, "z": -10.0 },
+      "space": "MNI152NLin2009cAsym",
+      "radiusMm": 4.0
+    },
+    {
+      "seedName": "sgACC_Cash2019",
+      "coordinates": { "x": 6.0, "y": 24.0, "z": -11.0 },
+      "space": "MNI152NLin2009cAsym",
+      "radiusMm": 4.0
+    }
+  ],
+  "qcCriteria": {
+    "maxMeanFramewiseDisplacement": 0.25,
+    "maxPctVolumesOver05mm": 15.0,
+    "minRetainedScanMinutes": 10.0,
+    "minT1Snr": 40.0,
+    "minBoldCnr": 1.5
+  },
+  "lateralityVerification": {
+    "enforceHemisphereBoundary": true,
+    "leftDlpfcXRange": [-60.0, -25.0],
+    "rightDlpfcXRange": [25.0, 60.0],
+    "disallowCrossHemisphereBleed": true
+  },
+  "verificationSignature": "MAGNIOM-NEURO-SEAL-20260902-v1.0.0"
+}

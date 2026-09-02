@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "synthetic-connectome/1.0",
+  "quality": "fail",
+  "reliabilityProfile": {
+    "candidateId": "cand-g04-unreliable-fc",
+    "scanDurationMinutes": 5.5,
+    "meanFramewiseDisplacementMm": 0.38,
+    "retainedFramesPercentage": 62.0,
+    "temporalSnr": 22.1,
+    "splitHalfLocalisationDistanceMm": 18.4,
+    "overallReliabilityScore": 0.42,
+    "isReliableForPersonalisation": false,
+    "warnings": [
+      "LIMITED_FC_RELIABILITY",
+      "EXCESSIVE_MOTION_FD_EXCEEDED",
+      "SHORT_RESTING_STATE_DURATION"
+    ]
+  },
+  "candidates": [
+    {
+      "candidateCode": "SYN-UNRELIABLE-G04",
+      "targetFamilyCode": "TF-MDD-CONVERGENT-LDLPFC-001",
+      "reliabilityScore": 0.42,
+      "circuitConcordance": 0.95,
+      "baselineCircuitConcordance": 0.65,
+      "mniCoordinate": {
+        "x": -58,
+        "y": 20,
+        "z": 40,
+        "unit": "mm",
+        "space": "MNI152NLin2009cAsym"
+      },
+      "accessibility": "good"
+    }
+  ]
+}

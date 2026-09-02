@@ -1,0 +1,40 @@
+{
+  "$schema": "https://magniom.org/schemas/scientific-policy-v1.0.json",
+  "id": "pol-mdd-v1.0.0",
+  "policyVersion": "MAGNIOM-POLICY-1.0.0",
+  "semanticVersion": "1.0.0",
+  "status": "FROZEN",
+  "releasedAt": "2026-09-02T00:00:00.000Z",
+  "title": "Canonical MDD Decision Support Scientific Policy Release v1.0",
+  "description": "Frozen scientific policy governing ranking weights, evidence ceilings, connectomic QC cutoffs, and safety envelopes for Clinical and Research targeting modes.",
+  "scoringWeights": {
+    "phenotypeConcordance": 0.40,
+    "circuitEvidence": 0.35,
+    "connectomicStrength": 0.15,
+    "anatomicalSafetyMargin": 0.10
+  },
+  "candidateSlateRules": {
+    "maxPrimaryCandidates": 3,
+    "maxAdditionalCandidates": 2,
+    "minimumPrimaryConfidenceTier": "T2",
+    "disallowSubthresholdCandidatesInClinical": true
+  },
+  "qualityControlThresholds": {
+    "maxMeanFramewiseDisplacementMm": 0.25,
+    "minRetainedDurationSeconds": 600,
+    "minSnr": 40.0,
+    "minCnr": 1.5,
+    "maxSpatialUncertaintyMm": 5.0
+  },
+  "safetyConstraints": {
+    "skullProximityWarningMm": 8.0,
+    "sulcalDepthSafetyMarginMm": 4.0,
+    "forbidNonTargetCortexStimulation": true
+  },
+  "modeSeparation": {
+    "clinicalRequiresVerifiedPhenotype": true,
+    "clinicalRequiresClinicianSignOff": true,
+    "researchAllowsSyntheticOrUnverified": true
+  },
+  "verificationSignature": "MAGNIOM-POLICY-SEAL-20260902-v1.0.0"
+}

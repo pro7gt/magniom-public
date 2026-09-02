@@ -1,0 +1,98 @@
+{
+  "$schema": "https://magniom.org/schemas/phenotype-ontology-v1.0.json",
+  "ontologyVersion": "MAGNIOM-PHENOTYPE-1.0.0",
+  "semanticVersion": "1.0.0",
+  "status": "FROZEN",
+  "releaseTimestamp": "2026-09-02T00:00:00.000Z",
+  "title": "Magniom Clinical Phenotype & Symptom-to-Circuit Ontology v1.0",
+  "description": "Frozen canonical ontology mapping DSM-5 depressive phenotypes, symptom clusters, and standardized clinical scales to therapeutic circuits.",
+  "indications": [
+    {
+      "code": "MDD",
+      "system": "DSM-5",
+      "display": "Major Depressive Disorder",
+      "dsm5Criteria": ["296.20", "296.21", "296.22", "296.23", "296.30", "296.31", "296.32", "296.33"],
+      "icd11Criteria": ["6A70", "6A71"]
+    },
+    {
+      "code": "TRD",
+      "system": "DSM-5-MOD",
+      "display": "Treatment-Resistant Major Depressive Disorder",
+      "definition": "Failure of >= 2 adequate pharmacotherapy trials in current episode"
+    },
+    {
+      "code": "OCD",
+      "system": "DSM-5",
+      "display": "Obsessive-Compulsive Disorder",
+      "dsm5Criteria": ["300.3"],
+      "icd11Criteria": ["6B20"]
+    }
+  ],
+  "symptomDimensions": [
+    {
+      "dimensionId": "DYSPHORIA",
+      "name": "Dysphoric / Depressed Mood",
+      "associatedCircuits": [
+        { "circuitId": "sgacc_left_dlpfc", "weight": 0.40, "confidence": "HIGH" },
+        { "circuitId": "left_dlpfc_fpi", "weight": 0.30, "confidence": "HIGH" }
+      ],
+      "scaleItems": [
+        { "scale": "MADRS", "itemIndex": 1, "name": "Apparent sadness" },
+        { "scale": "MADRS", "itemIndex": 2, "name": "Reported sadness" },
+        { "scale": "HAM-D-17", "itemIndex": 1, "name": "Depressed mood" },
+        { "scale": "PHQ-9", "itemIndex": 2, "name": "Feeling down, depressed, or hopeless" }
+      ]
+    },
+    {
+      "dimensionId": "ANHEDONIA",
+      "name": "Anhedonia / Loss of Interest",
+      "associatedCircuits": [
+        { "circuitId": "left_dlpfc_fpi", "weight": 0.45, "confidence": "HIGH" },
+        { "circuitId": "dacc_salience", "weight": 0.35, "confidence": "MODERATE" },
+        { "circuitId": "sgacc_left_dlpfc", "weight": 0.20, "confidence": "MODERATE" }
+      ],
+      "scaleItems": [
+        { "scale": "MADRS", "itemIndex": 8, "name": "Inability to feel" },
+        { "scale": "HAM-D-17", "itemIndex": 7, "name": "Work and activities" },
+        { "scale": "PHQ-9", "itemIndex": 1, "name": "Little interest or pleasure in doing things" }
+      ]
+    },
+    {
+      "dimensionId": "ANXIOUS_SOMATIC",
+      "name": "Anxious-Somatic & Tension",
+      "associatedCircuits": [
+        { "circuitId": "right_dlpfc_hyperarousal", "weight": 0.50, "confidence": "HIGH" },
+        { "circuitId": "dacc_salience", "weight": 0.30, "confidence": "MODERATE" },
+        { "circuitId": "sgacc_left_dlpfc", "weight": 0.20, "confidence": "MODERATE" }
+      ],
+      "scaleItems": [
+        { "scale": "MADRS", "itemIndex": 3, "name": "Inner tension" },
+        { "scale": "HAM-D-17", "itemIndex": 10, "name": "Anxiety psychic" },
+        { "scale": "HAM-D-17", "itemIndex": 11, "name": "Anxiety somatic" },
+        { "scale": "GAD-7", "itemIndex": 1, "name": "Feeling nervous, anxious or on edge" }
+      ]
+    },
+    {
+      "dimensionId": "RUMINATION",
+      "name": "Cognitive Dyscontrol & Rumination",
+      "associatedCircuits": [
+        { "circuitId": "left_dlpfc_fpi", "weight": 0.45, "confidence": "HIGH" },
+        { "circuitId": "dacc_salience", "weight": 0.35, "confidence": "MODERATE" },
+        { "circuitId": "sgacc_left_dlpfc", "weight": 0.20, "confidence": "MODERATE" }
+      ],
+      "scaleItems": [
+        { "scale": "MADRS", "itemIndex": 6, "name": "Concentration difficulties" },
+        { "scale": "HAM-D-17", "itemIndex": 8, "name": "Retardation psychomotor" },
+        { "scale": "PHQ-9", "itemIndex": 7, "name": "Trouble concentrating on things" }
+      ]
+    }
+  ],
+  "supportedScales": [
+    { "name": "MADRS", "version": "1.0", "range": [0, 60], "clinicalThreshold": 20 },
+    { "name": "HAM-D-17", "version": "1.0", "range": [0, 52], "clinicalThreshold": 18 },
+    { "name": "PHQ-9", "version": "1.0", "range": [0, 27], "clinicalThreshold": 10 },
+    { "name": "GAD-7", "version": "1.0", "range": [0, 21], "clinicalThreshold": 10 },
+    { "name": "Y-BOCS", "version": "1.0", "range": [0, 40], "clinicalThreshold": 16 }
+  ],
+  "verificationSignature": "MAGNIOM-ONTOLOGY-SEAL-20260902-v1.0.0"
+}

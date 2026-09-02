@@ -1,9 +1,13 @@
 import type { Metadata } from 'next';
 import '../styles/globals.css';
+import { MagniomTopBar } from '../components/shell/magniom-top-bar';
+import { EnvironmentSafetyStrip } from '../components/shell/environment-safety-strip';
+import { GlobalSidebar } from '../components/shell/global-sidebar';
+import { VersionManifestDisclosure } from '../components/shell/version-manifest-disclosure';
 
 export const metadata: Metadata = {
   title: 'Magniom — Clinician Decision Support Workspace',
-  description: 'Connectome-Informed TMS Target Decision Support System',
+  description: 'Connectome-Informed TMS Target Decision Support System (IEC 62304 / ISO 14971 Aligned)',
 };
 
 export default function RootLayout({
@@ -13,21 +17,34 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body>
-        <header className="header-bar">
-          <div className="logo-group">
-            <span style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-0.025em', color: '#38bdf8' }}>
-              MAGNIOM
-            </span>
-            <span style={{ color: '#6b7280', fontSize: '0.875rem' }}>|</span>
-            <span style={{ color: '#9ca3af', fontSize: '0.875rem' }}>TMS Target Decision Support</span>
-          </div>
-          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-            <span className="badge badge-research">RESEARCH PROTOTYPE (M0/M1)</span>
-            <span style={{ fontSize: '0.8125rem', color: '#9ca3af' }}>v0.1.0-alpha</span>
-          </div>
-        </header>
-        <main>{children}</main>
+        {/* Layer 1: Top Bar (§7–22) */}
+        <MagniomTopBar currentMode="CLINICAL" />
+
+        {/* Layer 2: Safety / CDS Environment Strip (§13, §123) */}
+        <EnvironmentSafetyStrip mode="CLINICAL" />
+
+        {/* 4-Layer Shell Body: Sidebar + Main Workspace Canvas */}
+        <div className="shell-workspace-container">
+          {/* Layer 3: Global / Case Sidebar (§23–39, §51–53) */}
+          <GlobalSidebar />
+
+          {/* Layer 4: Main Canvas (§57, §58) */}
+          <main role="main" className="shell-main-canvas" id="main-content">
+            {children}
+          </main>
+        </div>
+
+        {/* Provenance Footer (§78, §124, §153) */}
+        <VersionManifestDisclosure />
       </body>
     </html>
   );

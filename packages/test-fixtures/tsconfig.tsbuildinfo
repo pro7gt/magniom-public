@@ -1,1 +1,1 @@
-{"root":["./src/index.ts"],"version":"5.9.3"}
+{"root":["./src/g01-evidence-only.ts","./src/g02-convergent.ts","./src/g03-low-gain.ts","./src/g04-unreliable.ts","./src/g05-anxiosomatic.ts","./src/g08-research-ceiling.ts","./src/golden-cases-suite.ts","./src/imaging-validation-suite.ts","./src/index.ts","./src/structural-fixtures.ts","./src/ux-golden-cases.ts"],"version":"5.9.3"}

@@ -1,0 +1,93 @@
+{
+  "id": "slate-golden-02",
+  "caseId": "case-golden-02",
+  "phenotypeSnapshotId": "snap-golden-02",
+  "scientificPolicyVersion": "MAGNIOM-POLICY-MDD-1.0.0",
+  "evidenceReleaseVersion": "MAGNIOM-EVIDENCE-1.0.0",
+  "generatedAt": "2026-09-01T10:10:00.000Z",
+  "mode": "CLINICAL",
+  "primaryCandidates": [
+    {
+      "id": "cand-g02-convergent",
+      "familyId": "TF-MDD-CONVERGENT-LDLPFC-001",
+      "circuitId": "CIRCUIT-MDD-CONVERGENT-001",
+      "role": "PRIMARY_1",
+      "method": "CONNECTOME_REFINED",
+      "evidenceTier": "T1",
+      "mniCoordinate": {
+        "space": "MNI152NLin2009cAsym",
+        "x": -44,
+        "y": 40,
+        "z": 34,
+        "unit": "mm"
+      },
+      "surfaceVertex": {
+        "space": "fsLR_32k",
+        "hemisphere": "L",
+        "vertexIndex": 18452,
+        "parcelName": "p9-46v_L"
+      },
+      "evidenceScore": 0.96,
+      "phenotypeConcordanceScore": 0.92,
+      "connectomeRefinementScore": 0.84,
+      "overallScore": 0.94,
+      "rationale": "High sgACC anticorrelation with robust DLPFC evidence baseline (gain = +0.18 over standard prior).",
+      "contraindicationsOrConflicts": [],
+      "isSuppressedOrRedundant": false,
+      "convergenceProfile": {
+        "distanceToEvidenceBaselineMm": 8.25,
+        "convergenceClassification": "high",
+        "incrementalGainOverBaseline": 0.18
+      }
+    }
+  ],
+  "additionalCandidates": [
+    {
+      "id": "cand-g02-evidence-baseline",
+      "familyId": "TF-MDD-LDLPFC-EST-001",
+      "circuitId": "CIRCUIT-MDD-LDLPFC-001",
+      "role": "ADDITIONAL_A",
+      "method": "EVIDENCE_ONLY_PRIOR",
+      "evidenceTier": "T1",
+      "mniCoordinate": {
+        "space": "MNI152NLin2009cAsym",
+        "x": -38,
+        "y": 44,
+        "z": 30,
+        "unit": "mm"
+      },
+      "evidenceScore": 0.95,
+      "phenotypeConcordanceScore": 0.92,
+      "overallScore": 0.9,
+      "rationale": "Counterfactual standard evidence anchor preserved for clinician review.",
+      "contraindicationsOrConflicts": [],
+      "isSuppressedOrRedundant": false
+    }
+  ],
+  "suppressedCandidates": [],
+  "personalisationQualification": "qualified",
+  "counterfactualSummary": {
+    "evidenceBaselineCoordinate": {
+      "space": "MNI152NLin2009cAsym",
+      "x": -38,
+      "y": 44,
+      "z": 30,
+      "unit": "mm"
+    },
+    "candidateCoordinate": {
+      "space": "MNI152NLin2009cAsym",
+      "x": -44,
+      "y": 40,
+      "z": 34,
+      "unit": "mm"
+    },
+    "displacementDistanceMm": 8.25,
+    "expectedMechanisticGain": 0.18,
+    "justificationSummary": "Qualified connectome refinement shows +0.18 gain over standard baseline within 8.25mm."
+  },
+  "clinicalCoverageProfile": {
+    "primaryDomainCovered": "DOMAIN-MDD-DYSPHORIC-001",
+    "secondaryDomainsCovered": [],
+    "overallClinicalCoverageScore": 0.94
+  }
+}

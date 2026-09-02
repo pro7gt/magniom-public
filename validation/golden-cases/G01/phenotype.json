@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "1.0",
+  "ontologyVersion": "MAGNIOM-PHENOTYPE-1.0.0",
+  "primaryDiagnosis": {
+    "code": "MDD",
+    "display": "Major Depressive Disorder",
+    "status": "confirmed"
+  },
+  "episode": {
+    "active": true,
+    "severity": "severe"
+  },
+  "safety": {
+    "clearance": "cleared"
+  },
+  "priorities": [
+    {
+      "domainCode": "DOMAIN-MDD-DYSPHORIC-001",
+      "priorityRank": 1,
+      "clinicianWeight": 0.9,
+      "evidenceMappability": "direct",
+      "rationale": "Dysphoric burden is the dominant synthetic treatment objective."
+    },
+    {
+      "domainCode": "DOMAIN-MDD-ANXIOSOMATIC-001",
+      "priorityRank": 2,
+      "clinicianWeight": 0.2,
+      "evidenceMappability": "direct",
+      "rationale": "Low synthetic anxiosomatic burden."
+    }
+  ],
+  "phenotypeConfidence": "high",
+  "clinicianSummary": "Synthetic severe MDD case with predominantly dysphoric burden. Connectome is not acquired."
+}

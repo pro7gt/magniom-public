@@ -8,19 +8,24 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     }
   },
   "scripts": {
     "build": "tsc -b",
     "typecheck": "tsc --noEmit",
     "lint": "echo '@magniom/test-fixtures: lint passed'",
-    "test": "echo '@magniom/test-fixtures: tests passed'"
+    "test": "vitest run"
   },
   "dependencies": {
-    "@magniom/domain": "*"
+    "@magniom/domain": "*",
+    "@magniom/evidence": "*",
+    "@magniom/schemas": "*",
+    "@magniom/scientific-policy": "*"
   },
   "devDependencies": {
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.2",
+    "vitest": "^3.0.7"
   }
 }

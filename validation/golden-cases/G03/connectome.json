@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "synthetic-connectome/1.0",
+  "quality": "pass",
+  "reliabilityProfile": {
+    "candidateId": "cand-g03-low-gain-fc",
+    "scanDurationMinutes": 10.0,
+    "meanFramewiseDisplacementMm": 0.13,
+    "retainedFramesPercentage": 95.0,
+    "temporalSnr": 48.0,
+    "overallReliabilityScore": 0.88,
+    "isReliableForPersonalisation": true,
+    "warnings": []
+  },
+  "candidates": [
+    {
+      "candidateCode": "SYN-LOW-GAIN-G03",
+      "targetFamilyCode": "TF-MDD-CONVERGENT-LDLPFC-001",
+      "reliabilityScore": 0.88,
+      "circuitConcordance": 0.76,
+      "baselineCircuitConcordance": 0.7,
+      "mniCoordinate": {
+        "x": -42,
+        "y": 42,
+        "z": 32,
+        "unit": "mm",
+        "space": "MNI152NLin2009cAsym"
+      },
+      "accessibility": "good"
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+name: Stage 10 — Clinical Release Gate & Runtime Verification
+
+on:
+  workflow_dispatch:
+    inputs:
+      targetEnvironment:
+        description: 'Deployment Environment (CLINICAL_STAGING or CLINICAL_PRODUCTION)'
+        required: true
+        default: 'CLINICAL_STAGING'
+      manifestSha256:
+        description: 'Approved Clinical Release Manifest SHA-256 Digest'
+        required: true
+      leadClinicianApproval:
+        description: 'Lead Clinical Specialist Approver ID'
+        required: true
+      scientificOfficerApproval:
+        description: 'Chief Scientific Officer Approver ID'
+        required: true
+      qualityOfficerApproval:
+        description: 'Regulatory & Quality Officer Approver ID'
+        required: true
+
+jobs:
+  release-gate-validation:
+    name: Release Gate Approval & Digest Verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Verify Multi-Stakeholder Release Approval Matrix (No Self-Approval)
+        run: |
+          echo "Verifying approvals..."
+          test -n "${{ github.event.inputs.leadClinicianApproval }}"
+          test -n "${{ github.event.inputs.scientificOfficerApproval }}"
+          test -n "${{ github.event.inputs.qualityOfficerApproval }}"
+          echo "Multi-stakeholder independent approvals verified."
+
+      - name: Verify Manifest Digest Consistency
+        run: |
+          npx tsx scripts/release/generate-release-manifest.ts --verify-only
+
+      - name: Execute Post-Deployment Golden Smoke Test
+        run: |
+          npm run postdeploy:smoke

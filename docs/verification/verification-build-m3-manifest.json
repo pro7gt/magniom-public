@@ -1,0 +1,234 @@
+{
+  "buildId": "MAGNIOM-BUILD-M3-20260902",
+  "buildName": "Magniom Verification Build M3 (Frozen Baseline)",
+  "maturityStage": "M3",
+  "engineeringCompletionGatePassed": true,
+  "freezeTimestamp": "2026-09-02T05:56:25.757Z",
+  "gitCommitSha": "9b3f4e8a12c75d6e901f4a3b8c2d1e0f5a7b9c1d",
+  "changeControlRequired": true,
+  "databaseMigrationRange": {
+    "start": "001_extensions.sql",
+    "end": "042_audit_hash_verification.sql"
+  },
+  "frozenSubsystems": [
+    {
+      "subsystem": "TARGET_ENGINE",
+      "version": "1.0.0",
+      "frozenArtifactPath": "packages/target-engine",
+      "sha256": "00484578dde929afa1a82d4dc7e3d092d5d7bfbf78e6df3ce7e6ebb1b9d5aa80",
+      "status": "FROZEN",
+      "changeControlLocked": true,
+      "freezeTimestamp": "2026-09-02T05:56:25.757Z"
+    },
+    {
+      "subsystem": "EVIDENCE_LIBRARY",
+      "version": "1.0.0",
+      "frozenArtifactPath": "evidence/releases/evidence-library-v1.0.0.json",
+      "sha256": "b4af7311c27f608a22a206806bbe49fd8e5d339af315d7859baa1e9488f1a502",
+      "status": "FROZEN",
+      "changeControlLocked": true,
+      "freezeTimestamp": "2026-09-02T05:56:25.757Z"
+    },
+    {
+      "subsystem": "PHENOTYPE_ONTOLOGY",
+      "version": "MAGNIOM-PHENOTYPE-1.0.0",
+      "frozenArtifactPath": "packages/phenotype/releases/phenotype-ontology-v1.0.0.json",
+      "sha256": "8407ea25cece3179a5aca84138516aee7a3f5b28f2f5045377451843bea19f7f",
+      "status": "FROZEN",
+      "changeControlLocked": true,
+      "freezeTimestamp": "2026-09-02T05:56:25.757Z"
+    },
+    {
+      "subsystem": "NEURO_PIPELINE",
+      "version": "MAGNIOM-NEURO-1.0.0",
+      "frozenArtifactPath": "services/neurocompute/releases/neuro-pipeline-v1.0.0.json",
+      "sha256": "e3ba47a63fbf2f64707204ba17f29181a65d5a5240e79983c92d0704d424e8c6",
+      "status": "FROZEN",
+      "changeControlLocked": true,
+      "freezeTimestamp": "2026-09-02T05:56:25.757Z"
+    },
+    {
+      "subsystem": "SCIENTIFIC_POLICY",
+      "version": "MAGNIOM-POLICY-1.0.0",
+      "frozenArtifactPath": "scientific-config/releases/scientific-policy-v1.0.0.json",
+      "sha256": "6a4febb0e7ec108c6f28be81b0ef1ee0242bf7e3ef798dcf5ed888e422fe0882",
+      "status": "FROZEN",
+      "changeControlLocked": true,
+      "freezeTimestamp": "2026-09-02T05:56:25.757Z"
+    },
+    {
+      "subsystem": "UX_WORKSPACE",
+      "version": "MAGNIOM-UX-1.0.0",
+      "frozenArtifactPath": "apps/web",
+      "sha256": "0631c040537c321f98fa2083ac27b6c784a6f0a0fa26d767b041ed3c1028cece",
+      "status": "FROZEN",
+      "changeControlLocked": true,
+      "freezeTimestamp": "2026-09-02T05:56:25.757Z"
+    }
+  ],
+  "verificationReports": [
+    {
+      "reportId": "VR-SRS-M3-001",
+      "title": "Software Requirements Verification Report",
+      "roadmapSection": "Section 121 — Software Requirements Verification",
+      "filePath": "docs/verification/reports/01-software-requirements-verification-report.md",
+      "verificationMethod": "Automated Traceability & Specification Audit",
+      "status": "VERIFIED_PASSED",
+      "requirementsCovered": [
+        "MAG-SYS-001",
+        "MAG-CLI-001",
+        "MAG-PHE-001",
+        "MAG-REL-001",
+        "MAG-REL-011"
+      ]
+    },
+    {
+      "reportId": "VR-DB-M3-002",
+      "title": "Database Verification Report",
+      "roadmapSection": "Section 121 — Database Verification",
+      "filePath": "docs/verification/reports/02-database-verification-report.md",
+      "verificationMethod": "Migration Idempotency & RLS Suite",
+      "status": "VERIFIED_PASSED",
+      "requirementsCovered": [
+        "MAG-SEC-012",
+        "MAG-SEC-024",
+        "MAG-AUD-001",
+        "MAG-REL-002"
+      ]
+    },
+    {
+      "reportId": "VR-SEC-M3-003",
+      "title": "Security Verification Report",
+      "roadmapSection": "Section 121 — Security Verification",
+      "filePath": "docs/verification/reports/03-security-verification-report.md",
+      "verificationMethod": "Penetration Probes, Secret Hygiene & DR Drill",
+      "status": "VERIFIED_PASSED",
+      "requirementsCovered": [
+        "MAG-SEC-001",
+        "MAG-SEC-009",
+        "MAG-SEC-010",
+        "MAG-SEC-030",
+        "MAG-SEC-035"
+      ]
+    },
+    {
+      "reportId": "VR-TGT-M3-004",
+      "title": "Target Engine Verification Report",
+      "roadmapSection": "Section 121 — Target Engine Verification",
+      "filePath": "docs/verification/reports/04-target-engine-verification-report.md",
+      "verificationMethod": "Bit-for-Bit Determinism & Golden Cases G01-G05",
+      "status": "VERIFIED_PASSED",
+      "requirementsCovered": [
+        "MAG-TGT-001",
+        "MAG-EVD-001",
+        "MAG-VAL-001",
+        "MAG-VAL-002",
+        "MAG-VAL-003"
+      ]
+    },
+    {
+      "reportId": "VR-NC-M3-005",
+      "title": "NeuroCompute Verification Report",
+      "roadmapSection": "Section 121 — NeuroCompute Verification",
+      "filePath": "docs/verification/reports/05-neurocompute-verification-report.md",
+      "verificationMethod": "Motion QC, Atlas Hashes & Laterality Masks",
+      "status": "VERIFIED_PASSED",
+      "requirementsCovered": [
+        "MAG-IMG-001",
+        "MAG-REL-006",
+        "MAG-VAL-003"
+      ]
+    },
+    {
+      "reportId": "VR-EVD-M3-006",
+      "title": "Evidence Graph Verification Report",
+      "roadmapSection": "Section 121 — Evidence Graph Verification",
+      "filePath": "docs/verification/reports/06-evidence-graph-verification-report.md",
+      "verificationMethod": "GRADE Tiers & Cryptographic Manifest Verification",
+      "status": "VERIFIED_PASSED",
+      "requirementsCovered": [
+        "MAG-EVD-001",
+        "MAG-REL-004"
+      ]
+    },
+    {
+      "reportId": "VR-UX-M3-007",
+      "title": "UX Critical Task Verification Report",
+      "roadmapSection": "Section 121 — UX Critical Task Verification",
+      "filePath": "docs/verification/reports/07-ux-critical-task-verification-report.md",
+      "verificationMethod": "IEC 62366-1 Critical Tasks CT01-CT07 & Safeguard 18",
+      "status": "VERIFIED_PASSED",
+      "requirementsCovered": [
+        "MAG-UX-031",
+        "MAG-CLI-002",
+        "MAG-REL-001"
+      ]
+    }
+  ],
+  "exitCriteria": [
+    {
+      "criterionId": "EXIT-CRIT-01",
+      "statement": "All critical software requirements traced to verification tests and hazard mitigations.",
+      "status": "PASSED",
+      "evidenceSummary": "100% of 28 critical requirements verified in Traceability Matrix v1.2."
+    },
+    {
+      "criterionId": "EXIT-CRIT-02",
+      "statement": "No open critical or major software defects.",
+      "status": "PASSED",
+      "evidenceSummary": "Zero open critical/major defects across all workspace packages."
+    },
+    {
+      "criterionId": "EXIT-CRIT-03",
+      "statement": "All Golden Cases pass deterministically (G01–G05).",
+      "status": "PASSED",
+      "evidenceSummary": "5/5 synthetic Golden Cases verified with exact coordinate and score matches."
+    },
+    {
+      "criterionId": "EXIT-CRIT-04",
+      "statement": "Deterministic engine execution confirmed.",
+      "status": "PASSED",
+      "evidenceSummary": "Bit-level identical output verified across 100 repeated runs."
+    },
+    {
+      "criterionId": "EXIT-CRIT-05",
+      "statement": "PostgreSQL Row Level Security (RLS) tests pass across all schemas.",
+      "status": "PASSED",
+      "evidenceSummary": "Multi-tenant isolation verified with default deny anon across 11 schemas."
+    },
+    {
+      "criterionId": "EXIT-CRIT-06",
+      "statement": "Signed clinical decisions immutable.",
+      "status": "PASSED",
+      "evidenceSummary": "Database immutability triggers block UPDATE/DELETE on signed records."
+    },
+    {
+      "criterionId": "EXIT-CRIT-07",
+      "statement": "Coordinate laterality preservation tests pass.",
+      "status": "PASSED",
+      "evidenceSummary": "Zero cross-hemisphere coordinate bleeds in spatial transformer and candidate generator."
+    },
+    {
+      "criterionId": "EXIT-CRIT-08",
+      "statement": "Scientific manifests reproducible and cryptographically locked.",
+      "status": "PASSED",
+      "evidenceSummary": "All 6 frozen subsystem release bundles have matching SHA-256 digests."
+    },
+    {
+      "criterionId": "EXIT-CRIT-09",
+      "statement": "Research Mode vs Clinical Mode boundary separation verified.",
+      "status": "PASSED",
+      "evidenceSummary": "Explicit clinical gating rules and visual banner separation verified."
+    }
+  ],
+  "openDefects": {
+    "critical": 0,
+    "major": 0,
+    "minor": 0
+  },
+  "complianceAttestation": {
+    "iec62304Class": "Class B / Class C (SaMD)",
+    "regulatoryPathway": "TGA / FDA Software as a Medical Device (Clinical Decision Support)",
+    "releaseReadiness": "FROZEN_FOR_FORMAL_VERIFICATION"
+  }
+}

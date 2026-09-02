@@ -15,12 +15,14 @@
     "build": "tsc -b",
     "typecheck": "tsc --noEmit",
     "lint": "echo '@magniom/presentation: lint passed'",
-    "test": "echo '@magniom/presentation: tests passed'"
+    "test": "vitest run"
   },
   "dependencies": {
     "@magniom/domain": "*"
   },
   "devDependencies": {
-    "typescript": "^5.8.2"
+    "@magniom/test-fixtures": "*",
+    "typescript": "^5.8.2",
+    "vitest": "^3.0.7"
   }
 }

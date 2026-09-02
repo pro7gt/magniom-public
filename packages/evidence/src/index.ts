@@ -17,3 +17,7 @@ export const EVIDENCE_TIER_RANK: Record<EvidenceTier, number> = {
 export function isTierPermittedInClinicalMode(tier: EvidenceTier): boolean {
   return tier === 'T1' || tier === 'T2' || tier === 'T3';
 }
+
+export * from './canonical-manifest.js';
+export * from './release.js';
+export * from './graph.js';

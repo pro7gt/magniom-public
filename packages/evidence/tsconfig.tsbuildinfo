@@ -1,1 +1,1 @@
-{"root":["./src/index.ts"],"version":"5.9.3"}
+{"root":["./src/canonical-manifest.ts","./src/graph.ts","./src/index.ts","./src/release.ts"],"version":"5.9.3"}

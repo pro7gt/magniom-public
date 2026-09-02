@@ -1,7 +1,7 @@
 {
   "$schema": "./requirement-schema.json",
-  "version": "1.0.0",
-  "lastUpdated": "2026-09-01T12:00:00.000Z",
+  "version": "1.2.0",
+  "lastUpdated": "2026-09-02T15:30:00.000Z",
   "requirements": [
     {
       "id": "MAG-SYS-001",
@@ -114,9 +114,108 @@
       "status": "approved"
     },
     {
+      "id": "MAG-SEC-001",
+      "domain": "SEC",
+      "statement": "MAGNIOM shall authenticate clinical users before granting access to patient-specific resources.",
+      "sourceSpecification": ["MAGNIOM-System Requirements Specification v1.0", "MAGNIOM-Supabase Database & Security Specification v1.0"],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "security_test",
+      "riskControlIds": ["HAZ-005"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-SEC-009",
+      "domain": "SEC",
+      "statement": "Browser clients shall not receive privileged service credentials capable of bypassing RLS.",
+      "sourceSpecification": ["MAGNIOM-Technical Architecture v1.0", "MAGNIOM-Supabase Database & Security Specification v1.0"],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "security_test",
+      "riskControlIds": ["HAZ-005"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-SEC-010",
+      "domain": "SEC",
+      "statement": "Privileged compute workers shall authenticate machine-to-machine with scoped tokens and bounded TTLs.",
+      "sourceSpecification": ["MAGNIOM-System Requirements Specification v1.0", "MAGNIOM-Technical Architecture v1.0"],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "security_test",
+      "riskControlIds": ["HAZ-005"],
+      "status": "approved"
+    },
+    {
       "id": "MAG-SEC-012",
       "domain": "SEC",
       "statement": "Cross-organization clinical data access shall be strictly prohibited by PostgreSQL Row Level Security (RLS) policies.",
+      "sourceSpecification": ["MAGNIOM-Supabase Database & Security Specification v1.0"],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "security_test",
+      "riskControlIds": ["HAZ-005"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-SEC-014",
+      "domain": "SEC",
+      "statement": "Storage buckets containing clinical MRI or derived patient artefacts shall be private and access-controlled.",
+      "sourceSpecification": ["MAGNIOM-Supabase Database & Security Specification v1.0"],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "security_test",
+      "riskControlIds": ["HAZ-005"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-SEC-022",
+      "domain": "SEC",
+      "statement": "Clinical signing authority shall be explicitly granted and revocable per authorized clinician.",
+      "sourceSpecification": ["MAGNIOM-Supabase Database & Security Specification v1.0"],
+      "safetyClass": "critical",
+      "appliesToMode": "clinical",
+      "verificationMethod": "security_test",
+      "riskControlIds": ["HAZ-001", "HAZ-005"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-SEC-024",
+      "domain": "SEC",
+      "statement": "Signed clinical decisions shall resist UPDATE and DELETE operations through database immutability triggers.",
+      "sourceSpecification": ["MAGNIOM-Supabase Database & Security Specification v1.0"],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "security_test",
+      "riskControlIds": ["HAZ-001", "HAZ-005"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-SEC-029",
+      "domain": "SEC",
+      "statement": "Queue payloads and worker messages shall avoid unnecessary patient-identifying information.",
+      "sourceSpecification": ["MAGNIOM-Supabase Database & Security Specification v1.0", "MAGNIOM-Technical Architecture v1.0"],
+      "safetyClass": "major",
+      "appliesToMode": "all",
+      "verificationMethod": "security_test",
+      "riskControlIds": ["HAZ-005"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-SEC-030",
+      "domain": "SEC",
+      "statement": "Application and audit logs shall automatically redact Protected Health Information (PHI).",
+      "sourceSpecification": ["MAGNIOM-System Requirements Specification v1.0"],
+      "safetyClass": "major",
+      "appliesToMode": "all",
+      "verificationMethod": "unit_test",
+      "riskControlIds": ["HAZ-005"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-SEC-035",
+      "domain": "SEC",
+      "statement": "Backup and restore controls shall preserve clinically important records and scientific provenance with cryptographic hash parity.",
       "sourceSpecification": ["MAGNIOM-Supabase Database & Security Specification v1.0"],
       "safetyClass": "critical",
       "appliesToMode": "all",
@@ -149,9 +248,108 @@
     {
       "id": "MAG-REL-001",
       "domain": "REL",
-      "statement": "Scientific policy and evidence releases shall be versioned immutably and verified via cryptographic manifest hashes.",
-      "sourceSpecification": ["MAGNIOM-Scientific Policy & Algorithm Configuration Specification v1.0"],
+      "statement": "Production Clinical releases SHALL identify the exact application and core package versions.",
+      "sourceSpecification": ["MAGNIOM-System Requirements Specification v1.0"],
       "safetyClass": "major",
+      "appliesToMode": "all",
+      "verificationMethod": "unit_test",
+      "riskControlIds": ["HAZ-003"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-REL-002",
+      "domain": "REL",
+      "statement": "Production Clinical releases SHALL identify database migration baseline versions (001 to 042).",
+      "sourceSpecification": ["MAGNIOM-System Requirements Specification v1.0"],
+      "safetyClass": "major",
+      "appliesToMode": "all",
+      "verificationMethod": "integration_test",
+      "riskControlIds": ["HAZ-005"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-REL-003",
+      "domain": "REL",
+      "statement": "Production Clinical releases SHALL identify and pin ScientificPolicyRelease MAGNIOM-POLICY-1.0.0.",
+      "sourceSpecification": ["MAGNIOM-System Requirements Specification v1.0"],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "unit_test",
+      "riskControlIds": ["HAZ-003"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-REL-004",
+      "domain": "REL",
+      "statement": "Production Clinical releases SHALL identify and pin EvidenceLibraryRelease MAGNIOM-EVIDENCE-1.0.0.",
+      "sourceSpecification": ["MAGNIOM-System Requirements Specification v1.0"],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "unit_test",
+      "riskControlIds": ["HAZ-003"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-REL-005",
+      "domain": "REL",
+      "statement": "Production Clinical releases SHALL identify and pin TargetEngineVersion 1.0.0.",
+      "sourceSpecification": ["MAGNIOM-System Requirements Specification v1.0"],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "unit_test",
+      "riskControlIds": ["HAZ-002"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-REL-006",
+      "domain": "REL",
+      "statement": "Production Clinical releases SHALL identify and pin PipelineVersion MAGNIOM-NEURO-1.0.0.",
+      "sourceSpecification": ["MAGNIOM-System Requirements Specification v1.0"],
+      "safetyClass": "critical",
+      "appliesToMode": "clinical",
+      "verificationMethod": "golden_case",
+      "riskControlIds": ["HAZ-003"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-REL-010",
+      "domain": "REL",
+      "statement": "Production Clinical releases SHALL identify and pin Phenotype Ontology release MAGNIOM-PHENOTYPE-1.0.0.",
+      "sourceSpecification": ["MAGNIOM-System Requirements Specification v1.0"],
+      "safetyClass": "major",
+      "appliesToMode": "all",
+      "verificationMethod": "unit_test",
+      "riskControlIds": ["HAZ-004"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-REL-011",
+      "domain": "REL",
+      "statement": "Clinical scientific versions SHALL be frozen for formal verification.",
+      "sourceSpecification": ["MAGNIOM-System Requirements Specification v1.0", "MAGNIOM-Implementation & Validation Roadmap v1.0"],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "unit_test",
+      "riskControlIds": ["HAZ-003"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-REL-012",
+      "domain": "REL",
+      "statement": "Feature and scientific changes after M3 freeze SHALL undergo formal change-control impact assessment.",
+      "sourceSpecification": ["MAGNIOM-System Requirements Specification v1.0", "MAGNIOM-Implementation & Validation Roadmap v1.0"],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "inspection",
+      "riskControlIds": ["HAZ-003"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-REL-026",
+      "domain": "REL",
+      "statement": "A Clinical Release Package SHALL identify the exact combination of SRS, Clinical & Scientific Spec, Canonical Target Data Spec, Phenotype Ontology, Evidence Library, Policy, Target Engine, Neuro Pipeline, Normative Model, Atlas, DB Migration, and UX workspace.",
+      "sourceSpecification": ["MAGNIOM-System Requirements Specification v1.0"],
+      "safetyClass": "critical",
       "appliesToMode": "all",
       "verificationMethod": "unit_test",
       "riskControlIds": ["HAZ-003"],
@@ -166,6 +364,28 @@
       "appliesToMode": "all",
       "verificationMethod": "golden_case",
       "riskControlIds": ["HAZ-002", "HAZ-003"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-VAL-002",
+      "domain": "VAL",
+      "statement": "Target Engine execution shall produce identical candidate coordinates, confidence scores, and slates across 1000 repeated runs given identical inputs.",
+      "sourceSpecification": ["MAGNIOM-Target Engine & Ranking Algorithm Specification v1.0"],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "unit_test",
+      "riskControlIds": ["HAZ-002"],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-VAL-003",
+      "domain": "VAL",
+      "statement": "Coordinate transformations and candidate generation shall preserve anatomical laterality without left-right hemisphere crossing.",
+      "sourceSpecification": ["MAGNIOM-Canonical Target Data Specification v1.0"],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "unit_test",
+      "riskControlIds": ["HAZ-002"],
       "status": "approved"
     }
   ]

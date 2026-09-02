@@ -1,0 +1,4629 @@
+{
+  "srsVersion": "1.0",
+  "extractionDate": "2026-09-02T06:47:36.795Z",
+  "totalRequirements": 412,
+  "domainSummary": {
+    "MAG-AUD": {
+      "total": 12,
+      "critical": 7,
+      "major": 5
+    },
+    "MAG-CLI": {
+      "total": 20,
+      "critical": 13,
+      "major": 7
+    },
+    "MAG-DAT": {
+      "total": 23,
+      "critical": 14,
+      "major": 8
+    },
+    "MAG-EVD": {
+      "total": 25,
+      "critical": 17,
+      "major": 8
+    },
+    "MAG-IMG": {
+      "total": 40,
+      "critical": 24,
+      "major": 16
+    },
+    "MAG-PHE": {
+      "total": 18,
+      "critical": 7,
+      "major": 10
+    },
+    "MAG-POL": {
+      "total": 30,
+      "critical": 22,
+      "major": 8
+    },
+    "MAG-REL": {
+      "total": 27,
+      "critical": 21,
+      "major": 5
+    },
+    "MAG-SEC": {
+      "total": 35,
+      "critical": 24,
+      "major": 11
+    },
+    "MAG-SYS": {
+      "total": 30,
+      "critical": 19,
+      "major": 5
+    },
+    "MAG-TGT": {
+      "total": 50,
+      "critical": 26,
+      "major": 24
+    },
+    "MAG-UX": {
+      "total": 38,
+      "critical": 19,
+      "major": 17
+    },
+    "MAG-VAL": {
+      "total": 46,
+      "critical": 30,
+      "major": 11
+    },
+    "MAG-WFL": {
+      "total": 18,
+      "critical": 13,
+      "major": 4
+    }
+  },
+  "requirements": [
+    {
+      "id": "MAG-AUD-001",
+      "domain": "MAG-AUD",
+      "domainLabel": "Audit / Provenance",
+      "statement": "MAGNIOM SHALL maintain an append-only semantic audit trail for clinically significant events.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §19 Audit"
+    },
+    {
+      "id": "MAG-AUD-002",
+      "domain": "MAG-AUD",
+      "domainLabel": "Audit / Provenance",
+      "statement": "Audit events SHALL identify actor, action, time and affected aggregate.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §19 Audit"
+    },
+    {
+      "id": "MAG-AUD-003",
+      "domain": "MAG-AUD",
+      "domainLabel": "Audit / Provenance",
+      "statement": "Scientific version activation SHALL be audited.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §19 Audit"
+    },
+    {
+      "id": "MAG-AUD-004",
+      "domain": "MAG-AUD",
+      "domainLabel": "Audit / Provenance",
+      "statement": "Target Slate generation/publication SHALL be audited.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §19 Audit"
+    },
+    {
+      "id": "MAG-AUD-005",
+      "domain": "MAG-AUD",
+      "domainLabel": "Audit / Provenance",
+      "statement": "Phenotype approval SHALL be audited.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §19 Audit"
+    },
+    {
+      "id": "MAG-AUD-006",
+      "domain": "MAG-AUD",
+      "domainLabel": "Audit / Provenance",
+      "statement": "ClinicianDecision signing SHALL be audited.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §19 Audit"
+    },
+    {
+      "id": "MAG-AUD-007",
+      "domain": "MAG-AUD",
+      "domainLabel": "Audit / Provenance",
+      "statement": "Target rejection/modification SHALL remain reconstructable.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §19 Audit"
+    },
+    {
+      "id": "MAG-AUD-008",
+      "domain": "MAG-AUD",
+      "domainLabel": "Audit / Provenance",
+      "statement": "Privileged administrative actions SHALL be audited.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §19 Audit"
+    },
+    {
+      "id": "MAG-AUD-009",
+      "domain": "MAG-AUD",
+      "domainLabel": "Audit / Provenance",
+      "statement": "Research-to-Clinical promotion events SHALL be audited.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §19 Audit"
+    },
+    {
+      "id": "MAG-AUD-010",
+      "domain": "MAG-AUD",
+      "domainLabel": "Audit / Provenance",
+      "statement": "Scientific Policy integrity/signature failures SHALL be audited.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §19 Audit"
+    },
+    {
+      "id": "MAG-AUD-011",
+      "domain": "MAG-AUD",
+      "domainLabel": "Audit / Provenance",
+      "statement": "Audit history SHALL NOT be silently rewritten during supersession.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §19 Audit"
+    },
+    {
+      "id": "MAG-AUD-012",
+      "domain": "MAG-AUD",
+      "domainLabel": "Audit / Provenance",
+      "statement": "An authorised reviewer SHALL be able to reconstruct the evidence→candidate→slate→decision chain.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "SV"
+      ],
+      "srsSection": "SRS §19 Audit"
+    },
+    {
+      "id": "MAG-CLI-001",
+      "domain": "MAG-CLI",
+      "domainLabel": "Clinical Workflow & Authority",
+      "statement": "A clinician-approved PhenotypeSnapshot SHALL be required before Clinical Mode target generation.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §9 Clinical"
+    },
+    {
+      "id": "MAG-CLI-002",
+      "domain": "MAG-CLI",
+      "domainLabel": "Clinical Workflow & Authority",
+      "statement": "The initial Clinical Mode indication SHALL be restricted to the approved MDD indication scope.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §9 Clinical"
+    },
+    {
+      "id": "MAG-CLI-003",
+      "domain": "MAG-CLI",
+      "domainLabel": "Clinical Workflow & Authority",
+      "statement": "MAGNIOM SHALL NOT autonomously diagnose major depressive disorder.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "I",
+        "HF"
+      ],
+      "srsSection": "SRS §9 Clinical"
+    },
+    {
+      "id": "MAG-CLI-004",
+      "domain": "MAG-CLI",
+      "domainLabel": "Clinical Workflow & Authority",
+      "statement": "MAGNIOM SHALL NOT independently determine whether TMS is clinically indicated.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "I",
+        "HF"
+      ],
+      "srsSection": "SRS §9 Clinical"
+    },
+    {
+      "id": "MAG-CLI-005",
+      "domain": "MAG-CLI",
+      "domainLabel": "Clinical Workflow & Authority",
+      "statement": "MAGNIOM SHALL NOT replace TMS safety assessment.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "I",
+        "HF"
+      ],
+      "srsSection": "SRS §9 Clinical"
+    },
+    {
+      "id": "MAG-CLI-006",
+      "domain": "MAG-CLI",
+      "domainLabel": "Clinical Workflow & Authority",
+      "statement": "Final target selection SHALL be stored separately from the Target Slate.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §9 Clinical"
+    },
+    {
+      "id": "MAG-CLI-007",
+      "domain": "MAG-CLI",
+      "domainLabel": "Clinical Workflow & Authority",
+      "statement": "Final clinical target selection SHALL require an authorised clinician.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT",
+        "ST"
+      ],
+      "srsSection": "SRS §9 Clinical"
+    },
+    {
+      "id": "MAG-CLI-008",
+      "domain": "MAG-CLI",
+      "domainLabel": "Clinical Workflow & Authority",
+      "statement": "A clinician SHALL be able to reject every MAGNIOM candidate.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT",
+        "HF"
+      ],
+      "srsSection": "SRS §9 Clinical"
+    },
+    {
+      "id": "MAG-CLI-009",
+      "domain": "MAG-CLI",
+      "domainLabel": "Clinical Workflow & Authority",
+      "statement": "A clinician SHALL be able to select an evidence-supported target not ranked first by MAGNIOM.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT",
+        "HF"
+      ],
+      "srsSection": "SRS §9 Clinical"
+    },
+    {
+      "id": "MAG-CLI-010",
+      "domain": "MAG-CLI",
+      "domainLabel": "Clinical Workflow & Authority",
+      "statement": "A clinician SHALL be able to select no TMS target.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §9 Clinical"
+    },
+    {
+      "id": "MAG-CLI-011",
+      "domain": "MAG-CLI",
+      "domainLabel": "Clinical Workflow & Authority",
+      "statement": "A clinician SHALL be able to document reasoning for modifying or rejecting candidate targets.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §9 Clinical"
+    },
+    {
+      "id": "MAG-CLI-012",
+      "domain": "MAG-CLI",
+      "domainLabel": "Clinical Workflow & Authority",
+      "statement": "A signed ClinicianDecision SHALL identify the Target Slate on which the decision was based.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §9 Clinical"
+    },
+    {
+      "id": "MAG-CLI-013",
+      "domain": "MAG-CLI",
+      "domainLabel": "Clinical Workflow & Authority",
+      "statement": "A signed ClinicianDecision SHALL identify the authorised clinician responsible for the decision.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §9 Clinical"
+    },
+    {
+      "id": "MAG-CLI-014",
+      "domain": "MAG-CLI",
+      "domainLabel": "Clinical Workflow & Authority",
+      "statement": "Every candidate reviewed in a signed decision SHALL have an explicit clinician disposition.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §9 Clinical"
+    },
+    {
+      "id": "MAG-CLI-015",
+      "domain": "MAG-CLI",
+      "domainLabel": "Clinical Workflow & Authority",
+      "statement": "A signed ClinicianDecision SHALL be immutable.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT",
+        "ST"
+      ],
+      "srsSection": "SRS §9 Clinical"
+    },
+    {
+      "id": "MAG-CLI-016",
+      "domain": "MAG-CLI",
+      "domainLabel": "Clinical Workflow & Authority",
+      "statement": "A changed phenotype SHALL NOT mutate an existing Target Slate.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §9 Clinical"
+    },
+    {
+      "id": "MAG-CLI-017",
+      "domain": "MAG-CLI",
+      "domainLabel": "Clinical Workflow & Authority",
+      "statement": "Clinically material phenotype changes SHALL require a new Target Slate if updated targeting is requested.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §9 Clinical"
+    },
+    {
+      "id": "MAG-CLI-018",
+      "domain": "MAG-CLI",
+      "domainLabel": "Clinical Workflow & Authority",
+      "statement": "Clinical Mode SHALL expose the evidence-only targeting counterfactual where applicable.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §9 Clinical"
+    },
+    {
+      "id": "MAG-CLI-019",
+      "domain": "MAG-CLI",
+      "domainLabel": "Clinical Workflow & Authority",
+      "statement": "MAGNIOM SHALL distinguish a Target Slate from a treatment prescription in clinician-facing presentation.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §9 Clinical"
+    },
+    {
+      "id": "MAG-CLI-020",
+      "domain": "MAG-CLI",
+      "domainLabel": "Clinical Workflow & Authority",
+      "statement": "MAGNIOM SHALL NOT autonomously determine stimulation protocol, frequency, dose, intensity, pulse number or accelerated schedule.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "I",
+        "HF"
+      ],
+      "srsSection": "SRS §9 Clinical"
+    },
+    {
+      "id": "MAG-DAT-001",
+      "domain": "MAG-DAT",
+      "domainLabel": "Canonical Data / Integrity",
+      "statement": "Canonical domain entities SHALL use immutable unique identities.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §16 Canonical Data"
+    },
+    {
+      "id": "MAG-DAT-002",
+      "domain": "MAG-DAT",
+      "domainLabel": "Canonical Data / Integrity",
+      "statement": "Mutable facts SHALL NOT be encoded into primary IDs.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §16 Canonical Data"
+    },
+    {
+      "id": "MAG-DAT-003",
+      "domain": "MAG-DAT",
+      "domainLabel": "Canonical Data / Integrity",
+      "statement": "Machine timestamps SHALL use ISO 8601 UTC.",
+      "safetyClass": "Standard",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §16 Canonical Data"
+    },
+    {
+      "id": "MAG-DAT-004",
+      "domain": "MAG-DAT",
+      "domainLabel": "Canonical Data / Integrity",
+      "statement": "Historical event time and persistence/write time SHALL remain distinguishable where relevant.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §16 Canonical Data"
+    },
+    {
+      "id": "MAG-DAT-005",
+      "domain": "MAG-DAT",
+      "domainLabel": "Canonical Data / Integrity",
+      "statement": "Scientific and algorithmic artefacts SHALL retain explicit version identity.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §16 Canonical Data"
+    },
+    {
+      "id": "MAG-DAT-006",
+      "domain": "MAG-DAT",
+      "domainLabel": "Canonical Data / Integrity",
+      "statement": "Historical Target Slates SHALL retain all scientific versions necessary for reconstruction.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §16 Canonical Data"
+    },
+    {
+      "id": "MAG-DAT-007",
+      "domain": "MAG-DAT",
+      "domainLabel": "Canonical Data / Integrity",
+      "statement": "Every TargetCandidate SHALL have case context.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §16 Canonical Data"
+    },
+    {
+      "id": "MAG-DAT-008",
+      "domain": "MAG-DAT",
+      "domainLabel": "Canonical Data / Integrity",
+      "statement": "Reusable scientific objects SHALL remain distinct from patient-specific objects.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §16 Canonical Data"
+    },
+    {
+      "id": "MAG-DAT-009",
+      "domain": "MAG-DAT",
+      "domainLabel": "Canonical Data / Integrity",
+      "statement": "Patient findings SHALL NOT silently become reusable scientific evidence.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §16 Canonical Data"
+    },
+    {
+      "id": "MAG-DAT-010",
+      "domain": "MAG-DAT",
+      "domainLabel": "Canonical Data / Integrity",
+      "statement": "TargetCandidate SHALL include target definition, evidence basis, uncertainty and clinical rationale.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §16 Canonical Data"
+    },
+    {
+      "id": "MAG-DAT-011",
+      "domain": "MAG-DAT",
+      "domainLabel": "Canonical Data / Integrity",
+      "statement": "TargetCandidate SHALL retain counterarguments.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §16 Canonical Data"
+    },
+    {
+      "id": "MAG-DAT-012",
+      "domain": "MAG-DAT",
+      "domainLabel": "Canonical Data / Integrity",
+      "statement": "TargetReliabilityProfile SHALL identify the applicable imaging/connectome run.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §16 Canonical Data"
+    },
+    {
+      "id": "MAG-DAT-013",
+      "domain": "MAG-DAT",
+      "domainLabel": "Canonical Data / Integrity",
+      "statement": "TargetSlate SHALL reference the immutable candidate objects it contains.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §16 Canonical Data"
+    },
+    {
+      "id": "MAG-DAT-014",
+      "domain": "MAG-DAT",
+      "domainLabel": "Canonical Data / Integrity",
+      "statement": "TargetSlate SHALL contain a reproducibility/version manifest or reference thereto.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §16 Canonical Data"
+    },
+    {
+      "id": "MAG-DAT-015",
+      "domain": "MAG-DAT",
+      "domainLabel": "Canonical Data / Integrity",
+      "statement": "Published TargetSlate payload SHALL be integrity-hashed.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §16 Canonical Data"
+    },
+    {
+      "id": "MAG-DAT-016",
+      "domain": "MAG-DAT",
+      "domainLabel": "Canonical Data / Integrity",
+      "statement": "ClinicianDecision SHALL remain a separate canonical aggregate from TargetSlate.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §16 Canonical Data"
+    },
+    {
+      "id": "MAG-DAT-017",
+      "domain": "MAG-DAT",
+      "domainLabel": "Canonical Data / Integrity",
+      "statement": "Clinical snapshots SHALL be immutable after approval/publication.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §16 Canonical Data"
+    },
+    {
+      "id": "MAG-DAT-018",
+      "domain": "MAG-DAT",
+      "domainLabel": "Canonical Data / Integrity",
+      "statement": "Data quality state SHALL distinguish verified, reviewed, unverified, incomplete and invalid information where applicable.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §16 Canonical Data"
+    },
+    {
+      "id": "MAG-DAT-019",
+      "domain": "MAG-DAT",
+      "domainLabel": "Canonical Data / Integrity",
+      "statement": "Core clinical semantics SHALL NOT be hidden solely inside arbitrary unstructured JSON payloads.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "I"
+      ],
+      "srsSection": "SRS §16 Canonical Data"
+    },
+    {
+      "id": "MAG-DAT-020",
+      "domain": "MAG-DAT",
+      "domainLabel": "Canonical Data / Integrity",
+      "statement": "Spatial coordinates SHALL include explicit coordinate-space provenance.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §16 Canonical Data"
+    },
+    {
+      "id": "MAG-DAT-021",
+      "domain": "MAG-DAT",
+      "domainLabel": "Canonical Data / Integrity",
+      "statement": "The system SHALL support backup and restore of signed decisions, Target Slates, snapshots, audit records and scientific manifests.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §16 Canonical Data"
+    },
+    {
+      "id": "MAG-DAT-022",
+      "domain": "MAG-DAT",
+      "domainLabel": "Canonical Data / Integrity",
+      "statement": "Object-storage recovery controls SHALL be tested independently of relational-database restore.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §16 Canonical Data"
+    },
+    {
+      "id": "MAG-DAT-023",
+      "domain": "MAG-DAT",
+      "domainLabel": "Canonical Data / Integrity",
+      "statement": "Artefact integrity SHALL be verifiable after restore using stored hashes.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §16 Canonical Data"
+    },
+    {
+      "id": "MAG-EVD-001",
+      "domain": "MAG-EVD",
+      "domainLabel": "Evidence Knowledge System",
+      "statement": "Clinical target generation SHALL use a versioned EvidenceLibraryRelease.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §11 Evidence Knowledge"
+    },
+    {
+      "id": "MAG-EVD-002",
+      "domain": "MAG-EVD",
+      "domainLabel": "Evidence Knowledge System",
+      "statement": "Clinical target generation SHALL NOT consume arbitrary latest evidence rows.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §11 Evidence Knowledge"
+    },
+    {
+      "id": "MAG-EVD-003",
+      "domain": "MAG-EVD",
+      "domainLabel": "Evidence Knowledge System",
+      "statement": "An active EvidenceLibraryRelease SHALL be immutable.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST",
+        "IT"
+      ],
+      "srsSection": "SRS §11 Evidence Knowledge"
+    },
+    {
+      "id": "MAG-EVD-004",
+      "domain": "MAG-EVD",
+      "domainLabel": "Evidence Knowledge System",
+      "statement": "EvidenceClaims SHALL be narrower canonical propositions rather than mere references to publications.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "I"
+      ],
+      "srsSection": "SRS §11 Evidence Knowledge"
+    },
+    {
+      "id": "MAG-EVD-005",
+      "domain": "MAG-EVD",
+      "domainLabel": "Evidence Knowledge System",
+      "statement": "Each clinical EvidenceClaim SHALL retain supporting source provenance.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §11 Evidence Knowledge"
+    },
+    {
+      "id": "MAG-EVD-006",
+      "domain": "MAG-EVD",
+      "domainLabel": "Evidence Knowledge System",
+      "statement": "EvidenceClaims SHALL support conflicting evidence relationships.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §11 Evidence Knowledge"
+    },
+    {
+      "id": "MAG-EVD-007",
+      "domain": "MAG-EVD",
+      "domainLabel": "Evidence Knowledge System",
+      "statement": "Negative or contradictory evidence SHALL remain queryable.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §11 Evidence Knowledge"
+    },
+    {
+      "id": "MAG-EVD-008",
+      "domain": "MAG-EVD",
+      "domainLabel": "Evidence Knowledge System",
+      "statement": "Every Clinical Mode TargetFamily SHALL have a complete approved evidence path.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §11 Evidence Knowledge"
+    },
+    {
+      "id": "MAG-EVD-009",
+      "domain": "MAG-EVD",
+      "domainLabel": "Evidence Knowledge System",
+      "statement": "A patient imaging abnormality SHALL NOT create its own Clinical Mode evidence path.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §11 Evidence Knowledge"
+    },
+    {
+      "id": "MAG-EVD-010",
+      "domain": "MAG-EVD",
+      "domainLabel": "Evidence Knowledge System",
+      "statement": "Clinical TargetFamilies SHALL be constrained by approved populations and indication scope.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §11 Evidence Knowledge"
+    },
+    {
+      "id": "MAG-EVD-011",
+      "domain": "MAG-EVD",
+      "domainLabel": "Evidence Knowledge System",
+      "statement": "TargetingStrategy eligibility SHALL be separately governable from TargetFamily eligibility.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §11 Evidence Knowledge"
+    },
+    {
+      "id": "MAG-EVD-012",
+      "domain": "MAG-EVD",
+      "domainLabel": "Evidence Knowledge System",
+      "statement": "Evidence tier SHALL function as a governance/eligibility category rather than an assumed linear biological probability.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §11 Evidence Knowledge"
+    },
+    {
+      "id": "MAG-EVD-013",
+      "domain": "MAG-EVD",
+      "domainLabel": "Evidence Knowledge System",
+      "statement": "Tier D evidence SHALL NOT independently enter Clinical Mode ranking under v1 policy.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §11 Evidence Knowledge"
+    },
+    {
+      "id": "MAG-EVD-014",
+      "domain": "MAG-EVD",
+      "domainLabel": "Evidence Knowledge System",
+      "statement": "Tier R evidence SHALL NOT enter Clinical Mode ranking.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §11 Evidence Knowledge"
+    },
+    {
+      "id": "MAG-EVD-015",
+      "domain": "MAG-EVD",
+      "domainLabel": "Evidence Knowledge System",
+      "statement": "Tier C SHALL NOT automatically become a standalone Clinical Mode primary candidate.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §11 Evidence Knowledge"
+    },
+    {
+      "id": "MAG-EVD-016",
+      "domain": "MAG-EVD",
+      "domainLabel": "Evidence Knowledge System",
+      "statement": "Tier C use SHALL be limited to roles explicitly authorised by ScientificPolicyRelease.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §11 Evidence Knowledge"
+    },
+    {
+      "id": "MAG-EVD-017",
+      "domain": "MAG-EVD",
+      "domainLabel": "Evidence Knowledge System",
+      "statement": "New literature SHALL enter staging/review rather than automatically altering active clinical evidence.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §11 Evidence Knowledge"
+    },
+    {
+      "id": "MAG-EVD-018",
+      "domain": "MAG-EVD",
+      "domainLabel": "Evidence Knowledge System",
+      "statement": "LLM assistance SHALL NOT autonomously approve an EvidenceClaim.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §11 Evidence Knowledge"
+    },
+    {
+      "id": "MAG-EVD-019",
+      "domain": "MAG-EVD",
+      "domainLabel": "Evidence Knowledge System",
+      "statement": "LLM assistance SHALL NOT autonomously assign final Evidence Tier.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §11 Evidence Knowledge"
+    },
+    {
+      "id": "MAG-EVD-020",
+      "domain": "MAG-EVD",
+      "domainLabel": "Evidence Knowledge System",
+      "statement": "LLM assistance SHALL NOT autonomously promote a TargetFamily into Clinical Mode.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §11 Evidence Knowledge"
+    },
+    {
+      "id": "MAG-EVD-021",
+      "domain": "MAG-EVD",
+      "domainLabel": "Evidence Knowledge System",
+      "statement": "Clinically material evidence changes SHALL undergo independent review.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "I"
+      ],
+      "srsSection": "SRS §11 Evidence Knowledge"
+    },
+    {
+      "id": "MAG-EVD-022",
+      "domain": "MAG-EVD",
+      "domainLabel": "Evidence Knowledge System",
+      "statement": "Evidence may be downgraded as well as upgraded.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §11 Evidence Knowledge"
+    },
+    {
+      "id": "MAG-EVD-023",
+      "domain": "MAG-EVD",
+      "domainLabel": "Evidence Knowledge System",
+      "statement": "Retracted sources SHALL remain in historical provenance but SHALL trigger review of materially dependent claims.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §11 Evidence Knowledge"
+    },
+    {
+      "id": "MAG-EVD-024",
+      "domain": "MAG-EVD",
+      "domainLabel": "Evidence Knowledge System",
+      "statement": "Clinical circuit/search-space artefacts SHALL carry immutable content hashes.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §11 Evidence Knowledge"
+    },
+    {
+      "id": "MAG-EVD-025",
+      "domain": "MAG-EVD",
+      "domainLabel": "Evidence Knowledge System",
+      "statement": "Clinical spatial evidence artefacts SHALL be validated for coordinate space, orientation and laterality before activation.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "SV"
+      ],
+      "srsSection": "SRS §11 Evidence Knowledge"
+    },
+    {
+      "id": "MAG-IMG-001",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "The neuroimaging pipeline SHALL produce measurements rather than final clinical decisions.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "I"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-002",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Structural MRI and resting-state fMRI inputs SHALL retain immutable source provenance.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-003",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Original imaging artefacts SHALL NOT be overwritten during processing.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-004",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Every processing run SHALL reference an immutable PipelineVersion.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-005",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Every Clinical Mode processing run SHALL record its input manifest.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-006",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Every Clinical Mode processing run SHALL record immutable hashes for required inputs and outputs.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-007",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Clinical scientific containers SHALL be version-pinned.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-008",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Mutable container tags alone SHALL NOT constitute scientific provenance.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "I"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-009",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Clinical imaging preprocessing SHALL follow the approved Primary Clinical Pipeline.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "SV"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-010",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Alternative preprocessing SHALL NOT silently replace the Primary Clinical Pipeline.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-011",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Sensitivity processing SHALL be used to assess methodological robustness rather than select a preferred target opportunistically.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "SV"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-012",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Patient-specific connectomic measurements SHALL NOT influence Clinical Mode unless required QC gates are satisfied.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-013",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Failed connectomic QC SHALL disable patient-specific FC influence.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-014",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Connectomic failure SHALL NOT automatically prevent evidence-only targeting where evidence-only generation remains clinically valid.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-015",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Registration quality SHALL be recorded.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-016",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Segmentation quality SHALL be recorded.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-017",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Parcel/surface coverage quality SHALL be recorded where applicable.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-018",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Motion-related QC SHALL be recorded.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-019",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Usable resting-state acquisition duration SHALL be recorded.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-020",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Pipeline output SHALL distinguish spatial coordinate precision from localisation reliability.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "HF",
+        "SV"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-021",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Subject-to-standard coordinate transforms SHALL retain provenance.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "SV"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-022",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Coordinate-space conversions SHALL undergo dedicated verification.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "SV"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-023",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Laterality SHALL be explicitly verified during imaging validation.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "SV"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-024",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Clinical TargetFamily search masks SHALL undergo spatial validation before activation.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "SV"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-025",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Target reliability SHALL include applicable cross-run localisation assessment.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "SV"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-026",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Target reliability SHALL include applicable pipeline-sensitivity information.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "SV"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-027",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Target reliability SHALL retain the PipelineVersion on which it was calculated.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-028",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Target reliability SHALL include split-half localisation when technically applicable.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "SV"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-029",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Reliability-limiting factors SHALL be recorded.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-030",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "A TargetReliabilityProfile used by a published Clinical Target Slate SHALL be immutable.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-031",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "A NormativeModelVersion SHALL declare compatible processing.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-032",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Clinical Mode SHALL reject an incompatible normative-model/pipeline combination.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-033",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Normative abnormality SHALL NOT independently create a Clinical Mode target unless a future validated Scientific Policy explicitly authorises that role.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-034",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Normative Model updates SHALL NOT silently change historical normative findings.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-035",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Pipeline upgrades SHALL require reproducibility and target-displacement assessment before Clinical Mode activation.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "SV"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-036",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Clinical pipeline software SHALL NOT update automatically merely because newer upstream packages exist.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-037",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "E-field modelling SHALL retain solver, head-model, segmentation, conductivity and coil provenance.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-038",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "E-field output SHALL NOT be treated as direct proof of clinical efficacy.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-039",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "E-field ranking influence SHALL occur only when enabled by Scientific Policy.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-IMG-040",
+      "domain": "MAG-IMG",
+      "domainLabel": "Neuroimaging/Connectomics",
+      "statement": "Incomplete E-field availability across otherwise comparable candidates SHALL NOT create ranking advantage.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §13 Neuroimaging"
+    },
+    {
+      "id": "MAG-PHE-001",
+      "domain": "MAG-PHE",
+      "domainLabel": "Phenotype",
+      "statement": "MAGNIOM SHALL represent diagnosis separately from dimensional phenotype.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §10 Phenotype"
+    },
+    {
+      "id": "MAG-PHE-002",
+      "domain": "MAG-PHE",
+      "domainLabel": "Phenotype",
+      "statement": "Phenotype data SHALL retain source provenance.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §10 Phenotype"
+    },
+    {
+      "id": "MAG-PHE-003",
+      "domain": "MAG-PHE",
+      "domainLabel": "Phenotype",
+      "statement": "Symptom observations SHALL remain distinguishable from canonical symptom concepts.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §10 Phenotype"
+    },
+    {
+      "id": "MAG-PHE-004",
+      "domain": "MAG-PHE",
+      "domainLabel": "Phenotype",
+      "statement": "Canonical symptom concepts SHALL remain distinguishable from clinical symptom domains.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §10 Phenotype"
+    },
+    {
+      "id": "MAG-PHE-005",
+      "domain": "MAG-PHE",
+      "domainLabel": "Phenotype",
+      "statement": "Clinical symptom domains SHALL remain distinguishable from clinician-approved therapeutic priorities.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §10 Phenotype"
+    },
+    {
+      "id": "MAG-PHE-006",
+      "domain": "MAG-PHE",
+      "domainLabel": "Phenotype",
+      "statement": "Symptom-to-circuit mappings SHALL require evidence-permitted mappings rather than direct questionnaire-to-target conversion.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §10 Phenotype"
+    },
+    {
+      "id": "MAG-PHE-007",
+      "domain": "MAG-PHE",
+      "domainLabel": "Phenotype",
+      "statement": "Baseline questionnaire totals SHALL NOT be treated as direct measurements of therapeutic circuits.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §10 Phenotype"
+    },
+    {
+      "id": "MAG-PHE-008",
+      "domain": "MAG-PHE",
+      "domainLabel": "Phenotype",
+      "statement": "Clinical Mode SHALL restrict circuit-influencing phenotype domains to those permitted by the active scientific evidence and policy.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §10 Phenotype"
+    },
+    {
+      "id": "MAG-PHE-009",
+      "domain": "MAG-PHE",
+      "domainLabel": "Phenotype",
+      "statement": "The initial Clinical Mode phenotype ontology SHALL support dysphoric and anxiosomatic evidence-permitted circuit domains.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §10 Phenotype"
+    },
+    {
+      "id": "MAG-PHE-010",
+      "domain": "MAG-PHE",
+      "domainLabel": "Phenotype",
+      "statement": "Other symptom domains MAY be represented clinically without necessarily influencing circuit-specific targeting.",
+      "safetyClass": "Standard",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §10 Phenotype"
+    },
+    {
+      "id": "MAG-PHE-011",
+      "domain": "MAG-PHE",
+      "domainLabel": "Phenotype",
+      "statement": "A PhenotypeSnapshot SHALL be immutable after approval.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §10 Phenotype"
+    },
+    {
+      "id": "MAG-PHE-012",
+      "domain": "MAG-PHE",
+      "domainLabel": "Phenotype",
+      "statement": "The snapshot SHALL identify the clinical assessment and source observations from which it was derived.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §10 Phenotype"
+    },
+    {
+      "id": "MAG-PHE-013",
+      "domain": "MAG-PHE",
+      "domainLabel": "Phenotype",
+      "statement": "The snapshot SHALL identify clinician-approved treatment priorities.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §10 Phenotype"
+    },
+    {
+      "id": "MAG-PHE-014",
+      "domain": "MAG-PHE",
+      "domainLabel": "Phenotype",
+      "statement": "Diagnostic uncertainty SHALL be representable.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §10 Phenotype"
+    },
+    {
+      "id": "MAG-PHE-015",
+      "domain": "MAG-PHE",
+      "domainLabel": "Phenotype",
+      "statement": "Clinically material safety state SHALL be representable independently of circuit eligibility.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §10 Phenotype"
+    },
+    {
+      "id": "MAG-PHE-016",
+      "domain": "MAG-PHE",
+      "domainLabel": "Phenotype",
+      "statement": "The Target Engine SHALL consume an immutable PhenotypeSnapshot rather than mutable live observations.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §10 Phenotype"
+    },
+    {
+      "id": "MAG-PHE-017",
+      "domain": "MAG-PHE",
+      "domainLabel": "Phenotype",
+      "statement": "A questionnaire item SHALL NOT independently generate a clinical target.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §10 Phenotype"
+    },
+    {
+      "id": "MAG-PHE-018",
+      "domain": "MAG-PHE",
+      "domainLabel": "Phenotype",
+      "statement": "Missing or incomplete phenotype data SHALL be explicitly represented rather than inferred as absence of symptoms.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §10 Phenotype"
+    },
+    {
+      "id": "MAG-POL-001",
+      "domain": "MAG-POL",
+      "domainLabel": "Scientific Policy",
+      "statement": "Every clinically meaningful scientific configuration SHALL reference one ScientificPolicyRelease.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §12 Scientific Policy"
+    },
+    {
+      "id": "MAG-POL-002",
+      "domain": "MAG-POL",
+      "domainLabel": "Scientific Policy",
+      "statement": "ScientificPolicyRelease SHALL be versioned and immutable after activation.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §12 Scientific Policy"
+    },
+    {
+      "id": "MAG-POL-003",
+      "domain": "MAG-POL",
+      "domainLabel": "Scientific Policy",
+      "statement": "Scientific Policy SHALL remain distinct from engineering configuration.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "I"
+      ],
+      "srsSection": "SRS §12 Scientific Policy"
+    },
+    {
+      "id": "MAG-POL-004",
+      "domain": "MAG-POL",
+      "domainLabel": "Scientific Policy",
+      "statement": "Any configuration capable of altering candidate generation, eligibility, coordinates, reliability, ranking, suppression or abstention SHALL be treated as scientific configuration.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "I",
+        "UT"
+      ],
+      "srsSection": "SRS §12 Scientific Policy"
+    },
+    {
+      "id": "MAG-POL-005",
+      "domain": "MAG-POL",
+      "domainLabel": "Scientific Policy",
+      "statement": "Scientific ranking parameters SHALL NOT be editable through ordinary production administration interfaces.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §12 Scientific Policy"
+    },
+    {
+      "id": "MAG-POL-006",
+      "domain": "MAG-POL",
+      "domainLabel": "Scientific Policy",
+      "statement": "Clinical Mode SHALL use explicit positive scientific-component compatibility.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §12 Scientific Policy"
+    },
+    {
+      "id": "MAG-POL-007",
+      "domain": "MAG-POL",
+      "domainLabel": "Scientific Policy",
+      "statement": "Clinical compatibility SHALL NOT be inferred merely because individual components are each active.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §12 Scientific Policy"
+    },
+    {
+      "id": "MAG-POL-008",
+      "domain": "MAG-POL",
+      "domainLabel": "Scientific Policy",
+      "statement": "Clinical Mode SHALL validate the complete relevant compatibility tuple before target generation.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §12 Scientific Policy"
+    },
+    {
+      "id": "MAG-POL-009",
+      "domain": "MAG-POL",
+      "domainLabel": "Scientific Policy",
+      "statement": "The compatibility tuple SHALL include EvidenceLibraryRelease, TargetEngineVersion, PipelineVersion where applicable, NormativeModelVersion where applicable, EFieldEngineVersion where applicable, indication and mode.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §12 Scientific Policy"
+    },
+    {
+      "id": "MAG-POL-010",
+      "domain": "MAG-POL",
+      "domainLabel": "Scientific Policy",
+      "statement": "Scientific component versions SHALL be referenced through immutable identities rather than `latest` selectors.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §12 Scientific Policy"
+    },
+    {
+      "id": "MAG-POL-011",
+      "domain": "MAG-POL",
+      "domainLabel": "Scientific Policy",
+      "statement": "Scientific Policy SHALL define role-aware evidence eligibility.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §12 Scientific Policy"
+    },
+    {
+      "id": "MAG-POL-012",
+      "domain": "MAG-POL",
+      "domainLabel": "Scientific Policy",
+      "statement": "Scientific Policy SHALL define minimum personalisation reliability.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §12 Scientific Policy"
+    },
+    {
+      "id": "MAG-POL-013",
+      "domain": "MAG-POL",
+      "domainLabel": "Scientific Policy",
+      "statement": "Scientific Policy SHALL define applicable personalisation-adoption criteria.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §12 Scientific Policy"
+    },
+    {
+      "id": "MAG-POL-014",
+      "domain": "MAG-POL",
+      "domainLabel": "Scientific Policy",
+      "statement": "Scientific Policy SHALL define role-specific ranking parameters.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §12 Scientific Policy"
+    },
+    {
+      "id": "MAG-POL-015",
+      "domain": "MAG-POL",
+      "domainLabel": "Scientific Policy",
+      "statement": "Every scientific parameter SHALL have a controlled value and, where appropriate, validated bounds.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §12 Scientific Policy"
+    },
+    {
+      "id": "MAG-POL-016",
+      "domain": "MAG-POL",
+      "domainLabel": "Scientific Policy",
+      "statement": "A parameter outside its permitted bounds SHALL cause configuration rejection rather than silent clamping.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §12 Scientific Policy"
+    },
+    {
+      "id": "MAG-POL-017",
+      "domain": "MAG-POL",
+      "domainLabel": "Scientific Policy",
+      "statement": "Scientific Policy SHALL define prohibited configurations.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §12 Scientific Policy"
+    },
+    {
+      "id": "MAG-POL-018",
+      "domain": "MAG-POL",
+      "domainLabel": "Scientific Policy",
+      "statement": "Clinical Mode SHALL fail closed when scientific configuration integrity cannot be established.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §12 Scientific Policy"
+    },
+    {
+      "id": "MAG-POL-019",
+      "domain": "MAG-POL",
+      "domainLabel": "Scientific Policy",
+      "statement": "Scientific Policy SHALL distinguish feature fallback from complete Target Slate abstention.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §12 Scientific Policy"
+    },
+    {
+      "id": "MAG-POL-020",
+      "domain": "MAG-POL",
+      "domainLabel": "Scientific Policy",
+      "statement": "An active Clinical ScientificPolicyRelease SHALL carry integrity hashes.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §12 Scientific Policy"
+    },
+    {
+      "id": "MAG-POL-021",
+      "domain": "MAG-POL",
+      "domainLabel": "Scientific Policy",
+      "statement": "Clinical activation SHALL require appropriate governance approval.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §12 Scientific Policy"
+    },
+    {
+      "id": "MAG-POL-022",
+      "domain": "MAG-POL",
+      "domainLabel": "Scientific Policy",
+      "statement": "Governance approval SHALL be distinguishable from cryptographic integrity/signature evidence.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §12 Scientific Policy"
+    },
+    {
+      "id": "MAG-POL-023",
+      "domain": "MAG-POL",
+      "domainLabel": "Scientific Policy",
+      "statement": "Changes to ranking-relevant policy parameters SHALL require a new ScientificPolicyRelease.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §12 Scientific Policy"
+    },
+    {
+      "id": "MAG-POL-024",
+      "domain": "MAG-POL",
+      "domainLabel": "Scientific Policy",
+      "statement": "Scientific policy changes SHALL NOT retrospectively mutate existing Target Slates.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §12 Scientific Policy"
+    },
+    {
+      "id": "MAG-POL-025",
+      "domain": "MAG-POL",
+      "domainLabel": "Scientific Policy",
+      "statement": "ScientificPolicyRelease SHALL record validation maturity separately from lifecycle status.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §12 Scientific Policy"
+    },
+    {
+      "id": "MAG-POL-026",
+      "domain": "MAG-POL",
+      "domainLabel": "Scientific Policy",
+      "statement": "Clinical activation SHALL NOT be achievable solely by changing a `mode` or status flag.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §12 Scientific Policy"
+    },
+    {
+      "id": "MAG-POL-027",
+      "domain": "MAG-POL",
+      "domainLabel": "Scientific Policy",
+      "statement": "Organisation-specific scientific overrides SHALL NOT be permitted without a separately controlled and validated ScientificPolicyRelease.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §12 Scientific Policy"
+    },
+    {
+      "id": "MAG-POL-028",
+      "domain": "MAG-POL",
+      "domainLabel": "Scientific Policy",
+      "statement": "Clinical outcomes SHALL NOT automatically update scientific policy parameters.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §12 Scientific Policy"
+    },
+    {
+      "id": "MAG-POL-029",
+      "domain": "MAG-POL",
+      "domainLabel": "Scientific Policy",
+      "statement": "Scientific Policy SHALL explicitly define the role of normative modelling.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §12 Scientific Policy"
+    },
+    {
+      "id": "MAG-POL-030",
+      "domain": "MAG-POL",
+      "domainLabel": "Scientific Policy",
+      "statement": "Scientific Policy SHALL explicitly define the permitted role of E-field modelling.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §12 Scientific Policy"
+    },
+    {
+      "id": "MAG-REL-001",
+      "domain": "MAG-REL",
+      "domainLabel": "Release / Version / Configuration",
+      "statement": "Production Clinical releases SHALL identify the application version.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "I"
+      ],
+      "srsSection": "SRS §20 Release"
+    },
+    {
+      "id": "MAG-REL-002",
+      "domain": "MAG-REL",
+      "domainLabel": "Release / Version / Configuration",
+      "statement": "Production Clinical releases SHALL identify database migration version.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "I"
+      ],
+      "srsSection": "SRS §20 Release"
+    },
+    {
+      "id": "MAG-REL-003",
+      "domain": "MAG-REL",
+      "domainLabel": "Release / Version / Configuration",
+      "statement": "Production Clinical releases SHALL identify ScientificPolicyRelease.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "I"
+      ],
+      "srsSection": "SRS §20 Release"
+    },
+    {
+      "id": "MAG-REL-004",
+      "domain": "MAG-REL",
+      "domainLabel": "Release / Version / Configuration",
+      "statement": "Production Clinical releases SHALL identify EvidenceLibraryRelease.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "I"
+      ],
+      "srsSection": "SRS §20 Release"
+    },
+    {
+      "id": "MAG-REL-005",
+      "domain": "MAG-REL",
+      "domainLabel": "Release / Version / Configuration",
+      "statement": "Production Clinical releases SHALL identify TargetEngineVersion.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "I"
+      ],
+      "srsSection": "SRS §20 Release"
+    },
+    {
+      "id": "MAG-REL-006",
+      "domain": "MAG-REL",
+      "domainLabel": "Release / Version / Configuration",
+      "statement": "Production Clinical releases SHALL identify PipelineVersion where applicable.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "I"
+      ],
+      "srsSection": "SRS §20 Release"
+    },
+    {
+      "id": "MAG-REL-007",
+      "domain": "MAG-REL",
+      "domainLabel": "Release / Version / Configuration",
+      "statement": "Production Clinical releases SHALL identify NormativeModelVersion where applicable.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "I"
+      ],
+      "srsSection": "SRS §20 Release"
+    },
+    {
+      "id": "MAG-REL-008",
+      "domain": "MAG-REL",
+      "domainLabel": "Release / Version / Configuration",
+      "statement": "Production Clinical releases SHALL identify AtlasVersion where applicable.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "I"
+      ],
+      "srsSection": "SRS §20 Release"
+    },
+    {
+      "id": "MAG-REL-009",
+      "domain": "MAG-REL",
+      "domainLabel": "Release / Version / Configuration",
+      "statement": "Production Clinical releases SHALL identify EFieldEngineVersion where applicable.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "I"
+      ],
+      "srsSection": "SRS §20 Release"
+    },
+    {
+      "id": "MAG-REL-010",
+      "domain": "MAG-REL",
+      "domainLabel": "Release / Version / Configuration",
+      "statement": "Production Clinical releases SHALL identify Phenotype Ontology version.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "I"
+      ],
+      "srsSection": "SRS §20 Release"
+    },
+    {
+      "id": "MAG-REL-011",
+      "domain": "MAG-REL",
+      "domainLabel": "Release / Version / Configuration",
+      "statement": "Clinical scientific versions SHALL be frozen for formal verification.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "I"
+      ],
+      "srsSection": "SRS §20 Release"
+    },
+    {
+      "id": "MAG-REL-012",
+      "domain": "MAG-REL",
+      "domainLabel": "Release / Version / Configuration",
+      "statement": "Feature/scientific changes after M3 freeze SHALL undergo change-impact assessment.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "I"
+      ],
+      "srsSection": "SRS §20 Release"
+    },
+    {
+      "id": "MAG-REL-013",
+      "domain": "MAG-REL",
+      "domainLabel": "Release / Version / Configuration",
+      "statement": "Scientific implementation changes SHALL trigger regression verification.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "SV"
+      ],
+      "srsSection": "SRS §20 Release"
+    },
+    {
+      "id": "MAG-REL-014",
+      "domain": "MAG-REL",
+      "domainLabel": "Release / Version / Configuration",
+      "statement": "Scientific parameter changes SHALL trigger scientific impact assessment.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "SV"
+      ],
+      "srsSection": "SRS §20 Release"
+    },
+    {
+      "id": "MAG-REL-015",
+      "domain": "MAG-REL",
+      "domainLabel": "Release / Version / Configuration",
+      "statement": "Scientific model changes SHALL trigger validation proportionate to the changed behaviour.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "SV",
+        "CV"
+      ],
+      "srsSection": "SRS §20 Release"
+    },
+    {
+      "id": "MAG-REL-016",
+      "domain": "MAG-REL",
+      "domainLabel": "Release / Version / Configuration",
+      "statement": "A new Evidence Library SHALL NOT automatically become clinically active.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §20 Release"
+    },
+    {
+      "id": "MAG-REL-017",
+      "domain": "MAG-REL",
+      "domainLabel": "Release / Version / Configuration",
+      "statement": "A new neuroimaging software version SHALL NOT automatically become clinically active.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §20 Release"
+    },
+    {
+      "id": "MAG-REL-018",
+      "domain": "MAG-REL",
+      "domainLabel": "Release / Version / Configuration",
+      "statement": "A new normative model SHALL NOT automatically become clinically active.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §20 Release"
+    },
+    {
+      "id": "MAG-REL-019",
+      "domain": "MAG-REL",
+      "domainLabel": "Release / Version / Configuration",
+      "statement": "A new Target Engine SHALL NOT automatically become clinically active.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §20 Release"
+    },
+    {
+      "id": "MAG-REL-020",
+      "domain": "MAG-REL",
+      "domainLabel": "Release / Version / Configuration",
+      "statement": "A new Scientific Policy SHALL NOT automatically become clinically active.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §20 Release"
+    },
+    {
+      "id": "MAG-REL-021",
+      "domain": "MAG-REL",
+      "domainLabel": "Release / Version / Configuration",
+      "statement": "Clinical release activation SHALL require a controlled Clinical Release Package.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "I"
+      ],
+      "srsSection": "SRS §20 Release"
+    },
+    {
+      "id": "MAG-REL-022",
+      "domain": "MAG-REL",
+      "domainLabel": "Release / Version / Configuration",
+      "statement": "No single developer SHALL independently activate Clinical Mode.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §20 Release"
+    },
+    {
+      "id": "MAG-REL-023",
+      "domain": "MAG-REL",
+      "domainLabel": "Release / Version / Configuration",
+      "statement": "Superseded releases SHALL remain recoverable for historical reconstruction.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §20 Release"
+    },
+    {
+      "id": "MAG-REL-024",
+      "domain": "MAG-REL",
+      "domainLabel": "Release / Version / Configuration",
+      "statement": "Withdrawn scientific releases SHALL remain historically identifiable.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §20 Release"
+    },
+    {
+      "id": "MAG-REL-025",
+      "domain": "MAG-REL",
+      "domainLabel": "Release / Version / Configuration",
+      "statement": "Clinically material release changes SHALL generate a change-impact report.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "I"
+      ],
+      "srsSection": "SRS §20 Release"
+    },
+    {
+      "id": "MAG-REL-026",
+      "domain": "MAG-REL",
+      "domainLabel": "Release / Version / Configuration",
+      "statement": "A Clinical Release Package SHALL identify the exact combination of:",
+      "safetyClass": "Unknown",
+      "verificationMethods": [],
+      "srsSection": "SRS §20 Release"
+    },
+    {
+      "id": "MAG-REL-027",
+      "domain": "MAG-REL",
+      "domainLabel": "Release / Version / Configuration",
+      "statement": "Before M8 activation, authorised release governance SHALL determine that:",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "Inspection"
+      ],
+      "srsSection": "SRS §20 Release"
+    },
+    {
+      "id": "MAG-SEC-001",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "MAGNIOM SHALL authenticate clinical users before access to patient-specific resources.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-002",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Clinical users SHALL use appropriate MFA controls in Clinical Mode.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-003",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Authorisation SHALL be enforced server/database side and SHALL NOT rely solely on frontend visibility.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-004",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Patient data access SHALL resolve to organisational authorisation.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-005",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Clinical resources SHALL enforce organisation membership.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-006",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Permission checks SHALL be capability-based rather than relying solely on job-title labels.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-007",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Base clinical/scientific schemas SHALL NOT be generically exposed for unrestricted authenticated CRUD access.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-008",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "High-risk mutations SHALL use controlled domain commands, RPCs or trusted server-side services.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-009",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Browser clients SHALL NOT receive privileged service credentials capable of bypassing RLS.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-010",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Privileged workers SHALL authenticate machine-to-machine.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-011",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Privileged worker actions SHALL be auditable.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-012",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Cross-organisation clinical data access SHALL be denied by database-enforced Row Level Security.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-013",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Critical case-bound child records SHALL enforce organisation/case consistency structurally.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-014",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Storage containing clinical MRI or derived patient artefacts SHALL be private.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-015",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Permanent public URLs SHALL NOT be used for clinical imaging artefacts.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-016",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Temporary signed access SHALL be time-limited and generated only when required.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-017",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Signed access URLs/tokens SHALL NOT be persisted as canonical object identity.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-018",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Clinical and research storage SHALL remain separable.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-019",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Security-definer functions SHALL undergo dedicated cross-organisation and privilege tests.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-020",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Scientific-policy mutation permissions SHALL be separate from ordinary organisation administration.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-021",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Evidence release activation SHALL require privileged controlled workflow.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-022",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Clinical signing authority SHALL be explicitly granted and revocable.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-023",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Only authorised clinicians SHALL sign ClinicianDecisions.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-024",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Signed clinical decisions SHALL resist UPDATE and DELETE through ordinary application/database paths.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-025",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Published Target Slates SHALL resist ordinary UPDATE and DELETE.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-026",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Approved PhenotypeSnapshots SHALL resist ordinary UPDATE and DELETE.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-027",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Active scientific evidence versions SHALL resist ordinary mutation.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-028",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Authentication secrets and passwords SHALL NOT be replicated into application-domain tables.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-029",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Queue payloads SHALL avoid unnecessary patient-identifying information.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-030",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Logs SHALL avoid unnecessary patient-identifying information.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-031",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Cross-organisation access attempts SHALL be detectable through security monitoring.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-032",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Scientific-policy activation SHALL generate a high-risk audit event.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-033",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Evidence Library activation SHALL generate a high-risk audit event.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-034",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Clinical signing-authority changes SHALL generate high-risk audit events.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SEC-035",
+      "domain": "MAG-SEC",
+      "domainLabel": "Security / Privacy",
+      "statement": "Backup and restore controls SHALL preserve clinically important records and scientific provenance.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §17 Security"
+    },
+    {
+      "id": "MAG-SYS-001",
+      "domain": "MAG-SYS",
+      "domainLabel": "System-wide",
+      "statement": "MAGNIOM SHALL operate as clinician-facing decision support rather than autonomous treatment prescription.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "I",
+        "HF"
+      ],
+      "srsSection": "SRS §8 System-wide + §22–23"
+    },
+    {
+      "id": "MAG-SYS-002",
+      "domain": "MAG-SYS",
+      "domainLabel": "System-wide",
+      "statement": "MAGNIOM SHALL maintain clinician authority separately from algorithmic candidate generation.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT",
+        "HF"
+      ],
+      "srsSection": "SRS §8 System-wide + §22–23"
+    },
+    {
+      "id": "MAG-SYS-003",
+      "domain": "MAG-SYS",
+      "domainLabel": "System-wide",
+      "statement": "MAGNIOM SHALL distinguish scientific evidence, patient-specific observation, algorithmic inference and clinician decision as separate information classes.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "I",
+        "IT"
+      ],
+      "srsSection": "SRS §8 System-wide + §22–23"
+    },
+    {
+      "id": "MAG-SYS-004",
+      "domain": "MAG-SYS",
+      "domainLabel": "System-wide",
+      "statement": "MAGNIOM SHALL preserve Clinical Mode and Research Mode as structurally distinct modes.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT",
+        "ST"
+      ],
+      "srsSection": "SRS §8 System-wide + §22–23"
+    },
+    {
+      "id": "MAG-SYS-005",
+      "domain": "MAG-SYS",
+      "domainLabel": "System-wide",
+      "statement": "Research Mode output SHALL NOT influence clinical treatment unless formally promoted and authorised through the Clinical Mode governance pathway.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT",
+        "ST"
+      ],
+      "srsSection": "SRS §8 System-wide + §22–23"
+    },
+    {
+      "id": "MAG-SYS-006",
+      "domain": "MAG-SYS",
+      "domainLabel": "System-wide",
+      "statement": "MAGNIOM SHALL support deterministic reconstruction of every published Target Slate.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC",
+        "SV"
+      ],
+      "srsSection": "SRS §8 System-wide + §22–23"
+    },
+    {
+      "id": "MAG-SYS-007",
+      "domain": "MAG-SYS",
+      "domainLabel": "System-wide",
+      "statement": "MAGNIOM SHALL record exact versions of all scientific components capable of influencing a Target Slate.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §8 System-wide + §22–23"
+    },
+    {
+      "id": "MAG-SYS-008",
+      "domain": "MAG-SYS",
+      "domainLabel": "System-wide",
+      "statement": "Historical clinical outputs SHALL NOT silently change when scientific software, evidence or configuration changes.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §8 System-wide + §22–23"
+    },
+    {
+      "id": "MAG-SYS-009",
+      "domain": "MAG-SYS",
+      "domainLabel": "System-wide",
+      "statement": "MAGNIOM SHALL support scientifically valid abstention and fallback results.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §8 System-wide + §22–23"
+    },
+    {
+      "id": "MAG-SYS-010",
+      "domain": "MAG-SYS",
+      "domainLabel": "System-wide",
+      "statement": "MAGNIOM SHALL NOT require a target merely because the interface or schema contains target positions.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "GC",
+        "HF"
+      ],
+      "srsSection": "SRS §8 System-wide + §22–23"
+    },
+    {
+      "id": "MAG-SYS-011",
+      "domain": "MAG-SYS",
+      "domainLabel": "System-wide",
+      "statement": "MAGNIOM SHALL NOT represent patient-specific targeting as inherently superior to high-quality evidence-based standard targeting.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "I",
+        "HF"
+      ],
+      "srsSection": "SRS §8 System-wide + §22–23"
+    },
+    {
+      "id": "MAG-SYS-012",
+      "domain": "MAG-SYS",
+      "domainLabel": "System-wide",
+      "statement": "MAGNIOM SHALL expose uncertainty relevant to clinical interpretation.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT",
+        "HF"
+      ],
+      "srsSection": "SRS §8 System-wide + §22–23"
+    },
+    {
+      "id": "MAG-SYS-013",
+      "domain": "MAG-SYS",
+      "domainLabel": "System-wide",
+      "statement": "MAGNIOM SHALL maintain sufficient provenance for an authorised reviewer to reconstruct why a target was generated.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT",
+        "SV"
+      ],
+      "srsSection": "SRS §8 System-wide + §22–23"
+    },
+    {
+      "id": "MAG-SYS-014",
+      "domain": "MAG-SYS",
+      "domainLabel": "System-wide",
+      "statement": "Scientific behaviour SHALL NOT depend on undocumented runtime state.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §8 System-wide + §22–23"
+    },
+    {
+      "id": "MAG-SYS-015",
+      "domain": "MAG-SYS",
+      "domainLabel": "System-wide",
+      "statement": "Software completion SHALL NOT by itself constitute clinical validation or permission for Clinical Mode deployment.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "I"
+      ],
+      "srsSection": "SRS §8 System-wide + §22–23"
+    },
+    {
+      "id": "MAG-SYS-016",
+      "domain": "MAG-SYS",
+      "domainLabel": "System-wide",
+      "statement": "Every clinically significant scientific computation SHALL produce sufficient provenance to identify:",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT",
+        "SV"
+      ],
+      "srsSection": "SRS §8 System-wide + §22–23"
+    },
+    {
+      "id": "MAG-SYS-017",
+      "domain": "MAG-SYS",
+      "domainLabel": "System-wide",
+      "statement": "The same frozen scientific inputs and component versions SHALL produce equivalent deterministic Target Engine results.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §8 System-wide + §22–23"
+    },
+    {
+      "id": "MAG-SYS-018",
+      "domain": "MAG-SYS",
+      "domainLabel": "System-wide",
+      "statement": "Loss of an optional personalisation component SHALL NOT cause MAGNIOM to fabricate replacement scientific information.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §8 System-wide + §22–23"
+    },
+    {
+      "id": "MAG-SYS-019",
+      "domain": "MAG-SYS",
+      "domainLabel": "System-wide",
+      "statement": "Where an evidence-only fallback is scientifically permitted, failure of personalisation SHALL be communicated explicitly.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §8 System-wide + §22–23"
+    },
+    {
+      "id": "MAG-SYS-020",
+      "domain": "MAG-SYS",
+      "domainLabel": "System-wide",
+      "statement": "Scientific processing failure SHALL be distinguishable from clinically valid abstention.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §8 System-wide + §22–23"
+    },
+    {
+      "id": "MAG-SYS-021",
+      "domain": "MAG-SYS",
+      "domainLabel": "System-wide",
+      "statement": "create an:",
+      "safetyClass": "Unknown",
+      "verificationMethods": [],
+      "srsSection": "SRS §8 System-wide + §22–23"
+    },
+    {
+      "id": "MAG-SYS-022",
+      "domain": "MAG-SYS",
+      "domainLabel": "System-wide",
+      "statement": "generate an unvalidated numerical:",
+      "safetyClass": "Unknown",
+      "verificationMethods": [],
+      "srsSection": "SRS §8 System-wide + §22–23"
+    },
+    {
+      "id": "MAG-SYS-023",
+      "domain": "MAG-SYS",
+      "domainLabel": "System-wide",
+      "statement": "convert evidence tiers into arbitrary probability percentages.",
+      "safetyClass": "Unknown",
+      "verificationMethods": [],
+      "srsSection": "SRS §8 System-wide + §22–23"
+    },
+    {
+      "id": "MAG-SYS-024",
+      "domain": "MAG-SYS",
+      "domainLabel": "System-wide",
+      "statement": "automatically convert hypoconnectivity into a stimulation protocol.",
+      "safetyClass": "Unknown",
+      "verificationMethods": [],
+      "srsSection": "SRS §8 System-wide + §22–23"
+    },
+    {
+      "id": "MAG-SYS-025",
+      "domain": "MAG-SYS",
+      "domainLabel": "System-wide",
+      "statement": "automatically convert hyperconnectivity into a stimulation protocol.",
+      "safetyClass": "Unknown",
+      "verificationMethods": [],
+      "srsSection": "SRS §8 System-wide + §22–23"
+    },
+    {
+      "id": "MAG-SYS-026",
+      "domain": "MAG-SYS",
+      "domainLabel": "System-wide",
+      "statement": "assume abnormal connectivity is pathological or causal.",
+      "safetyClass": "Unknown",
+      "verificationMethods": [],
+      "srsSection": "SRS §8 System-wide + §22–23"
+    },
+    {
+      "id": "MAG-SYS-027",
+      "domain": "MAG-SYS",
+      "domainLabel": "System-wide",
+      "statement": "assume additional targets are intrinsically better than fewer targets.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "I",
+        "GC",
+        "HF",
+        "as",
+        "applicable"
+      ],
+      "srsSection": "SRS §8 System-wide + §22–23"
+    },
+    {
+      "id": "MAG-SYS-028",
+      "domain": "MAG-SYS",
+      "domainLabel": "System-wide",
+      "statement": "infer multi-target treatment from Target Slate cardinality.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "I",
+        "GC",
+        "HF",
+        "as",
+        "applicable"
+      ],
+      "srsSection": "SRS §8 System-wide + §22–23"
+    },
+    {
+      "id": "MAG-SYS-029",
+      "domain": "MAG-SYS",
+      "domainLabel": "System-wide",
+      "statement": "promote research hypotheses into Clinical Mode through display-layer behaviour alone.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "I",
+        "GC",
+        "HF",
+        "as",
+        "applicable"
+      ],
+      "srsSection": "SRS §8 System-wide + §22–23"
+    },
+    {
+      "id": "MAG-SYS-030",
+      "domain": "MAG-SYS",
+      "domainLabel": "System-wide",
+      "statement": "use continuously learning Clinical Mode ranking in v1.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "I",
+        "GC",
+        "HF",
+        "as",
+        "applicable"
+      ],
+      "srsSection": "SRS §8 System-wide + §22–23"
+    },
+    {
+      "id": "MAG-TGT-001",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Target Engine Clinical Mode ranking SHALL be deterministic.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-002",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Target Engine SHALL NOT use random sampling in Clinical Mode.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-003",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Target Engine SHALL NOT depend on live internet search for Clinical Mode ranking.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-004",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Target Engine SHALL NOT depend on live PubMed search for Clinical Mode ranking.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-005",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Target Engine SHALL NOT depend on LLM output for Clinical Mode candidate eligibility or ranking.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-006",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Target Engine SHALL NOT depend on undocumented clinician preference.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-007",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Target Engine SHALL use gates before compensable scores.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-008",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "A candidate failing a mandatory scientific gate SHALL NOT become eligible through a high score in another dimension.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-009",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Every Clinical Mode candidate SHALL derive from an eligible TargetFamily contained in the pinned EvidenceLibraryRelease.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-010",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Target Engine SHALL verify indication scope before clinical candidate generation.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-011",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Target Engine SHALL verify mode compatibility before candidate eligibility.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-012",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Patient-specific FC SHALL influence ranking only after imaging/reliability qualification.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-013",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Connectome-refined candidates SHALL remain within evidence-permitted target-generation spaces.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-014",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "A Clinical connectome-refined candidate SHALL require a TargetReliabilityProfile.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-015",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Low reliability SHALL prevent FC-driven promotion according to the active policy.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-016",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "The engine SHALL preserve an evidence-only counterfactual where personalisation is evaluated.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-017",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Personalisation SHALL NOT automatically replace its evidence-only baseline.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-018",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Personalisation adoption SHALL satisfy all active Scientific Policy conditions.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-019",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Failure of personalisation adoption SHALL retain an eligible evidence baseline where appropriate.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-020",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Target utility SHALL NOT be represented as response probability.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-021",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Target utility SHALL NOT be represented as biological certainty.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-022",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Evidence Tier SHALL NOT be included as a simple compensable scalar in candidate utility.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-023",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Candidate utility SHALL be calculated only after applicable hard gates pass.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-024",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Utility dimensions SHALL be candidate-class/role appropriate.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-025",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Raw utility values SHALL NOT be globally compared across scientifically incompatible candidate classes.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-026",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Evidence-only missing connectomic dimensions SHALL NOT be represented as zero values that unfairly penalise the baseline.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-027",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Anatomically unstimulable candidates SHALL be excluded from Clinical Mode eligibility.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-028",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Conditional accessibility SHALL be handled according to active Scientific Policy.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-029",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Candidate redundancy SHALL be assessed using versioned criteria.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-030",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Redundancy logic SHALL NOT treat convergent evidence paths as automatically independent treatment targets.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-031",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Target Slate SHALL contain no more than three Primary Candidates.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-032",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Target Slate SHALL contain no more than two Additional Candidates.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-033",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Target Engine SHALL NOT generate candidates merely to fill five positions.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-034",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Research-only candidates SHALL NOT appear in a Clinical Mode Target Slate.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-035",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Suppressed candidates SHALL remain reconstructable for validation and audit.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-036",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Suppression SHALL include structured suppression reasons.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-037",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Every Clinical Mode candidate SHALL retain its evidence basis.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-038",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Every Clinical Mode candidate SHALL retain its ranking features necessary for reconstruction.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-039",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Every candidate SHALL contain uncertainty information.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-040",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Every candidate SHALL contain at least one counterargument or explicit statement of limitations.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-041",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Candidate explanation SHALL answer why the candidate was nominated.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-042",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Candidate explanation SHALL identify what patient imaging contributed, if anything.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-043",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Candidate explanation SHALL identify measurement reliability.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-044",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Candidate explanation SHALL expose the relevant counterfactual.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-045",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Clinical Mode candidate explanation SHALL derive from canonical structured facts.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-046",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "An LLM used for later prose rendering SHALL NOT alter evidence, rank, mandatory limitations or uncertainty.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-047",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Target Engine SHALL support explicit abstention profiles.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-048",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Defined hard-gate failure SHALL produce the specified abstention/fallback behaviour.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-049",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Target Engine SHALL NOT prescribe a stimulation protocol.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "I"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-TGT-050",
+      "domain": "MAG-TGT",
+      "domainLabel": "Target Engine",
+      "statement": "Target Engine output SHALL be reproducible from its version manifest and immutable inputs.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC",
+        "SV"
+      ],
+      "srsSection": "SRS §14 Target Engine"
+    },
+    {
+      "id": "MAG-UX-001",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "The primary clinician workflow SHALL centre on Cases.",
+      "safetyClass": "Standard",
+      "verificationMethods": [
+        "I"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-002",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "The workflow SHALL present clinical formulation before algorithmic target output.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-003",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "The clinician SHALL approve phenotype before seeing a newly generated Target Slate.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT",
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-004",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "The workspace SHALL keep evidence visible or readily inspectable for each candidate.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-005",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "A personalised coordinate SHALL NOT be presented without corresponding reliability information.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-006",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "The evidence-only counterfactual SHALL remain accessible during candidate review.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-007",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "Alternative candidates SHALL remain inspectable and SHALL NOT be visually erased by Primary Candidate 1.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-008",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "The workspace SHALL distinguish algorithmic ranking from clinical authority.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-009",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "The interface SHALL distinguish Research Mode from Clinical Mode.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-010",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "Mode state SHALL be clearly visible when viewing research output capable of resembling clinical output.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-011",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "Clinicians SHALL be able to inspect why personalisation changed or did not change the target.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-012",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "Clinicians SHALL be able to inspect the strongest counterargument against each candidate.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-013",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "Clinicians SHALL be able to inspect source evidence supporting a candidate.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-014",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "Clinicians SHALL be able to inspect material evidence conflicts.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-015",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "Clinicians SHALL be able to distinguish measurement reliability from coordinate precision.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-016",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "Clinicians SHALL be able to recognise when personalisation was unavailable because of imaging limitations.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-017",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "The workspace SHALL display evidence-only fallback when patient-specific FC is not qualified but evidence targeting remains valid.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-018",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "The interface SHALL support active clinician rejection of candidates.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-019",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "The interface SHALL support modification of candidate choice with reasoning.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-020",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "The interface SHALL support explicit no-target decisions.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-021",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "Candidate ranking SHALL NOT be visually represented as certainty or response probability.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-022",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "The workspace SHALL NOT describe a candidate as an “optimal target” unless future validated claims explicitly permit such wording.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-023",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "Clinician-facing explanations SHALL include important limitations.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-024",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "Clinician-facing explanations SHALL not omit contradictory evidence merely because it weakens the top-ranked candidate.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-025",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "The clinician SHALL be able to compare candidates directly.",
+      "safetyClass": "Standard",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-026",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "Target visualisation SHALL identify coordinate space and laterality where clinically relevant.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-027",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "Target visualisation SHALL distinguish target centre, ROI/confidence region and relevant overlays where available.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-028",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "Stale or superseded Target Slates SHALL be distinguishable from the current reviewable slate.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-029",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "The system SHALL prevent accidental signing against a stale/superseded slate.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT",
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-030",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "Candidate review SHALL require active clinician reasoning rather than passive confirmation alone.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-031",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "No target candidate SHALL be preselected for clinician acceptance.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-032",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "The interface SHALL NOT provide a generic “Accept MAGNIOM recommendation” action.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-033",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "Human-factors validation SHALL test clinician ability to safely override Primary Candidate 1.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-034",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "Human-factors validation SHALL test clinician recognition of low-reliability personalisation.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-035",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "Human-factors validation SHALL test understanding that the Target Slate is not a prescription.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-036",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "Human-factors validation SHALL test recognition of Research Mode.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-037",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "Human-factors validation SHALL test recognition of stale Target Slates.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-UX-038",
+      "domain": "MAG-UX",
+      "domainLabel": "Clinician Workspace / Human Factors",
+      "statement": "Critical user tasks SHALL have no unacceptable residual use-related risk before Clinical Mode release.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §15 Clinician Workspace"
+    },
+    {
+      "id": "MAG-VAL-001",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Every approved system requirement SHALL have a defined verification method.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "I"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-002",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Every critical requirement SHALL be linked to applicable risk controls.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "I"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-003",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Formal verification SHALL determine whether implementation conforms to specification.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "SV"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-004",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Clinical validation SHALL remain distinguishable from software verification.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "I"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-005",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Golden Cases SHALL be established before reliance on real-patient clinical outputs.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-006",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Golden Cases SHALL include expected eligible candidates.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-007",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Golden Cases SHALL include expected suppressed candidates.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-008",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Golden Cases SHALL include expected Target Slate ordering where applicable.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-009",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Golden Cases SHALL include expected abstention/fallback behaviour.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-010",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Golden Cases SHALL include Research/Clinical boundary cases.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-011",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Golden Cases SHALL include low-reliability connectome cases.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-012",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Golden Cases SHALL include evidence-ceiling cases.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-013",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Golden Cases SHALL include incompatible scientific configuration cases.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-014",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Golden Cases SHALL include personalisation adoption and rejection cases.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "GC"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-015",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Scientific parameter thresholds SHALL undergo boundary testing.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "UT"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-016",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Coordinate-transform verification SHALL include laterality testing.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "SV"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-017",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Pipeline validation SHALL include target-displacement assessment when processing changes.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "SV"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-018",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Pipeline validation SHALL assess target reliability.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "SV"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-019",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Retrospective validation SHALL use a locked validation dataset/protocol.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "CV"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-020",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Validation data SHALL NOT be repeatedly used for unconstrained algorithm tuning.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "CV"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-021",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Development and validation cohorts SHALL be separated where required by the validation design.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "CV"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-022",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Prospective silent validation SHALL prevent MAGNIOM target output from influencing contemporaneous treatment decisions.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "CV"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-023",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Clinical Mode promotion SHALL require completion of applicable engineering/security gates.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "I"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-024",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Clinical Mode promotion SHALL require applicable scientific/clinical gates.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "I"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-025",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Clinical Mode promotion SHALL require applicable human-factors gates.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "I"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-026",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Clinical Mode promotion SHALL require applicable regulatory/quality gates.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "I"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-027",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Clinical Mode SHALL NOT be released with open critical defects.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "I"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-028",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Cross-organisation security testing SHALL pass before Clinical Mode release.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-029",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Signed-decision immutability SHALL be verified before Clinical Mode release.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-030",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Research/Clinical separation SHALL be verified before Clinical Mode release.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-031",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Target localisation reproducibility SHALL be characterised before Clinical Mode use of individualised FC targeting.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "SV"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-032",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Reliability thresholds SHALL be empirically justified before they govern Clinical Mode personalisation.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "SV"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-033",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Required scan-duration thresholds SHALL be empirically justified before Clinical Mode use.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "SV"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-034",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Denoising/preprocessing sensitivity SHALL be characterised before Clinical Mode release.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "SV"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-035",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Evidence Library used for Clinical Mode SHALL undergo independent scientific review.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "SV"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-036",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Human-factors validation SHALL demonstrate that intended clinicians can understand and safely challenge MAGNIOM output.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-037",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Human-factors validation SHALL demonstrate clinicians can distinguish Target Slate from prescription.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "HF"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-038",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Clinical Mode SHALL require validation evidence appropriate to the actual intended claims.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "CV"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-039",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "MAGNIOM SHALL NOT claim outcome superiority without appropriately controlled clinical evidence supporting that claim.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "CV"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-040",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Post-deployment data SHALL support surveillance and future research without automatic modification of the active clinical algorithm.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "I"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-041",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Clinical Mode SHALL NOT be commercially supplied without satisfying the regulatory pathway applicable to the final intended purpose and jurisdiction.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "Inspection"
+      ],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-042",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Clinical release SHALL NOT terminate scientific surveillance.",
+      "safetyClass": "Unknown",
+      "verificationMethods": [],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-043",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "MAGNIOM SHOULD monitor:",
+      "safetyClass": "Unknown",
+      "verificationMethods": [],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-044",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Operational metrics SHALL NOT automatically become clinical evidence.",
+      "safetyClass": "Unknown",
+      "verificationMethods": [],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-045",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "Post-release observations SHALL enter controlled research/analysis before supporting algorithm changes.",
+      "safetyClass": "Unknown",
+      "verificationMethods": [],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-VAL-046",
+      "domain": "MAG-VAL",
+      "domainLabel": "Verification and Validation",
+      "statement": "A clinically material post-release algorithm change SHALL require a new controlled scientific release and validation appropriate to its impact.",
+      "safetyClass": "Unknown",
+      "verificationMethods": [],
+      "srsSection": "SRS §21 Verification & Validation"
+    },
+    {
+      "id": "MAG-WFL-001",
+      "domain": "MAG-WFL",
+      "domainLabel": "Workflow / Jobs / State Transitions",
+      "statement": "Clinically significant state transitions SHALL occur through controlled domain actions.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §18 Workflow"
+    },
+    {
+      "id": "MAG-WFL-002",
+      "domain": "MAG-WFL",
+      "domainLabel": "Workflow / Jobs / State Transitions",
+      "statement": "Clinical state SHALL NOT depend on a sequence of unrelated client-side mutations.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §18 Workflow"
+    },
+    {
+      "id": "MAG-WFL-003",
+      "domain": "MAG-WFL",
+      "domainLabel": "Workflow / Jobs / State Transitions",
+      "statement": "Phenotype approval SHALL be transactional.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §18 Workflow"
+    },
+    {
+      "id": "MAG-WFL-004",
+      "domain": "MAG-WFL",
+      "domainLabel": "Workflow / Jobs / State Transitions",
+      "statement": "Target Slate publication SHALL be transactional.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §18 Workflow"
+    },
+    {
+      "id": "MAG-WFL-005",
+      "domain": "MAG-WFL",
+      "domainLabel": "Workflow / Jobs / State Transitions",
+      "statement": "Clinician decision signing SHALL be transactional.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §18 Workflow"
+    },
+    {
+      "id": "MAG-WFL-006",
+      "domain": "MAG-WFL",
+      "domainLabel": "Workflow / Jobs / State Transitions",
+      "statement": "Evidence Library activation SHALL be transactional.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §18 Workflow"
+    },
+    {
+      "id": "MAG-WFL-007",
+      "domain": "MAG-WFL",
+      "domainLabel": "Workflow / Jobs / State Transitions",
+      "statement": "Scientific Policy activation SHALL be transactional.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §18 Workflow"
+    },
+    {
+      "id": "MAG-WFL-008",
+      "domain": "MAG-WFL",
+      "domainLabel": "Workflow / Jobs / State Transitions",
+      "statement": "Failed Target Slate publication SHALL roll back incomplete clinical state.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §18 Workflow"
+    },
+    {
+      "id": "MAG-WFL-009",
+      "domain": "MAG-WFL",
+      "domainLabel": "Workflow / Jobs / State Transitions",
+      "statement": "Long-running scientific jobs SHALL use durable job-state tracking.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §18 Workflow"
+    },
+    {
+      "id": "MAG-WFL-010",
+      "domain": "MAG-WFL",
+      "domainLabel": "Workflow / Jobs / State Transitions",
+      "statement": "Scientific jobs SHALL support idempotency.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §18 Workflow"
+    },
+    {
+      "id": "MAG-WFL-011",
+      "domain": "MAG-WFL",
+      "domainLabel": "Workflow / Jobs / State Transitions",
+      "statement": "Repeated identical job submission SHALL NOT create scientifically different results solely because it was submitted twice.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §18 Workflow"
+    },
+    {
+      "id": "MAG-WFL-012",
+      "domain": "MAG-WFL",
+      "domainLabel": "Workflow / Jobs / State Transitions",
+      "statement": "Processing failures SHALL NOT create a partially valid clinical connectome.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §18 Workflow"
+    },
+    {
+      "id": "MAG-WFL-013",
+      "domain": "MAG-WFL",
+      "domainLabel": "Workflow / Jobs / State Transitions",
+      "statement": "Jobs SHALL record scientific component/version context necessary for reconstruction.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §18 Workflow"
+    },
+    {
+      "id": "MAG-WFL-014",
+      "domain": "MAG-WFL",
+      "domainLabel": "Workflow / Jobs / State Transitions",
+      "statement": "Long-running workflow chains SHALL carry correlation identifiers.",
+      "safetyClass": "Standard",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §18 Workflow"
+    },
+    {
+      "id": "MAG-WFL-015",
+      "domain": "MAG-WFL",
+      "domainLabel": "Workflow / Jobs / State Transitions",
+      "statement": "Correlation identifiers SHALL NOT use patient names.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "ST"
+      ],
+      "srsSection": "SRS §18 Workflow"
+    },
+    {
+      "id": "MAG-WFL-016",
+      "domain": "MAG-WFL",
+      "domainLabel": "Workflow / Jobs / State Transitions",
+      "statement": "Supersession SHALL preserve previous outputs rather than overwrite them.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §18 Workflow"
+    },
+    {
+      "id": "MAG-WFL-017",
+      "domain": "MAG-WFL",
+      "domainLabel": "Workflow / Jobs / State Transitions",
+      "statement": "A case SHALL NOT automatically migrate an existing Target Slate to a new Evidence Library.",
+      "safetyClass": "Critical",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §18 Workflow"
+    },
+    {
+      "id": "MAG-WFL-018",
+      "domain": "MAG-WFL",
+      "domainLabel": "Workflow / Jobs / State Transitions",
+      "statement": "Updated evidence SHALL require explicit new target generation when re-analysis is desired.",
+      "safetyClass": "Major",
+      "verificationMethods": [
+        "IT"
+      ],
+      "srsSection": "SRS §18 Workflow"
+    }
+  ]
+}

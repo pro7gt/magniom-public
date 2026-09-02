@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "1.0",
+  "ontologyVersion": "MAGNIOM-PHENOTYPE-1.0.0",
+  "primaryDiagnosis": {
+    "code": "MDD",
+    "display": "Major Depressive Disorder",
+    "status": "confirmed"
+  },
+  "episode": {
+    "active": true,
+    "severity": "severe"
+  },
+  "safety": {
+    "clearance": "cleared"
+  },
+  "priorities": [
+    {
+      "domainCode": "DOMAIN-MDD-DYSPHORIC-001",
+      "priorityRank": 1,
+      "clinicianWeight": 0.95,
+      "evidenceMappability": "direct",
+      "rationale": "Severe treatment-resistant dysphoric depression."
+    }
+  ],
+  "phenotypeConfidence": "high",
+  "clinicianSummary": "Synthetic MDD case with degraded fMRI scan quality (excessive motion FD=0.38mm, reliability=0.42)."
+}

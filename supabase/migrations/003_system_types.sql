@@ -1,22 +1,64 @@
 -- 003_system_types.sql
 -- System-wide enums and domain types
--- Conforms to Section 5 of MAGNIOM-Supabase Database & Security Specification v1.0
+-- Conforms to Section 5, 9, 10 of MAGNIOM-Supabase Database & Security Specification v1.0
 
 CREATE TYPE identity.app_role AS ENUM (
-  'system_admin',
-  'org_admin',
   'tms_specialist',
   'clinical_reviewer',
   'imaging_specialist',
-  'evidence_reviewer',
-  'auditor',
-  'service_worker'
+  'researcher',
+  'evidence_curator',
+  'evidence_approver',
+  'organisation_admin',
+  'service_worker',
+  'system_admin'
 );
 
-CREATE TYPE clinical.magniom_mode AS ENUM (
-  'RESEARCH',
-  'CLINICAL',
-  'VALIDATION'
+CREATE TYPE system.magniom_mode AS ENUM (
+  'clinical',
+  'research',
+  'validation'
+);
+
+CREATE TYPE system.qualitative_confidence AS ENUM (
+  'high',
+  'moderate',
+  'low',
+  'not_assessable'
+);
+
+CREATE TYPE system.data_quality_state AS ENUM (
+  'verified',
+  'reviewed',
+  'unverified',
+  'incomplete',
+  'invalid'
+);
+
+CREATE TYPE clinical.case_state AS ENUM (
+  'draft',
+  'phenotype_ready',
+  'phenotype_approved',
+  'imaging_pending',
+  'imaging_processing',
+  'connectome_ready',
+  'target_generation_pending',
+  'target_generating',
+  'target_slate_ready',
+  'clinician_review',
+  'decision_signed',
+  'personalisation_abstained',
+  'targeting_abstained',
+  'decision_deferred',
+  'superseded',
+  'closed'
+);
+
+CREATE TYPE clinical.snapshot_state AS ENUM (
+  'draft',
+  'ready_for_review',
+  'approved',
+  'superseded'
 );
 
 CREATE TYPE targeting.candidate_role AS ENUM (
@@ -51,3 +93,4 @@ CREATE TYPE targeting.decision_type AS ENUM (
   'DEFERRED',
   'REJECTED'
 );
+

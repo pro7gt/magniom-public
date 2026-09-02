@@ -1,1 +1,1 @@
-{"root":["./src/index.ts"],"version":"5.9.3"}
+{"root":["./src/default-policy.ts","./src/index.ts","./src/policy-hasher.ts","./src/policy.ts"],"version":"5.9.3"}

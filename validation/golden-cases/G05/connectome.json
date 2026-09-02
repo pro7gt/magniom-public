@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "synthetic-connectome/1.0",
+  "quality": "pass",
+  "reliabilityProfile": {
+    "candidateId": "cand-g05-convergent-ldlpfc",
+    "scanDurationMinutes": 12.0,
+    "meanFramewiseDisplacementMm": 0.12,
+    "retainedFramesPercentage": 97.0,
+    "temporalSnr": 51.0,
+    "splitHalfLocalisationDistanceMm": 2.3,
+    "overallReliabilityScore": 0.88,
+    "isReliableForPersonalisation": true,
+    "warnings": []
+  },
+  "candidates": [
+    {
+      "candidateCode": "SYN-CONVERGENT-G05",
+      "targetFamilyCode": "TF-MDD-CONVERGENT-LDLPFC-001",
+      "reliabilityScore": 0.88,
+      "circuitConcordance": 0.82,
+      "baselineCircuitConcordance": 0.66,
+      "mniCoordinate": {
+        "x": -44,
+        "y": 40,
+        "z": 34,
+        "unit": "mm",
+        "space": "MNI152NLin2009cAsym"
+      },
+      "surfaceVertex": {
+        "space": "fsLR_32k",
+        "hemisphere": "L",
+        "vertexIndex": 18452,
+        "parcelName": "p9-46v_L"
+      },
+      "accessibility": "good"
+    }
+  ]
+}
