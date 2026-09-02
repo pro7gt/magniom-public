@@ -38,13 +38,25 @@ export class SecurityLogger {
     // MRN patterns e.g. MRN-12345, MRN: 998877
     { pattern: /\bMRN[-\s:]*[A-Za-z0-9-]{4,}\b/gi, replacement: '[REDACTED_MRN]' },
     // Email patterns
-    { pattern: /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g, replacement: '[REDACTED_EMAIL]' },
+    {
+      pattern: /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g,
+      replacement: '[REDACTED_EMAIL]',
+    },
     // Phone numbers
-    { pattern: /\b(\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b/g, replacement: '[REDACTED_PHONE]' },
+    {
+      pattern: /\b(\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b/g,
+      replacement: '[REDACTED_PHONE]',
+    },
     // Patient name key/value pairs
-    { pattern: /("?(?:patient_name|full_name|patientName)"?\s*[:=]\s*)"[^"]+"/gi, replacement: '$1"[REDACTED_NAME]"' },
+    {
+      pattern: /("?(?:patient_name|full_name|patientName)"?\s*[:=]\s*)"[^"]+"/gi,
+      replacement: '$1"[REDACTED_NAME]"',
+    },
     // Dates of birth
-    { pattern: /("?(?:dob|date_of_birth|birthDate)"?\s*[:=]\s*)"[^"]+"/gi, replacement: '$1"[REDACTED_DOB]"' },
+    {
+      pattern: /("?(?:dob|date_of_birth|birthDate)"?\s*[:=]\s*)"[^"]+"/gi,
+      replacement: '$1"[REDACTED_DOB]"',
+    },
   ];
 
   public static redactPHI(text: string): string {
@@ -62,11 +74,19 @@ export class SecurityLogger {
     if (typeof obj !== 'object') return obj;
 
     if (Array.isArray(obj)) {
-      return obj.map((item) => this.sanitizeObject(item));
+      return obj.map(item => this.sanitizeObject(item));
     }
 
     const sanitized: Record<string, unknown> = {};
-    const restrictedKeys = new Set(['patient_name', 'full_name', 'patientName', 'mrn', 'ssn', 'dob', 'date_of_birth']);
+    const restrictedKeys = new Set([
+      'patient_name',
+      'full_name',
+      'patientName',
+      'mrn',
+      'ssn',
+      'dob',
+      'date_of_birth',
+    ]);
 
     for (const [key, value] of Object.entries(obj as Record<string, unknown>)) {
       if (restrictedKeys.has(key.toLowerCase())) {
@@ -92,10 +112,12 @@ export class SecurityLogger {
       orgId?: string | undefined;
       eventType?: string | undefined;
       metadata?: Record<string, unknown> | undefined;
-    }
+    },
   ): StructuredLogEntry {
     const sanitizedMsg = this.redactPHI(message);
-    const sanitizedMetadata = context?.metadata ? (this.sanitizeObject(context.metadata) as Record<string, unknown>) : undefined;
+    const sanitizedMetadata = context?.metadata
+      ? (this.sanitizeObject(context.metadata) as Record<string, unknown>)
+      : undefined;
 
     return {
       timestamp: new Date().toISOString(),
@@ -115,7 +137,7 @@ export class SecurityLogger {
     event: HighRiskSecurityEvent,
     actorId: string,
     orgId: string,
-    details: Record<string, any>
+    details: Record<string, any>,
   ): StructuredLogEntry {
     return this.createLogEntry('SECURITY', `High-Risk Security Event: ${event}`, {
       actorId,

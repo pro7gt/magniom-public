@@ -1,4 +1,4 @@
-name: Security Audit
+name: Security Audit & Supply Chain Hygiene
 
 on:
   push:
@@ -8,9 +8,12 @@ on:
   schedule:
     - cron: '0 0 * * 1' # Weekly security audit
 
+permissions:
+  contents: read
+
 jobs:
   audit:
-    name: Dependency Audit & Secret Scan
+    name: Dependency Audit, SBOM & Secret Scan
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -20,6 +23,19 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
 
       - name: Run NPM Audit
         run: npm audit --audit-level=high || true
+
+      - name: Generate & Verify SBOM
+        run: npm run sbom:generate && npm run sbom:verify
+
+      - name: Scan Secret Hygiene & Leak Prevention
+        run: npm run security:secrets
+
+      - name: Execute Penetration Testing Readiness Probe
+        run: npm run security:probe

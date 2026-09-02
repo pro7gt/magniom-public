@@ -32,7 +32,8 @@ export const CANONICAL_MDD_TARGET_FAMILIES: readonly TargetFamilyDefinition[] = 
     circuitId: 'CIRCUIT-MDD-LDLPFC-001',
     baselineCandidateId: 'cand-g01-evidence-ldlpfc',
     defaultEvidenceScore: 0.95,
-    defaultRationale: 'Standard evidence-based left prefrontal depression anchor (no connectome available).',
+    defaultRationale:
+      'Standard evidence-based left prefrontal depression anchor (no connectome available).',
     domainCoverage: {
       'DOMAIN-MDD-DYSPHORIC-001': 'direct',
       'DOMAIN-MDD-ANXIOSOMATIC-001': 'partial',
@@ -93,13 +94,13 @@ export const CANONICAL_MDD_TARGET_FAMILIES: readonly TargetFamilyDefinition[] = 
  * Builds TargetFamilyDefinitions dynamically from an EvidenceKnowledgeGraph instance.
  */
 export function getTargetFamilyDefinitionsFromGraph(
-  graph: EvidenceKnowledgeGraph
+  graph: EvidenceKnowledgeGraph,
 ): readonly TargetFamilyDefinition[] {
   const families = graph.getTargetFamilies();
 
-  return families.map((family) => {
+  return families.map(family => {
     const existing = CANONICAL_MDD_TARGET_FAMILIES.find(
-      (f) => f.id === family.id || f.code === family.code
+      f => f.id === family.id || f.code === family.code,
     );
 
     if (existing) {
@@ -113,7 +114,12 @@ export function getTargetFamilyDefinitionsFromGraph(
     return {
       ...family,
       baselineCandidateId: `cand-${family.code.toLowerCase().replace(/_/g, '-')}-baseline`,
-      defaultEvidenceScore: family.evidenceCeilingTier === 'T1' ? 0.95 : family.evidenceCeilingTier === 'T2' ? 0.88 : 0.60,
+      defaultEvidenceScore:
+        family.evidenceCeilingTier === 'T1'
+          ? 0.95
+          : family.evidenceCeilingTier === 'T2'
+            ? 0.88
+            : 0.6,
       defaultRationale: `${family.name} baseline candidate.`,
       domainCoverage: {},
       evidenceCeilingTier: graph.getEvidenceCeilingTier(family.id),

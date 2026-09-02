@@ -2,10 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import type {
-  CameraOrientationPreset,
-  SurfaceMeshType,
-} from '@magniom/domain';
+import type { CameraOrientationPreset, SurfaceMeshType } from '@magniom/domain';
 import type {
   Clinical3DViewerViewModel,
   ViewerLayerVisibilityViewModel,
@@ -29,7 +26,9 @@ export function Clinical3DViewer({ viewModel, onSelectCandidate }: Clinical3DVie
   const [surfaceType, setSurfaceType] = useState<SurfaceMeshType>(viewModel.activeSurfaceType);
   const [hemisphere, setHemisphere] = useState<'L' | 'R' | 'BOTH'>(viewModel.activeHemisphere);
   const [layers, setLayers] = useState<ViewerLayerVisibilityViewModel>(viewModel.visibleLayers);
-  const [activeCircuitId, setActiveCircuitId] = useState<string | undefined>(viewModel.activeCircuitOverlayId);
+  const [activeCircuitId, setActiveCircuitId] = useState<string | undefined>(
+    viewModel.activeCircuitOverlayId,
+  );
   const [circuitOpacity, setCircuitOpacity] = useState<number>(0.75);
   const [isWebGlSupported, setIsWebGlSupported] = useState<boolean>(true);
   const [isOrbiting, setIsOrbiting] = useState<boolean>(false);
@@ -43,7 +42,7 @@ export function Clinical3DViewer({ viewModel, onSelectCandidate }: Clinical3DVie
 
   // Handle Layer Toggle
   const handleToggleLayer = (layerKey: keyof ViewerLayerVisibilityViewModel) => {
-    setLayers((prev) => ({ ...prev, [layerKey]: !prev[layerKey] }));
+    setLayers(prev => ({ ...prev, [layerKey]: !prev[layerKey] }));
   };
 
   // Three.js Scene Setup & Render Loop
@@ -208,7 +207,7 @@ export function Clinical3DViewer({ viewModel, onSelectCandidate }: Clinical3DVie
         if (obj instanceof THREE.Mesh) {
           obj.geometry.dispose();
           if (Array.isArray(obj.material)) {
-            obj.material.forEach((m) => m.dispose());
+            obj.material.forEach(m => m.dispose());
           } else {
             obj.material.dispose();
           }
@@ -223,7 +222,7 @@ export function Clinical3DViewer({ viewModel, onSelectCandidate }: Clinical3DVie
         if (obj instanceof THREE.Mesh) {
           obj.geometry.dispose();
           if (Array.isArray(obj.material)) {
-            obj.material.forEach((m) => m.dispose());
+            obj.material.forEach(m => m.dispose());
           } else {
             obj.material.dispose();
           }
@@ -274,13 +273,17 @@ export function Clinical3DViewer({ viewModel, onSelectCandidate }: Clinical3DVie
             const dTarget = Math.sqrt(
               Math.pow(x - viewModel.selectedTarget.mniCoordinate.x, 2) +
                 Math.pow(y - viewModel.selectedTarget.mniCoordinate.y, 2) +
-                Math.pow(z - viewModel.selectedTarget.mniCoordinate.z, 2)
+                Math.pow(z - viewModel.selectedTarget.mniCoordinate.z, 2),
             );
 
             if (isLeft && dTarget < 28.0) {
               const weight = Math.max(0, 1.0 - dTarget / 28.0) * circuitOpacity;
               // Coolwarm colormap (Cyan/Blue to Amber)
-              colors.push(0.02 * (1 - weight) + 0.1 * weight, 0.45 * (1 - weight) + 0.74 * weight, 0.85 * (1 - weight) + 0.98 * weight);
+              colors.push(
+                0.02 * (1 - weight) + 0.1 * weight,
+                0.45 * (1 - weight) + 0.74 * weight,
+                0.85 * (1 - weight) + 0.98 * weight,
+              );
             } else {
               colors.push(0.18, 0.22, 0.28);
             }
@@ -333,7 +336,7 @@ export function Clinical3DViewer({ viewModel, onSelectCandidate }: Clinical3DVie
       const pos = new THREE.Vector3(
         activeTarget.mniCoordinate.x,
         activeTarget.mniCoordinate.y,
-        activeTarget.mniCoordinate.z
+        activeTarget.mniCoordinate.z,
       );
 
       // Target centre node (Solid sphere marker)
@@ -361,7 +364,7 @@ export function Clinical3DViewer({ viewModel, onSelectCandidate }: Clinical3DVie
       patchMesh.lookAt(
         pos.x + activeTarget.coilNormal.x,
         pos.y + activeTarget.coilNormal.y,
-        pos.z + activeTarget.coilNormal.z
+        pos.z + activeTarget.coilNormal.z,
       );
       overlaysGroupRef.current.add(patchMesh);
 
@@ -369,8 +372,10 @@ export function Clinical3DViewer({ viewModel, onSelectCandidate }: Clinical3DVie
       const normalVector = new THREE.Vector3(
         activeTarget.coilNormal.x,
         activeTarget.coilNormal.y,
-        activeTarget.coilNormal.z
-      ).normalize().multiplyScalar(22.0);
+        activeTarget.coilNormal.z,
+      )
+        .normalize()
+        .multiplyScalar(22.0);
 
       const lineGeom = new THREE.BufferGeometry().setFromPoints([
         pos,
@@ -390,7 +395,7 @@ export function Clinical3DViewer({ viewModel, onSelectCandidate }: Clinical3DVie
       const confCenter = new THREE.Vector3(
         conf.centroidMni.x,
         conf.centroidMni.y,
-        conf.centroidMni.z
+        conf.centroidMni.z,
       );
 
       // Semi-transparent dispersion ellipsoid
@@ -411,15 +416,11 @@ export function Clinical3DViewer({ viewModel, onSelectCandidate }: Clinical3DVie
     // 4. Render Evidence Counterfactual Baseline & Connecting 3D Vector
     if (layers.evidenceOnlyTarget && viewModel.counterfactual?.hasCounterfactual) {
       const cf = viewModel.counterfactual;
-      const baselinePos = new THREE.Vector3(
-        cf.baselineMni.x,
-        cf.baselineMni.y,
-        cf.baselineMni.z
-      );
+      const baselinePos = new THREE.Vector3(cf.baselineMni.x, cf.baselineMni.y, cf.baselineMni.z);
       const candidatePos = new THREE.Vector3(
         cf.candidateMni.x,
         cf.candidateMni.y,
-        cf.candidateMni.z
+        cf.candidateMni.z,
       );
 
       // ○ Evidence baseline open ring marker
@@ -448,12 +449,12 @@ export function Clinical3DViewer({ viewModel, onSelectCandidate }: Clinical3DVie
 
     // 5. Render Alternative Slate Candidates
     if (layers.alternativeTargets) {
-      viewModel.candidates3D.forEach((cand) => {
+      viewModel.candidates3D.forEach(cand => {
         if (cand.id === activeTarget.id) return;
         const candPos = new THREE.Vector3(
           cand.mniCoordinate.x,
           cand.mniCoordinate.y,
-          cand.mniCoordinate.z
+          cand.mniCoordinate.z,
         );
 
         const sphereGeom = new THREE.SphereGeometry(1.8, 16, 16);
@@ -552,7 +553,8 @@ export function Clinical3DViewer({ viewModel, onSelectCandidate }: Clinical3DVie
           <div className="webgl-fallback-card">
             <h4>WebGL Hardware Acceleration Disabled</h4>
             <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
-              Operating in WCAG 2.2 AA accessible schematic mode. All spatial coordinates, parcel boundaries, and counterfactuals remain fully accessible below.
+              Operating in WCAG 2.2 AA accessible schematic mode. All spatial coordinates, parcel
+              boundaries, and counterfactuals remain fully accessible below.
             </p>
           </div>
         )}
@@ -560,18 +562,31 @@ export function Clinical3DViewer({ viewModel, onSelectCandidate }: Clinical3DVie
 
       {/* Candidate Focus Selector Chips */}
       {viewModel.candidates3D.length > 1 && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', padding: '0.25rem 0' }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            flexWrap: 'wrap',
+            padding: '0.25rem 0',
+          }}
+        >
           <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
             Focus Target:
           </span>
-          {viewModel.candidates3D.map((c) => {
+          {viewModel.candidates3D.map(c => {
             const isSelected = c.id === viewModel.selectedCandidateId;
             return (
               <button
                 key={c.id}
                 type="button"
                 className={`btn btn-sm ${isSelected ? 'btn-primary' : 'btn-secondary'}`}
-                style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem' }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  fontSize: '0.75rem',
+                }}
                 onClick={() => onSelectCandidate?.(c.id)}
               >
                 <span
@@ -612,13 +627,9 @@ export function Clinical3DViewer({ viewModel, onSelectCandidate }: Clinical3DVie
           confidenceRegion={viewModel.confidenceRegion}
         />
 
-        <Counterfactual3DOverlay
-          counterfactual={viewModel.counterfactual}
-        />
+        <Counterfactual3DOverlay counterfactual={viewModel.counterfactual} />
 
-        <ConfidenceRegionOverlay
-          confidenceRegion={viewModel.confidenceRegion}
-        />
+        <ConfidenceRegionOverlay confidenceRegion={viewModel.confidenceRegion} />
 
         <CircuitOverlaySelector
           overlays={viewModel.circuitOverlays}

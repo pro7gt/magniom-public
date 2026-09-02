@@ -51,7 +51,8 @@ describe('SPRINT 8: NeuroCompute Ingest + Structural Verification Suite', () => 
         caseId: 'e0000000-0000-0000-0000-000000000001',
         imagingStudyId: 'img-study-syn-001',
         rawDicomBucket: 'clinical-ingest',
-        rawDicomObjectPath: 'org/a0000000-0000-0000-0000-000000000001/case/e0000000-0000-0000-0000-000000000001/dicom.zip',
+        rawDicomObjectPath:
+          'org/a0000000-0000-0000-0000-000000000001/case/e0000000-0000-0000-0000-000000000001/dicom.zip',
         pseudonymousSubjectId: 'sub-MGN7F3A92',
       });
       expect(validPayload.pseudonymousSubjectId).toBe('sub-MGN7F3A92');
@@ -119,7 +120,7 @@ describe('SPRINT 8: NeuroCompute Ingest + Structural Verification Suite', () => 
       expect(failMetrics.snrT1w).toBeLessThan(10.0);
       expect(failMetrics.cnrT1w).toBeLessThan(2.5);
       expect(failMetrics.eulerHolesLh).toBeGreaterThan(40);
-      expect(failMetrics.mniRegistrationOverlapDice).toBeLessThan(0.80);
+      expect(failMetrics.mniRegistrationOverlapDice).toBeLessThan(0.8);
     });
 
     it('validates imaging QC run entity with High quality registration and segmentation', () => {

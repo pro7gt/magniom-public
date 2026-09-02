@@ -28,7 +28,7 @@ describe('Golden Cases G01–G05 & Sprint 1 Exit Criteria', () => {
 
       // Verify deterministic hash length
       expect(validatedSlate.deterministicManifestHash).toHaveLength(64);
-    }
+    },
   );
 
   it('G01: should enforce evidence-only targeting when connectome is null', () => {
@@ -98,7 +98,7 @@ describe('Golden Cases G01–G05 & Sprint 1 Exit Criteria', () => {
 
   it('Property Test: Deterministic hashing generates identical hashes for repeated runs', () => {
     const iterations = Array.from({ length: 100 }, () =>
-      computeSha256(GOLDEN_CASE_02.expectedSlate)
+      computeSha256(GOLDEN_CASE_02.expectedSlate),
     );
     const unique = new Set(iterations);
     expect(unique.size).toBe(1);

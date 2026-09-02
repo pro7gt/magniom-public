@@ -97,7 +97,7 @@ describe('Sprint 5 — Targeting + Decisions (Magniom Engineering Prototype)', (
 
     getEventsForAggregate(aggregateType: string, aggregateId: string): readonly AuditEvent[] {
       return this.events.filter(
-        (e) => e.aggregateType === aggregateType && e.aggregateId === aggregateId
+        e => e.aggregateType === aggregateType && e.aggregateId === aggregateId,
       );
     }
   }
@@ -302,7 +302,7 @@ describe('Sprint 5 — Targeting + Decisions (Magniom Engineering Prototype)', (
         {
           fullName: 'Dr. Jane Smith, FRANZCP',
           registrationIdentifier: 'MED0001234567',
-        }
+        },
       );
 
       const signInput = {
@@ -507,7 +507,7 @@ describe('Sprint 5 — Targeting + Decisions (Magniom Engineering Prototype)', (
       });
 
       expect(dbPayload.candidates).toHaveLength(2);
-      const suppressed = dbPayload.candidates.find((c) => c.isSuppressedOrRedundant === true);
+      const suppressed = dbPayload.candidates.find(c => c.isSuppressedOrRedundant === true);
       expect(suppressed).toBeDefined();
       expect(suppressed?.suppressionReason).toBe('LOW_INCREMENTAL_VALUE');
     });
@@ -528,7 +528,7 @@ describe('Sprint 5 — Targeting + Decisions (Magniom Engineering Prototype)', (
         caseId: 'case-g04',
       });
 
-      const suppressed = dbPayload.candidates.find((c) => c.isSuppressedOrRedundant === true);
+      const suppressed = dbPayload.candidates.find(c => c.isSuppressedOrRedundant === true);
       expect(suppressed?.suppressionReason).toBe('LOW_RELIABILITY');
     });
 

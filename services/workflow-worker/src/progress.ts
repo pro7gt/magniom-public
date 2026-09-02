@@ -42,7 +42,7 @@ export class ProgressReporter {
     stage: string,
     stageDescription: string,
     progressPercent?: number,
-    detail: Record<string, unknown> = {}
+    detail: Record<string, unknown> = {},
   ): Promise<string> {
     const progress: Omit<JobProgress, 'id' | 'recordedAt'> = {
       jobId: this.jobId,

@@ -9,14 +9,15 @@ import type { ScientificPolicyRelease } from '@magniom/scientific-policy';
 
 export interface ClinicalScopeGateResult {
   readonly passed: boolean;
-  readonly reasonCode?: 'DIAGNOSIS_OUT_OF_SCOPE' | 'INACTIVE_EPISODE' | 'SAFETY_NOT_CLEARED' | 'INVALID_INDICATION';
+  readonly reasonCode?:
+    'DIAGNOSIS_OUT_OF_SCOPE' | 'INACTIVE_EPISODE' | 'SAFETY_NOT_CLEARED' | 'INVALID_INDICATION';
   readonly message?: string;
 }
 
 export function evaluateClinicalScopeGate(
   snapshot: PhenotypeSnapshot | undefined | null,
   policy: ScientificPolicyRelease,
-  mode: MagniomMode
+  mode: MagniomMode,
 ): ClinicalScopeGateResult {
   if (!snapshot) {
     return {
@@ -51,7 +52,9 @@ export function evaluateClinicalScopeGate(
   const matchesPolicy = policy.indicationScope.some((indication: { code: string }) => {
     const indCode = indication.code.toUpperCase();
     return (
-      (diagCode && (diagCode === indCode || (diagCode === 'MDD' && (indCode === '296.23' || indCode === '6A70')))) ||
+      (diagCode &&
+        (diagCode === indCode ||
+          (diagCode === 'MDD' && (indCode === '296.23' || indCode === '6A70')))) ||
       primaryDiag.includes('MAJOR DEPRESSIVE') ||
       primaryDiag.includes('MDD')
     );

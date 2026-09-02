@@ -46,7 +46,9 @@ export class Sprint15VerificationBuildM3Orchestrator {
     console.log('📦 Auditing and Sealing 6 Frozen Subsystems...');
     const frozenSubsystems = this.auditSubsystems();
     for (const sub of frozenSubsystems) {
-      console.log(`  ✅ [${sub.subsystem}] ${sub.version} -> SHA-256: ${sub.sha256.slice(0, 16)}...`);
+      console.log(
+        `  ✅ [${sub.subsystem}] ${sub.version} -> SHA-256: ${sub.sha256.slice(0, 16)}...`,
+      );
     }
 
     // 2. Audit the 7 Formal Verification Reports (Roadmap Section 121)
@@ -95,7 +97,10 @@ export class Sprint15VerificationBuildM3Orchestrator {
       },
     };
 
-    const manifestPath = path.join(this.repoRoot, 'docs/verification/verification-build-m3-manifest.json');
+    const manifestPath = path.join(
+      this.repoRoot,
+      'docs/verification/verification-build-m3-manifest.json',
+    );
     fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2), 'utf8');
     console.log(`\n🔒 Master Verification Build M3 Manifest Sealed at:\n   ${manifestPath}`);
 
@@ -111,9 +116,18 @@ export class Sprint15VerificationBuildM3Orchestrator {
 
     const sub1Path = path.join(this.repoRoot, 'packages/target-engine/package.json');
     const sub2Path = path.join(this.repoRoot, 'evidence/releases/evidence-library-v1.0.0.json');
-    const sub3Path = path.join(this.repoRoot, 'packages/phenotype/releases/phenotype-ontology-v1.0.0.json');
-    const sub4Path = path.join(this.repoRoot, 'services/neurocompute/releases/neuro-pipeline-v1.0.0.json');
-    const sub5Path = path.join(this.repoRoot, 'scientific-config/releases/scientific-policy-v1.0.0.json');
+    const sub3Path = path.join(
+      this.repoRoot,
+      'packages/phenotype/releases/phenotype-ontology-v1.0.0.json',
+    );
+    const sub4Path = path.join(
+      this.repoRoot,
+      'services/neurocompute/releases/neuro-pipeline-v1.0.0.json',
+    );
+    const sub5Path = path.join(
+      this.repoRoot,
+      'scientific-config/releases/scientific-policy-v1.0.0.json',
+    );
     const sub6Path = path.join(this.repoRoot, 'apps/web/package.json');
 
     return [
@@ -183,7 +197,13 @@ export class Sprint15VerificationBuildM3Orchestrator {
         filePath: 'docs/verification/reports/01-software-requirements-verification-report.md',
         verificationMethod: 'Automated Traceability & Specification Audit',
         status: 'VERIFIED_PASSED',
-        requirementsCovered: ['MAG-SYS-001', 'MAG-CLI-001', 'MAG-PHE-001', 'MAG-REL-001', 'MAG-REL-011'],
+        requirementsCovered: [
+          'MAG-SYS-001',
+          'MAG-CLI-001',
+          'MAG-PHE-001',
+          'MAG-REL-001',
+          'MAG-REL-011',
+        ],
       },
       {
         reportId: 'VR-DB-M3-002',
@@ -201,7 +221,13 @@ export class Sprint15VerificationBuildM3Orchestrator {
         filePath: 'docs/verification/reports/03-security-verification-report.md',
         verificationMethod: 'Penetration Probes, Secret Hygiene & DR Drill',
         status: 'VERIFIED_PASSED',
-        requirementsCovered: ['MAG-SEC-001', 'MAG-SEC-009', 'MAG-SEC-010', 'MAG-SEC-030', 'MAG-SEC-035'],
+        requirementsCovered: [
+          'MAG-SEC-001',
+          'MAG-SEC-009',
+          'MAG-SEC-010',
+          'MAG-SEC-030',
+          'MAG-SEC-035',
+        ],
       },
       {
         reportId: 'VR-TGT-M3-004',
@@ -210,7 +236,13 @@ export class Sprint15VerificationBuildM3Orchestrator {
         filePath: 'docs/verification/reports/04-target-engine-verification-report.md',
         verificationMethod: 'Bit-for-Bit Determinism & Golden Cases G01-G05',
         status: 'VERIFIED_PASSED',
-        requirementsCovered: ['MAG-TGT-001', 'MAG-EVD-001', 'MAG-VAL-001', 'MAG-VAL-002', 'MAG-VAL-003'],
+        requirementsCovered: [
+          'MAG-TGT-001',
+          'MAG-EVD-001',
+          'MAG-VAL-001',
+          'MAG-VAL-002',
+          'MAG-VAL-003',
+        ],
       },
       {
         reportId: 'VR-NC-M3-005',
@@ -246,7 +278,8 @@ export class Sprint15VerificationBuildM3Orchestrator {
     return [
       {
         criterionId: 'EXIT-CRIT-01',
-        statement: 'All critical software requirements traced to verification tests and hazard mitigations.',
+        statement:
+          'All critical software requirements traced to verification tests and hazard mitigations.',
         status: 'PASSED',
         evidenceSummary: '100% of 28 critical requirements verified in Traceability Matrix v1.2.',
       },
@@ -260,7 +293,8 @@ export class Sprint15VerificationBuildM3Orchestrator {
         criterionId: 'EXIT-CRIT-03',
         statement: 'All Golden Cases pass deterministically (G01–G05).',
         status: 'PASSED',
-        evidenceSummary: '5/5 synthetic Golden Cases verified with exact coordinate and score matches.',
+        evidenceSummary:
+          '5/5 synthetic Golden Cases verified with exact coordinate and score matches.',
       },
       {
         criterionId: 'EXIT-CRIT-04',
@@ -272,7 +306,8 @@ export class Sprint15VerificationBuildM3Orchestrator {
         criterionId: 'EXIT-CRIT-05',
         statement: 'PostgreSQL Row Level Security (RLS) tests pass across all schemas.',
         status: 'PASSED',
-        evidenceSummary: 'Multi-tenant isolation verified with default deny anon across 11 schemas.',
+        evidenceSummary:
+          'Multi-tenant isolation verified with default deny anon across 11 schemas.',
       },
       {
         criterionId: 'EXIT-CRIT-06',
@@ -284,7 +319,8 @@ export class Sprint15VerificationBuildM3Orchestrator {
         criterionId: 'EXIT-CRIT-07',
         statement: 'Coordinate laterality preservation tests pass.',
         status: 'PASSED',
-        evidenceSummary: 'Zero cross-hemisphere coordinate bleeds in spatial transformer and candidate generator.',
+        evidenceSummary:
+          'Zero cross-hemisphere coordinate bleeds in spatial transformer and candidate generator.',
       },
       {
         criterionId: 'EXIT-CRIT-08',
@@ -304,7 +340,7 @@ export class Sprint15VerificationBuildM3Orchestrator {
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const orchestrator = new Sprint15VerificationBuildM3Orchestrator();
-  orchestrator.runFullVerification().catch((err) => {
+  orchestrator.runFullVerification().catch(err => {
     console.error('❌ Verification Build M3 failed:', err);
     process.exit(1);
   });

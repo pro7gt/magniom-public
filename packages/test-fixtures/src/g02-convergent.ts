@@ -1,4 +1,9 @@
-import type { PhenotypeSnapshot, TargetCandidate, TargetSlate, TargetReliabilityProfile } from '@magniom/domain';
+import type {
+  PhenotypeSnapshot,
+  TargetCandidate,
+  TargetSlate,
+  TargetReliabilityProfile,
+} from '@magniom/domain';
 import { computeSha256 } from '@magniom/scientific-policy';
 import { EvidenceKnowledgeGraph, CANONICAL_EVIDENCE_RELEASE_1_0_0 } from '@magniom/evidence';
 
@@ -42,7 +47,8 @@ export const G02_PHENOTYPE: PhenotypeSnapshot = {
     priorTmsExposure: false,
   },
   phenotypeConfidence: 'HIGH',
-  clinicianSummary: 'Synthetic moderate recurrent MDD with high-quality rs-fMRI connectome available.',
+  clinicianSummary:
+    'Synthetic moderate recurrent MDD with high-quality rs-fMRI connectome available.',
   confirmedByClinicianId: 'clin-demo-001',
   confirmedAt: '2026-09-01T10:00:00.000Z',
   snapshotHash: computeSha256({
@@ -117,7 +123,8 @@ export const G02_PRIMARY_1: TargetCandidate = {
   phenotypeConcordanceScore: 0.84,
   connectomeRefinementScore: 0.84,
   overallScore: 0.88,
-  rationale: 'Qualified connectome-refined left prefrontal depression target addressing core depressive symptoms.',
+  rationale:
+    'Qualified connectome-refined left prefrontal depression target addressing core depressive symptoms.',
   contraindicationsOrConflicts: [],
   isSuppressedOrRedundant: false,
   convergenceProfile: {
@@ -154,7 +161,9 @@ export const G02_ADDITIONAL_A: TargetCandidate = {
   isSuppressedOrRedundant: false,
   evidencePaths: graph.findEvidencePaths('TF-MDD-LDLPFC-EST-001'),
   conflictingEvidence: graph.getConflictingClaims('TF-MDD-LDLPFC-EST-001'),
-  counterarguments: ['Fixed group anchor does not account for patient-specific functional anatomy variations.'],
+  counterarguments: [
+    'Fixed group anchor does not account for patient-specific functional anatomy variations.',
+  ],
 };
 
 const g02SlatePayload = {
@@ -174,7 +183,8 @@ const g02SlatePayload = {
     candidateCoordinate: G02_PRIMARY_1.mniCoordinate,
     displacementDistanceMm: 8.25,
     expectedMechanisticGain: 0.18,
-    justificationSummary: 'Qualified connectome refinement shows +0.18 gain over standard baseline within 8.25mm.',
+    justificationSummary:
+      'Qualified connectome refinement shows +0.18 gain over standard baseline within 8.25mm.',
   },
   clinicalCoverageProfile: {
     primaryDomainCovered: 'DOMAIN-MDD-DYSPHORIC-001',

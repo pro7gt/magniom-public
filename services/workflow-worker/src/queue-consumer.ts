@@ -28,11 +28,7 @@ export class QueueConsumer {
   }
 
   async processNextMessage(queueName: string): Promise<boolean> {
-    const messages = await this.dbClient.readQueueMessages(
-      queueName,
-      this.config.leaseSeconds,
-      1
-    );
+    const messages = await this.dbClient.readQueueMessages(queueName, this.config.leaseSeconds, 1);
 
     if (messages.length === 0 || !messages[0]) {
       return false;
@@ -42,7 +38,9 @@ export class QueueConsumer {
     const handler = this.handlers.get(envelope.requestedOperation) ?? this.handlers.get(queueName);
 
     if (!handler) {
-      console.warn(`[Worker ${this.config.workerId}] No registered handler for operation '${envelope.requestedOperation}'`);
+      console.warn(
+        `[Worker ${this.config.workerId}] No registered handler for operation '${envelope.requestedOperation}'`,
+      );
       return false;
     }
 
@@ -50,7 +48,7 @@ export class QueueConsumer {
     const claimed = await this.dbClient.claimJob(
       envelope.jobId,
       this.config.workerId,
-      this.config.leaseSeconds
+      this.config.leaseSeconds,
     );
 
     if (!claimed) {
@@ -61,7 +59,7 @@ export class QueueConsumer {
     const progressReporter = new ProgressReporter(
       envelope.jobId,
       this.config.workerId,
-      this.dbClient
+      this.dbClient,
     );
     progressReporter.startHeartbeat(this.config.heartbeatIntervalMs);
 
@@ -98,7 +96,7 @@ export class QueueConsumer {
         await this.dbClient.completeJob(
           envelope.jobId,
           this.config.workerId,
-          result.resultReference ?? {}
+          result.resultReference ?? {},
         );
         await this.dbClient.archiveQueueMessage(queueName, envelope.jobId);
       } else {
@@ -107,7 +105,7 @@ export class QueueConsumer {
           this.config.workerId,
           result.error?.code ?? 'JOB_EXECUTION_FAILED',
           result.error?.detail ?? { message: result.error?.message ?? 'Failed' },
-          result.error?.retryable ?? false
+          result.error?.retryable ?? false,
         );
       }
     } catch (err: any) {
@@ -116,7 +114,7 @@ export class QueueConsumer {
         this.config.workerId,
         'UNHANDLED_EXCEPTION',
         { message: err.message, stack: err.stack },
-        true
+        true,
       );
     } finally {
       progressReporter.stopHeartbeat();

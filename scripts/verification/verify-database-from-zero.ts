@@ -37,10 +37,12 @@ export class DatabaseVerificationRunner {
     const errors: string[] = [];
     const migrationFiles = fs
       .readdirSync(this.migrationsDir)
-      .filter((f) => f.endsWith('.sql'))
+      .filter(f => f.endsWith('.sql'))
       .sort();
 
-    console.log(`📦 Auditing ${migrationFiles.length} sequential migrations (001 -> ${migrationFiles[migrationFiles.length - 1].slice(0, 3)})...`);
+    console.log(
+      `📦 Auditing ${migrationFiles.length} sequential migrations (001 -> ${migrationFiles[migrationFiles.length - 1].slice(0, 3)})...`,
+    );
 
     let lastOrder = 0;
     const migrations: MigrationMeta[] = [];
@@ -54,7 +56,9 @@ export class DatabaseVerificationRunner {
 
       const order = parseInt(match[1], 10);
       if (order <= lastOrder && order !== 0) {
-        errors.push(`Migration sequence error: ${file} (order ${order}) is not strictly greater than previous (${lastOrder}).`);
+        errors.push(
+          `Migration sequence error: ${file} (order ${order}) is not strictly greater than previous (${lastOrder}).`,
+        );
       }
       lastOrder = order;
 
@@ -62,7 +66,10 @@ export class DatabaseVerificationRunner {
       const content = fs.readFileSync(filePath, 'utf8');
 
       const hasRLS = content.includes('ENABLE ROW LEVEL SECURITY');
-      const hasImmutabilityTrigger = content.includes('prevent_') || content.includes('immutable') || content.includes('BEFORE UPDATE');
+      const hasImmutabilityTrigger =
+        content.includes('prevent_') ||
+        content.includes('immutable') ||
+        content.includes('BEFORE UPDATE');
 
       migrations.push({
         filename: file,
@@ -77,25 +84,29 @@ export class DatabaseVerificationRunner {
 
     // 2. Audit Table RLS Enforcement
     console.log('\n🔒 Verifying Row Level Security (RLS) Policies across Schemas...');
-    const rlsMigrations = migrations.filter((m) => m.hasRLS);
-    console.log(`  ✅ RLS explicit activations declared across ${rlsMigrations.length} migration files.`);
+    const rlsMigrations = migrations.filter(m => m.hasRLS);
+    console.log(
+      `  ✅ RLS explicit activations declared across ${rlsMigrations.length} migration files.`,
+    );
 
     // 3. Audit Immutability Triggers
     console.log('\n🛡️ Verifying Immutability Enforcements (Target Slates & Signed Decisions)...');
-    const immutabilityMigrations = migrations.filter((m) => m.hasImmutabilityTrigger);
-    console.log(`  ✅ Immutability protections active across ${immutabilityMigrations.length} migration files.`);
+    const immutabilityMigrations = migrations.filter(m => m.hasImmutabilityTrigger);
+    console.log(
+      `  ✅ Immutability protections active across ${immutabilityMigrations.length} migration files.`,
+    );
 
     // 4. Audit 11-Domain Test Suites
     console.log('\n🧪 Auditing 11-Domain SQL Test Suites in supabase/tests/...');
     if (!fs.existsSync(this.testsDir)) {
       errors.push(`Tests directory not found: ${this.testsDir}`);
     } else {
-      const testFiles = fs.readdirSync(this.testsDir).filter((f) => f.endsWith('.sql'));
+      const testFiles = fs.readdirSync(this.testsDir).filter(f => f.endsWith('.sql'));
       console.log(`  ✅ Found ${testFiles.length} root SQL test suites.`);
-      
+
       const dbTestsDir = path.join(this.testsDir, 'database');
       if (fs.existsSync(dbTestsDir)) {
-        const dbTestFiles = fs.readdirSync(dbTestsDir).filter((f) => f.endsWith('.sql'));
+        const dbTestFiles = fs.readdirSync(dbTestsDir).filter(f => f.endsWith('.sql'));
         console.log(`  ✅ Found ${dbTestFiles.length} structured domain SQL test suites.`);
       }
     }
@@ -107,7 +118,7 @@ export class DatabaseVerificationRunner {
       return { passed: true, migrationCount: migrations.length, errors: [] };
     } else {
       console.error('❌ DATABASE VERIFICATION FAILED:');
-      errors.forEach((e) => console.error(`   - ${e}`));
+      errors.forEach(e => console.error(`   - ${e}`));
       console.log('================================================\n');
       return { passed: false, migrationCount: migrations.length, errors };
     }

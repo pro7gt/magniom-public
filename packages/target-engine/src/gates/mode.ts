@@ -14,7 +14,7 @@ export interface ModeGateResult {
 
 export function evaluateModeGate(
   mode: MagniomMode,
-  policy: ScientificPolicyRelease
+  policy: ScientificPolicyRelease,
 ): ModeGateResult {
   if (!policy.modeScope.includes(mode)) {
     return {

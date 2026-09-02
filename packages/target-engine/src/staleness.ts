@@ -47,10 +47,7 @@ export function evaluateStaleStatus(options: StaleCheckOptions): StalenessEvalua
   }
 
   // 3. Slate Supersession Check
-  if (
-    caseRecord.currentTargetSlateId &&
-    caseRecord.currentTargetSlateId !== slateRecord.id
-  ) {
+  if (caseRecord.currentTargetSlateId && caseRecord.currentTargetSlateId !== slateRecord.id) {
     return {
       isStale: true,
       reason: 'TARGET_SLATE_SUPERSEDED',
@@ -76,7 +73,7 @@ export function evaluateStaleStatus(options: StaleCheckOptions): StalenessEvalua
  */
 export function isSlateStale(
   slate: { phenotypeSnapshotId: string },
-  currentPhenotype: { id: string }
+  currentPhenotype: { id: string },
 ): boolean {
   return slate.phenotypeSnapshotId !== currentPhenotype.id;
 }

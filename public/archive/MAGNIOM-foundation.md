@@ -57,7 +57,7 @@ Their 2024 affective-disorder series similarly associated multi-target parcel-gu
 
 The 2025 safety study is more substantial: **165 patients / 202 target sets**, with no serious adverse events reported; fatigue, muscle twitching, headache and discomfort were the main transient effects. That supports the feasibility and tolerability of stimulating a broader range of connectome-selected cortical parcels. It does **not**, however, prove efficacy or superiority of multi-target targeting. ([PubMed][14])
 
-### The part of Cingulum I would *not* reproduce as a hard rule
+### The part of Cingulum I would _not_ reproduce as a hard rule
 
 Their anxiety methodology used hyperconnectivity to select cTBS and hypoconnectivity to select iTBS. ([PubMed][12])
 
@@ -269,12 +269,12 @@ I would support two input modes.
 
 The platform ingests an already processed functional-connectomics dataset from an external validated platform such as:
 
-* parcel time-series
-* connectivity matrix
-* HCP parcel labels
-* anomaly metrics
-* T1
-* target ROIs
+- parcel time-series
+- connectivity matrix
+- HCP parcel labels
+- anomaly metrics
+- T1
+- target ROIs
 
 This is the fastest MVP.
 
@@ -1010,8 +1010,8 @@ For example:
 
 same patient
 
-* repeat scan or split-half data
-* same pipeline
+- repeat scan or split-half data
+- same pipeline
   → candidate target should stay within a predefined spatial/e-field tolerance.
 
 The field currently has enough evidence that personalised FC coordinates can be unstable that this cannot be ignored. ([PubMed][17])
@@ -1040,11 +1040,11 @@ This is the core product.
 
 Allows:
 
-* novel targets
-* lower-confidence symptom circuits
-* experimental anomaly-based targeting
-* cross-atlas analyses
-* new ranking algorithms
+- novel targets
+- lower-confidence symptom circuits
+- experimental anomaly-based targeting
+- cross-atlas analyses
+- new ranking algorithms
 
 These must be visibly separated from routine clinical recommendations.
 
@@ -1092,27 +1092,27 @@ The scientific pieces now almost form a complete bridge:
 
 **established clinical efficacy of prefrontal TMS**
 
-*
+-
 
 **sgACC connectivity literature**
 
-*
+-
 
 **Stanford individualized targeting**
 
-*
+-
 
 **MGB causal/symptom circuit work**
 
-*
+-
 
 **prospective symptom-specific targeting**
 
-*
+-
 
 **Cingulum's multi-target connectomic observations**
 
-*
+-
 
 **recent randomized positive and negative personalised-targeting trials**
 
@@ -1162,23 +1162,23 @@ RenovaTarget can combine those lessons into something more rigorous:
 
 That, in my view, is the right foundation for the software.
 
-[1]: https://pubmed.ncbi.nlm.nih.gov/34711062/?utm_source=chatgpt.com "Stanford Neuromodulation Therapy (SNT): A Double-Blind Randomized Controlled Trial - PubMed"
-[2]: https://pubmed.ncbi.nlm.nih.gov/32160765/?utm_source=chatgpt.com "Distinct Symptom-Specific Treatment Targets for Circuit-Based Neuromodulation - PubMed"
-[3]: https://pubmed.ncbi.nlm.nih.gov/42340706/?utm_source=chatgpt.com "Connectivity- vs Scalp-Based Targeting of Accelerated Transcranial Magnetic Stimulation for Depression: A Randomized Clinical Trial - PubMed"
-[4]: https://pubmed.ncbi.nlm.nih.gov/42581396/?utm_source=chatgpt.com "Individualized Connectivity-Guided Versus Conventional Targeting of Accelerated Theta-Burst Stimulation in Depression: A Randomized, Double-Blind, Parallel-Design Trial - PubMed"
-[5]: https://pubmed.ncbi.nlm.nih.gov/38228914/?utm_source=chatgpt.com "Connectivity-guided intermittent theta burst versus repetitive transcranial magnetic stimulation for treatment-resistant depression: a randomized controlled trial."
-[6]: https://www.sciencedirect.com/science/article/pii/S0165032725005890?utm_source=chatgpt.com "Effectiveness of personalized repetitive transcranial magnetic stimulation for major depressive disorder: A systematic review and meta-analysis of randomized active-controlled trials - ScienceDirect"
-[7]: https://pmc.ncbi.nlm.nih.gov/articles/PMC11446248/?utm_source=chatgpt.com "Functional Connectivity Mapping for rTMS Target Selection in Depression - PMC"
-[8]: https://pubmed.ncbi.nlm.nih.gov/42035652/?utm_source=chatgpt.com "Precision functional network imaging-guided transcranial magnetic stimulation: A review of clinical applications through resting-state fMRI - PubMed"
-[9]: https://pmc.ncbi.nlm.nih.gov/articles/PMC10636393/?utm_source=chatgpt.com "Personalized, parcel‐guided rTMS for the treatment of major depressive disorder: Safety and proof of concept - PMC"
-[10]: https://www.cambridge.org/core/product/77E07C98AB9ECA6359E7BA7860DB43F4/core-reader?utm_source=chatgpt.com "Evaluating the safety profile of connectome-based repetitive transcranial magnetic stimulation | Acta Neuropsychiatrica | Cambridge Core"
-[11]: https://onlinelibrary.wiley.com/doi/10.1002/brb3.3268?utm_source=chatgpt.com "Personalized, parcel‐guided rTMS for the treatment of major depressive disorder: Safety and proof of concept - Tang - 2023 - Brain and Behavior - Wiley Online Library"
-[12]: https://pubmed.ncbi.nlm.nih.gov/36949668/?utm_source=chatgpt.com "An agile, data-driven approach for target selection in rTMS therapy for anxiety symptoms: Proof of concept and preliminary data for two novel targets - PubMed"
-[13]: https://pubmed.ncbi.nlm.nih.gov/39415644/?utm_source=chatgpt.com "Improvements in Sleep Quality in Patients With Major Depressive and Generalized Anxiety Disorders Treated With Individualized, Parcel-Guided Transcranial Magnetic Stimulation."
-[14]: https://pubmed.ncbi.nlm.nih.gov/40116602/?utm_source=chatgpt.com "Evaluating the safety profile of connectome-based repetitive transcranial magnetic stimulation - PubMed"
-[15]: https://pubmed.ncbi.nlm.nih.gov/30600571/?utm_source=chatgpt.com "Critical role of glutamatergic and GABAergic neurotransmission in the central mechanisms of theta-burst stimulation - PubMed"
-[16]: https://pubmed.ncbi.nlm.nih.gov/42529453/?utm_source=chatgpt.com "Effect of database, pre-processing pipeline, and scan duration on rs-fMRI functional connectivity based treatment targets for TMS obtained using the Stanford Neuromodulation Therapy (SNT) protocol."
-[17]: https://pubmed.ncbi.nlm.nih.gov/38419897/?utm_source=chatgpt.com "Personalized connectivity-based network targeting model of transcranial magnetic stimulation for treatment of psychiatric disorders: computational feasibility and reproducibility - PubMed"
-[18]: https://pmc.ncbi.nlm.nih.gov/articles/PMC13130353/?utm_source=chatgpt.com "Evaluating the safety profile of connectome-based repetitive transcranial magnetic stimulation - PMC"
-[19]: https://www.tga.gov.au/resources/guidance/understanding-clinical-decision-support-system-software-regulation?utm_source=chatgpt.com "Understanding clinical decision support system software regulation | Therapeutic Goods Administration (TGA)"
-[20]: https://www.tga.gov.au/products/medical-devices/software-and-artificial-intelligence-ai/overview/software-based-medical-device-exclusions?utm_source=chatgpt.com "Software-based medical device exclusions | Therapeutic Goods Administration (TGA)"
+[1]: https://pubmed.ncbi.nlm.nih.gov/34711062/?utm_source=chatgpt.com 'Stanford Neuromodulation Therapy (SNT): A Double-Blind Randomized Controlled Trial - PubMed'
+[2]: https://pubmed.ncbi.nlm.nih.gov/32160765/?utm_source=chatgpt.com 'Distinct Symptom-Specific Treatment Targets for Circuit-Based Neuromodulation - PubMed'
+[3]: https://pubmed.ncbi.nlm.nih.gov/42340706/?utm_source=chatgpt.com 'Connectivity- vs Scalp-Based Targeting of Accelerated Transcranial Magnetic Stimulation for Depression: A Randomized Clinical Trial - PubMed'
+[4]: https://pubmed.ncbi.nlm.nih.gov/42581396/?utm_source=chatgpt.com 'Individualized Connectivity-Guided Versus Conventional Targeting of Accelerated Theta-Burst Stimulation in Depression: A Randomized, Double-Blind, Parallel-Design Trial - PubMed'
+[5]: https://pubmed.ncbi.nlm.nih.gov/38228914/?utm_source=chatgpt.com 'Connectivity-guided intermittent theta burst versus repetitive transcranial magnetic stimulation for treatment-resistant depression: a randomized controlled trial.'
+[6]: https://www.sciencedirect.com/science/article/pii/S0165032725005890?utm_source=chatgpt.com 'Effectiveness of personalized repetitive transcranial magnetic stimulation for major depressive disorder: A systematic review and meta-analysis of randomized active-controlled trials - ScienceDirect'
+[7]: https://pmc.ncbi.nlm.nih.gov/articles/PMC11446248/?utm_source=chatgpt.com 'Functional Connectivity Mapping for rTMS Target Selection in Depression - PMC'
+[8]: https://pubmed.ncbi.nlm.nih.gov/42035652/?utm_source=chatgpt.com 'Precision functional network imaging-guided transcranial magnetic stimulation: A review of clinical applications through resting-state fMRI - PubMed'
+[9]: https://pmc.ncbi.nlm.nih.gov/articles/PMC10636393/?utm_source=chatgpt.com 'Personalized, parcel‐guided rTMS for the treatment of major depressive disorder: Safety and proof of concept - PMC'
+[10]: https://www.cambridge.org/core/product/77E07C98AB9ECA6359E7BA7860DB43F4/core-reader?utm_source=chatgpt.com 'Evaluating the safety profile of connectome-based repetitive transcranial magnetic stimulation | Acta Neuropsychiatrica | Cambridge Core'
+[11]: https://onlinelibrary.wiley.com/doi/10.1002/brb3.3268?utm_source=chatgpt.com 'Personalized, parcel‐guided rTMS for the treatment of major depressive disorder: Safety and proof of concept - Tang - 2023 - Brain and Behavior - Wiley Online Library'
+[12]: https://pubmed.ncbi.nlm.nih.gov/36949668/?utm_source=chatgpt.com 'An agile, data-driven approach for target selection in rTMS therapy for anxiety symptoms: Proof of concept and preliminary data for two novel targets - PubMed'
+[13]: https://pubmed.ncbi.nlm.nih.gov/39415644/?utm_source=chatgpt.com 'Improvements in Sleep Quality in Patients With Major Depressive and Generalized Anxiety Disorders Treated With Individualized, Parcel-Guided Transcranial Magnetic Stimulation.'
+[14]: https://pubmed.ncbi.nlm.nih.gov/40116602/?utm_source=chatgpt.com 'Evaluating the safety profile of connectome-based repetitive transcranial magnetic stimulation - PubMed'
+[15]: https://pubmed.ncbi.nlm.nih.gov/30600571/?utm_source=chatgpt.com 'Critical role of glutamatergic and GABAergic neurotransmission in the central mechanisms of theta-burst stimulation - PubMed'
+[16]: https://pubmed.ncbi.nlm.nih.gov/42529453/?utm_source=chatgpt.com 'Effect of database, pre-processing pipeline, and scan duration on rs-fMRI functional connectivity based treatment targets for TMS obtained using the Stanford Neuromodulation Therapy (SNT) protocol.'
+[17]: https://pubmed.ncbi.nlm.nih.gov/38419897/?utm_source=chatgpt.com 'Personalized connectivity-based network targeting model of transcranial magnetic stimulation for treatment of psychiatric disorders: computational feasibility and reproducibility - PubMed'
+[18]: https://pmc.ncbi.nlm.nih.gov/articles/PMC13130353/?utm_source=chatgpt.com 'Evaluating the safety profile of connectome-based repetitive transcranial magnetic stimulation - PMC'
+[19]: https://www.tga.gov.au/resources/guidance/understanding-clinical-decision-support-system-software-regulation?utm_source=chatgpt.com 'Understanding clinical decision support system software regulation | Therapeutic Goods Administration (TGA)'
+[20]: https://www.tga.gov.au/products/medical-devices/software-and-artificial-intelligence-ai/overview/software-based-medical-device-exclusions?utm_source=chatgpt.com 'Software-based medical device exclusions | Therapeutic Goods Administration (TGA)'

@@ -1,10 +1,7 @@
 'use client';
 
 import React from 'react';
-import type {
-  CameraOrientationPreset,
-  SurfaceMeshType,
-} from '@magniom/domain';
+import type { CameraOrientationPreset, SurfaceMeshType } from '@magniom/domain';
 import type { ViewerLayerVisibilityViewModel } from '@magniom/presentation';
 
 interface ViewerControlsProps {
@@ -48,7 +45,7 @@ export function ViewerControls({
       <div className="control-group">
         <span className="control-group-title">Camera Views</span>
         <div className="btn-group" role="group" aria-label="Anatomical View Presets">
-          {presets.map((p) => (
+          {presets.map(p => (
             <button
               key={p.id}
               type="button"
@@ -77,7 +74,7 @@ export function ViewerControls({
           <select
             className="form-select"
             value={surfaceType}
-            onChange={(e) => onChangeSurfaceType(e.target.value as SurfaceMeshType)}
+            onChange={e => onChangeSurfaceType(e.target.value as SurfaceMeshType)}
             aria-label="Cortical Surface Geometry"
           >
             <option value="midthickness">Midthickness Surface</option>
@@ -89,7 +86,7 @@ export function ViewerControls({
           <select
             className="form-select"
             value={hemisphere}
-            onChange={(e) => onChangeHemisphere(e.target.value as 'L' | 'R' | 'BOTH')}
+            onChange={e => onChangeHemisphere(e.target.value as 'L' | 'R' | 'BOTH')}
             aria-label="Hemisphere Selection"
           >
             <option value="L">Left Hemisphere (Target)</option>
@@ -142,7 +139,10 @@ export function ViewerControls({
             <span style={{ color: 'var(--accent-cyan)', fontWeight: 600 }}>Selected Target</span>
           </label>
 
-          <label className="checkbox-label" title="Render 3D Spatial Reliability & Uncertainty Envelope">
+          <label
+            className="checkbox-label"
+            title="Render 3D Spatial Reliability & Uncertainty Envelope"
+          >
             <input
               type="checkbox"
               checked={layers.reliabilityRegion}
@@ -160,7 +160,10 @@ export function ViewerControls({
             <span style={{ color: '#f59e0b' }}>Therapeutic Circuit</span>
           </label>
 
-          <label className="checkbox-label" title="Render Evidence-Only Standard Baseline Reference Coordinate">
+          <label
+            className="checkbox-label"
+            title="Render Evidence-Only Standard Baseline Reference Coordinate"
+          >
             <input
               type="checkbox"
               checked={layers.evidenceOnlyTarget}
@@ -169,7 +172,10 @@ export function ViewerControls({
             <span style={{ color: '#9ca3af' }}>Evidence Counterfactual</span>
           </label>
 
-          <label className="checkbox-label" title="Render All Alternative Slate Candidates in 3D Space">
+          <label
+            className="checkbox-label"
+            title="Render All Alternative Slate Candidates in 3D Space"
+          >
             <input
               type="checkbox"
               checked={layers.alternativeTargets}

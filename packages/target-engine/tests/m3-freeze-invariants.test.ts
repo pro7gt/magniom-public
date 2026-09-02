@@ -27,10 +27,19 @@ describe('Sprint 15: Verification Build M3 Freeze Invariants', () => {
   });
 
   it('verifies the existence and schema integrity of all frozen release bundles', () => {
-    const phenotypeBundlePath = path.join(rootDir, 'packages/phenotype/releases/phenotype-ontology-v1.0.0.json');
+    const phenotypeBundlePath = path.join(
+      rootDir,
+      'packages/phenotype/releases/phenotype-ontology-v1.0.0.json',
+    );
     const evidenceBundlePath = path.join(rootDir, 'evidence/releases/evidence-library-v1.0.0.json');
-    const policyBundlePath = path.join(rootDir, 'scientific-config/releases/scientific-policy-v1.0.0.json');
-    const neuroBundlePath = path.join(rootDir, 'services/neurocompute/releases/neuro-pipeline-v1.0.0.json');
+    const policyBundlePath = path.join(
+      rootDir,
+      'scientific-config/releases/scientific-policy-v1.0.0.json',
+    );
+    const neuroBundlePath = path.join(
+      rootDir,
+      'services/neurocompute/releases/neuro-pipeline-v1.0.0.json',
+    );
 
     expect(fs.existsSync(phenotypeBundlePath)).toBe(true);
     expect(fs.existsSync(evidenceBundlePath)).toBe(true);
@@ -71,7 +80,9 @@ describe('Sprint 15: Verification Build M3 Freeze Invariants', () => {
       });
       expect(repeatedSlate.id).toBe(initialSlateId);
       expect(repeatedSlate.primaryCandidates.length).toBe(initialSlate.primaryCandidates.length);
-      expect(repeatedSlate.primaryCandidates[0].mniCoordinate).toEqual(initialSlate.primaryCandidates[0].mniCoordinate);
+      expect(repeatedSlate.primaryCandidates[0].mniCoordinate).toEqual(
+        initialSlate.primaryCandidates[0].mniCoordinate,
+      );
     }
   });
 

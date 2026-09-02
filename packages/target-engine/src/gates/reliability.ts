@@ -20,8 +20,19 @@ export interface ReliabilityGateResult {
 }
 
 export function evaluateReliabilityGate(
-  connectomeInput: ConnectomeTargetInput | { quality?: string; reliabilityProfile?: TargetReliabilityProfile | CanonicalTargetReliabilityProfile; reliabilityProfiles?: readonly (TargetReliabilityProfile | CanonicalTargetReliabilityProfile)[]; candidates?: readonly unknown[] } | null | undefined,
-  policy: ScientificPolicyRelease
+  connectomeInput:
+    | ConnectomeTargetInput
+    | {
+        quality?: string;
+        reliabilityProfile?: TargetReliabilityProfile | CanonicalTargetReliabilityProfile;
+        reliabilityProfiles?: readonly (
+          TargetReliabilityProfile | CanonicalTargetReliabilityProfile
+        )[];
+        candidates?: readonly unknown[];
+      }
+    | null
+    | undefined,
+  policy: ScientificPolicyRelease,
 ): ReliabilityGateResult {
   // If no connectome data is provided, personalisation is cleanly marked not available
   if (!connectomeInput || connectomeInput === null) {
@@ -33,7 +44,8 @@ export function evaluateReliabilityGate(
   }
 
   const warnings: string[] = [];
-  const qcStatus = 'qcStatus' in connectomeInput ? connectomeInput.qcStatus : connectomeInput.quality;
+  const qcStatus =
+    'qcStatus' in connectomeInput ? connectomeInput.qcStatus : connectomeInput.quality;
 
   if (qcStatus === 'fail') {
     warnings.push('LIMITED_FC_RELIABILITY');
@@ -80,12 +92,15 @@ export function evaluateReliabilityGate(
       }
     }
 
-    const minReliability = policy.evidencePolicy.minReliabilityForPersonalisation ?? 0.70;
+    const minReliability = policy.evidencePolicy.minReliabilityForPersonalisation ?? 0.7;
     const isReliable = profile.isReliableForPersonalisation;
     const score = profile.overallReliabilityScore;
 
     // Check composite distance if available in canonical profile
-    if ('compositeSpatialDistanceMm' in profile && typeof profile.compositeSpatialDistanceMm === 'number') {
+    if (
+      'compositeSpatialDistanceMm' in profile &&
+      typeof profile.compositeSpatialDistanceMm === 'number'
+    ) {
       if (profile.compositeSpatialDistanceMm > 8.0) {
         if (!warnings.includes('EXCESSIVE_SPATIAL_DISPERSION')) {
           warnings.push('EXCESSIVE_SPATIAL_DISPERSION');

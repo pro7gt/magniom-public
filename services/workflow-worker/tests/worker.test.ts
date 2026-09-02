@@ -10,11 +10,7 @@ import {
   WorkerAuthService,
   StorageClient,
 } from '../src/index.js';
-import type {
-  WorkflowDatabaseClient,
-  JobExecutionContext,
-  JobHandler,
-} from '../src/index.js';
+import type { WorkflowDatabaseClient, JobExecutionContext, JobHandler } from '../src/index.js';
 import type {
   WorkflowJob,
   JobProgress,
@@ -70,7 +66,11 @@ class MockWorkflowDatabaseClient implements WorkflowDatabaseClient {
     return id;
   }
 
-  async completeJob(jobId: string, workerId: string, resultReference: Record<string, unknown>): Promise<boolean> {
+  async completeJob(
+    jobId: string,
+    workerId: string,
+    resultReference: Record<string, unknown>,
+  ): Promise<boolean> {
     const job = this.jobs.get(jobId);
     if (!job || job.workerId !== workerId || job.status !== 'running') {
       return false;
@@ -84,12 +84,19 @@ class MockWorkflowDatabaseClient implements WorkflowDatabaseClient {
     return true;
   }
 
-  async failJob(jobId: string, workerId: string, errorCode: string, errorDetail: Record<string, unknown>, retryable: boolean): Promise<boolean> {
+  async failJob(
+    jobId: string,
+    workerId: string,
+    errorCode: string,
+    errorDetail: Record<string, unknown>,
+    retryable: boolean,
+  ): Promise<boolean> {
     const job = this.jobs.get(jobId);
     if (!job || job.workerId !== workerId) {
       return false;
     }
-    const nextStatus = retryable && job.attemptCount < job.maxAttempts ? 'failed_retryable' : 'failed_terminal';
+    const nextStatus =
+      retryable && job.attemptCount < job.maxAttempts ? 'failed_retryable' : 'failed_terminal';
     this.jobs.set(jobId, {
       ...job,
       status: nextStatus,
@@ -104,7 +111,9 @@ class MockWorkflowDatabaseClient implements WorkflowDatabaseClient {
     return { slateId: 'slate-mock-001' };
   }
 
-  async registerArtifact(artifact: Omit<ArtifactRecord, 'id' | 'createdAt'>): Promise<ArtifactRecord> {
+  async registerArtifact(
+    artifact: Omit<ArtifactRecord, 'id' | 'createdAt'>,
+  ): Promise<ArtifactRecord> {
     const record: ArtifactRecord = {
       ...artifact,
       id: `art-${this.artifacts.length + 1}`,
@@ -115,11 +124,11 @@ class MockWorkflowDatabaseClient implements WorkflowDatabaseClient {
   }
 
   async fetchPendingOutboxEvents(_batchSize = 50): Promise<readonly OutboxEvent[]> {
-    return this.outbox.filter((e) => !e.publishedAt);
+    return this.outbox.filter(e => !e.publishedAt);
   }
 
   async markOutboxEventPublished(eventId: string): Promise<boolean> {
-    const event = this.outbox.find((e) => e.id === eventId);
+    const event = this.outbox.find(e => e.id === eventId);
     if (event) {
       (event as any).publishedAt = new Date().toISOString();
       return true;
@@ -128,7 +137,7 @@ class MockWorkflowDatabaseClient implements WorkflowDatabaseClient {
   }
 
   async incrementOutboxAttempts(eventId: string): Promise<boolean> {
-    const event = this.outbox.find((e) => e.id === eventId);
+    const event = this.outbox.find(e => e.id === eventId);
     if (event) {
       (event as any).attempts = event.attempts + 1;
       return true;
@@ -143,9 +152,13 @@ class MockWorkflowDatabaseClient implements WorkflowDatabaseClient {
     return list.length;
   }
 
-  async readQueueMessages(queueName: string, _vt: number, qty: number): Promise<readonly QueueEnvelope[]> {
+  async readQueueMessages(
+    queueName: string,
+    _vt: number,
+    qty: number,
+  ): Promise<readonly QueueEnvelope[]> {
     const list = this.queues.get(queueName) ?? [];
-    const available = list.filter((m) => !this.archivedMessages.has(`${queueName}:${m.jobId}`));
+    const available = list.filter(m => !this.archivedMessages.has(`${queueName}:${m.jobId}`));
     return available.slice(0, qty);
   }
 
@@ -164,7 +177,9 @@ describe('Worker Unit & Lifecycle Invariants', () => {
 
     expect(auth.assertWorkerPermission('target.generate')).toBe(true);
     expect(auth.assertWorkerPermission('imaging.read')).toBe(true);
-    expect(() => auth.assertWorkerPermission('phenotype.approve')).toThrowError('WORKER_PERMISSION_DENIED');
+    expect(() => auth.assertWorkerPermission('phenotype.approve')).toThrowError(
+      'WORKER_PERMISSION_DENIED',
+    );
   });
 
   it('records progress milestones and maintains heartbeat during active execution', async () => {
@@ -284,7 +299,9 @@ describe('Worker Unit & Lifecycle Invariants', () => {
       },
     });
 
-    const handler = new (await import('../src/handlers/structural-processing.js')).StructuralProcessingJobHandler(dbClient);
+    const handler = new (
+      await import('../src/handlers/structural-processing.js')
+    ).StructuralProcessingJobHandler(dbClient);
     worker.registerHandler(handler);
 
     const result = await worker.runOnce(['neurocompute']);
@@ -293,6 +310,6 @@ describe('Worker Unit & Lifecycle Invariants', () => {
     const job = dbClient.jobs.get(jobId);
     expect(job?.status).toBe('succeeded');
     expect(dbClient.artifacts.length).toBeGreaterThan(0);
-    expect(dbClient.progress.some((p) => p.stage === 'SURFACE_RECONSTRUCTION')).toBe(true);
+    expect(dbClient.progress.some(p => p.stage === 'SURFACE_RECONSTRUCTION')).toBe(true);
   });
 });

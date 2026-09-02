@@ -15,4 +15,3 @@ export * from './spatial/index.js';
 export * from './persistence.js';
 export * from './staleness.js';
 export * from './engine.js';
-

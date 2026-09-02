@@ -1,7 +1,7 @@
 # Magniom Environment Strategy v1.0
 
 **Standard Reference:** IEC 62304 / ISO 13485 / IEC 81001-5-1  
-**Document Status:** Controlled Engineering Document  
+**Document Status:** Controlled Engineering Document
 
 ---
 
@@ -13,13 +13,13 @@ This document establishes the controlled multi-tier environment strategy for Mag
 
 ## 2. Environment Matrix
 
-| Tier | Environment Name | Primary Purpose | Deployment Target | Database / Auth | Data Classification | Mode Flag |
-|---|---|---|---|---|---|---|
-| **ENV-1** | `local` | Developer workstation iteration & unit testing | Local Docker / Supabase CLI | Local Postgres / Synthetic Seed | Public / Synthetic only (Zero PHI) | `MAGNIOM_MODE=RESEARCH` |
-| **ENV-2** | `ci` | Automated regression, linting, typecheck, build | GitHub Actions Runner | Ephemeral Postgres / Test Fixtures | Synthetic Golden Cases | `MAGNIOM_MODE=VALIDATION` |
-| **ENV-3** | `development` | Shared staging for engineering prototypes (M1) | Cloud staging container / Supabase Branch | Dedicated Dev Supabase | De-identified / Synthetic | `MAGNIOM_MODE=RESEARCH` |
-| **ENV-4** | `validation` | Formal verification & retrospective clinical trials (M3–M6) | Air-gapped / HIPAA-compliant cluster | Locked verification DB with immutable snapshots | De-identified Clinical Datasets | `MAGNIOM_MODE=VALIDATION` |
-| **ENV-5** | `production` | Clinical decision support for authorized specialists (M8) | Multi-zone ISO 27001/TGA-compliant medical cloud | High-availability PostgreSQL with hardened RLS & audit triggers | Protected Health Information (PHI) / Encrypted | `MAGNIOM_MODE=CLINICAL` |
+| Tier      | Environment Name | Primary Purpose                                             | Deployment Target                                | Database / Auth                                                 | Data Classification                            | Mode Flag                 |
+| --------- | ---------------- | ----------------------------------------------------------- | ------------------------------------------------ | --------------------------------------------------------------- | ---------------------------------------------- | ------------------------- |
+| **ENV-1** | `local`          | Developer workstation iteration & unit testing              | Local Docker / Supabase CLI                      | Local Postgres / Synthetic Seed                                 | Public / Synthetic only (Zero PHI)             | `MAGNIOM_MODE=RESEARCH`   |
+| **ENV-2** | `ci`             | Automated regression, linting, typecheck, build             | GitHub Actions Runner                            | Ephemeral Postgres / Test Fixtures                              | Synthetic Golden Cases                         | `MAGNIOM_MODE=VALIDATION` |
+| **ENV-3** | `development`    | Shared staging for engineering prototypes (M1)              | Cloud staging container / Supabase Branch        | Dedicated Dev Supabase                                          | De-identified / Synthetic                      | `MAGNIOM_MODE=RESEARCH`   |
+| **ENV-4** | `validation`     | Formal verification & retrospective clinical trials (M3–M6) | Air-gapped / HIPAA-compliant cluster             | Locked verification DB with immutable snapshots                 | De-identified Clinical Datasets                | `MAGNIOM_MODE=VALIDATION` |
+| **ENV-5** | `production`     | Clinical decision support for authorized specialists (M8)   | Multi-zone ISO 27001/TGA-compliant medical cloud | High-availability PostgreSQL with hardened RLS & audit triggers | Protected Health Information (PHI) / Encrypted | `MAGNIOM_MODE=CLINICAL`   |
 
 ---
 

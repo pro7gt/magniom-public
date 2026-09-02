@@ -2,7 +2,7 @@
 
 **Document ID:** VR-SCI-IMPACT-001  
 **Specification Reference:** MAGNIOM-Enterprise Verification Spec v1.0 (Sections 100–104)  
-**Evaluation Timestamp:** 2026-09-02T06:48:54.513Z  
+**Evaluation Timestamp:** 2026-09-02T12:50:47.934Z  
 **Assessed Materiality Tier:** `S1_NONE`  
 **Overall Status:** ✅ PASSED_S1  
 

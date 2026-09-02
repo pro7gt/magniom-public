@@ -24,12 +24,15 @@ export function calculateCandidateUtility(candidate: TargetCandidate): number {
   return Number(result.toFixed(2));
 }
 
-export function scoreCandidates(candidates: readonly TargetCandidate[]): readonly TargetCandidate[] {
-  return candidates.map((candidate) => {
+export function scoreCandidates(
+  candidates: readonly TargetCandidate[],
+): readonly TargetCandidate[] {
+  return candidates.map(candidate => {
     // If overallScore is already specifically populated (e.g. from fixture), retain or compute
-    const overallScore = candidate.overallScore > 0 && candidate.overallScore !== candidate.evidenceScore
-      ? candidate.overallScore
-      : calculateCandidateUtility(candidate);
+    const overallScore =
+      candidate.overallScore > 0 && candidate.overallScore !== candidate.evidenceScore
+        ? candidate.overallScore
+        : calculateCandidateUtility(candidate);
 
     return {
       ...candidate,

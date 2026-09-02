@@ -21,8 +21,14 @@ export class SecretHygieneScanner {
   constructor(repoRoot: string = resolve(process.cwd())) {
     this.repoRoot = repoRoot;
     this.leakPatterns = [
-      { name: 'Supabase Service Role Key', regex: /eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]{20,}/ },
-      { name: 'Hardcoded Postgres Password', regex: /postgres:\/\/[a-zA-Z0-9_-]+:[a-zA-Z0-9_!@#$%^&*()+=]+@/ },
+      {
+        name: 'Supabase Service Role Key',
+        regex: /eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]{20,}/,
+      },
+      {
+        name: 'Hardcoded Postgres Password',
+        regex: /postgres:\/\/[a-zA-Z0-9_-]+:[a-zA-Z0-9_!@#$%^&*()+=]+@/,
+      },
       { name: 'Private Key Block', regex: /-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----/ },
       { name: 'AWS Secret Access Key', regex: /aws_secret_access_key\s*=\s*[A-Za-z0-9\/+=]{40}/ },
     ];
@@ -41,8 +47,18 @@ export class SecretHygieneScanner {
           this.scanDirectory(fullPath, findings);
         }
       } else if (stat.isFile()) {
-        const allowedExts = ['.ts', '.tsx', '.js', '.jsx', '.json', '.md', '.sql', '.toml', '.env.example'];
-        if (allowedExts.some((ext) => entry.endsWith(ext))) {
+        const allowedExts = [
+          '.ts',
+          '.tsx',
+          '.js',
+          '.jsx',
+          '.json',
+          '.md',
+          '.sql',
+          '.toml',
+          '.env.example',
+        ];
+        if (allowedExts.some(ext => entry.endsWith(ext))) {
           this.scanFile(fullPath, findings);
         }
       }
@@ -82,7 +98,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
   if (findings.length === 0) {
     console.log('✓ PASS: Zero hardcoded secrets, service keys, or private certificates detected.');
-    console.log('  Scanned apps, packages, services, and docs according to MAG-SEC-009 & MAG-SEC-028.');
+    console.log(
+      '  Scanned apps, packages, services, and docs according to MAG-SEC-009 & MAG-SEC-028.',
+    );
     process.exit(0);
   } else {
     console.error(`✗ FAIL: ${findings.length} potential secret leak(s) detected:`);

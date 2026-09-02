@@ -1,7 +1,7 @@
 /**
  * @magniom/web - Release & Authority Context Provider
  * Conforms to MAGNIOM-Application Shell, Navigation & Clinical Context Specification v1.0 (Sections 11, 12, 17, 18, 124, 125).
- * 
+ *
  * Provides single authoritative release provenance and user session context
  * to prevent maturity-state contradictions (e.g. M1 vs M3).
  */

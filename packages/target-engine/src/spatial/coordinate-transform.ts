@@ -18,7 +18,7 @@ import type {
  */
 export function multiplyMatrix4x4(
   a: readonly (readonly number[])[],
-  b: readonly (readonly number[])[]
+  b: readonly (readonly number[])[],
 ): number[][] {
   const result: number[][] = [
     [0, 0, 0, 0],
@@ -48,7 +48,7 @@ export function determinant4x4(m: readonly (readonly number[])[]): number {
   let det = 0;
   for (let c = 0; c < 4; c++) {
     const minor = getMinor3x3(m, 0, c);
-    const cofactor = ((c % 2 === 0 ? 1 : -1) * (m[0]?.[c] ?? 0)) * determinant3x3(minor);
+    const cofactor = (c % 2 === 0 ? 1 : -1) * (m[0]?.[c] ?? 0) * determinant3x3(minor);
     det += cofactor;
   }
   return det;
@@ -57,7 +57,7 @@ export function determinant4x4(m: readonly (readonly number[])[]): number {
 function getMinor3x3(
   m: readonly (readonly number[])[],
   rowToRemove: number,
-  colToRemove: number
+  colToRemove: number,
 ): number[][] {
   const minor: number[][] = [];
   for (let r = 0; r < 4; r++) {
@@ -120,16 +120,32 @@ export function invertMatrix4x4(m: readonly (readonly number[])[]): number[][] {
  */
 export function transformPointAffine(
   point: Vector3D,
-  matrix: readonly (readonly number[])[]
+  matrix: readonly (readonly number[])[],
 ): Vector3D {
   const x = point.x;
   const y = point.y;
   const z = point.z;
 
-  const nx = (matrix[0]?.[0] ?? 0) * x + (matrix[0]?.[1] ?? 0) * y + (matrix[0]?.[2] ?? 0) * z + (matrix[0]?.[3] ?? 0);
-  const ny = (matrix[1]?.[0] ?? 0) * x + (matrix[1]?.[1] ?? 0) * y + (matrix[1]?.[2] ?? 0) * z + (matrix[1]?.[3] ?? 0);
-  const nz = (matrix[2]?.[0] ?? 0) * x + (matrix[2]?.[1] ?? 0) * y + (matrix[2]?.[2] ?? 0) * z + (matrix[2]?.[3] ?? 0);
-  const nw = (matrix[3]?.[0] ?? 0) * x + (matrix[3]?.[1] ?? 0) * y + (matrix[3]?.[2] ?? 0) * z + (matrix[3]?.[3] ?? 1);
+  const nx =
+    (matrix[0]?.[0] ?? 0) * x +
+    (matrix[0]?.[1] ?? 0) * y +
+    (matrix[0]?.[2] ?? 0) * z +
+    (matrix[0]?.[3] ?? 0);
+  const ny =
+    (matrix[1]?.[0] ?? 0) * x +
+    (matrix[1]?.[1] ?? 0) * y +
+    (matrix[1]?.[2] ?? 0) * z +
+    (matrix[1]?.[3] ?? 0);
+  const nz =
+    (matrix[2]?.[0] ?? 0) * x +
+    (matrix[2]?.[1] ?? 0) * y +
+    (matrix[2]?.[2] ?? 0) * z +
+    (matrix[2]?.[3] ?? 0);
+  const nw =
+    (matrix[3]?.[0] ?? 0) * x +
+    (matrix[3]?.[1] ?? 0) * y +
+    (matrix[3]?.[2] ?? 0) * z +
+    (matrix[3]?.[3] ?? 1);
 
   const w = Math.abs(nw) > 1e-12 ? nw : 1.0;
 
@@ -146,7 +162,7 @@ export function transformPointAffine(
  */
 export function transformVectorAffine(
   vec: Vector3D,
-  matrix: readonly (readonly number[])[]
+  matrix: readonly (readonly number[])[],
 ): Vector3D {
   const x = vec.x;
   const y = vec.y;
@@ -173,11 +189,11 @@ export function transformVectorAffine(
  */
 export function nativeToMniAffine(
   nativeCoord: SubjectCoordinate,
-  transform: CoordinateTransformMatrix4x4
+  transform: CoordinateTransformMatrix4x4,
 ): MniCoordinate {
   const res = transformPointAffine(
     { x: nativeCoord.x, y: nativeCoord.y, z: nativeCoord.z },
-    transform.matrix4x4
+    transform.matrix4x4,
   );
 
   return {
@@ -194,13 +210,10 @@ export function nativeToMniAffine(
  */
 export function mniToNativeAffine(
   mniCoord: MniCoordinate,
-  transform: CoordinateTransformMatrix4x4
+  transform: CoordinateTransformMatrix4x4,
 ): SubjectCoordinate {
   const invMatrix = transform.inverseMatrix4x4 || invertMatrix4x4(transform.matrix4x4);
-  const res = transformPointAffine(
-    { x: mniCoord.x, y: mniCoord.y, z: mniCoord.z },
-    invMatrix
-  );
+  const res = transformPointAffine({ x: mniCoord.x, y: mniCoord.y, z: mniCoord.z }, invMatrix);
 
   return {
     space: 'NATIVE_T1W',
@@ -219,7 +232,7 @@ export function mniToNativeAffine(
 export function convertCoordinateOrientation(
   coord: Vector3D,
   from: CoordinateOrientation,
-  to: CoordinateOrientation
+  to: CoordinateOrientation,
 ): Vector3D {
   if (from === to) return { ...coord };
 
@@ -240,7 +253,7 @@ export function convertCoordinateOrientation(
 export function verifyLaterality(
   coord: Vector3D,
   hemisphere: 'L' | 'R',
-  convention: CoordinateOrientation = 'RAS'
+  convention: CoordinateOrientation = 'RAS',
 ): { valid: boolean; reason?: string } {
   const effectiveX = convention === 'RAS' ? coord.x : -coord.x;
 
@@ -276,11 +289,13 @@ export function computeEuclideanDistance3D(p1: Vector3D, p2: Vector3D): number {
  */
 export function surfaceVertexToCoordinate(
   mesh: SurfaceMeshGeometry,
-  vertexIndex: number
+  vertexIndex: number,
 ): Vector3D {
   const base = vertexIndex * 3;
   if (base + 2 >= mesh.vertices.length) {
-    throw new Error(`Vertex index ${vertexIndex} out of bounds for mesh with ${mesh.vertexCount} vertices.`);
+    throw new Error(
+      `Vertex index ${vertexIndex} out of bounds for mesh with ${mesh.vertexCount} vertices.`,
+    );
   }
 
   return {
@@ -295,7 +310,7 @@ export function surfaceVertexToCoordinate(
  */
 export function findClosestSurfaceVertex(
   mesh: SurfaceMeshGeometry,
-  targetCoord: Vector3D
+  targetCoord: Vector3D,
 ): { vertexIndex: number; distanceMm: number; coordinate: Vector3D } {
   let closestIndex = 0;
   let minDistance = Number.POSITIVE_INFINITY;
@@ -323,7 +338,7 @@ export function findClosestSurfaceVertex(
  */
 export function estimateSurfaceNormalAtVertex(
   mesh: SurfaceMeshGeometry,
-  vertexIndex: number
+  vertexIndex: number,
 ): Vector3D {
   if (mesh.normals && mesh.normals.length >= (vertexIndex + 1) * 3) {
     const base = vertexIndex * 3;

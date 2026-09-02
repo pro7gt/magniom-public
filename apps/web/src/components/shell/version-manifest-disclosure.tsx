@@ -18,12 +18,24 @@ export function VersionManifestDisclosure() {
           <span className="build-badge">
             <span className="status-dot">●</span> {releaseContext.buildName}
           </span>
-          <span className="footer-divider" aria-hidden="true">|</span>
-          <span className="subsystem-pill"><strong>Target Engine:</strong> v1.0.0</span>
-          <span className="subsystem-pill"><strong>Evidence:</strong> v1.0.0</span>
-          <span className="subsystem-pill"><strong>Phenotype:</strong> v1.0.0</span>
-          <span className="subsystem-pill"><strong>Neuro:</strong> v1.0.0</span>
-          <span className="subsystem-pill"><strong>Policy:</strong> v1.0.0</span>
+          <span className="footer-divider" aria-hidden="true">
+            |
+          </span>
+          <span className="subsystem-pill">
+            <strong>Target Engine:</strong> v1.0.0
+          </span>
+          <span className="subsystem-pill">
+            <strong>Evidence:</strong> v1.0.0
+          </span>
+          <span className="subsystem-pill">
+            <strong>Phenotype:</strong> v1.0.0
+          </span>
+          <span className="subsystem-pill">
+            <strong>Neuro:</strong> v1.0.0
+          </span>
+          <span className="subsystem-pill">
+            <strong>Policy:</strong> v1.0.0
+          </span>
         </div>
 
         <div className="footer-provenance-action">
@@ -40,10 +52,14 @@ export function VersionManifestDisclosure() {
 
       {/* Release Provenance Modal (§78, §124) */}
       {isOpen && (
-        <div className="provenance-modal-backdrop" onClick={() => setIsOpen(false)} role="presentation">
+        <div
+          className="provenance-modal-backdrop"
+          onClick={() => setIsOpen(false)}
+          role="presentation"
+        >
           <div
             className="provenance-modal-content"
-            onClick={(e) => e.stopPropagation()}
+            onClick={e => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
             aria-labelledby="provenance-modal-title"
@@ -56,8 +72,15 @@ export function VersionManifestDisclosure() {
                 <h2 id="provenance-modal-title" style={{ fontSize: '1.25rem', fontWeight: 800 }}>
                   Scientific Release Manifest & Subsystem Provenance
                 </h2>
-                <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
-                  Authoritative cryptographic freeze manifest for IEC 62304 / ISO 14971 traceability.
+                <p
+                  style={{
+                    fontSize: '0.8125rem',
+                    color: 'var(--text-secondary)',
+                    marginTop: '0.25rem',
+                  }}
+                >
+                  Authoritative cryptographic freeze manifest for IEC 62304 / ISO 14971
+                  traceability.
                 </p>
               </div>
               <button
@@ -80,7 +103,9 @@ export function VersionManifestDisclosure() {
               </div>
               <div className="meta-card">
                 <span className="meta-label">Freeze Timestamp</span>
-                <strong className="meta-value">{new Date(releaseContext.freezeTimestamp).toUTCString()}</strong>
+                <strong className="meta-value">
+                  {new Date(releaseContext.freezeTimestamp).toUTCString()}
+                </strong>
               </div>
             </div>
 
@@ -95,10 +120,14 @@ export function VersionManifestDisclosure() {
                   </tr>
                 </thead>
                 <tbody>
-                  {releaseContext.subsystems.map((sub) => (
+                  {releaseContext.subsystems.map(sub => (
                     <tr key={sub.subsystemName}>
-                      <td><strong>{sub.subsystemName}</strong></td>
-                      <td><span className="badge badge-neutral">{sub.version}</span></td>
+                      <td>
+                        <strong>{sub.subsystemName}</strong>
+                      </td>
+                      <td>
+                        <span className="badge badge-neutral">{sub.version}</span>
+                      </td>
                       <td>
                         <span className="font-mono text-cyan" title={sub.sha256DigestFull}>
                           {sub.sha256DigestShort}…

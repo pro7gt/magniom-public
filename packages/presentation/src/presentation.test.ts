@@ -116,10 +116,7 @@ describe('@magniom/presentation Unit Tests', () => {
   });
 
   it('transforms candidates into ComparisonTableViewModel without single winner column', () => {
-    const compVM = toComparisonTableViewModel([
-      G01_PRIMARY_1,
-      G02_PRIMARY_1,
-    ]);
+    const compVM = toComparisonTableViewModel([G01_PRIMARY_1, G02_PRIMARY_1]);
     expect(compVM.rows.length).toBe(2);
     expect(compVM.rows[0].roleLabel).toContain('Primary Candidate 1');
   });
@@ -174,7 +171,7 @@ describe('@magniom/presentation Unit Tests', () => {
     const viewerVM = toClinical3DViewerViewModel(
       GOLDEN_CASE_02_SLATE,
       allCandidates,
-      G02_PRIMARY_1.id
+      G02_PRIMARY_1.id,
     );
 
     expect(viewerVM.caseId).toBe(GOLDEN_CASE_02_SLATE.caseId);
@@ -191,7 +188,11 @@ describe('@magniom/presentation Unit Tests', () => {
     it('creates TopBarViewModel with authoritative mode badge, user identity, and site context', () => {
       const topBarVM = toTopBarViewModel({
         mode: 'CLINICAL',
-        user: { displayName: 'Dr A. Smith', roleTitle: 'TMS Specialist', hasSigningAuthority: true },
+        user: {
+          displayName: 'Dr A. Smith',
+          roleTitle: 'TMS Specialist',
+          hasSigningAuthority: true,
+        },
         organization: { organizationName: 'Melbourne TMS Centre', siteName: 'Site 1 — Parkville' },
       });
 
@@ -249,8 +250,9 @@ describe('@magniom/presentation Unit Tests', () => {
       expect(releaseVM.buildId).toBe('MAGNIOM-BUILD-M3-20260902');
       expect(releaseVM.subsystems.length).toBe(6);
       expect(releaseVM.subsystems.every(s => s.status === 'FROZEN')).toBe(true);
-      expect(releaseVM.decisionSupportDisclaimer).toContain('does not autonomously prescribe treatment');
+      expect(releaseVM.decisionSupportDisclaimer).toContain(
+        'does not autonomously prescribe treatment',
+      );
     });
   });
 });
-

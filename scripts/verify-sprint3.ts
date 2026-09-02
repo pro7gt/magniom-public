@@ -129,7 +129,9 @@ function verifySprint3() {
     updatedAt: new Date().toISOString(),
   };
   const validatedCase = validateClinicalCase(mockCase);
-  console.log(`   ✓ ClinicalCase contract validated: ${validatedCase.caseCode} (v${validatedCase.version})`);
+  console.log(
+    `   ✓ ClinicalCase contract validated: ${validatedCase.caseCode} (v${validatedCase.version})`,
+  );
 
   const mockAssessment = {
     id: 'f1000000-0000-0000-0000-000000000001',
@@ -153,10 +155,14 @@ function verifySprint3() {
     createdAt: new Date().toISOString(),
   };
   const validatedObservation = validateClinicalObservation(mockObservation);
-  console.log(`   ✓ ClinicalObservation contract validated: ${validatedObservation.conceptCode} = ${validatedObservation.numericValue}`);
+  console.log(
+    `   ✓ ClinicalObservation contract validated: ${validatedObservation.conceptCode} = ${validatedObservation.numericValue}`,
+  );
 
   // 5. Exit Criterion: Approved Synthetic Phenotype Stored Immutably
-  console.log('\n🏆 5. Verifying Sprint 3 Exit Criterion: Approved Synthetic Phenotype Immutably Stored...');
+  console.log(
+    '\n🏆 5. Verifying Sprint 3 Exit Criterion: Approved Synthetic Phenotype Immutably Stored...',
+  );
 
   // A. Golden Case G01 Phenotype validation & sealing
   const g01Validation = validatePhenotypeForClinicalTargeting(G01_PHENOTYPE);
@@ -198,7 +204,9 @@ function verifySprint3() {
     console.error('❌ Hash collision: Mutated payload produced same SHA-256 seal.');
     process.exit(1);
   }
-  console.log(`   ✓ Hash sensitivity verified (payload modification alters seal: ${mutatedHash.slice(0, 16)}...)`);
+  console.log(
+    `   ✓ Hash sensitivity verified (payload modification alters seal: ${mutatedHash.slice(0, 16)}...)`,
+  );
 
   console.log('\n🎉 ALL SPRINT 3 DELIVERABLES AND EXIT CRITERIA VERIFIED SUCCESSFULLY!');
 }

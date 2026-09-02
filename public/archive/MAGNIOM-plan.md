@@ -14,14 +14,10 @@ Its purpose should be:
 
 The fundamental architecture should remain:
 
-**Clinical phenotype**
-+
-**Evidence-supported therapeutic circuits**
-+
-**Patient-specific functional connectomics**
-+
-**Target reliability**
-+
+**Clinical phenotype** +
+**Evidence-supported therapeutic circuits** +
+**Patient-specific functional connectomics** +
+**Target reliability** +
 **Cortical accessibility / electric-field modelling**
 →
 **Ranked candidate target slate**
@@ -50,11 +46,11 @@ A clinician-facing TMS targeting decision-support platform.
 
 **Magniom is not:**
 
-* an autonomous prescribing system
-* an MRI diagnostic system
-* an automated psychiatric diagnosis engine
-* a black-box AI treatment recommender
-* a guarantee of optimal targeting
+- an autonomous prescribing system
+- an MRI diagnostic system
+- an automated psychiatric diagnosis engine
+- a black-box AI treatment recommender
+- a guarantee of optimal targeting
 
 The core output is:
 
@@ -62,11 +58,11 @@ The core output is:
 
 containing:
 
-* Primary Target 1
-* Primary Target 2
-* Primary Target 3
-* Alternative Target A
-* Alternative Target B
+- Primary Target 1
+- Primary Target 2
+- Primary Target 3
+- Alternative Target A
+- Alternative Target B
 
 but importantly:
 
@@ -94,13 +90,13 @@ I recommend strongly resisting the temptation to start transdiagnostically.
 
 because we have the strongest combination of:
 
-* established TMS efficacy
-* DLPFC evidence
-* sgACC connectivity research
-* symptom-specific depression circuitry
-* prospective circuit-targeting data
-* personalised connectivity trials
-* enough contradictory evidence to build appropriate safeguards
+- established TMS efficacy
+- DLPFC evidence
+- sgACC connectivity research
+- symptom-specific depression circuitry
+- prospective circuit-targeting data
+- personalised connectivity trials
+- enough contradictory evidence to build appropriate safeguards
 
 Then extend sequentially:
 
@@ -160,11 +156,11 @@ Major depressive disorder
 
 Each symptom gets:
 
-* measurement
-* severity
-* confidence
-* clinical priority
-* evidence-linked circuits
+- measurement
+- severity
+- confidence
+- clinical priority
+- evidence-linked circuits
 
 We should avoid prematurely claiming every symptom has a validated TMS circuit.
 
@@ -216,22 +212,22 @@ Evidence source
 
 With metadata:
 
-* study design
-* N
-* comparator
-* target definition
-* MNI coordinate
-* atlas
-* stimulation protocol
-* coil
-* outcome
-* effect
-* follow-up
-* replication
-* evidence grade
-* limitations
-* citation
-* last reviewed
+- study design
+- N
+- comparator
+- target definition
+- MNI coordinate
+- atlas
+- stimulation protocol
+- coil
+- outcome
+- effect
+- follow-up
+- replication
+- evidence grade
+- limitations
+- citation
+- last reviewed
 
 This database may ultimately become one of Magniom's most valuable assets.
 
@@ -251,15 +247,15 @@ and
 
 The protocol should specify:
 
-* field strength
-* voxel size
-* TR
-* scan length
-* head fixation
-* eyes open/closed
-* instructions
-* motion limits
-* sequence metadata
+- field strength
+- voxel size
+- TR
+- scan length
+- head fixation
+- eyes open/closed
+- instructions
+- motion limits
+- sequence metadata
 
 Given recent evidence about target instability, I would design Magniom around a **longer rs-fMRI acquisition than many historical personalised-targeting studies**.
 
@@ -367,13 +363,13 @@ This will require careful thought.
 
 We need:
 
-* reference cohort
-* acquisition harmonisation
-* preprocessing consistency
-* site/scanner adjustment
-* age distribution
-* quality thresholds
-* normative model versioning
+- reference cohort
+- acquisition harmonisation
+- preprocessing consistency
+- site/scanner adjustment
+- age distribution
+- quality thresholds
+- normative model versioning
 
 And most importantly:
 
@@ -542,12 +538,12 @@ But the canonical architecture should anticipate:
 
 Ultimately the target should include:
 
-* cortical ROI
-* coil centre
-* coil orientation
-* expected E-field
-* target engagement
-* off-target exposure
+- cortical ROI
+- coil centre
+- coil orientation
+- expected E-field
+- target engagement
+- off-target exposure
 
 ---
 
@@ -746,14 +742,14 @@ We should define:
 
 alongside:
 
-* algorithm versioning
-* audit logs
-* change control
-* clinical governance
-* evidence review
-* cybersecurity
-* Australian privacy requirements
-* anticipated TGA/SaMD implications
+- algorithm versioning
+- audit logs
+- change control
+- clinical governance
+- evidence review
+- cybersecurity
+- Australian privacy requirements
+- anticipated TGA/SaMD implications
 
 ---
 

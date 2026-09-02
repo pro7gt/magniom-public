@@ -33,4 +33,3 @@ export const ALL_GOLDEN_CASES = [
 ] as const;
 
 export { ALL_UX_GOLDEN_CASES };
-

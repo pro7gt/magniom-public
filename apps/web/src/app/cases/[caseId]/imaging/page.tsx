@@ -4,11 +4,7 @@ import React, { use } from 'react';
 import Link from 'next/link';
 import { caseStore } from '../../../../lib/case-store';
 
-export default function CaseImagingPage({
-  params,
-}: {
-  params: Promise<{ caseId: string }>;
-}) {
+export default function CaseImagingPage({ params }: { params: Promise<{ caseId: string }> }) {
   const resolvedParams = use(params);
   const caseId = resolvedParams.caseId;
   const record = caseStore.getCaseRecord(caseId);
@@ -19,13 +15,22 @@ export default function CaseImagingPage({
 
   return (
     <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '1rem',
+        }}
+      >
         <div>
           <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)' }}>
             Neuroimaging Acquisition QC &amp; Technical Qualification
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-            Verification of T1w structural and BOLD resting-state fMRI technical quality metrics (Section 62).
+            Verification of T1w structural and BOLD resting-state fMRI technical quality metrics
+            (Section 62).
           </p>
         </div>
 
@@ -36,16 +41,36 @@ export default function CaseImagingPage({
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          gap: '1.5rem',
+        }}
+      >
         {/* Card 1: Structural QC */}
         <div className="card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '0.75rem',
+            }}
+          >
             <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--accent-cyan)' }}>
               T1w Structural Acquisition
             </h3>
             <span className="badge badge-tier1">QC PASS</span>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.875rem' }}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.5rem',
+              fontSize: '0.875rem',
+            }}
+          >
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: 'var(--text-secondary)' }}>Resolution:</span>
               <strong>0.8 mm isotropic (3D MPRAGE)</strong>
@@ -55,7 +80,9 @@ export default function CaseImagingPage({
               <strong style={{ color: '#34d399' }}>32.4 (High SNR)</strong>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>MNI152 Non-linear Registration:</span>
+              <span style={{ color: 'var(--text-secondary)' }}>
+                MNI152 Non-linear Registration:
+              </span>
               <strong style={{ color: '#34d399' }}>Dice 0.94 (Optimal)</strong>
             </div>
           </div>
@@ -63,7 +90,14 @@ export default function CaseImagingPage({
 
         {/* Card 2: Resting-State fMRI QC */}
         <div className="card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '0.75rem',
+            }}
+          >
             <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--accent-cyan)' }}>
               Resting-State BOLD Series
             </h3>
@@ -71,7 +105,14 @@ export default function CaseImagingPage({
               {isLowReliability ? 'ELEVATED MOTION' : 'QC QUALIFIED'}
             </span>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.875rem' }}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.5rem',
+              fontSize: '0.875rem',
+            }}
+          >
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: 'var(--text-secondary)' }}>Acquired Runs:</span>
               <strong>3 Runs (30 mins total)</strong>

@@ -18,7 +18,9 @@ function checkForbiddenImports(packageDir: string, forbiddenPatterns: RegExp[]):
 
       for (const pattern of forbiddenPatterns) {
         if (pattern.test(content)) {
-          console.error(`❌ Boundary violation in ${filePath}: matched forbidden pattern ${pattern}`);
+          console.error(
+            `❌ Boundary violation in ${filePath}: matched forbidden pattern ${pattern}`,
+          );
           violations++;
         }
       }
@@ -56,7 +58,9 @@ function verifyBoundaries() {
     process.exit(1);
   }
 
-  console.log('✅ All package boundary constraints satisfied (pure domain & target engine are fully isolated).');
+  console.log(
+    '✅ All package boundary constraints satisfied (pure domain & target engine are fully isolated).',
+  );
 }
 
 verifyBoundaries();

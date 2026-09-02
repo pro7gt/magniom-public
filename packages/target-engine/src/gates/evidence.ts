@@ -20,7 +20,7 @@ export function evaluateEvidenceGate(
   policy: ScientificPolicyRelease,
   mode: MagniomMode,
   familyId?: string,
-  graph?: EvidenceKnowledgeGraph
+  graph?: EvidenceKnowledgeGraph,
 ): EvidenceGateResult {
   // Graph-level Evidence Ceiling Check
   if (graph && familyId) {
@@ -41,7 +41,9 @@ export function evaluateEvidenceGate(
     }
   }
 
-  const tierPermission = policy.evidencePolicy.tierPermissions.find((tp: { tier: string }) => tp.tier === tier);
+  const tierPermission = policy.evidencePolicy.tierPermissions.find(
+    (tp: { tier: string }) => tp.tier === tier,
+  );
 
   if (!tierPermission) {
     return {

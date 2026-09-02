@@ -42,7 +42,8 @@ export class StorageClient {
     mimeType?: string;
     processingRunId?: string;
   }): Promise<ArtifactRecord> {
-    const rawContent = typeof params.content === 'string' ? params.content : JSON.stringify(params.content);
+    const rawContent =
+      typeof params.content === 'string' ? params.content : JSON.stringify(params.content);
     const sha256 = computeSha256(params.content);
     const sizeBytes = Buffer.byteLength(rawContent, 'utf8');
 

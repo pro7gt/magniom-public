@@ -8,14 +8,8 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import {
-  WorkflowWorker,
-  TargetGenerationJobHandler,
-} from '../src/index.js';
-import type {
-  WorkflowDatabaseClient,
-  TargetEngineContextLoader,
-} from '../src/index.js';
+import { WorkflowWorker, TargetGenerationJobHandler } from '../src/index.js';
+import type { WorkflowDatabaseClient, TargetEngineContextLoader } from '../src/index.js';
 import {
   GOLDEN_CASE_01_PHENOTYPE,
   G02_PHENOTYPE,
@@ -90,7 +84,11 @@ class MockWorkflowDatabaseClient implements WorkflowDatabaseClient {
     return id;
   }
 
-  async completeJob(jobId: string, workerId: string, resultReference: Record<string, unknown>): Promise<boolean> {
+  async completeJob(
+    jobId: string,
+    workerId: string,
+    resultReference: Record<string, unknown>,
+  ): Promise<boolean> {
     const job = this.jobs.get(jobId);
     if (!job || job.workerId !== workerId || job.status !== 'running') {
       return false;
@@ -117,12 +115,19 @@ class MockWorkflowDatabaseClient implements WorkflowDatabaseClient {
     return true;
   }
 
-  async failJob(jobId: string, workerId: string, errorCode: string, errorDetail: Record<string, unknown>, retryable: boolean): Promise<boolean> {
+  async failJob(
+    jobId: string,
+    workerId: string,
+    errorCode: string,
+    errorDetail: Record<string, unknown>,
+    retryable: boolean,
+  ): Promise<boolean> {
     const job = this.jobs.get(jobId);
     if (!job || job.workerId !== workerId) {
       return false;
     }
-    const nextStatus = retryable && job.attemptCount < job.maxAttempts ? 'failed_retryable' : 'failed_terminal';
+    const nextStatus =
+      retryable && job.attemptCount < job.maxAttempts ? 'failed_retryable' : 'failed_terminal';
     this.jobs.set(jobId, {
       ...job,
       status: nextStatus,
@@ -134,12 +139,15 @@ class MockWorkflowDatabaseClient implements WorkflowDatabaseClient {
   }
 
   async publishTargetSlate(input: PublishTargetSlateInput): Promise<{ slateId: string }> {
-    const slateId = (input.outputPayload as any).id ?? `slate-${Math.random().toString(36).substring(2, 9)}`;
+    const slateId =
+      (input.outputPayload as any).id ?? `slate-${Math.random().toString(36).substring(2, 9)}`;
     this.publishedSlates.set(slateId, input);
     return { slateId };
   }
 
-  async registerArtifact(artifact: Omit<ArtifactRecord, 'id' | 'createdAt'>): Promise<ArtifactRecord> {
+  async registerArtifact(
+    artifact: Omit<ArtifactRecord, 'id' | 'createdAt'>,
+  ): Promise<ArtifactRecord> {
     const record: ArtifactRecord = {
       ...artifact,
       id: `art-${this.artifacts.length + 1}`,
@@ -150,11 +158,11 @@ class MockWorkflowDatabaseClient implements WorkflowDatabaseClient {
   }
 
   async fetchPendingOutboxEvents(_batchSize = 50): Promise<readonly OutboxEvent[]> {
-    return this.outbox.filter((e) => !e.publishedAt);
+    return this.outbox.filter(e => !e.publishedAt);
   }
 
   async markOutboxEventPublished(eventId: string): Promise<boolean> {
-    const event = this.outbox.find((e) => e.id === eventId);
+    const event = this.outbox.find(e => e.id === eventId);
     if (event) {
       (event as any).publishedAt = new Date().toISOString();
       return true;
@@ -163,7 +171,7 @@ class MockWorkflowDatabaseClient implements WorkflowDatabaseClient {
   }
 
   async incrementOutboxAttempts(eventId: string): Promise<boolean> {
-    const event = this.outbox.find((e) => e.id === eventId);
+    const event = this.outbox.find(e => e.id === eventId);
     if (event) {
       (event as any).attempts = event.attempts + 1;
       return true;
@@ -178,9 +186,13 @@ class MockWorkflowDatabaseClient implements WorkflowDatabaseClient {
     return list.length;
   }
 
-  async readQueueMessages(queueName: string, _vt: number, qty: number): Promise<readonly QueueEnvelope[]> {
+  async readQueueMessages(
+    queueName: string,
+    _vt: number,
+    qty: number,
+  ): Promise<readonly QueueEnvelope[]> {
     const list = this.queues.get(queueName) ?? [];
-    const available = list.filter((m) => !this.archivedMessages.has(`${queueName}:${m.jobId}`));
+    const available = list.filter(m => !this.archivedMessages.has(`${queueName}:${m.jobId}`));
     return available.slice(0, qty);
   }
 
@@ -302,7 +314,7 @@ describe('Sprint 7 Exit Criteria: Synthetic Background Worker Target Slate Gener
     expect(runResult.processedJobs).toBe(1);
 
     // Step 4: Verify Outbox Event Marked Published
-    const outboxEvent = dbClient.outbox.find((e) => e.id === 'outbox-g02-001');
+    const outboxEvent = dbClient.outbox.find(e => e.id === 'outbox-g02-001');
     expect(outboxEvent?.publishedAt).toBeDefined();
 
     // Step 5: Verify Job Succeeded
@@ -312,9 +324,9 @@ describe('Sprint 7 Exit Criteria: Synthetic Background Worker Target Slate Gener
     expect(completedJob?.completedAt).toBeDefined();
 
     // Step 6: Verify Honest Progress Milestones
-    const jobProgress = dbClient.progress.filter((p) => p.jobId === jobId);
+    const jobProgress = dbClient.progress.filter(p => p.jobId === jobId);
     expect(jobProgress.length).toBeGreaterThanOrEqual(6);
-    const stages = jobProgress.map((p) => p.stage);
+    const stages = jobProgress.map(p => p.stage);
     expect(stages).toContain('VALIDATING_JOB_INPUTS');
     expect(stages).toContain('LOADING_CLINICAL_CONTEXT');
     expect(stages).toContain('COMPUTING_TARGET_SLATE');
@@ -331,7 +343,9 @@ describe('Sprint 7 Exit Criteria: Synthetic Background Worker Target Slate Gener
     expect(publishedSlate.candidates.length).toBeGreaterThan(0);
 
     // G02 Primary candidate must be CONNECTOME_REFINED
-    const primaryCandidate = publishedSlate.candidates.find((c: any) => c.candidateRole === 'PRIMARY_1');
+    const primaryCandidate = publishedSlate.candidates.find(
+      (c: any) => c.candidateRole === 'PRIMARY_1',
+    );
     expect(primaryCandidate).toBeDefined();
     expect(primaryCandidate.targetMethod).toBe('CONNECTOME_REFINED');
     expect(primaryCandidate.evidenceTier).toBe('T1');
@@ -393,7 +407,7 @@ describe('Sprint 7 Exit Criteria: Synthetic Background Worker Target Slate Gener
         isImmutable: true,
       },
       finalTargets,
-      { fullName: 'Dr. Jane Smith', registrationIdentifier: 'MED-001' }
+      { fullName: 'Dr. Jane Smith', registrationIdentifier: 'MED-001' },
     );
 
     expect(decisionManifest.digitalSignatureHash).toBeDefined();
@@ -412,7 +426,11 @@ describe('Sprint 7 Exit Criteria: Synthetic Background Worker Target Slate Gener
     worker.registerHandler(new TargetGenerationJobHandler(dbClient, contextLoader));
 
     const testCases = [
-      { caseId: 'case-g01', snapshot: GOLDEN_CASE_01_PHENOTYPE, expectedPrimaryMethod: 'EVIDENCE_ONLY_PRIOR' },
+      {
+        caseId: 'case-g01',
+        snapshot: GOLDEN_CASE_01_PHENOTYPE,
+        expectedPrimaryMethod: 'EVIDENCE_ONLY_PRIOR',
+      },
       { caseId: 'case-g03', snapshot: G03_PHENOTYPE, expectedPrimaryMethod: 'EVIDENCE_ONLY_PRIOR' }, // Connectome suppressed (low incremental value)
       { caseId: 'case-g04', snapshot: G04_PHENOTYPE, expectedPrimaryMethod: 'EVIDENCE_ONLY_PRIOR' }, // Connectome suppressed (low reliability)
       { caseId: 'case-g05', snapshot: G05_PHENOTYPE, expectedPrimaryMethod: 'CONNECTOME_REFINED' }, // Anxiosomatic Primary 2 present

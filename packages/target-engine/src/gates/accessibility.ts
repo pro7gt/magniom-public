@@ -16,7 +16,7 @@ export function evaluateAccessibilityGate(
   mniCoordinate: MniCoordinate,
   profile?: TargetAccessibilityProfile,
   targetFamilyId?: string,
-  accessibilityRating?: 'good' | 'acceptable' | 'difficult' | 'inaccessible' | string
+  accessibilityRating?: 'good' | 'acceptable' | 'difficult' | 'inaccessible' | string,
 ): AccessibilityGateResult {
   if (profile && !profile.accessibleByStandardCoil) {
     return {
@@ -44,14 +44,15 @@ export function evaluateAccessibilityGate(
   }
 
   // Laterality check (MAG-IMG-023 / Section 175): Left DLPFC families require x < 0
-  if (targetFamilyId && (
-    targetFamilyId.includes('LDLPFC') ||
-    targetFamilyId.includes('LEFT') ||
-    targetFamilyId === 'TF-MDD-CONVERGENT-LDLPFC-001' ||
-    targetFamilyId === 'TF-MDD-SGACC-LDLPFC-001' ||
-    targetFamilyId === 'TF-MDD-LDLPFC-EST-001' ||
-    targetFamilyId === 'TF-MDD-DYSPHORIC-001'
-  )) {
+  if (
+    targetFamilyId &&
+    (targetFamilyId.includes('LDLPFC') ||
+      targetFamilyId.includes('LEFT') ||
+      targetFamilyId === 'TF-MDD-CONVERGENT-LDLPFC-001' ||
+      targetFamilyId === 'TF-MDD-SGACC-LDLPFC-001' ||
+      targetFamilyId === 'TF-MDD-LDLPFC-EST-001' ||
+      targetFamilyId === 'TF-MDD-DYSPHORIC-001')
+  ) {
     if (x >= 0) {
       return {
         accessible: false,

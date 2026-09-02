@@ -37,13 +37,16 @@ jobs:
       - name: Verify All Package Boundaries & Rules
         run: npm run verify:boundaries && npm run verify:static-rules
 
+      - name: Strict Typecheck
+        run: npm run typecheck
+
       - name: Execute Full Monorepo Tests & Property Invariants
         run: npm test && npm run verify:properties
 
       - name: Execute Golden Cases & Scientific Impact Gating
         run: npm run verify:scientific-impact
 
-      - name: Build Monorepo Workspaces
+      - name: Build Monorepo Workspaces (Build Once Principle)
         run: npm run build
 
       - name: Generate SBOM & Verify Supply Chain
@@ -51,6 +54,9 @@ jobs:
 
       - name: Generate Sealed Clinical Release Manifest
         run: npm run release:manifest
+
+      - name: Verify Formal Verification Exit Criteria
+        run: npm run verify:exit-criteria
 
       - name: Archive Release Qualification Package
         uses: actions/upload-artifact@v4
@@ -60,4 +66,4 @@ jobs:
             docs/verification/verification-build-m3-manifest.json
             docs/verification/traceability-matrix.md
             docs/verification/reports/*.md
-            evidence/sbom.json
+            docs/security/sbom/*.json

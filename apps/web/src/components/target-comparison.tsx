@@ -25,7 +25,7 @@ export function TargetComparison({
   comparison3D,
 }: TargetComparisonProps) {
   const [selectedCandId, setSelectedCandId] = useState<string>(
-    comparison3D?.candidates[0]?.id || ''
+    comparison3D?.candidates[0]?.id || '',
   );
   const [sortField, setSortField] = useState<SortField>('role');
   const [sortAsc, setSortAsc] = useState(true);
@@ -55,13 +55,29 @@ export function TargetComparison({
 
   return (
     <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          flexWrap: 'wrap',
+          gap: '1rem',
+        }}
+      >
         <div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
+          <h1
+            style={{
+              fontSize: '1.5rem',
+              fontWeight: 700,
+              color: 'var(--text-primary)',
+              marginBottom: '0.25rem',
+            }}
+          >
             Multi-Attribute Target Candidate Comparison
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-            Systematic evaluation of competing candidate hypotheses across clinical, biological, and reliability dimensions without forced single-score ranking.
+            Systematic evaluation of competing candidate hypotheses across clinical, biological, and
+            reliability dimensions without forced single-score ranking.
           </p>
         </div>
 
@@ -69,7 +85,11 @@ export function TargetComparison({
           <Link href={`/cases/${caseId}/targets`} className="btn btn-secondary">
             ← Return to Target Slate
           </Link>
-          <Link href={`/cases/${caseId}/decision`} className="btn btn-primary" id="proceed-to-decision-btn">
+          <Link
+            href={`/cases/${caseId}/decision`}
+            className="btn btn-primary"
+            id="proceed-to-decision-btn"
+          >
             Proceed to Clinical Decision →
           </Link>
         </div>
@@ -86,7 +106,14 @@ export function TargetComparison({
 
       {/* Convergence Diagnostic Banner */}
       <div className="card" style={{ background: '#0d1527', borderColor: '#1e3a5f' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '0.5rem',
+          }}
+        >
           <h2 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--accent-cyan)' }}>
             Spatial Convergence Diagnostic: {convergenceViewModel.headline}
           </h2>
@@ -94,9 +121,7 @@ export function TargetComparison({
             {convergenceViewModel.convergenceLevel} CONVERGENCE
           </span>
         </div>
-        <p style={{ fontSize: '0.875rem', color: '#cbd5e1' }}>
-          {convergenceViewModel.summary}
-        </p>
+        <p style={{ fontSize: '0.875rem', color: '#cbd5e1' }}>{convergenceViewModel.summary}</p>
       </div>
 
       {/* Comparison Table */}
@@ -123,14 +148,20 @@ export function TargetComparison({
             </tr>
           </thead>
           <tbody>
-            {sortedRows.map((row) => (
+            {sortedRows.map(row => (
               <tr key={row.candidateId}>
                 <td>
                   <strong style={{ color: 'var(--accent-cyan)' }}>{row.roleLabel}</strong>
                 </td>
                 <td>
                   <div>{row.targetFamily}</div>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '0.75rem',
+                      color: 'var(--text-secondary)',
+                    }}
+                  >
                     {row.coordinateFormatted}
                   </div>
                 </td>
@@ -149,9 +180,7 @@ export function TargetComparison({
                   <strong style={{ color: '#e2e8f0' }}>{row.personalisationDisplacement}</strong>
                 </td>
                 <td>{row.anatomicalAccessibility}</td>
-                <td style={{ color: '#fca5a5', fontSize: '0.8125rem' }}>
-                  {row.mainUncertainty}
-                </td>
+                <td style={{ color: '#fca5a5', fontSize: '0.8125rem' }}>{row.mainUncertainty}</td>
               </tr>
             ))}
           </tbody>
@@ -163,41 +192,101 @@ export function TargetComparison({
         <h2 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: '1rem' }}>
           7-Dimensional Decision Uncertainty Matrix
         </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
-          <div style={{ background: 'var(--bg-surface-elevated)', padding: '0.875rem', borderRadius: '0.5rem', fontSize: '0.8125rem' }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: '1rem',
+          }}
+        >
+          <div
+            style={{
+              background: 'var(--bg-surface-elevated)',
+              padding: '0.875rem',
+              borderRadius: '0.5rem',
+              fontSize: '0.8125rem',
+            }}
+          >
             <strong style={{ color: 'var(--accent-cyan)' }}>1. Evidence Uncertainty:</strong>
             <p style={{ color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
               Level of replicated prospective randomized trial support for candidate target family.
             </p>
           </div>
-          <div style={{ background: 'var(--bg-surface-elevated)', padding: '0.875rem', borderRadius: '0.5rem', fontSize: '0.8125rem' }}>
-            <strong style={{ color: 'var(--accent-cyan)' }}>2. Phenotype Concordance Uncertainty:</strong>
+          <div
+            style={{
+              background: 'var(--bg-surface-elevated)',
+              padding: '0.875rem',
+              borderRadius: '0.5rem',
+              fontSize: '0.8125rem',
+            }}
+          >
+            <strong style={{ color: 'var(--accent-cyan)' }}>
+              2. Phenotype Concordance Uncertainty:
+            </strong>
             <p style={{ color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
-              Alignment between patient dominant symptom clusters and target circuit biological engagement.
+              Alignment between patient dominant symptom clusters and target circuit biological
+              engagement.
             </p>
           </div>
-          <div style={{ background: 'var(--bg-surface-elevated)', padding: '0.875rem', borderRadius: '0.5rem', fontSize: '0.8125rem' }}>
-            <strong style={{ color: 'var(--accent-cyan)' }}>3. Connectome Reliability Uncertainty:</strong>
+          <div
+            style={{
+              background: 'var(--bg-surface-elevated)',
+              padding: '0.875rem',
+              borderRadius: '0.5rem',
+              fontSize: '0.8125rem',
+            }}
+          >
+            <strong style={{ color: 'var(--accent-cyan)' }}>
+              3. Connectome Reliability Uncertainty:
+            </strong>
             <p style={{ color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
               Test-retest stability across split-half time series and scan-to-scan motion variance.
             </p>
           </div>
-          <div style={{ background: 'var(--bg-surface-elevated)', padding: '0.875rem', borderRadius: '0.5rem', fontSize: '0.8125rem' }}>
-            <strong style={{ color: 'var(--accent-cyan)' }}>4. Spatial Geodesic Uncertainty:</strong>
+          <div
+            style={{
+              background: 'var(--bg-surface-elevated)',
+              padding: '0.875rem',
+              borderRadius: '0.5rem',
+              fontSize: '0.8125rem',
+            }}
+          >
+            <strong style={{ color: 'var(--accent-cyan)' }}>
+              4. Spatial Geodesic Uncertainty:
+            </strong>
             <p style={{ color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
               Displacement distance from established group normative reference coordinates.
             </p>
           </div>
-          <div style={{ background: 'var(--bg-surface-elevated)', padding: '0.875rem', borderRadius: '0.5rem', fontSize: '0.8125rem' }}>
-            <strong style={{ color: 'var(--accent-cyan)' }}>5. Anatomical Accessibility Uncertainty:</strong>
+          <div
+            style={{
+              background: 'var(--bg-surface-elevated)',
+              padding: '0.875rem',
+              borderRadius: '0.5rem',
+              fontSize: '0.8125rem',
+            }}
+          >
+            <strong style={{ color: 'var(--accent-cyan)' }}>
+              5. Anatomical Accessibility Uncertainty:
+            </strong>
             <p style={{ color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
               Cortical depth and scalp-to-cortex distance affecting induced electric field focus.
             </p>
           </div>
-          <div style={{ background: 'var(--bg-surface-elevated)', padding: '0.875rem', borderRadius: '0.5rem', fontSize: '0.8125rem' }}>
-            <strong style={{ color: 'var(--accent-cyan)' }}>6. External Validity Uncertainty:</strong>
+          <div
+            style={{
+              background: 'var(--bg-surface-elevated)',
+              padding: '0.875rem',
+              borderRadius: '0.5rem',
+              fontSize: '0.8125rem',
+            }}
+          >
+            <strong style={{ color: 'var(--accent-cyan)' }}>
+              6. External Validity Uncertainty:
+            </strong>
             <p style={{ color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
-              Degree of clinical trial population overlap with specific patient treatment resistance history.
+              Degree of clinical trial population overlap with specific patient treatment resistance
+              history.
             </p>
           </div>
         </div>

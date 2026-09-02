@@ -5,7 +5,11 @@
  */
 
 import type { ConnectomeTargetInput, PhenotypeSnapshot } from '@magniom/domain';
-import { createConnectomeInput, createReliabilityProfile, createPhenotypeSnapshot } from './golden-cases-suite.js';
+import {
+  createConnectomeInput,
+  createReliabilityProfile,
+  createPhenotypeSnapshot,
+} from './golden-cases-suite.js';
 
 export const IMAGING_VALIDATION_PHENOTYPE: PhenotypeSnapshot = createPhenotypeSnapshot({
   id: 'snap-imaging-val',
@@ -128,8 +132,8 @@ export const I03_MOTION_FAILURE_CONNECTOME: ConnectomeTargetInput = createConnec
       subjectT1Coordinate: { space: 'MNI152NLin2009cAsym', x: -44, y: 40, z: 34, unit: 'mm' },
       mniCoordinate: { space: 'MNI152NLin2009cAsym', x: -44, y: 40, z: 34, unit: 'mm' },
       clusterAreaMm2: 50.0,
-      circuitConcordanceRaw: 0.80,
-      circuitConcordancePercentile: 0.80,
+      circuitConcordanceRaw: 0.8,
+      circuitConcordancePercentile: 0.8,
       baselineCircuitConcordance: 0.65,
       accessibility: 'good',
       reliabilityScore: 0.35,
@@ -244,7 +248,8 @@ export const I06_GSR_SENSITIVE_CONNECTOME: ConnectomeTargetInput = createConnect
       baselineCircuitConcordance: 0.65,
       accessibility: 'good',
       reliabilityScore: 0.72,
-      fitInterpretation: 'Candidate exhibits pipeline-sensitivity dispersion between CD-1 and SD-1.',
+      fitInterpretation:
+        'Candidate exhibits pipeline-sensitivity dispersion between CD-1 and SD-1.',
     },
   ],
 });
@@ -319,7 +324,8 @@ export const I08_SIGNAL_DROPOUT_CONNECTOME: ConnectomeTargetInput = createConnec
       baselineCircuitConcordance: 0.65,
       accessibility: 'good',
       reliabilityScore: 0.84,
-      fitInterpretation: 'DLPFC circuit remains valid while subgenual seed exhibits susceptibility dropout.',
+      fitInterpretation:
+        'DLPFC circuit remains valid while subgenual seed exhibits susceptibility dropout.',
     },
   ],
 });
@@ -335,7 +341,7 @@ export const I09_MULTI_SCANNER_CONNECTOME: ConnectomeTargetInput = createConnect
     createReliabilityProfile({
       caseId: 'case-i09',
       compositeSpatialDistanceMm: 2.6,
-      overallReliabilityScore: 0.90,
+      overallReliabilityScore: 0.9,
     }),
   ],
   candidateRegions: [
@@ -353,7 +359,7 @@ export const I09_MULTI_SCANNER_CONNECTOME: ConnectomeTargetInput = createConnect
       circuitConcordancePercentile: 0.86,
       baselineCircuitConcordance: 0.65,
       accessibility: 'good',
-      reliabilityScore: 0.90,
+      reliabilityScore: 0.9,
       fitInterpretation: 'Multi-scanner cross-site validated candidate.',
     },
   ],
@@ -390,7 +396,8 @@ export const I10_REPEAT_SESSION_CONNECTOME: ConnectomeTargetInput = createConnec
       baselineCircuitConcordance: 0.65,
       accessibility: 'good',
       reliabilityScore: 0.92,
-      fitInterpretation: 'Separate-day repeat session confirming individual biological localisation.',
+      fitInterpretation:
+        'Separate-day repeat session confirming individual biological localisation.',
     },
   ],
 });

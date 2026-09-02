@@ -49,7 +49,7 @@ describe('MAG-SEC-030 & MAG-AUD-001: Logging Controls, PHI Scrubbing & Audit Cha
       'TMS_SIGNING_AUTHORITY_GRANTED',
       'user-admin-01',
       'org-alpha',
-      { targetUser: 'user-clinician-02', grantedBy: 'Dr. Chief of Psychiatry' }
+      { targetUser: 'user-clinician-02', grantedBy: 'Dr. Chief of Psychiatry' },
     );
 
     expect(entry.level).toBe('SECURITY');
@@ -79,7 +79,9 @@ describe('MAG-SEC-030 & MAG-AUD-001: Logging Controls, PHI Scrubbing & Audit Cha
       const id = `evt-00${i + 1}`;
       const type = eventTypes[i];
       const ts = `2026-09-02T10:0${i}:00Z`;
-      const hash = createHash('sha256').update(prevHash + id + type + ts).digest('hex');
+      const hash = createHash('sha256')
+        .update(prevHash + id + type + ts)
+        .digest('hex');
 
       events.push({ id, prevHash, eventType: type, timestamp: ts, eventHash: hash });
       prevHash = hash;
@@ -90,7 +92,9 @@ describe('MAG-SEC-030 & MAG-AUD-001: Logging Controls, PHI Scrubbing & Audit Cha
     let chainValid = true;
 
     for (const evt of events) {
-      const calculated = createHash('sha256').update(testPrev + evt.id + evt.eventType + evt.timestamp).digest('hex');
+      const calculated = createHash('sha256')
+        .update(testPrev + evt.id + evt.eventType + evt.timestamp)
+        .digest('hex');
       if (calculated !== evt.eventHash) {
         chainValid = false;
         break;
@@ -105,7 +109,9 @@ describe('MAG-SEC-030 & MAG-AUD-001: Logging Controls, PHI Scrubbing & Audit Cha
     let tamperedChainValid = true;
     testPrev = 'GENESIS';
     for (const evt of events) {
-      const calculated = createHash('sha256').update(testPrev + evt.id + evt.eventType + evt.timestamp).digest('hex');
+      const calculated = createHash('sha256')
+        .update(testPrev + evt.id + evt.eventType + evt.timestamp)
+        .digest('hex');
       if (calculated !== evt.eventHash) {
         tamperedChainValid = false;
         break;

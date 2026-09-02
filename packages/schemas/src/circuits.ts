@@ -5,20 +5,20 @@
  * and MAGNIOM-Neuroimaging & Functional Connectomics Pipeline Specification v1.0 Sections 106-117, 148, 150
  */
 
-import { z } from "zod";
+import { z } from 'zod';
 
 export const SpatialCoordinateSchema = z.object({
-  space: z.enum(["MNI152NLin2009cAsym", "NATIVE_T1W"]),
+  space: z.enum(['MNI152NLin2009cAsym', 'NATIVE_T1W']),
   x: z.number(),
   y: z.number(),
   z: z.number(),
-  unit: z.string().default("mm"),
+  unit: z.string().default('mm'),
 });
 export type SpatialCoordinate = z.infer<typeof SpatialCoordinateSchema>;
 
 export const SurfaceVertexRefSchema = z.object({
-  space: z.enum(["fsLR_32k"]),
-  hemisphere: z.enum(["L", "R"]),
+  space: z.enum(['fsLR_32k']),
+  hemisphere: z.enum(['L', 'R']),
   vertexIndex: z.number().int().nonnegative(),
   parcelName: z.string(),
 });
@@ -28,14 +28,14 @@ export const ReliabilityMeasureSchema = z.object({
   metric_name: z.string(),
   value: z.number().optional(),
   unit: z.string().optional(),
-  interpretation: z.enum(["high", "moderate", "low", "not_assessable"]),
+  interpretation: z.enum(['high', 'moderate', 'low', 'not_assessable']),
   method: z.string(),
 });
 export type ReliabilityMeasure = z.infer<typeof ReliabilityMeasureSchema>;
 
 export const CorticalConfidenceRegionSchema = z.object({
   space: z.string(),
-  hemisphere: z.enum(["L", "R"]),
+  hemisphere: z.enum(['L', 'R']),
   surface_vertex_indices: z.array(z.number().int().nonnegative()),
   surface_area_mm2: z.number().nonnegative(),
   centroid_mni: z.tuple([z.number(), z.number(), z.number()]),
@@ -95,19 +95,19 @@ export type PipelineSensitivityResult = z.infer<typeof PipelineSensitivityResult
 
 export const CanonicalTargetReliabilityProfileSchema = z.object({
   id: z.string(),
-  version: z.string().default("1.0.0"),
+  version: z.string().default('1.0.0'),
   case_id: z.string(),
   imaging_study_id: z.string(),
   connectome_run_id: z.string(),
   target_candidate_id: z.string(),
   target_family_version_id: z.string(),
-  qc_status: z.enum(["pass", "conditional", "fail"]),
+  qc_status: z.enum(['pass', 'conditional', 'fail']),
   usable_resting_state_minutes: z.number().nonnegative(),
   mean_framewise_displacement_mm: z.number().nonnegative(),
   censored_volume_fraction: z.number().min(0).max(1),
-  registration_quality: z.enum(["high", "moderate", "low", "fail"]),
-  segmentation_quality: z.enum(["high", "moderate", "low", "fail"]),
-  parcel_coverage_quality: z.enum(["high", "moderate", "low", "fail"]),
+  registration_quality: z.enum(['high', 'moderate', 'low', 'fail']),
+  segmentation_quality: z.enum(['high', 'moderate', 'low', 'fail']),
+  parcel_coverage_quality: z.enum(['high', 'moderate', 'low', 'fail']),
   cross_run_spatial_distance_mm: z.number().nonnegative().optional(),
   split_half_spatial_distance_mm: z.number().nonnegative().optional(),
   composite_spatial_distance_mm: z.number().nonnegative(),
@@ -117,7 +117,7 @@ export const CanonicalTargetReliabilityProfileSchema = z.object({
   connectivity_reliability_score: z.number().min(0).max(1),
   qc_reliability_score: z.number().min(0).max(1),
   overall_reliability_score: z.number().min(0).max(1),
-  reliability_class: z.enum(["high", "moderate", "low", "unreliable"]),
+  reliability_class: z.enum(['high', 'moderate', 'low', 'unreliable']),
   is_reliable_for_personalisation: z.boolean(),
   atlas_concordance: ReliabilityMeasureSchema.optional(),
   pipeline_sensitivity: ReliabilityMeasureSchema.optional(),
@@ -133,14 +133,15 @@ export const CanonicalTargetReliabilityProfileSchema = z.object({
   created_at: z.string().optional(),
 });
 
-export type CanonicalTargetReliabilityProfile = z.infer<typeof CanonicalTargetReliabilityProfileSchema>;
-
+export type CanonicalTargetReliabilityProfile = z.infer<
+  typeof CanonicalTargetReliabilityProfileSchema
+>;
 
 export const ImagingCandidateRegionSchema = z.object({
   targetFamilyVersionId: z.string(),
   candidateCode: z.string(),
-  generationMethod: z.enum(["CONNECTOME_REFINED", "EVIDENCE_ONLY_PRIOR", "SYMPTOM_CIRCUIT"]),
-  hemisphere: z.enum(["L", "R"]),
+  generationMethod: z.enum(['CONNECTOME_REFINED', 'EVIDENCE_ONLY_PRIOR', 'SYMPTOM_CIRCUIT']),
+  hemisphere: z.enum(['L', 'R']),
   surfaceVertexIndex: z.number().int().nonnegative(),
   parcelName: z.string(),
   subjectT1Coordinate: SpatialCoordinateSchema,
@@ -150,7 +151,7 @@ export const ImagingCandidateRegionSchema = z.object({
   circuitConcordanceRaw: z.number(),
   circuitConcordancePercentile: z.number().min(0).max(1),
   baselineCircuitConcordance: z.number().min(0).max(1),
-  accessibility: z.enum(["good", "acceptable", "difficult", "inaccessible"]),
+  accessibility: z.enum(['good', 'acceptable', 'difficult', 'inaccessible']),
   reliabilityScore: z.number().min(0).max(1),
   fitInterpretation: z.string(),
 });
@@ -169,7 +170,7 @@ export const CandidateMapRefSchema = z.object({
   circuitId: z.string(),
   artifactPath: z.string(),
   artifactSha256: z.string().length(64),
-  mapType: z.enum(["anticorrelation", "concordance", "symptom_template"]),
+  mapType: z.enum(['anticorrelation', 'concordance', 'symptom_template']),
 });
 export type CandidateMapRef = z.infer<typeof CandidateMapRefSchema>;
 
@@ -180,18 +181,18 @@ export const NormativeFindingSchema = z.object({
   expectedValue: z.number().optional(),
   zScore: z.number().optional(),
   percentile: z.number().min(0).max(100).optional(),
-  direction: z.enum(["higher", "lower"]).optional(),
+  direction: z.enum(['higher', 'lower']).optional(),
   modelVersion: z.string(),
-  relevance: z.enum(["supportive", "neutral", "contradictory", "uncertain"]).optional(),
+  relevance: z.enum(['supportive', 'neutral', 'contradictory', 'uncertain']).optional(),
 });
 export type NormativeFinding = z.infer<typeof NormativeFindingSchema>;
 
 export const ConnectomeTargetInputSchema = z.object({
   connectomeRunId: z.string(),
   pipelineVersion: z.string(),
-  qcStatus: z.enum(["pass", "conditional", "fail"]),
+  qcStatus: z.enum(['pass', 'conditional', 'fail']),
   retainedMinutes: z.number().nonnegative(),
-  atlasName: z.string().default("HCP-MMP1.0"),
+  atlasName: z.string().default('HCP-MMP1.0'),
   circuitMetrics: z.array(CircuitMetricSchema),
   candidateRegions: z.array(ImagingCandidateRegionSchema),
   candidateMaps: z.array(CandidateMapRefSchema).optional(),
@@ -203,4 +204,3 @@ export const ConnectomeTargetInputSchema = z.object({
   reliabilityManifestId: z.string().optional(),
 });
 export type ConnectomeTargetInput = z.infer<typeof ConnectomeTargetInputSchema>;
-

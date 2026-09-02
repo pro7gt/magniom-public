@@ -79,15 +79,20 @@ export class AffectedCaseIndexer {
       targetReleaseId: releaseId,
       generatedAt: new Date().toISOString(),
       totalAffectedCases: syntheticCases.length,
-      signedDecisionsCount: syntheticCases.filter((c) => c.decisionStatus === 'SIGNED').length,
+      signedDecisionsCount: syntheticCases.filter(c => c.decisionStatus === 'SIGNED').length,
       affectedCases: syntheticCases,
       recallClassification: 'RECALL_INFORMATIONAL',
     };
 
-    const outPath = path.join(this.repoRoot, `docs/verification/recall-index-${releaseId.toLowerCase().replace(/[^a-z0-9]/g, '-')}.json`);
+    const outPath = path.join(
+      this.repoRoot,
+      `docs/verification/recall-index-${releaseId.toLowerCase().replace(/[^a-z0-9]/g, '-')}.json`,
+    );
     fs.writeFileSync(outPath, JSON.stringify(index, null, 2), 'utf8');
 
-    console.log(`  ✅ Successfully indexed ${index.totalAffectedCases} case(s) (${index.signedDecisionsCount} signed clinical decisions).`);
+    console.log(
+      `  ✅ Successfully indexed ${index.totalAffectedCases} case(s) (${index.signedDecisionsCount} signed clinical decisions).`,
+    );
     console.log(`  🔒 Recall Index persisted at: ${outPath}`);
     console.log('\n================================================');
     console.log('✅ RELEASE RECALL INDEXING COMPLETE: PASSED');

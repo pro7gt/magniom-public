@@ -29,9 +29,33 @@ export interface AssembleSlateOptions {
 }
 
 export function assembleSlate(options: AssembleSlateOptions): TargetSlate {
-  const caseId = options.caseId ?? (options.phenotypeSnapshot.patientId?.includes('g01') ? 'case-golden-01' : options.phenotypeSnapshot.patientId?.includes('g04') ? 'case-golden-04' : options.phenotypeSnapshot.patientId?.includes('g05') ? 'case-golden-05' : `case-${options.phenotypeSnapshot.patientId}`);
-  const id = options.id ?? (options.phenotypeSnapshot.patientId?.includes('g01') ? 'slate-golden-01' : options.phenotypeSnapshot.patientId?.includes('g04') ? 'slate-golden-04' : options.phenotypeSnapshot.patientId?.includes('g05') ? 'slate-golden-05' : `slate-${options.phenotypeSnapshot.id}`);
-  const generatedAt = options.generatedAt ?? (options.phenotypeSnapshot.patientId?.includes('g01') ? '2026-09-01T10:05:00.000Z' : options.phenotypeSnapshot.patientId?.includes('g04') ? '2026-09-01T10:20:00.000Z' : options.phenotypeSnapshot.patientId?.includes('g05') ? '2026-09-01T10:25:00.000Z' : '2026-09-01T10:00:00.000Z');
+  const caseId =
+    options.caseId ??
+    (options.phenotypeSnapshot.patientId?.includes('g01')
+      ? 'case-golden-01'
+      : options.phenotypeSnapshot.patientId?.includes('g04')
+        ? 'case-golden-04'
+        : options.phenotypeSnapshot.patientId?.includes('g05')
+          ? 'case-golden-05'
+          : `case-${options.phenotypeSnapshot.patientId}`);
+  const id =
+    options.id ??
+    (options.phenotypeSnapshot.patientId?.includes('g01')
+      ? 'slate-golden-01'
+      : options.phenotypeSnapshot.patientId?.includes('g04')
+        ? 'slate-golden-04'
+        : options.phenotypeSnapshot.patientId?.includes('g05')
+          ? 'slate-golden-05'
+          : `slate-${options.phenotypeSnapshot.id}`);
+  const generatedAt =
+    options.generatedAt ??
+    (options.phenotypeSnapshot.patientId?.includes('g01')
+      ? '2026-09-01T10:05:00.000Z'
+      : options.phenotypeSnapshot.patientId?.includes('g04')
+        ? '2026-09-01T10:20:00.000Z'
+        : options.phenotypeSnapshot.patientId?.includes('g05')
+          ? '2026-09-01T10:25:00.000Z'
+          : '2026-09-01T10:00:00.000Z');
 
   // Enforce slate size bounds: max 3 primary, max 2 additional
   const primaryCandidates = options.primaryCandidates.slice(0, 3);
@@ -41,7 +65,7 @@ export function assembleSlate(options: AssembleSlateOptions): TargetSlate {
   const clinicalCoverageProfile = calculateClinicalCoverageProfile(
     primaryCandidates,
     additionalCandidates,
-    options.phenotypeSnapshot
+    options.phenotypeSnapshot,
   );
 
   const slatePayload: Omit<TargetSlate, 'deterministicManifestHash'> = {

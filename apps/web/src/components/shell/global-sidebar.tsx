@@ -39,7 +39,9 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
     <nav
       role="navigation"
       className={`global-sidebar ${isCollapsed ? 'collapsed' : 'expanded'}`}
-      aria-label={isCaseWorkspace ? `Case Navigation for ${activeCaseCode}` : 'Global Application Navigation'}
+      aria-label={
+        isCaseWorkspace ? `Case Navigation for ${activeCaseCode}` : 'Global Application Navigation'
+      }
     >
       {/* Sidebar Collapse/Expand Toggle Button */}
       <div className="sidebar-header-toggle">
@@ -59,8 +61,14 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
         /* ========================================================================= */
         <div className="case-navigation-group">
           {/* Back to All Cases link (§53) */}
-          <Link href="/cases" className="sidebar-back-link" title="Return to Clinical Case Registry">
-            <span className="back-icon" aria-hidden="true">←</span>
+          <Link
+            href="/cases"
+            className="sidebar-back-link"
+            title="Return to Clinical Case Registry"
+          >
+            <span className="back-icon" aria-hidden="true">
+              ←
+            </span>
             {!isCollapsed && <span className="back-text">All Cases</span>}
           </Link>
 
@@ -70,7 +78,9 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
               {isCollapsed ? activeCaseCode?.slice(-4) : activeCaseCode}
             </span>
             {!isCollapsed && activeRecord && (
-              <span className="case-indication-sub">{activeRecord.clinicalCase.indicationCode}</span>
+              <span className="case-indication-sub">
+                {activeRecord.clinicalCase.indicationCode}
+              </span>
             )}
           </div>
 
@@ -85,7 +95,9 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                 role="menuitem"
                 title="Case Overview"
               >
-                <span className="nav-icon" aria-hidden="true">📋</span>
+                <span className="nav-icon" aria-hidden="true">
+                  📋
+                </span>
                 {!isCollapsed && <span className="nav-label">Overview</span>}
               </Link>
             </li>
@@ -97,7 +109,9 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                 role="menuitem"
                 title="Clinical Assessment & Baselines"
               >
-                <span className="nav-icon" aria-hidden="true">🩺</span>
+                <span className="nav-icon" aria-hidden="true">
+                  🩺
+                </span>
                 {!isCollapsed && <span className="nav-label">Assessment</span>}
               </Link>
             </li>
@@ -109,7 +123,9 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                 role="menuitem"
                 title="Phenotype Workspace"
               >
-                <span className="nav-icon" aria-hidden="true">🧬</span>
+                <span className="nav-icon" aria-hidden="true">
+                  🧬
+                </span>
                 {!isCollapsed && <span className="nav-label">Phenotype</span>}
                 {!isCollapsed && activeRecord?.phenotype.snapshotHash && (
                   <span className="badge badge-tier1 badge-tiny">Approved</span>
@@ -124,7 +140,9 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                 role="menuitem"
                 title="Neuroimaging QC & Qualification"
               >
-                <span className="nav-icon" aria-hidden="true">🧠</span>
+                <span className="nav-icon" aria-hidden="true">
+                  🧠
+                </span>
                 {!isCollapsed && <span className="nav-label">Imaging</span>}
               </Link>
             </li>
@@ -136,7 +154,9 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                 role="menuitem"
                 title="Functional Connectome Qualification"
               >
-                <span className="nav-icon" aria-hidden="true">🌐</span>
+                <span className="nav-icon" aria-hidden="true">
+                  🌐
+                </span>
                 {!isCollapsed && <span className="nav-label">Connectome</span>}
               </Link>
             </li>
@@ -148,7 +168,9 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                 role="menuitem"
                 title="Target Slate Workspace"
               >
-                <span className="nav-icon" aria-hidden="true">🎯</span>
+                <span className="nav-icon" aria-hidden="true">
+                  🎯
+                </span>
                 {!isCollapsed && <span className="nav-label">Target Slate</span>}
                 {!isCollapsed && activeRecord?.isStale && (
                   <span className="badge badge-tier3 badge-tiny">Stale</span>
@@ -163,7 +185,9 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                 role="menuitem"
                 title="Target Comparison Matrix"
               >
-                <span className="nav-icon" aria-hidden="true">⚖️</span>
+                <span className="nav-icon" aria-hidden="true">
+                  ⚖️
+                </span>
                 {!isCollapsed && <span className="nav-label">Compare</span>}
               </Link>
             </li>
@@ -175,7 +199,9 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                 role="menuitem"
                 title="Clinical Decision & Sign-Off"
               >
-                <span className="nav-icon" aria-hidden="true">✍️</span>
+                <span className="nav-icon" aria-hidden="true">
+                  ✍️
+                </span>
                 {!isCollapsed && <span className="nav-label">Decision</span>}
                 {!isCollapsed && activeRecord?.decision?.isImmutable && (
                   <span className="badge badge-tier1 badge-tiny">Signed</span>
@@ -190,7 +216,9 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                 role="menuitem"
                 title="TMS Treatment Prescription"
               >
-                <span className="nav-icon" aria-hidden="true">⚡</span>
+                <span className="nav-icon" aria-hidden="true">
+                  ⚡
+                </span>
                 {!isCollapsed && <span className="nav-label">Treatment</span>}
               </Link>
             </li>
@@ -202,7 +230,9 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                 role="menuitem"
                 title="Clinical Outcomes & Response"
               >
-                <span className="nav-icon" aria-hidden="true">📈</span>
+                <span className="nav-icon" aria-hidden="true">
+                  📈
+                </span>
                 {!isCollapsed && <span className="nav-label">Outcomes</span>}
               </Link>
             </li>
@@ -214,7 +244,9 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                 role="menuitem"
                 title="Cryptographic Audit History"
               >
-                <span className="nav-icon" aria-hidden="true">🔒</span>
+                <span className="nav-icon" aria-hidden="true">
+                  🔒
+                </span>
                 {!isCollapsed && <span className="nav-label">Audit</span>}
               </Link>
             </li>
@@ -236,7 +268,9 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                   role="menuitem"
                   title="Clinician Home Worklist"
                 >
-                  <span className="nav-icon" aria-hidden="true">🏠</span>
+                  <span className="nav-icon" aria-hidden="true">
+                    🏠
+                  </span>
                   {!isCollapsed && <span className="nav-label">Home</span>}
                 </Link>
               </li>
@@ -248,7 +282,9 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                   role="menuitem"
                   title="Clinical Cases Registry"
                 >
-                  <span className="nav-icon" aria-hidden="true">📁</span>
+                  <span className="nav-icon" aria-hidden="true">
+                    📁
+                  </span>
                   {!isCollapsed && <span className="nav-label">Cases</span>}
                 </Link>
               </li>
@@ -260,9 +296,13 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                   role="menuitem"
                   title="Cases Awaiting Clinician Review"
                 >
-                  <span className="nav-icon" aria-hidden="true">⏳</span>
+                  <span className="nav-icon" aria-hidden="true">
+                    ⏳
+                  </span>
                   {!isCollapsed && <span className="nav-label">Awaiting Review</span>}
-                  <span className="badge badge-queue-count" title="3 cases require review">3</span>
+                  <span className="badge badge-queue-count" title="3 cases require review">
+                    3
+                  </span>
                 </Link>
               </li>
 
@@ -273,7 +313,9 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                   role="menuitem"
                   title="Signed & Pending Clinical Decisions"
                 >
-                  <span className="nav-icon" aria-hidden="true">📜</span>
+                  <span className="nav-icon" aria-hidden="true">
+                    📜
+                  </span>
                   {!isCollapsed && <span className="nav-label">Decisions</span>}
                 </Link>
               </li>
@@ -285,7 +327,9 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                   role="menuitem"
                   title="Evidence Claims & Therapeutic Circuits Library"
                 >
-                  <span className="nav-icon" aria-hidden="true">📚</span>
+                  <span className="nav-icon" aria-hidden="true">
+                    📚
+                  </span>
                   {!isCollapsed && <span className="nav-label">Evidence</span>}
                 </Link>
               </li>
@@ -305,7 +349,9 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                   role="menuitem"
                   title="Research Exploratory Neuroimaging Workspace"
                 >
-                  <span className="nav-icon" aria-hidden="true">🔬</span>
+                  <span className="nav-icon" aria-hidden="true">
+                    🔬
+                  </span>
                   {!isCollapsed && <span className="nav-label">Research</span>}
                 </Link>
               </li>
@@ -325,7 +371,9 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                   role="menuitem"
                   title="Validation Suite (Golden Cases G01–G09 & Human Factors)"
                 >
-                  <span className="nav-icon" aria-hidden="true">🧪</span>
+                  <span className="nav-icon" aria-hidden="true">
+                    🧪
+                  </span>
                   {!isCollapsed && <span className="nav-label">Validation Suite</span>}
                 </Link>
               </li>
@@ -337,7 +385,9 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                   role="menuitem"
                   title="Clinical & Scientific Guidance"
                 >
-                  <span className="nav-icon" aria-hidden="true">❓</span>
+                  <span className="nav-icon" aria-hidden="true">
+                    ❓
+                  </span>
                   {!isCollapsed && <span className="nav-label">Help</span>}
                 </Link>
               </li>

@@ -2,7 +2,7 @@
 
 **Standard Reference:** ISO 14971:2019 / IEC 62304:2006+AMD1:2015 / NIST SP 800-30 / HIPAA Security Rule  
 **System Classification:** Software as a Medical Device (SaMD) Class IIb / Class B Software System  
-**Document Status:** Controlled Engineering Security Baseline  
+**Document Status:** Controlled Engineering Security Baseline
 
 ---
 
@@ -14,7 +14,7 @@ Clinical safety in Magniom encompasses both **cybersecurity risks** (unauthorize
 
 ```
                             MAGNIOM HIGH-LEVEL DATA FLOW (DFD LEVEL 1)
-                            
+
    ┌─────────────────┐             HTTPS / TLS 1.3
    │  Clinical User  │ ──────────────────────────────────────┐
    │ (Authenticated) │                                       │
@@ -37,23 +37,24 @@ Clinical safety in Magniom encompasses both **cybersecurity risks** (unauthorize
 
 ## 2. Trust Boundaries & Protected Assets
 
-| Asset ID | Asset Description | Sensitivity Classification | Required Protections |
-|---|---|---|---|
-| **AST-001** | Patient Identity & Demographics (MRN, Name) | Restricted Clinical (PHI) | Multi-tenant RLS, no worker/log exposure (`MAG-SEC-029`, `MAG-SEC-030`) |
-| **AST-002** | Raw & Derived Neuroimaging (DICOM, BOLD, Surfaces) | Restricted Clinical | Private Storage, temporary signed URLs only (`MAG-SEC-014`, `MAG-SEC-016`) |
-| **AST-003** | Approved Phenotype Snapshots | Restricted Clinical (Immutable) | SHA-256 hash locked, no UPDATE/DELETE (`MAG-SEC-026`) |
-| **AST-004** | Target Candidates & Target Slates | Restricted Clinical (Immutable) | Deterministic generation, signed manifest, immutability trigger (`MAG-SEC-025`) |
-| **AST-005** | Signed Clinician Decisions | Restricted Clinical (Immutable) | Explicit clinician authority, cryptographic signature (`MAG-SEC-022`, `MAG-SEC-024`) |
-| **AST-006** | Evidence Library Releases | Scientific Internal (Immutable) | Strict version pinning, curator/approver separation (`MAG-SEC-020`, `MAG-SEC-021`) |
-| **AST-007** | Scientific Policy Releases | Scientific Internal (Immutable) | Signature verification, high-risk audit logging (`MAG-SEC-032`) |
-| **AST-008** | Audit Trail (`audit.events`) | System Regulatory (Immutable) | Append-only, SHA-256 hash chained, untamperable (`MAG-AUD-001`) |
-| **AST-009** | Cryptographic Secrets & M2M Tokens | Confidential Infrastructure | 4-tier secret isolation, zero browser leakage (`MAG-SEC-009`, `MAG-SEC-028`) |
+| Asset ID    | Asset Description                                  | Sensitivity Classification      | Required Protections                                                                 |
+| ----------- | -------------------------------------------------- | ------------------------------- | ------------------------------------------------------------------------------------ |
+| **AST-001** | Patient Identity & Demographics (MRN, Name)        | Restricted Clinical (PHI)       | Multi-tenant RLS, no worker/log exposure (`MAG-SEC-029`, `MAG-SEC-030`)              |
+| **AST-002** | Raw & Derived Neuroimaging (DICOM, BOLD, Surfaces) | Restricted Clinical             | Private Storage, temporary signed URLs only (`MAG-SEC-014`, `MAG-SEC-016`)           |
+| **AST-003** | Approved Phenotype Snapshots                       | Restricted Clinical (Immutable) | SHA-256 hash locked, no UPDATE/DELETE (`MAG-SEC-026`)                                |
+| **AST-004** | Target Candidates & Target Slates                  | Restricted Clinical (Immutable) | Deterministic generation, signed manifest, immutability trigger (`MAG-SEC-025`)      |
+| **AST-005** | Signed Clinician Decisions                         | Restricted Clinical (Immutable) | Explicit clinician authority, cryptographic signature (`MAG-SEC-022`, `MAG-SEC-024`) |
+| **AST-006** | Evidence Library Releases                          | Scientific Internal (Immutable) | Strict version pinning, curator/approver separation (`MAG-SEC-020`, `MAG-SEC-021`)   |
+| **AST-007** | Scientific Policy Releases                         | Scientific Internal (Immutable) | Signature verification, high-risk audit logging (`MAG-SEC-032`)                      |
+| **AST-008** | Audit Trail (`audit.events`)                       | System Regulatory (Immutable)   | Append-only, SHA-256 hash chained, untamperable (`MAG-AUD-001`)                      |
+| **AST-009** | Cryptographic Secrets & M2M Tokens                 | Confidential Infrastructure     | 4-tier secret isolation, zero browser leakage (`MAG-SEC-009`, `MAG-SEC-028`)         |
 
 ---
 
 ## 3. Threat Profiles & Analysis (Section 131 Vectors)
 
 ### Threat 1: External Attacker (PHI Breach & Exfiltration)
+
 - **Threat Agent:** Anonymous unauthenticated internet threat actor.
 - **Attack Vector:** Brute force on Auth, SQL injection against REST API, unauthenticated storage scraping, DDoS.
 - **Impact:** Compromise of patient privacy, HIPAA regulatory breach, system unavailability.
@@ -69,6 +70,7 @@ Clinical safety in Magniom encompasses both **cybersecurity risks** (unauthorize
 ---
 
 ### Threat 2: Malicious Authenticated User (Multi-Tenant Hopping / IDOR)
+
 - **Threat Agent:** Authenticated user from Hospital A attempting to view Hospital B records.
 - **Attack Vector:** Tampering with case IDs in API requests (`/cases/case-from-org-B`), modifying JWT claims.
 - **Impact:** Breach of healthcare multi-tenancy, cross-patient confidentiality failure.
@@ -83,6 +85,7 @@ Clinical safety in Magniom encompasses both **cybersecurity risks** (unauthorize
 ---
 
 ### Threat 3: Overprivileged Administrator (Privacy Bypass)
+
 - **Threat Agent:** Internal organization IT administrator without clinical clinical duties.
 - **Attack Vector:** Using admin privileges to view raw MRI scans, patient symptom scores, or alter clinical decisions.
 - **Impact:** Unauthorized internal snooping, violation of minimum necessary PHI principle.
@@ -96,6 +99,7 @@ Clinical safety in Magniom encompasses both **cybersecurity risks** (unauthorize
 ---
 
 ### Threat 4: Compromised Compute Worker (Lateral Movement & Output Tampering)
+
 - **Threat Agent:** Compute container (NeuroCompute / E-field) compromised via remote code execution.
 - **Attack Vector:** Worker attempts to query patient demographics, write fake target slates, or access other cases.
 - **Impact:** Poisoned connectome results, lateral movement across tenant compute jobs.
@@ -111,6 +115,7 @@ Clinical safety in Magniom encompasses both **cybersecurity risks** (unauthorize
 ---
 
 ### Threat 5: Supply-Chain Compromise (Third-Party Package Backdoor)
+
 - **Threat Agent:** Malicious upstream dependency published on npm, PyPI, or Docker Hub.
 - **Attack Vector:** Dependency typosquatting, compromised build package injecting telemetry or malware.
 - **Impact:** System-wide remote code execution, credential exfiltration.
@@ -125,6 +130,7 @@ Clinical safety in Magniom encompasses both **cybersecurity risks** (unauthorize
 ---
 
 ### Threat 6: Data Poisoning (Tampered Evidence / Normative Model)
+
 - **Threat Agent:** Unauthorized user or rogue curator modifying therapeutic circuits or normative atlases.
 - **Attack Vector:** Changing DLPFC coordinate maps or evidence weights directly in database.
 - **Impact:** Clinicians receive scientifically invalid target recommendations.
@@ -140,6 +146,7 @@ Clinical safety in Magniom encompasses both **cybersecurity risks** (unauthorize
 ---
 
 ### Threat 7: Scientific Integrity Error (Coordinate Laterality Flip)
+
 - **Threat Agent:** Defective transformation algorithm, software bug in RAS/LPS orientation parser.
 - **Attack Vector:** Target coordinate calculated in Right DLPFC instead of Left DLPFC.
 - **Impact:** Patient receives TMS stimulation on incorrect brain hemisphere (Severe Clinical Harm).
@@ -154,6 +161,7 @@ Clinical safety in Magniom encompasses both **cybersecurity risks** (unauthorize
 ---
 
 ### Threat 8: Automation Bias (Clinician Over-Trust)
+
 - **Threat Agent:** Cognitive bias in human clinical operator relying blindly on software recommendation.
 - **Attack Vector:** Clinician signs default target without reading counterarguments or checking scan QC.
 - **Impact:** Sub-optimal or inappropriate treatment administered without clinical critical appraisal.
@@ -169,15 +177,15 @@ Clinical safety in Magniom encompasses both **cybersecurity risks** (unauthorize
 
 ## 4. Residual Risk Assessment Summary
 
-| Threat ID | Threat Category | Pre-Risk | Post-Risk | Verification Gate |
-|---|---|---|---|---|
-| **THR-01** | External Attacker / PHI Breach | High | **Low** | `SEC-RLS-001`, `SEC-PEN-001` |
-| **THR-02** | Malicious User / Cross-Tenant IDOR | Critical | **Low** | `SEC-RLS-001` |
-| **THR-03** | Overprivileged Admin Privacy Bypass | High | **Low** | `SEC-RLS-001`, `IT-AUD-001` |
-| **THR-04** | Compromised Compute Worker | High | **Low** | `SEC-WRK-001` |
-| **THR-05** | Supply-Chain Vulnerability | High | **Low** | `SEC-SBM-001` |
-| **THR-06** | Evidence Data Poisoning | Critical | **Low** | `UT-EVD-001`, `UT-POL-001` |
-| **THR-07** | Coordinate Laterality Flip | Critical | **Negligible** | `UT-DAT-001`, `GC-REG-001` |
-| **THR-08** | Automation Bias | High | **Low** | `HF-UX-001`, `HF-UX-002` |
+| Threat ID  | Threat Category                     | Pre-Risk | Post-Risk      | Verification Gate            |
+| ---------- | ----------------------------------- | -------- | -------------- | ---------------------------- |
+| **THR-01** | External Attacker / PHI Breach      | High     | **Low**        | `SEC-RLS-001`, `SEC-PEN-001` |
+| **THR-02** | Malicious User / Cross-Tenant IDOR  | Critical | **Low**        | `SEC-RLS-001`                |
+| **THR-03** | Overprivileged Admin Privacy Bypass | High     | **Low**        | `SEC-RLS-001`, `IT-AUD-001`  |
+| **THR-04** | Compromised Compute Worker          | High     | **Low**        | `SEC-WRK-001`                |
+| **THR-05** | Supply-Chain Vulnerability          | High     | **Low**        | `SEC-SBM-001`                |
+| **THR-06** | Evidence Data Poisoning             | Critical | **Low**        | `UT-EVD-001`, `UT-POL-001`   |
+| **THR-07** | Coordinate Laterality Flip          | Critical | **Negligible** | `UT-DAT-001`, `GC-REG-001`   |
+| **THR-08** | Automation Bias                     | High     | **Low**        | `HF-UX-001`, `HF-UX-002`     |
 
 **Conclusion:** All identified threats have been reduced to acceptable residual risk levels through verifiable architectural controls, automated tests, and procedural barriers.

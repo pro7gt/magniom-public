@@ -14,7 +14,20 @@
     "lint": "turbo run lint && npm run verify",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
+    "ci:full": "tsx scripts/ci/run-full-local-ci.ts",
     "verify": "npm run verify:requirements && npm run verify:boundaries && npm run verify:static-rules",
+    "verify:all": "tsx scripts/ci/run-full-local-ci.ts",
+    "verify:stage0": "tsx scripts/ci/classify-change.ts",
+    "verify:stage1": "npm run verify:boundaries && npm run verify:static-rules && npm run typecheck && npm run format:check",
+    "verify:stage2": "npm run verify:requirements && npm test",
+    "verify:stage3": "npm run verify:properties",
+    "verify:stage4": "npm run verify:db:from-zero",
+    "verify:stage5": "npm run verify:scientific-impact",
+    "verify:stage6": "vitest run services/workflow-worker/tests/synthetic-e2e.test.ts services/workflow-worker/tests/structural-verification.test.ts services/workflow-worker/tests/functional-verification.test.ts",
+    "verify:stage7": "vitest run packages/presentation/src/presentation.test.ts",
+    "verify:stage8": "npm run sbom:generate && npm run sbom:verify && npm run security:secrets && npm run security:probe",
+    "verify:stage9": "npm run build && npm run release:manifest",
+    "verify:stage10": "npm run release:affected-cases && npm run postdeploy:smoke",
     "verify:requirements": "tsx scripts/verify-requirements.ts",
     "verify:boundaries": "tsx scripts/verify-package-boundaries.ts",
     "verify:static-rules": "tsx scripts/verification/lint-target-engine-rules.ts",
@@ -32,6 +45,9 @@
     "security:probe": "tsx scripts/security/pentest-readiness-probe.ts",
     "security:secrets": "tsx scripts/security/verify-secret-hygiene.ts",
     "security:backup-drill": "tsx scripts/security/backup-restore-drill.ts",
+    "build:cloudflare": "turbo run build && npm run build:cloudflare -w @magniom/web",
+    "deploy": "wrangler deploy",
+    "deploy:cloudflare": "npm run build:cloudflare && wrangler deploy",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css}\""
   },
@@ -42,7 +58,8 @@
     "tsx": "^4.19.3",
     "turbo": "^2.4.4",
     "typescript": "^5.8.2",
-    "vitest": "^3.0.7"
+    "vitest": "^3.0.7",
+    "wrangler": "^4.128.0"
   },
   "engines": {
     "node": ">=20.0.0"

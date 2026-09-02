@@ -1,0 +1,14 @@
+node_modules/
+dist/
+build/
+.next/
+.turbo/
+coverage/
+package-lock.json
+public/
+evidence/
+scientific-config/
+docs/
+validation/
+.venv/
+

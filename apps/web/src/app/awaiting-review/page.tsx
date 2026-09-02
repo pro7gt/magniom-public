@@ -7,14 +7,29 @@ import { caseStore } from '../../lib/case-store';
 export default function AwaitingReviewPage() {
   const allCases = caseStore.getAllCases();
   const queueCases = allCases.filter(
-    (c) => c.state === 'target_slate_ready' || c.state === 'phenotype_ready' || c.isStale
+    c => c.state === 'target_slate_ready' || c.state === 'phenotype_ready' || c.isStale,
   );
 
   return (
     <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '1rem',
+        }}
+      >
         <div>
-          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.25rem' }}>
+          <div
+            style={{
+              display: 'flex',
+              gap: '0.5rem',
+              alignItems: 'center',
+              marginBottom: '0.25rem',
+            }}
+          >
             <span className="badge badge-tier3">ACTIONABLE QUEUE</span>
             <span className="badge badge-neutral">{queueCases.length} Cases Pending</span>
           </div>
@@ -22,7 +37,8 @@ export default function AwaitingReviewPage() {
             Awaiting Specialist Clinician Review
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginTop: '0.25rem' }}>
-            Cases requiring phenotype confirmation, target candidate evaluation, or stale slate regeneration before signing.
+            Cases requiring phenotype confirmation, target candidate evaluation, or stale slate
+            regeneration before signing.
           </p>
         </div>
       </div>
@@ -40,7 +56,7 @@ export default function AwaitingReviewPage() {
               </tr>
             </thead>
             <tbody>
-              {queueCases.map((c) => (
+              {queueCases.map(c => (
                 <tr key={c.id}>
                   <td>
                     <strong style={{ fontFamily: 'var(--font-mono)', color: 'var(--accent-cyan)' }}>
@@ -49,7 +65,9 @@ export default function AwaitingReviewPage() {
                   </td>
                   <td>
                     <strong>{c.title}</strong>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{c.indication}</div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                      {c.indication}
+                    </div>
                   </td>
                   <td>
                     {c.isStale ? (

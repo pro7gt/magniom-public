@@ -7,7 +7,7 @@ import type { MniCoordinate, TargetAccessibilityProfile } from '@magniom/domain'
 
 export function calculateAccessibilityScore(
   mniCoordinate: MniCoordinate,
-  profile?: TargetAccessibilityProfile
+  profile?: TargetAccessibilityProfile,
 ): number {
   if (profile) {
     if (!profile.accessibleByStandardCoil) {
@@ -25,8 +25,8 @@ export function calculateAccessibilityScore(
   // Fallback based on standard cortical depth for MNI coordinates
   const depthEstimate = Math.sqrt(
     Math.pow(Math.abs(mniCoordinate.x) - 45, 2) +
-    Math.pow(mniCoordinate.y - 35, 2) +
-    Math.pow(mniCoordinate.z - 30, 2)
+      Math.pow(mniCoordinate.y - 35, 2) +
+      Math.pow(mniCoordinate.z - 30, 2),
   );
 
   if (depthEstimate <= 20) return 0.95;

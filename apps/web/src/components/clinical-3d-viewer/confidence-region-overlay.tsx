@@ -10,7 +10,14 @@ interface ConfidenceRegionOverlayProps {
 export function ConfidenceRegionOverlay({ confidenceRegion }: ConfidenceRegionOverlayProps) {
   return (
     <div className="confidence-region-card" aria-label="Spatial Confidence & Reliability Region">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '0.4rem',
+        }}
+      >
         <h4 style={{ fontSize: '0.875rem', fontWeight: 700, color: '#34d399' }}>
           Spatial Reliability Region (Section 47 & 115)
         </h4>
@@ -23,7 +30,17 @@ export function ConfidenceRegionOverlay({ confidenceRegion }: ConfidenceRegionOv
         {confidenceRegion.description}
       </p>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', background: 'var(--bg-surface-elevated)', padding: '0.5rem', borderRadius: '0.375rem', fontSize: '0.75rem' }}>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: '0.5rem',
+          background: 'var(--bg-surface-elevated)',
+          padding: '0.5rem',
+          borderRadius: '0.375rem',
+          fontSize: '0.75rem',
+        }}
+      >
         <div>
           <span style={{ color: 'var(--text-secondary)' }}>Dispersion Radius:</span>
           <div style={{ fontWeight: 700, color: '#f1f5f9', marginTop: '0.1rem' }}>

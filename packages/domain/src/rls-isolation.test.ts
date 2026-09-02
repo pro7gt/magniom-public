@@ -78,7 +78,10 @@ describe('MAG-SEC-012 & MAG-SEC-006: Multi-Tenant RLS & Capability Policy Engine
     return true;
   }
 
-  function evaluateDecisionSigningPolicy(user: UserSession, resource: MockCaseResource): { allowed: boolean; reason?: string } {
+  function evaluateDecisionSigningPolicy(
+    user: UserSession,
+    resource: MockCaseResource,
+  ): { allowed: boolean; reason?: string } {
     if (user.organisationId !== resource.organisationId) {
       return { allowed: false, reason: 'Cross-organisation signing prohibited' };
     }
@@ -137,7 +140,9 @@ describe('MAG-SEC-012 & MAG-SEC-006: Multi-Tenant RLS & Capability Policy Engine
 
     function attemptMutation(entity: typeof immutableEntity, op: 'UPDATE' | 'DELETE') {
       if (entity.isImmutable) {
-        throw new Error(`MAG-SEC-025: Table targeting.target_slates is immutable. ${op} operation is strictly prohibited.`);
+        throw new Error(
+          `MAG-SEC-025: Table targeting.target_slates is immutable. ${op} operation is strictly prohibited.`,
+        );
       }
     }
 

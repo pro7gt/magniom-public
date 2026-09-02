@@ -4,11 +4,7 @@ import React, { use } from 'react';
 import Link from 'next/link';
 import { caseStore } from '../../../../lib/case-store';
 
-export default function AuditPage({
-  params,
-}: {
-  params: Promise<{ caseId: string }>;
-}) {
+export default function AuditPage({ params }: { params: Promise<{ caseId: string }> }) {
   const resolvedParams = use(params);
   const caseId = resolvedParams.caseId;
   const record = caseStore.getCaseRecord(caseId);
@@ -19,13 +15,29 @@ export default function AuditPage({
 
   return (
     <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          flexWrap: 'wrap',
+          gap: '1rem',
+        }}
+      >
         <div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
+          <h1
+            style={{
+              fontSize: '1.5rem',
+              fontWeight: 700,
+              color: 'var(--text-primary)',
+              marginBottom: '0.25rem',
+            }}
+          >
             Cryptographic Audit Log & Decision Hash Verification
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-            Tamper-evident chronological audit trail for clinical governance and regulatory compliance (IEC 62304 / ISO 14971).
+            Tamper-evident chronological audit trail for clinical governance and regulatory
+            compliance (IEC 62304 / ISO 14971).
           </p>
         </div>
 
@@ -41,10 +53,24 @@ export default function AuditPage({
 
       {/* Decision Integrity Summary Card */}
       <div className="card" style={{ background: '#0a1424', borderColor: '#1e3a5f' }}>
-        <h2 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--accent-cyan)', marginBottom: '0.75rem' }}>
+        <h2
+          style={{
+            fontSize: '1.125rem',
+            fontWeight: 700,
+            color: 'var(--accent-cyan)',
+            marginBottom: '0.75rem',
+          }}
+        >
           Cryptographic Integrity & Digital Signature Status
         </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', fontSize: '0.8125rem' }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: '1rem',
+            fontSize: '0.8125rem',
+          }}
+        >
           <div>
             <span style={{ color: 'var(--text-secondary)' }}>Phenotype Snapshot Hash:</span>
             <div style={{ fontFamily: 'var(--font-mono)', color: '#34d399', marginTop: '0.25rem' }}>
@@ -59,7 +85,13 @@ export default function AuditPage({
           </div>
           <div>
             <span style={{ color: 'var(--text-secondary)' }}>Decision Digital Signature Hash:</span>
-            <div style={{ fontFamily: 'var(--font-mono)', color: record.decision?.isImmutable ? '#fbbf24' : 'var(--text-muted)', marginTop: '0.25rem' }}>
+            <div
+              style={{
+                fontFamily: 'var(--font-mono)',
+                color: record.decision?.isImmutable ? '#fbbf24' : 'var(--text-muted)',
+                marginTop: '0.25rem',
+              }}
+            >
               {record.decision?.digitalSignatureHash || 'Awaiting Specialist Signature'}
             </div>
           </div>
@@ -89,14 +121,35 @@ export default function AuditPage({
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <span className="badge badge-neutral">#{idx + 1}</span>
-                  <strong style={{ color: 'var(--accent-cyan)', fontSize: '0.875rem' }}>{evt.eventType}</strong>
+                  <strong style={{ color: 'var(--accent-cyan)', fontSize: '0.875rem' }}>
+                    {evt.eventType}
+                  </strong>
                 </div>
-                <pre style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: '#cbd5e1', marginTop: '0.5rem', background: '#090d16', padding: '0.5rem', borderRadius: '0.25rem', overflowX: 'auto' }}>
+                <pre
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '0.75rem',
+                    color: '#cbd5e1',
+                    marginTop: '0.5rem',
+                    background: '#090d16',
+                    padding: '0.5rem',
+                    borderRadius: '0.25rem',
+                    overflowX: 'auto',
+                  }}
+                >
                   {JSON.stringify(evt.details, null, 2)}
                 </pre>
               </div>
 
-              <div style={{ textAlign: 'right', fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>
+              <div
+                style={{
+                  textAlign: 'right',
+                  fontSize: '0.75rem',
+                  color: 'var(--text-muted)',
+                  fontFamily: 'var(--font-mono)',
+                  whiteSpace: 'nowrap',
+                }}
+              >
                 {new Date(evt.occurredAt).toLocaleString()}
               </div>
             </div>

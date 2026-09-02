@@ -53,12 +53,17 @@ function scanFile(filePath: string): Violation[] {
         file: filePath,
         line: lineNum,
         rule: 'RULE_2_NO_WALL_CLOCK_TIME',
-        message: 'Wall-clock time functions (Date.now()) are prohibited in deterministic ranking logic.',
+        message:
+          'Wall-clock time functions (Date.now()) are prohibited in deterministic ranking logic.',
       });
     }
 
     // Rule 3: No network I/O
-    if (lineText.includes('fetch(') || lineText.includes('XMLHttpRequest') || lineText.includes('axios.')) {
+    if (
+      lineText.includes('fetch(') ||
+      lineText.includes('XMLHttpRequest') ||
+      lineText.includes('axios.')
+    ) {
       violations.push({
         file: filePath,
         line: lineNum,
@@ -68,12 +73,17 @@ function scanFile(filePath: string): Violation[] {
     }
 
     // Rule 4: Prohibit untyped any in scientific calculations
-    if (/:\s*any\b/.test(lineText) && !lineText.includes('eslint-disable') && !lineText.includes('Record<string, unknown>')) {
+    if (
+      /:\s*any\b/.test(lineText) &&
+      !lineText.includes('eslint-disable') &&
+      !lineText.includes('Record<string, unknown>')
+    ) {
       violations.push({
         file: filePath,
         line: lineNum,
         rule: 'RULE_4_NO_UNTYPED_ANY',
-        message: 'Untyped `any` is prohibited in scientific calculation modules. Use strict domain types.',
+        message:
+          'Untyped `any` is prohibited in scientific calculation modules. Use strict domain types.',
       });
     }
 
@@ -122,7 +132,7 @@ export function runTargetEngineStaticLinter(): { passed: boolean; violations: Vi
   }
 
   console.error(`  ❌ ${violations.length} static rule violation(s) detected:`);
-  violations.forEach((v) => {
+  violations.forEach(v => {
     const relPath = path.relative(process.cwd(), v.file);
     console.error(`     - [${v.rule}] ${relPath}:${v.line} -> ${v.message}`);
   });

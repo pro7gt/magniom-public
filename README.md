@@ -47,10 +47,12 @@ magniom/
 ## Quickstart
 
 ### Prerequisites
+
 - Node.js >= 20.0.0
 - Docker (for local Supabase and NeuroCompute containers)
 
 ### Setup
+
 ```bash
 # Automated environment setup
 ./scripts/setup-local-env.sh
@@ -63,6 +65,7 @@ npm test
 ```
 
 ### Development
+
 ```bash
 # Launch Clinician Workspace on http://localhost:3000
 npm run dev
@@ -71,6 +74,7 @@ npm run dev
 ---
 
 ## Controlled Design Standards
+
 - **Software Lifecycle:** IEC 62304:2006 + AMD1:2015 (Class B/C SaMD)
 - **Risk Management:** ISO 14971:2019
 - **Usability Engineering:** IEC 62366-1:2015

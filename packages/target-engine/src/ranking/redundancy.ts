@@ -15,7 +15,7 @@ export function calculateMniDistanceMm(c1: TargetCandidate, c2: TargetCandidate)
 
 export function suppressRedundantCandidates(
   candidates: readonly TargetCandidate[],
-  spatialThresholdMm = 10.0
+  spatialThresholdMm = 10.0,
 ): { activeCandidates: TargetCandidate[]; suppressedCandidates: TargetCandidate[] } {
   const activeCandidates: TargetCandidate[] = [];
   const suppressedCandidates: TargetCandidate[] = [];
@@ -38,15 +38,20 @@ export function suppressRedundantCandidates(
     }
 
     // Check if redundant with any already active candidate
-    const redundantWith = activeCandidates.find((active) => {
+    const redundantWith = activeCandidates.find(active => {
       // Must share family or circuit or be within spatial threshold
       const distance = calculateMniDistanceMm(candidate, active);
-      const sameCircuitOrFamily = candidate.circuitId === active.circuitId || candidate.familyId === active.familyId;
-      
+      const sameCircuitOrFamily =
+        candidate.circuitId === active.circuitId || candidate.familyId === active.familyId;
+
       // If one is refined and the other is evidence only prior for the primary DLPFC anchor, preserve as counterfactual
       if (
-        (active.method === 'CONNECTOME_REFINED' && candidate.method === 'EVIDENCE_ONLY_PRIOR' && candidate.familyId === 'TF-MDD-LDLPFC-EST-001') ||
-        (active.method === 'EVIDENCE_ONLY_PRIOR' && candidate.method === 'CONNECTOME_REFINED' && active.familyId === 'TF-MDD-LDLPFC-EST-001')
+        (active.method === 'CONNECTOME_REFINED' &&
+          candidate.method === 'EVIDENCE_ONLY_PRIOR' &&
+          candidate.familyId === 'TF-MDD-LDLPFC-EST-001') ||
+        (active.method === 'EVIDENCE_ONLY_PRIOR' &&
+          candidate.method === 'CONNECTOME_REFINED' &&
+          active.familyId === 'TF-MDD-LDLPFC-EST-001')
       ) {
         return false;
       }

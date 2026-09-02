@@ -11,7 +11,7 @@ export default function ClinicianHomePage() {
 
   // Filter urgent / actionable cases
   const activeCases = allCases.slice(0, 5);
-  const urgentCase = allCases.find((c) => c.id === 'case-ux-g01') || allCases[0];
+  const urgentCase = allCases.find(c => c.id === 'case-ux-g01') || allCases[0];
 
   return (
     <div className="clinician-home-container">
@@ -24,7 +24,8 @@ export default function ClinicianHomePage() {
               Good evening, {session.user.displayName}
             </h1>
             <p className="greeting-subtitle">
-              <strong>3 clinical cases</strong> require specialist target review and formulation approval today.
+              <strong>3 clinical cases</strong> require specialist target review and formulation
+              approval today.
             </p>
           </div>
 
@@ -57,17 +58,25 @@ export default function ClinicianHomePage() {
                 Target Slate Ready for Specialist Clinician Review
               </h2>
               <p className="urgent-card-description">
-                <strong>{urgentCase.title}:</strong> High-convergence MDD profile with verified sgACC anti-correlation. Evidence baseline and patient-specific connectomic refinement qualified.
+                <strong>{urgentCase.title}:</strong> High-convergence MDD profile with verified
+                sgACC anti-correlation. Evidence baseline and patient-specific connectomic
+                refinement qualified.
               </p>
             </div>
 
             <div className="urgent-card-footer">
               <div className="urgent-card-meta">
-                <span>Phenotype: <strong className="text-emerald">Approved (SHA-256)</strong></span>
+                <span>
+                  Phenotype: <strong className="text-emerald">Approved (SHA-256)</strong>
+                </span>
                 <span>•</span>
-                <span>Connectome: <strong className="text-emerald">Qualified (27.4m BOLD)</strong></span>
+                <span>
+                  Connectome: <strong className="text-emerald">Qualified (27.4m BOLD)</strong>
+                </span>
                 <span>•</span>
-                <span>Candidates: <strong className="text-cyan">3 Hypotheses</strong></span>
+                <span>
+                  Candidates: <strong className="text-cyan">3 Hypotheses</strong>
+                </span>
               </div>
               <div className="urgent-card-actions">
                 <Link
@@ -108,7 +117,8 @@ export default function ClinicianHomePage() {
             </div>
             <h3 className="card-action-title">Phenotype Formulation Awaiting Clinician Gating</h3>
             <p className="card-action-text">
-              Anxious Depression dual-circuit profile requires specialist priority sign-off prior to Target Slate generation.
+              Anxious Depression dual-circuit profile requires specialist priority sign-off prior to
+              Target Slate generation.
             </p>
             <div className="card-action-footer">
               <span className="card-status-label">Anxious Distress • GAD-7: 16</span>
@@ -126,7 +136,8 @@ export default function ClinicianHomePage() {
             </div>
             <h3 className="card-action-title">Low Reliability Connectome Warning Review</h3>
             <p className="card-action-text">
-              Elevated motion artifacts flagged during resting-state scan. Requires specialist review of evidence-only fallback.
+              Elevated motion artifacts flagged during resting-state scan. Requires specialist
+              review of evidence-only fallback.
             </p>
             <div className="card-action-footer">
               <span className="card-status-label">Low Reliability • Fallback Active</span>
@@ -144,7 +155,8 @@ export default function ClinicianHomePage() {
             </div>
             <h3 className="card-action-title">Target Slate Predates Phenotype Update</h3>
             <p className="card-action-text">
-              Clinical phenotype was re-approved with updated severity weights. Slate must be regenerated before signing.
+              Clinical phenotype was re-approved with updated severity weights. Slate must be
+              regenerated before signing.
             </p>
             <div className="card-action-footer">
               <span className="card-status-label text-amber">Sign Lockout Active</span>
@@ -164,7 +176,8 @@ export default function ClinicianHomePage() {
               Recent Clinical Cases
             </h2>
             <p className="section-subtitle">
-              Active cases in your clinical service with verified neuroimaging and phenotype records.
+              Active cases in your clinical service with verified neuroimaging and phenotype
+              records.
             </p>
           </div>
           <Link href="/cases" className="btn btn-secondary btn-sm">
@@ -186,10 +199,12 @@ export default function ClinicianHomePage() {
                 </tr>
               </thead>
               <tbody>
-                {activeCases.map((c) => (
+                {activeCases.map(c => (
                   <tr key={c.id}>
                     <td>
-                      <strong style={{ fontFamily: 'var(--font-mono)', color: 'var(--accent-cyan)' }}>
+                      <strong
+                        style={{ fontFamily: 'var(--font-mono)', color: 'var(--accent-cyan)' }}
+                      >
                         {c.code}
                       </strong>
                     </td>

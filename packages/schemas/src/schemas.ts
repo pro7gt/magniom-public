@@ -102,7 +102,6 @@ export const DataQualityStateSchema = z.enum([
   'invalid',
 ]);
 
-
 export const ScientificChangeClassSchema = z.enum([
   'PATCH',
   'MINOR_METHODOLOGICAL',
@@ -267,13 +266,7 @@ export const ImagingStudyStatusSchema = z.enum([
   'superseded',
 ]);
 
-export const ImagingSeriesTypeSchema = z.enum([
-  'T1w',
-  'rest_bold',
-  'fieldmap',
-  'dwi',
-  'other',
-]);
+export const ImagingSeriesTypeSchema = z.enum(['T1w', 'rest_bold', 'fieldmap', 'dwi', 'other']);
 
 export const ConnectomicsRunStatusSchema = z.enum([
   'queued',
@@ -291,18 +284,9 @@ export const SurfaceMeshTypeSchema = z.enum([
   'sphere_reg',
 ]);
 
-export const MeshFormatSchema = z.enum([
-  'gifti_surf',
-  'gifti_metric',
-  'cifti',
-  'freesurfer_surf',
-]);
+export const MeshFormatSchema = z.enum(['gifti_surf', 'gifti_metric', 'cifti', 'freesurfer_surf']);
 
-export const QCWarningSeveritySchema = z.enum([
-  'info',
-  'warning',
-  'critical',
-]);
+export const QCWarningSeveritySchema = z.enum(['info', 'warning', 'critical']);
 
 export const ClinicalImpactSchema = z.enum([
   'none',
@@ -324,7 +308,6 @@ export const StructuralPipelineStageSchema = z.enum([
   'QC_EVALUATION',
   'MANIFEST_GENERATION',
 ]);
-
 
 // ==========================================
 // 2. Primitive Schemas
@@ -464,7 +447,6 @@ export const NeuronavigationExportSimulationSchema = z.object({
   roundTripErrorMm: z.number().nonnegative(),
 });
 
-
 // ==========================================
 // 3. Evidence Knowledge Graph Schemas
 // ==========================================
@@ -561,7 +543,12 @@ export const TargetDefinitionSchema = z.object({
   code: z.string().min(1),
   targetFamilyId: z.string().min(1),
   name: z.string().min(1),
-  targetType: z.enum(['group_reference', 'individualized_rule', 'anatomical_landmark', 'scalp_landmark']),
+  targetType: z.enum([
+    'group_reference',
+    'individualized_rule',
+    'anatomical_landmark',
+    'scalp_landmark',
+  ]),
   mniCoordinate: MniCoordinateSchema,
   hcpParcel: z.string().optional(),
   metadata: z.record(z.unknown()).optional(),
@@ -599,7 +586,10 @@ export const EvidenceLibraryReleaseSchema = z.object({
   version: z.string().min(1),
   releaseDate: z.string().optional(),
   releasedAt: z.string().optional(),
-  status: z.union([ObjectLifecycleStatusSchema, z.enum(['draft', 'validation', 'active', 'superseded'])]),
+  status: z.union([
+    ObjectLifecycleStatusSchema,
+    z.enum(['draft', 'validation', 'active', 'superseded']),
+  ]),
   circuits: z.array(TherapeuticCircuitSchema),
   families: z.array(TargetFamilySchema),
   claims: z.array(EvidenceClaimSchema),
@@ -608,7 +598,6 @@ export const EvidenceLibraryReleaseSchema = z.object({
   manifestHash: z.string().optional(),
   manifestSha256: z.string().optional(),
 });
-
 
 // ==========================================
 // 4. Target Reliability & QC Schemas
@@ -929,7 +918,10 @@ export const ScientificPolicyReleaseSchema = z.object({
     minReliabilityForPersonalisation: z.number().min(0).max(1),
     minIncrementalGainThreshold: z.number().min(0).max(1),
   }),
-  parameters: z.record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.array(z.string())])),
+  parameters: z.record(
+    z.string(),
+    z.union([z.string(), z.number(), z.boolean(), z.array(z.string())]),
+  ),
   policyPayloadSha256: z.string().length(64),
   compatibilityManifestSha256: z.string().length(64),
   releaseManifestSha256: z.string().length(64),
@@ -1562,5 +1554,3 @@ export const StructuralProcessingJobPayloadSchema = z.object({
   atlasId: z.string().min(1),
   mode: MagniomModeSchema,
 });
-
-

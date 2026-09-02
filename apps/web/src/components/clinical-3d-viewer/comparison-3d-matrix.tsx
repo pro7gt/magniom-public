@@ -15,13 +15,19 @@ export function Comparison3DMatrix({
   onSelectCandidate,
 }: Comparison3DMatrixProps) {
   return (
-    <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }} aria-label="3D Multi-Target Spatial Matrix">
+    <div
+      className="card"
+      style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
+      aria-label="3D Multi-Target Spatial Matrix"
+    >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
             3D Multi-Target Spatial Localization & Redundancy Matrix
           </h3>
-          <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', marginTop: '0.15rem' }}>
+          <p
+            style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', marginTop: '0.15rem' }}
+          >
             Systematic spatial separation and redundancy assessment across candidate hypotheses.
           </p>
         </div>
@@ -39,7 +45,7 @@ export function Comparison3DMatrix({
 
       {/* Candidate Selector Chips */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-        {comparison.candidates.map((c) => {
+        {comparison.candidates.map(c => {
           const isSelected = c.id === selectedCandidateId;
           return (
             <button
@@ -66,7 +72,10 @@ export function Comparison3DMatrix({
 
       {/* Pairwise Distance Matrix Table */}
       <div className="table-responsive">
-        <table className="table table-sm" style={{ width: '100%', fontSize: '0.75rem', borderCollapse: 'collapse' }}>
+        <table
+          className="table table-sm"
+          style={{ width: '100%', fontSize: '0.75rem', borderCollapse: 'collapse' }}
+        >
           <thead>
             <tr style={{ borderBottom: '1px solid var(--border-color)', textAlign: 'left' }}>
               <th style={{ padding: '0.4rem' }}>Candidate Pair</th>
@@ -85,9 +94,17 @@ export function Comparison3DMatrix({
                 }}
               >
                 <td style={{ padding: '0.4rem', fontWeight: 600, color: '#f1f5f9' }}>
-                  {pair.candidateAName} <span style={{ color: 'var(--text-muted)' }}>↔</span> {pair.candidateBName}
+                  {pair.candidateAName} <span style={{ color: 'var(--text-muted)' }}>↔</span>{' '}
+                  {pair.candidateBName}
                 </td>
-                <td style={{ padding: '0.4rem', fontFamily: 'var(--font-mono)', fontWeight: 700, color: pair.distanceMm < 15 ? '#f59e0b' : '#38bdf8' }}>
+                <td
+                  style={{
+                    padding: '0.4rem',
+                    fontFamily: 'var(--font-mono)',
+                    fontWeight: 700,
+                    color: pair.distanceMm < 15 ? '#f59e0b' : '#38bdf8',
+                  }}
+                >
                   {pair.distanceMm.toFixed(1)} mm
                 </td>
                 <td style={{ padding: '0.4rem', color: 'var(--text-secondary)' }}>

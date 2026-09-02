@@ -4,11 +4,11 @@
   --bg-surface-elevated: #1f2937;
   --bg-surface-card: #151c2e;
   --bg-surface-drawer: #0f172a;
-  
+
   --border-color: #374151;
   --border-subtle: #1f293d;
   --border-highlight: #38bdf8;
-  
+
   --accent-cyan: #38bdf8;
   --accent-cyan-hover: #0ea5e9;
   --accent-indigo: #818cf8;
@@ -16,12 +16,12 @@
   --accent-amber: #f59e0b;
   --accent-rose: #ef4444;
   --accent-purple: #8b5cf6;
-  
+
   --text-primary: #f9fafb;
   --text-secondary: #9ca3af;
   --text-muted: #6b7280;
   --text-inverse: #090d16;
-  
+
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', Menlo, Monaco, monospace;
 }
@@ -1043,7 +1043,8 @@ a:hover {
   transition: background 0.1s ease;
 }
 
-.search-result-item:hover, .search-result-item:focus {
+.search-result-item:hover,
+.search-result-item:focus {
   background-color: var(--bg-surface-elevated);
   outline: none;
 }
@@ -1711,7 +1712,8 @@ a:hover {
   font-size: 0.8125rem;
 }
 
-.provenance-table th, .provenance-table td {
+.provenance-table th,
+.provenance-table td {
   padding: 0.5rem 0.75rem;
   border-bottom: 1px solid var(--border-subtle);
   text-align: left;
@@ -1902,7 +1904,9 @@ a:hover {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  transition: transform 0.15s ease, border-color 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .worklist-action-card:hover {
@@ -1977,4 +1981,3 @@ a:hover {
 .text-amber {
   color: #fbbf24;
 }
-

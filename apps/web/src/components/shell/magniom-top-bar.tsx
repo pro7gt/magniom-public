@@ -24,14 +24,15 @@ export function MagniomTopBar({ currentMode = 'CLINICAL', onModeChange }: Magnio
   const session = CANONICAL_CLINICAL_SESSION;
 
   // Filter cases matching query
-  const matchingCases = searchQuery.trim().length > 0
-    ? allCases.filter(
-        (c) =>
-          c.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          c.indication.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : [];
+  const matchingCases =
+    searchQuery.trim().length > 0
+      ? allCases.filter(
+          c =>
+            c.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            c.indication.toLowerCase().includes(searchQuery.toLowerCase()),
+        )
+      : [];
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -50,7 +51,11 @@ export function MagniomTopBar({ currentMode = 'CLINICAL', onModeChange }: Magnio
   // Keyboard shortcut to focus search with '/'
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+      if (
+        e.key === '/' &&
+        document.activeElement?.tagName !== 'INPUT' &&
+        document.activeElement?.tagName !== 'TEXTAREA'
+      ) {
         e.preventDefault();
         const input = searchContainerRef.current?.querySelector('input');
         input?.focus();
@@ -63,12 +68,18 @@ export function MagniomTopBar({ currentMode = 'CLINICAL', onModeChange }: Magnio
   const isResearch = currentMode === 'RESEARCH';
 
   return (
-    <header role="banner" className="magniom-top-bar" aria-label="MAGNIOM Top Bar Authority and Global Navigation">
+    <header
+      role="banner"
+      className="magniom-top-bar"
+      aria-label="MAGNIOM Top Bar Authority and Global Navigation"
+    >
       {/* 1. Left: Brand & Clinical Descriptor */}
       <div className="top-bar-left">
         <Link href="/" className="top-bar-brand" aria-label="MAGNIOM Home">
           <span className="brand-title">MAGNIOM</span>
-          <span className="brand-separator" aria-hidden="true">|</span>
+          <span className="brand-separator" aria-hidden="true">
+            |
+          </span>
           <span className="brand-descriptor">TMS Target Decision Support</span>
         </Link>
       </div>
@@ -76,13 +87,15 @@ export function MagniomTopBar({ currentMode = 'CLINICAL', onModeChange }: Magnio
       {/* 2. Center: Global Case Search */}
       <div className="top-bar-center" ref={searchContainerRef}>
         <div className="global-search-wrapper">
-          <span className="search-icon" aria-hidden="true">🔍</span>
+          <span className="search-icon" aria-hidden="true">
+            🔍
+          </span>
           <input
             type="search"
             className="global-search-input"
             placeholder="Search cases, indications, or IDs... (Press '/' to focus)"
             value={searchQuery}
-            onChange={(e) => {
+            onChange={e => {
               setSearchQuery(e.target.value);
               setIsSearchOpen(true);
             }}
@@ -106,7 +119,7 @@ export function MagniomTopBar({ currentMode = 'CLINICAL', onModeChange }: Magnio
           {isSearchOpen && searchQuery.trim().length > 0 && (
             <div className="search-results-dropdown" role="listbox">
               {matchingCases.length > 0 ? (
-                matchingCases.slice(0, 6).map((c) => (
+                matchingCases.slice(0, 6).map(c => (
                   <div
                     key={c.id}
                     className="search-result-item"
@@ -117,7 +130,7 @@ export function MagniomTopBar({ currentMode = 'CLINICAL', onModeChange }: Magnio
                       setSearchQuery('');
                       router.push(`/cases/${c.id}`);
                     }}
-                    onKeyDown={(e) => {
+                    onKeyDown={e => {
                       if (e.key === 'Enter') {
                         setIsSearchOpen(false);
                         setSearchQuery('');
@@ -148,19 +161,30 @@ export function MagniomTopBar({ currentMode = 'CLINICAL', onModeChange }: Magnio
         {/* Mode Indicator */}
         <div className="mode-badge-container">
           {isResearch ? (
-            <span className="badge badge-tierexp mode-badge" title="Experimental neuroimaging analysis only">
+            <span
+              className="badge badge-tierexp mode-badge"
+              title="Experimental neuroimaging analysis only"
+            >
               <span className="mode-dot">●</span> RESEARCH PROTOTYPE
             </span>
           ) : (
-            <span className="badge badge-tier1 mode-badge" title="Authorised specialist clinical decision support">
+            <span
+              className="badge badge-tier1 mode-badge"
+              title="Authorised specialist clinical decision support"
+            >
               <span className="mode-dot">●</span> CLINICAL MODE
             </span>
           )}
         </div>
 
         {/* Organisation / Site Context */}
-        <div className="site-context-container" title={`${session.organization.organizationName} — ${session.organization.siteName}`}>
-          <span className="site-icon" aria-hidden="true">🏥</span>
+        <div
+          className="site-context-container"
+          title={`${session.organization.organizationName} — ${session.organization.siteName}`}
+        >
+          <span className="site-icon" aria-hidden="true">
+            🏥
+          </span>
           <span className="site-label">{session.organization.displayLabel}</span>
         </div>
 
@@ -178,7 +202,9 @@ export function MagniomTopBar({ currentMode = 'CLINICAL', onModeChange }: Magnio
               <span className="user-name">{session.user.displayName}</span>
               <span className="user-role">{session.user.roleTitle}</span>
             </div>
-            <span className="user-caret" aria-hidden="true">▾</span>
+            <span className="user-caret" aria-hidden="true">
+              ▾
+            </span>
           </button>
 
           {isUserMenuOpen && (

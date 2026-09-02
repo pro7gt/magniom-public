@@ -18,7 +18,8 @@ const graph = new EvidenceKnowledgeGraph(CANONICAL_EVIDENCE_RELEASE_1_0_0);
 export const G08_PHENOTYPE: PhenotypeSnapshot = {
   id: 'snap-golden-08',
   patientId: 'synth-pat-g08',
-  primaryDiagnosis: 'Major Depressive Disorder with Comorbid Generalized Anxiety (Research Protocol)',
+  primaryDiagnosis:
+    'Major Depressive Disorder with Comorbid Generalized Anxiety (Research Protocol)',
   episodeSeverity: 'SEVERE_WITHOUT_PSYCHOSIS',
   diagnosisAssertion: {
     code: 'MDD',
@@ -35,8 +36,8 @@ export const G08_PHENOTYPE: PhenotypeSnapshot = {
   safetyClearance: 'cleared',
   symptomScores: {
     dysphoriaScore: 0.85,
-    anhedoniaScore: 0.80,
-    anxiousSomaticScore: 0.90,
+    anhedoniaScore: 0.8,
+    anxiousSomaticScore: 0.9,
     ruminationScore: 0.85,
   },
   symptomPriorities: [
@@ -52,7 +53,8 @@ export const G08_PHENOTYPE: PhenotypeSnapshot = {
       priorityRank: 2,
       clinicianWeight: 0.85,
       evidenceMappability: 'direct',
-      rationale: 'Severe comorbid anxiety exploring cingulo-opercular circuits in research protocol.',
+      rationale:
+        'Severe comorbid anxiety exploring cingulo-opercular circuits in research protocol.',
     },
   ],
   treatmentHistory: {
@@ -60,7 +62,8 @@ export const G08_PHENOTYPE: PhenotypeSnapshot = {
     priorTmsExposure: false,
   },
   phenotypeConfidence: 'HIGH',
-  clinicianSummary: 'Synthetic research cohort patient evaluating Tier 4 causal anxiety circuit targets.',
+  clinicianSummary:
+    'Synthetic research cohort patient evaluating Tier 4 causal anxiety circuit targets.',
   confirmedByClinicianId: 'clin-research-001',
   confirmedAt: '2026-09-01T10:00:00.000Z',
   snapshotHash: computeSha256({
@@ -92,7 +95,7 @@ export const G08_CONNECTOME = {
       targetFamilyCode: 'TF-RES-CING-L8AV-001',
       reliabilityScore: 0.91,
       circuitConcordance: 0.89,
-      baselineCircuitConcordance: 0.60,
+      baselineCircuitConcordance: 0.6,
       mniCoordinate: {
         space: 'MNI152NLin2009cAsym' as const,
         x: -26,
@@ -133,7 +136,9 @@ export const G08_CLINICAL_PRIMARY_1: TargetCandidate = {
   isSuppressedOrRedundant: false,
   evidencePaths: graph.findEvidencePaths('TF-MDD-LDLPFC-EST-001'),
   conflictingEvidence: graph.getConflictingClaims('TF-MDD-LDLPFC-EST-001'),
-  counterarguments: ['Fixed group anchor does not account for patient-specific functional anatomy variations.'],
+  counterarguments: [
+    'Fixed group anchor does not account for patient-specific functional anatomy variations.',
+  ],
 };
 
 export const G08_CLINICAL_PRIMARY_2: TargetCandidate = {
@@ -159,7 +164,9 @@ export const G08_CLINICAL_PRIMARY_2: TargetCandidate = {
   isSuppressedOrRedundant: false,
   evidencePaths: graph.findEvidencePaths('TF-MDD-ANXIOSOMATIC-DMPFC-001'),
   conflictingEvidence: graph.getConflictingClaims('TF-MDD-ANXIOSOMATIC-DMPFC-001'),
-  counterarguments: ['Fixed group anchor does not account for patient-specific functional anatomy variations.'],
+  counterarguments: [
+    'Fixed group anchor does not account for patient-specific functional anatomy variations.',
+  ],
 };
 
 const g08ClinicalSlatePayload = {

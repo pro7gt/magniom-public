@@ -3,7 +3,7 @@
  * Conforms to MAGNIOM-Neuroimaging & Functional Connectomics Pipeline Specification v1.0 Sections 44-68, 143-150
  */
 
-import { z } from "zod";
+import { z } from 'zod';
 
 export const EchoMetadataSchema = z.object({
   echoIndex: z.number().int().min(1),
@@ -18,7 +18,7 @@ export const MultiEchoRunMetadataSchema = z.object({
   runIndex: z.number().int().min(1),
   subjectId: z.string(),
   sessionId: z.string().nullable().optional(),
-  taskName: z.string().default("rest"),
+  taskName: z.string().default('rest'),
   trSeconds: z.number().positive(),
   flipAngleDeg: z.number().positive(),
   echoes: z.array(EchoMetadataSchema).min(2),
@@ -54,7 +54,7 @@ export const ICAComponentMetricsSchema = z.object({
   kappa: z.number().nonnegative(),
   rho: z.number().nonnegative(),
   varianceExplainedFraction: z.number().min(0).max(1),
-  classification: z.enum(["accepted", "rejected", "ignorable"]),
+  classification: z.enum(['accepted', 'rejected', 'ignorable']),
   classificationReason: z.string(),
 });
 export type ICAComponentMetrics = z.infer<typeof ICAComponentMetricsSchema>;
@@ -112,17 +112,22 @@ export const FunctionalQCMetricsSchema = z.object({
 export type FunctionalQCMetrics = z.infer<typeof FunctionalQCMetricsSchema>;
 
 export const FunctionalQCEvaluationResultSchema = z.object({
-  overallStatus: z.enum(["pass", "conditional", "fail"]),
+  overallStatus: z.enum(['pass', 'conditional', 'fail']),
   runIndex: z.number().int().min(1),
   metrics: FunctionalQCMetricsSchema,
   warnings: z.array(
     z.object({
       code: z.string(),
       message: z.string(),
-      severity: z.enum(["info", "warning", "critical"]),
-      clinicalImpact: z.enum(["none", "possible", "target_family_specific", "personalisation_invalid"]),
+      severity: z.enum(['info', 'warning', 'critical']),
+      clinicalImpact: z.enum([
+        'none',
+        'possible',
+        'target_family_specific',
+        'personalisation_invalid',
+      ]),
       affectedComponents: z.array(z.string()).optional(),
-    })
+    }),
   ),
   isPersonalisationQualified: z.boolean(),
   limitationSummary: z.string().nullable().optional(),
@@ -130,7 +135,7 @@ export const FunctionalQCEvaluationResultSchema = z.object({
 export type FunctionalQCEvaluationResult = z.infer<typeof FunctionalQCEvaluationResultSchema>;
 
 export const DenoisedTimeSeriesOutputSchema = z.object({
-  denoisingConfiguration: z.enum(["CD-1", "SD-1"]),
+  denoisingConfiguration: z.enum(['CD-1', 'SD-1']),
   runIndex: z.number().int().min(1),
   subjectId: z.string(),
   denoisedBoldPath: z.string(),

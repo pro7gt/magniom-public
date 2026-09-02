@@ -4,11 +4,7 @@ import React, { use } from 'react';
 import Link from 'next/link';
 import { caseStore } from '../../../../lib/case-store';
 
-export default function CaseTreatmentPage({
-  params,
-}: {
-  params: Promise<{ caseId: string }>;
-}) {
+export default function CaseTreatmentPage({ params }: { params: Promise<{ caseId: string }> }) {
   const resolvedParams = use(params);
   const caseId = resolvedParams.caseId;
   const record = caseStore.getCaseRecord(caseId);
@@ -19,7 +15,15 @@ export default function CaseTreatmentPage({
 
   return (
     <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '1rem',
+        }}
+      >
         <div>
           <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)' }}>
             TMS Treatment Prescription &amp; Neuronavigation Plan
@@ -39,13 +43,33 @@ export default function CaseTreatmentPage({
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          gap: '1.5rem',
+        }}
+      >
         {/* Prescription Parameters */}
         <div className="card">
-          <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--accent-cyan)', marginBottom: '0.75rem' }}>
+          <h3
+            style={{
+              fontSize: '1.125rem',
+              fontWeight: 700,
+              color: 'var(--accent-cyan)',
+              marginBottom: '0.75rem',
+            }}
+          >
             TMS Protocol Specification
           </h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.875rem' }}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.5rem',
+              fontSize: '0.875rem',
+            }}
+          >
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: 'var(--text-secondary)' }}>Protocol Paradigm:</span>
               <strong>Intermittent Theta Burst (iTBS) / 10 Hz rTMS</strong>
@@ -67,7 +91,14 @@ export default function CaseTreatmentPage({
 
         {/* Neuronavigation Export */}
         <div className="card">
-          <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--accent-cyan)', marginBottom: '0.75rem' }}>
+          <h3
+            style={{
+              fontSize: '1.125rem',
+              fontWeight: 700,
+              color: 'var(--accent-cyan)',
+              marginBottom: '0.75rem',
+            }}
+          >
             Neuronavigation Export Package
           </h3>
           <p style={{ fontSize: '0.8125rem', color: '#cbd5e1', marginBottom: '0.75rem' }}>
@@ -80,7 +111,9 @@ export default function CaseTreatmentPage({
             disabled={!isSigned}
             style={{ width: '100%', fontSize: '0.8125rem' }}
           >
-            {isSigned ? '📥 Export DICOM / Neuronavigation XML' : '🔒 Signing Required for Clinical Export'}
+            {isSigned
+              ? '📥 Export DICOM / Neuronavigation XML'
+              : '🔒 Signing Required for Clinical Export'}
           </button>
         </div>
       </div>

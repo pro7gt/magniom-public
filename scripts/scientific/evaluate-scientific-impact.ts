@@ -28,7 +28,8 @@ import {
 } from '@magniom/test-fixtures';
 import type { TargetSlate } from '@magniom/domain';
 
-export type MaterialityTier = 'S1_NONE' | 'S2_NEGLIGIBLE' | 'S3_NON_NEGLIGIBLE' | 'S4_MAJOR_DISRUPTIVE';
+export type MaterialityTier =
+  'S1_NONE' | 'S2_NEGLIGIBLE' | 'S3_NON_NEGLIGIBLE' | 'S4_MAJOR_DISRUPTIVE';
 
 export interface CaseEvaluationResult {
   caseId: string;
@@ -54,13 +55,9 @@ export interface ScientificImpactReport {
 
 function computeEuclideanDistance(
   c1: { x: number; y: number; z: number },
-  c2: { x: number; y: number; z: number }
+  c2: { x: number; y: number; z: number },
 ): number {
-  return Math.sqrt(
-    Math.pow(c1.x - c2.x, 2) +
-    Math.pow(c1.y - c2.y, 2) +
-    Math.pow(c1.z - c2.z, 2)
-  );
+  return Math.sqrt(Math.pow(c1.x - c2.x, 2) + Math.pow(c1.y - c2.y, 2) + Math.pow(c1.z - c2.z, 2));
 }
 
 export class ScientificImpactEvaluator {
@@ -76,10 +73,30 @@ export class ScientificImpactEvaluator {
 
     const goldenCases = [
       { id: 'G01', name: 'G01: Evidence-Only Baseline MDD', p: G01_PHENOTYPE, c: null },
-      { id: 'G02', name: 'G02: High-Convergence Personalized MDD', p: G02_CASE_PHENOTYPE, c: G02_CASE_CONNECTOME },
-      { id: 'G04', name: 'G04: Unreliable FC QC Fallback MDD', p: G04_CASE_PHENOTYPE, c: G04_CASE_CONNECTOME },
-      { id: 'G05', name: 'G05: Anxiosomatic Multi-Circuit MDD', p: G05_CASE_PHENOTYPE, c: G05_CASE_CONNECTOME },
-      { id: 'G07', name: 'G07: Mixed Phenotype Target Slate', p: G07_CASE_PHENOTYPE, c: G07_CASE_CONNECTOME },
+      {
+        id: 'G02',
+        name: 'G02: High-Convergence Personalized MDD',
+        p: G02_CASE_PHENOTYPE,
+        c: G02_CASE_CONNECTOME,
+      },
+      {
+        id: 'G04',
+        name: 'G04: Unreliable FC QC Fallback MDD',
+        p: G04_CASE_PHENOTYPE,
+        c: G04_CASE_CONNECTOME,
+      },
+      {
+        id: 'G05',
+        name: 'G05: Anxiosomatic Multi-Circuit MDD',
+        p: G05_CASE_PHENOTYPE,
+        c: G05_CASE_CONNECTOME,
+      },
+      {
+        id: 'G07',
+        name: 'G07: Mixed Phenotype Target Slate',
+        p: G07_CASE_PHENOTYPE,
+        c: G07_CASE_CONNECTOME,
+      },
     ];
 
     const results: CaseEvaluationResult[] = [];
@@ -111,7 +128,9 @@ export class ScientificImpactEvaluator {
 
       console.log(`  ✅ [${gCase.id}] ${gCase.name}`);
       console.log(`     - Slate Manifest: ${slate.deterministicManifestHash.slice(0, 16)}...`);
-      console.log(`     - Primary Candidates: ${slate.primaryCandidates.length} | Top Candidate: ${primary?.id || 'none'}`);
+      console.log(
+        `     - Primary Candidates: ${slate.primaryCandidates.length} | Top Candidate: ${primary?.id || 'none'}`,
+      );
     }
 
     let materialityTier: MaterialityTier = 'S1_NONE';
@@ -127,7 +146,8 @@ export class ScientificImpactEvaluator {
       evaluatedCases: results,
       overallMaxShiftMm,
       overallMaxScoreShift,
-      requiresFullValidation: materialityTier === 'S3_NON_NEGLIGIBLE' || materialityTier === 'S4_MAJOR_DISRUPTIVE',
+      requiresFullValidation:
+        materialityTier === 'S3_NON_NEGLIGIBLE' || materialityTier === 'S4_MAJOR_DISRUPTIVE',
       requiresClinicalBoardApproval: materialityTier === 'S4_MAJOR_DISRUPTIVE',
       status: materialityTier === 'S1_NONE' ? 'PASSED_S1' : 'PASSED_S2_WITH_REVIEW',
     };
@@ -144,8 +164,11 @@ export class ScientificImpactEvaluator {
   }
 
   private writeMarkdownReport(report: ScientificImpactReport): void {
-    const reportPath = path.join(this.repoRoot, 'docs/verification/reports/08-scientific-impact-report.md');
-    
+    const reportPath = path.join(
+      this.repoRoot,
+      'docs/verification/reports/08-scientific-impact-report.md',
+    );
+
     const content = `# Formal Scientific Impact & Materiality Report
 
 **Document ID:** VR-SCI-IMPACT-001  
@@ -170,7 +193,7 @@ This report documents the automated scientific impact evaluation across the 5 ca
 
 | Case ID | Name | Primary Candidates | Top Candidate ID | Max Shift (mm) | Max ΔScore | Manifest Hash |
 |---|---|---|---|---|---|---|
-${report.evaluatedCases.map((c) => `| \`${c.caseId}\` | ${c.caseName} | ${c.primaryCandidateCount} | \`${c.primaryCandidateId}\` | ${c.maxCoordinateShiftMm.toFixed(2)} | ${c.maxScoreShift.toFixed(2)} | \`${c.manifestHash.slice(0, 16)}...\` |`).join('\n')}
+${report.evaluatedCases.map(c => `| \`${c.caseId}\` | ${c.caseName} | ${c.primaryCandidateCount} | \`${c.primaryCandidateId}\` | ${c.maxCoordinateShiftMm.toFixed(2)} | ${c.maxScoreShift.toFixed(2)} | \`${c.manifestHash.slice(0, 16)}...\` |`).join('\n')}
 
 ---
 

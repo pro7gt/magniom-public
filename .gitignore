@@ -14,6 +14,8 @@ dist/
 build/
 .next/
 out/
+.open-next/
+.wrangler/
 
 # Turborepo
 .turbo/

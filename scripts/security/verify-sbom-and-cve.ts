@@ -22,7 +22,11 @@ export class SBOMValidator {
     // Check devDependencies in root
     if (rootPkg.devDependencies) {
       for (const [name, version] of Object.entries(rootPkg.devDependencies)) {
-        if ((version as string).startsWith('^') || (version as string).startsWith('~') || (version as string) === '*') {
+        if (
+          (version as string).startsWith('^') ||
+          (version as string).startsWith('~') ||
+          (version as string) === '*'
+        ) {
           // While ^ is common in JS root devDependencies, flag unconstrained versions if any
         }
       }
@@ -77,10 +81,12 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 
   console.log(`[${pinning.passed ? '✓ PASS' : '✗ FAIL'}] Dependency Version Pinning (Section 133)`);
   if (!pinning.passed) {
-    pinning.violations.forEach((v) => console.log(`       Violation: ${v}`));
+    pinning.violations.forEach(v => console.log(`       Violation: ${v}`));
   }
 
-  console.log(`[${sbom.passed ? '✓ PASS' : '✗ FAIL'}] CycloneDX SBOM Manifest Integrity (Section 132)`);
+  console.log(
+    `[${sbom.passed ? '✓ PASS' : '✗ FAIL'}] CycloneDX SBOM Manifest Integrity (Section 132)`,
+  );
   console.log(`       ${sbom.details}\n`);
 
   if (pinning.passed && sbom.passed) {

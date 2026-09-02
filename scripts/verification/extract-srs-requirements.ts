@@ -64,7 +64,8 @@ function extractRequirements(srsPath: string): SrsRequirement[] {
   const seenIds = new Set<string>();
 
   // Parse table rows: | MAG-XXX-NNN | statement | class | verify |
-  const tableRowRegex = /^\|\s*\*{0,2}`?(MAG-[A-Z]+-\d+)`?\*{0,2}\s*\|\s*\*{0,2}(.*?)\*{0,2}\s*\|\s*(Critical|Major|Standard)?\s*\|\s*(.*?)\s*\|/;
+  const tableRowRegex =
+    /^\|\s*\*{0,2}`?(MAG-[A-Z]+-\d+)`?\*{0,2}\s*\|\s*\*{0,2}(.*?)\*{0,2}\s*\|\s*(Critical|Major|Standard)?\s*\|\s*(.*?)\s*\|/;
 
   // Parse standalone requirement blocks: ### MAG-XXX-NNN
   const standaloneHeaderRegex = /^###\s+(MAG-[A-Z]+-\d+)/;
@@ -128,7 +129,9 @@ function extractRequirements(srsPath: string): SrsRequirement[] {
             statement.length < 200
           ) {
             if (!statement) {
-              statement = nextLine.replace(/^(MAGNIOM\s+)?SHALL\s+(NOT\s+)?/i, '').replace(/\*{1,2}/g, '');
+              statement = nextLine
+                .replace(/^(MAGNIOM\s+)?SHALL\s+(NOT\s+)?/i, '')
+                .replace(/\*{1,2}/g, '');
             }
           }
         }
@@ -153,7 +156,7 @@ function main(): void {
   const repoRoot = path.resolve(process.cwd());
   const srsPath = path.join(
     repoRoot,
-    'public/guides/MAGNIOM-System Requirements Specification v1.0.md'
+    'public/guides/MAGNIOM-System Requirements Specification v1.0.md',
   );
 
   if (!fs.existsSync(srsPath)) {
@@ -181,13 +184,11 @@ function main(): void {
   console.log('─────────────────────────────────────────────');
   for (const [domain, counts] of Object.entries(domainCounts).sort()) {
     console.log(
-      `  ${domain.padEnd(12)} ${String(counts.total).padStart(3)} total  (${String(counts.critical).padStart(2)} Critical, ${String(counts.major).padStart(2)} Major)`
+      `  ${domain.padEnd(12)} ${String(counts.total).padStart(3)} total  (${String(counts.critical).padStart(2)} Critical, ${String(counts.major).padStart(2)} Major)`,
     );
   }
   console.log('─────────────────────────────────────────────');
-  console.log(
-    `  ${'TOTAL'.padEnd(12)} ${String(requirements.length).padStart(3)} requirements\n`
-  );
+  console.log(`  ${'TOTAL'.padEnd(12)} ${String(requirements.length).padStart(3)} requirements\n`);
 
   // Write output
   const outputPath = path.join(repoRoot, 'docs/verification/requirement-inventory.json');
@@ -203,13 +204,15 @@ function main(): void {
         requirements,
       },
       null,
-      2
+      2,
     ),
-    'utf8'
+    'utf8',
   );
 
   console.log(`📄 Requirement inventory written to: ${outputPath}`);
-  console.log(`   ${requirements.length} requirements extracted across ${Object.keys(domainCounts).length} domains.\n`);
+  console.log(
+    `   ${requirements.length} requirements extracted across ${Object.keys(domainCounts).length} domains.\n`,
+  );
 }
 
 main();

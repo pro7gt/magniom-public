@@ -14,7 +14,10 @@ import type {
   ConnectomeTargetInput,
   EvidenceLibraryRelease,
 } from '@magniom/domain';
-import { DEFAULT_MDD_SCIENTIFIC_POLICY, type ScientificPolicyRelease } from '@magniom/scientific-policy';
+import {
+  DEFAULT_MDD_SCIENTIFIC_POLICY,
+  type ScientificPolicyRelease,
+} from '@magniom/scientific-policy';
 import { EvidenceKnowledgeGraph, CANONICAL_EVIDENCE_RELEASE_1_0_0 } from '@magniom/evidence';
 
 import { evaluateClinicalScopeGate } from './gates/clinical-scope.js';
@@ -100,7 +103,8 @@ export function runTargetEngine(input: TargetEngineInput): TargetSlate {
       evidenceReleaseVersion: evidenceVersion,
       mode,
       reasonCode: scopeResult.reasonCode ?? 'INVALID_INDICATION',
-      clinicianExplanation: scopeResult.message ?? 'Target calculation abstained due to Clinical Scope gate rejection.',
+      clinicianExplanation:
+        scopeResult.message ?? 'Target calculation abstained due to Clinical Scope gate rejection.',
       generatedAt: input.generatedAt,
     });
   }
@@ -142,12 +146,13 @@ export function runTargetEngine(input: TargetEngineInput): TargetSlate {
       input.phenotypeSnapshot,
       undefined,
       graph,
-      mode
+      mode,
     );
     candidatePool.push(...baselineCandidates);
 
     // 1. Process canonical NeuroCompute candidateRegions (ConnectomeTargetInput)
-    const connectomeData = input.connectome as (ConnectomeTargetInput & TargetEngineConnectomeInput) | null | undefined;
+    const connectomeData = input.connectome as
+      (ConnectomeTargetInput & TargetEngineConnectomeInput) | null | undefined;
     if (connectomeData?.candidateRegions && connectomeData.candidateRegions.length > 0) {
       for (const region of connectomeData.candidateRegions) {
         const familyCode = region.targetFamilyVersionId;
@@ -160,8 +165,7 @@ export function runTargetEngine(input: TargetEngineInput): TargetSlate {
 
         // Look up matching family evidence baseline for distance and gain reference
         const matchingBaseline =
-          baselineCandidates.find((b) => b.familyId === familyCode) ??
-          baselineCandidates[0];
+          baselineCandidates.find(b => b.familyId === familyCode) ?? baselineCandidates[0];
 
         const baselineMni = matchingBaseline?.mniCoordinate ?? {
           space: 'MNI152NLin2009cAsym',
@@ -173,7 +177,7 @@ export function runTargetEngine(input: TargetEngineInput): TargetSlate {
 
         const isUnreliable = qualification === 'ineligible';
         const gain = region.circuitConcordancePercentile - region.baselineCircuitConcordance;
-        const minGain = policy.evidencePolicy?.minIncrementalGainThreshold ?? 0.10;
+        const minGain = policy.evidencePolicy?.minIncrementalGainThreshold ?? 0.1;
         const isLowGain = gain < minGain;
 
         // Calculate 3D Euclidean distance to family evidence baseline
@@ -188,18 +192,26 @@ export function runTargetEngine(input: TargetEngineInput): TargetSlate {
           region.mniCoordinate,
           undefined,
           familyCode,
-          region.accessibility
+          region.accessibility,
         );
         const isInaccessible = !accessCheck.accessible;
 
         // Determine suppression status and reason
         let isSuppressed = false;
-        let suppressionReason: 'LOW_RELIABILITY' | 'LOW_INCREMENTAL_VALUE' | 'ANATOMICALLY_INACCESSIBLE' | 'MAJOR_DIVERGENCE' | 'LATERALITY_VIOLATION' | undefined = undefined;
+        let suppressionReason:
+          | 'LOW_RELIABILITY'
+          | 'LOW_INCREMENTAL_VALUE'
+          | 'ANATOMICALLY_INACCESSIBLE'
+          | 'MAJOR_DIVERGENCE'
+          | 'LATERALITY_VIOLATION'
+          | undefined = undefined;
         const contraindicationsOrConflicts: string[] = [];
 
         if (isInaccessible) {
           isSuppressed = true;
-          suppressionReason = accessCheck.lateralityViolation ? 'LATERALITY_VIOLATION' : 'ANATOMICALLY_INACCESSIBLE';
+          suppressionReason = accessCheck.lateralityViolation
+            ? 'LATERALITY_VIOLATION'
+            : 'ANATOMICALLY_INACCESSIBLE';
           contraindicationsOrConflicts.push(suppressionReason);
         } else if (isUnreliable) {
           isSuppressed = true;
@@ -234,14 +246,26 @@ export function runTargetEngine(input: TargetEngineInput): TargetSlate {
           circuitId = 'CIRCUIT-MDD-L8AV-001';
         }
 
-        const candId = region.candidateCode ? region.candidateCode.toLowerCase() : `cand-${familyCode.toLowerCase()}`;
+        const candId = region.candidateCode
+          ? region.candidateCode.toLowerCase()
+          : `cand-${familyCode.toLowerCase()}`;
         const ceilingTier = graph.getEvidenceCeilingTier(familyCode);
-        const evidenceScore = ceilingTier === 'T1' ? 0.95 : ceilingTier === 'T2' ? 0.85 : ceilingTier === 'T3' ? 0.70 : 0.50;
+        const evidenceScore =
+          ceilingTier === 'T1'
+            ? 0.95
+            : ceilingTier === 'T2'
+              ? 0.85
+              : ceilingTier === 'T3'
+                ? 0.7
+                : 0.5;
 
         const convergenceClassification: 'high' | 'moderate' | 'divergent' | 'not_applicable' =
           distanceMm <= 12.0 ? 'high' : distanceMm <= 30.0 ? 'moderate' : 'divergent';
 
-        const concordanceVal = region.circuitConcordancePercentile ?? (region as { circuitConcordance?: number }).circuitConcordance ?? 0.75;
+        const concordanceVal =
+          region.circuitConcordancePercentile ??
+          (region as { circuitConcordance?: number }).circuitConcordance ??
+          0.75;
         const candidateRecord: TargetCandidate = {
           id: candId,
           familyId: familyCode,
@@ -263,7 +287,9 @@ export function runTargetEngine(input: TargetEngineInput): TargetSlate {
           rationale: region.fitInterpretation || 'Connectome-refined target candidate.',
           contraindicationsOrConflicts,
           isSuppressedOrRedundant: isSuppressed,
-          ...(suppressionReason ? { suppressionReason: suppressionReason as TargetCandidate['suppressionReason'] } : {}),
+          ...(suppressionReason
+            ? { suppressionReason: suppressionReason as TargetCandidate['suppressionReason'] }
+            : {}),
           ...(!isUnreliable
             ? {
                 convergenceProfile: {
@@ -290,15 +316,17 @@ export function runTargetEngine(input: TargetEngineInput): TargetSlate {
         }
 
         const isUnreliable = qualification === 'ineligible';
-        const gain = (fcCandidate.circuitConcordance ?? 0.8) - (fcCandidate.baselineCircuitConcordance ?? 0.65);
-        const isLowGain = gain < (policy.evidencePolicy?.minIncrementalGainThreshold ?? 0.10);
+        const gain =
+          (fcCandidate.circuitConcordance ?? 0.8) -
+          (fcCandidate.baselineCircuitConcordance ?? 0.65);
+        const isLowGain = gain < (policy.evidencePolicy?.minIncrementalGainThreshold ?? 0.1);
 
         const isSuppressed = isUnreliable || isLowGain;
         const suppressionReason = isUnreliable
           ? ('LOW_RELIABILITY' as const)
           : isLowGain
-          ? ('LOW_INCREMENTAL_VALUE' as const)
-          : undefined;
+            ? ('LOW_INCREMENTAL_VALUE' as const)
+            : undefined;
 
         const contraindicationsOrConflicts: string[] = [];
         if (isUnreliable) {
@@ -343,7 +371,9 @@ export function runTargetEngine(input: TargetEngineInput): TargetSlate {
           ...(fcCandidate.surfaceVertex ? { surfaceVertex: fcCandidate.surfaceVertex } : {}),
           evidenceScore: 0.95,
           phenotypeConcordanceScore: fcCandidate.circuitConcordance ?? 0.84,
-          ...(fcCandidate.circuitConcordance ? { connectomeRefinementScore: fcCandidate.circuitConcordance } : {}),
+          ...(fcCandidate.circuitConcordance
+            ? { connectomeRefinementScore: fcCandidate.circuitConcordance }
+            : {}),
           overallScore: isSuppressed ? 0.45 : (fcCandidate.circuitConcordance ?? 0.88),
           rationale: isSuppressed
             ? `Suppressed: extreme connectivity concordance (${fcCandidate.circuitConcordance}) disqualified due to severe unreliability (score 0.42).`
@@ -373,15 +403,21 @@ export function runTargetEngine(input: TargetEngineInput): TargetSlate {
   let processedCandidates = attachPhenotypeConcordance(candidatePool, input.phenotypeSnapshot);
 
   // Apply rationale, evidence ceiling, and accessibility checks
-  processedCandidates = processedCandidates.map((candidate) => {
-    const accessCheck = evaluateAccessibilityGate(candidate.mniCoordinate, undefined, candidate.familyId);
+  processedCandidates = processedCandidates.map(candidate => {
+    const accessCheck = evaluateAccessibilityGate(
+      candidate.mniCoordinate,
+      undefined,
+      candidate.familyId,
+    );
     const contraindications = [...candidate.contraindicationsOrConflicts];
 
     let isSuppressed = candidate.isSuppressedOrRedundant;
     let suppressionReason = candidate.suppressionReason;
 
     if (!accessCheck.accessible && accessCheck.warning) {
-      const code = accessCheck.lateralityViolation ? 'LATERALITY_VIOLATION' : 'ANATOMICALLY_INACCESSIBLE';
+      const code = accessCheck.lateralityViolation
+        ? 'LATERALITY_VIOLATION'
+        : 'ANATOMICALLY_INACCESSIBLE';
       if (!contraindications.includes(code)) {
         contraindications.push(code);
       }
@@ -411,7 +447,8 @@ export function runTargetEngine(input: TargetEngineInput): TargetSlate {
   // ----------------------------------------------------
   // Stage 7: Redundancy Suppression
   // ----------------------------------------------------
-  const { activeCandidates, suppressedCandidates } = suppressRedundantCandidates(processedCandidates);
+  const { activeCandidates, suppressedCandidates } =
+    suppressRedundantCandidates(processedCandidates);
 
   // Check if all candidates failed or were suppressed (G12: No Clinical Target)
   if (activeCandidates.length === 0) {
@@ -423,7 +460,8 @@ export function runTargetEngine(input: TargetEngineInput): TargetSlate {
       evidenceReleaseVersion: evidenceVersion,
       mode,
       reasonCode: 'NO_VALID_TARGET_CANDIDATE',
-      clinicianExplanation: 'No clinically accessible and valid target candidates met qualification criteria.',
+      clinicianExplanation:
+        'No clinically accessible and valid target candidates met qualification criteria.',
       generatedAt: input.generatedAt,
     });
   }
@@ -437,7 +475,7 @@ export function runTargetEngine(input: TargetEngineInput): TargetSlate {
       top2 &&
       top1.familyId !== top2.familyId &&
       Math.abs(top1.overallScore - top2.overallScore) < 0.001 &&
-      (top1.method === 'CONNECTOME_REFINED' && top2.method === 'CONNECTOME_REFINED' ||
+      ((top1.method === 'CONNECTOME_REFINED' && top2.method === 'CONNECTOME_REFINED') ||
         input.phenotypeSnapshot.patientId?.includes('exact-tie') ||
         input.phenotypeSnapshot.patientId?.includes('g18'))
     ) {
@@ -453,7 +491,11 @@ export function runTargetEngine(input: TargetEngineInput): TargetSlate {
   // ----------------------------------------------------
   // Stage 8: Role-Based Slate Assembly & Graph Enrichment
   // ----------------------------------------------------
-  const { primaryCandidates, additionalCandidates } = allocateSlateRoles(activeCandidates, input.phenotypeSnapshot, mode);
+  const { primaryCandidates, additionalCandidates } = allocateSlateRoles(
+    activeCandidates,
+    input.phenotypeSnapshot,
+    mode,
+  );
 
   const applyRoleGate = (candidate: TargetCandidate): TargetCandidate => {
     const contraindications = [...candidate.contraindicationsOrConflicts];
@@ -464,7 +506,7 @@ export function runTargetEngine(input: TargetEngineInput): TargetSlate {
         policy,
         mode,
         candidate.familyId,
-        graph
+        graph,
       );
       if (!evidenceGateCheck.eligible && evidenceGateCheck.reason) {
         if (!contraindications.includes('EVIDENCE_TIER_RESTRICTED')) {
@@ -478,9 +520,15 @@ export function runTargetEngine(input: TargetEngineInput): TargetSlate {
     };
   };
 
-  const finalPrimary = primaryCandidates.map((c) => enrichCandidateWithGraphEvidence(applyRoleGate(c), graph, qualification));
-  const finalAdditional = additionalCandidates.map((c) => enrichCandidateWithGraphEvidence(applyRoleGate(c), graph, qualification));
-  const finalSuppressed = suppressedCandidates.map((c) => enrichCandidateWithGraphEvidence(applyRoleGate(c), graph, qualification));
+  const finalPrimary = primaryCandidates.map(c =>
+    enrichCandidateWithGraphEvidence(applyRoleGate(c), graph, qualification),
+  );
+  const finalAdditional = additionalCandidates.map(c =>
+    enrichCandidateWithGraphEvidence(applyRoleGate(c), graph, qualification),
+  );
+  const finalSuppressed = suppressedCandidates.map(c =>
+    enrichCandidateWithGraphEvidence(applyRoleGate(c), graph, qualification),
+  );
 
   // ----------------------------------------------------
   // Stage 9: Assemble Target Slate

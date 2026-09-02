@@ -50,12 +50,18 @@ describe('Target Engine Property-Based Invariants (fast-check)', () => {
                 hemisphere: 'L',
                 surfaceVertexIndex: 18452,
                 parcelName: 'p9-46v_L',
-                subjectT1Coordinate: { space: 'MNI152NLin2009cAsym', x: -44, y: 40, z: 34, unit: 'mm' },
+                subjectT1Coordinate: {
+                  space: 'MNI152NLin2009cAsym',
+                  x: -44,
+                  y: 40,
+                  z: 34,
+                  unit: 'mm',
+                },
                 mniCoordinate: { space: 'MNI152NLin2009cAsym', x: -44, y: 40, z: 34, unit: 'mm' },
                 clusterAreaMm2: 90.0,
                 circuitConcordanceRaw: 0.75,
                 circuitConcordancePercentile: 0.75,
-                baselineCircuitConcordance: 0.60,
+                baselineCircuitConcordance: 0.6,
                 accessibility: 'good',
                 reliabilityScore: highRel,
                 fitInterpretation: 'High reliability candidate',
@@ -72,12 +78,18 @@ describe('Target Engine Property-Based Invariants (fast-check)', () => {
                 hemisphere: 'L',
                 surfaceVertexIndex: 18452,
                 parcelName: 'p9-46v_L',
-                subjectT1Coordinate: { space: 'MNI152NLin2009cAsym', x: -44, y: 40, z: 34, unit: 'mm' },
+                subjectT1Coordinate: {
+                  space: 'MNI152NLin2009cAsym',
+                  x: -44,
+                  y: 40,
+                  z: 34,
+                  unit: 'mm',
+                },
                 mniCoordinate: { space: 'MNI152NLin2009cAsym', x: -44, y: 40, z: 34, unit: 'mm' },
                 clusterAreaMm2: 90.0,
                 circuitConcordanceRaw: 0.75,
                 circuitConcordancePercentile: 0.75,
-                baselineCircuitConcordance: 0.60,
+                baselineCircuitConcordance: 0.6,
                 accessibility: 'good',
                 reliabilityScore: lowRel,
                 fitInterpretation: 'Low reliability candidate',
@@ -101,9 +113,9 @@ describe('Target Engine Property-Based Invariants (fast-check)', () => {
           const scoreLow = slateLow.primaryCandidates[0]?.overallScore ?? 0;
 
           return scoreLow <= scoreHigh + 1e-6;
-        }
+        },
       ),
-      { numRuns: 30 }
+      { numRuns: 30 },
     );
   });
 
@@ -124,25 +136,22 @@ describe('Target Engine Property-Based Invariants (fast-check)', () => {
   // Invariant 3: Clinical Mode gate for evidence tiers
   it('Invariant 3: Research-only evidence cannot enter Clinical Mode', () => {
     fc.assert(
-      fc.property(
-        fc.constantFrom('CLINICAL' as const, 'RESEARCH' as const),
-        (mode) => {
-          const slate = runTargetEngine({
-            phenotypeSnapshot: G01_CASE_PHENOTYPE,
-            connectome: null,
-            mode,
-          });
+      fc.property(fc.constantFrom('CLINICAL' as const, 'RESEARCH' as const), mode => {
+        const slate = runTargetEngine({
+          phenotypeSnapshot: G01_CASE_PHENOTYPE,
+          connectome: null,
+          mode,
+        });
 
-          if (mode === 'CLINICAL') {
-            for (const c of [...slate.primaryCandidates, ...(slate.additionalCandidates || [])]) {
-              // Clinical candidates must be evidence-backed (T1 or T2)
-              expect(['T1', 'T2']).toContain(c.evidenceTier);
-            }
+        if (mode === 'CLINICAL') {
+          for (const c of [...slate.primaryCandidates, ...(slate.additionalCandidates || [])]) {
+            // Clinical candidates must be evidence-backed (T1 or T2)
+            expect(['T1', 'T2']).toContain(c.evidenceTier);
           }
-          return true;
         }
-      ),
-      { numRuns: 20 }
+        return true;
+      }),
+      { numRuns: 20 },
     );
   });
 
@@ -150,21 +159,26 @@ describe('Target Engine Property-Based Invariants (fast-check)', () => {
   it('Invariant 4: Primary candidates cannot contain duplicate family IDs', () => {
     fc.assert(
       fc.property(
-        fc.constantFrom(G01_CASE_PHENOTYPE, G02_CASE_PHENOTYPE, G05_CASE_PHENOTYPE, G07_CASE_PHENOTYPE),
-        (phenotype) => {
+        fc.constantFrom(
+          G01_CASE_PHENOTYPE,
+          G02_CASE_PHENOTYPE,
+          G05_CASE_PHENOTYPE,
+          G07_CASE_PHENOTYPE,
+        ),
+        phenotype => {
           const slate = runTargetEngine({
             phenotypeSnapshot: phenotype,
             connectome: G02_CASE_CONNECTOME,
             mode: 'CLINICAL',
           });
 
-          const primaryFamilies = slate.primaryCandidates.map((c) => c.familyId);
+          const primaryFamilies = slate.primaryCandidates.map(c => c.familyId);
           const uniqueFamilies = new Set(primaryFamilies);
 
           return primaryFamilies.length === uniqueFamilies.size;
-        }
+        },
       ),
-      { numRuns: 20 }
+      { numRuns: 20 },
     );
   });
 
@@ -194,38 +208,52 @@ describe('Target Engine Property-Based Invariants (fast-check)', () => {
   // Invariant 6: Pure Determinism across identical runs
   it('Invariant 6: Same canonical input produces bitwise identical manifest hash and JSON payload', () => {
     fc.assert(
-      fc.property(
-        fc.double({ min: 0.6, max: 0.9, noNaN: true }),
-        (rel) => {
-          const conn = createConnectomeInput({
-            candidateRegions: [
-              {
-                targetFamilyVersionId: 'TF-MDD-CONVERGENT-LDLPFC-001',
-                candidateCode: 'CAN-DETERMINISM',
-                generationMethod: 'CONNECTOME_REFINED',
-                hemisphere: 'L',
-                surfaceVertexIndex: 18452,
-                parcelName: 'p9-46v_L',
-                subjectT1Coordinate: { space: 'MNI152NLin2009cAsym', x: -44, y: 40, z: 34, unit: 'mm' },
-                mniCoordinate: { space: 'MNI152NLin2009cAsym', x: -44, y: 40, z: 34, unit: 'mm' },
-                clusterAreaMm2: 90.0,
-                circuitConcordanceRaw: 0.75,
-                circuitConcordancePercentile: 0.75,
-                baselineCircuitConcordance: 0.60,
-                accessibility: 'good',
-                reliabilityScore: rel,
-                fitInterpretation: 'Deterministic candidate',
+      fc.property(fc.double({ min: 0.6, max: 0.9, noNaN: true }), rel => {
+        const conn = createConnectomeInput({
+          candidateRegions: [
+            {
+              targetFamilyVersionId: 'TF-MDD-CONVERGENT-LDLPFC-001',
+              candidateCode: 'CAN-DETERMINISM',
+              generationMethod: 'CONNECTOME_REFINED',
+              hemisphere: 'L',
+              surfaceVertexIndex: 18452,
+              parcelName: 'p9-46v_L',
+              subjectT1Coordinate: {
+                space: 'MNI152NLin2009cAsym',
+                x: -44,
+                y: 40,
+                z: 34,
+                unit: 'mm',
               },
-            ],
-          });
+              mniCoordinate: { space: 'MNI152NLin2009cAsym', x: -44, y: 40, z: 34, unit: 'mm' },
+              clusterAreaMm2: 90.0,
+              circuitConcordanceRaw: 0.75,
+              circuitConcordancePercentile: 0.75,
+              baselineCircuitConcordance: 0.6,
+              accessibility: 'good',
+              reliabilityScore: rel,
+              fitInterpretation: 'Deterministic candidate',
+            },
+          ],
+        });
 
-          const run1 = runTargetEngine({ phenotypeSnapshot: G02_CASE_PHENOTYPE, connectome: conn, mode: 'CLINICAL' });
-          const run2 = runTargetEngine({ phenotypeSnapshot: G02_CASE_PHENOTYPE, connectome: conn, mode: 'CLINICAL' });
+        const run1 = runTargetEngine({
+          phenotypeSnapshot: G02_CASE_PHENOTYPE,
+          connectome: conn,
+          mode: 'CLINICAL',
+        });
+        const run2 = runTargetEngine({
+          phenotypeSnapshot: G02_CASE_PHENOTYPE,
+          connectome: conn,
+          mode: 'CLINICAL',
+        });
 
-          return run1.deterministicManifestHash === run2.deterministicManifestHash && JSON.stringify(run1) === JSON.stringify(run2);
-        }
-      ),
-      { numRuns: 30 }
+        return (
+          run1.deterministicManifestHash === run2.deterministicManifestHash &&
+          JSON.stringify(run1) === JSON.stringify(run2)
+        );
+      }),
+      { numRuns: 30 },
     );
   });
 
@@ -275,9 +303,9 @@ describe('Target Engine Property-Based Invariants (fast-check)', () => {
           }).toThrow();
 
           return decision.status === 'SIGNED';
-        }
+        },
       ),
-      { numRuns: 20 }
+      { numRuns: 20 },
     );
   });
 });

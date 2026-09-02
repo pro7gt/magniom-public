@@ -45,12 +45,13 @@ export function CaseHeader({
   };
 
   const indicationFormatted =
-    indication === 'MDD'
-      ? 'Major Depressive Disorder ± Anxious Distress'
-      : indication;
+    indication === 'MDD' ? 'Major Depressive Disorder ± Anxious Distress' : indication;
 
   return (
-    <div className="case-status-header-wrapper" aria-label={`Clinical Context for Case ${caseCode}`}>
+    <div
+      className="case-status-header-wrapper"
+      aria-label={`Clinical Context for Case ${caseCode}`}
+    >
       {/* Persistent Case Status Header Bar (§41–50) */}
       <div className="case-status-header">
         <div className="case-header-primary">
@@ -58,13 +59,22 @@ export function CaseHeader({
             <span className="case-header-code" style={{ fontFamily: 'var(--font-mono)' }}>
               {caseCode}
             </span>
-            <span className="case-header-separator" aria-hidden="true">•</span>
+            <span className="case-header-separator" aria-hidden="true">
+              •
+            </span>
             <h1 className="case-header-indication">{indicationFormatted}</h1>
           </div>
           <div className="case-header-submeta">
-            <span>Subject: <strong>{patientDisplayLabel}</strong></span>
+            <span>
+              Subject: <strong>{patientDisplayLabel}</strong>
+            </span>
             <span>•</span>
-            <span>Active Task: <strong style={{ color: 'var(--accent-cyan)' }}>{stateLabels[caseState] || caseState}</strong></span>
+            <span>
+              Active Task:{' '}
+              <strong style={{ color: 'var(--accent-cyan)' }}>
+                {stateLabels[caseState] || caseState}
+              </strong>
+            </span>
           </div>
         </div>
 
@@ -122,11 +132,14 @@ export function CaseHeader({
           aria-label="Stale Target Slate Warning"
         >
           <div className="staleness-content">
-            <span className="staleness-icon" aria-hidden="true">⚠</span>
+            <span className="staleness-icon" aria-hidden="true">
+              ⚠
+            </span>
             <div>
               <strong className="staleness-title">STALE TARGET SLATE DETECTED:</strong>{' '}
               <span className="staleness-message">
-                {staleReason || 'The clinical phenotype was updated after this slate was computed. Clinical sign-off is blocked until slate is regenerated.'}
+                {staleReason ||
+                  'The clinical phenotype was updated after this slate was computed. Clinical sign-off is blocked until slate is regenerated.'}
               </span>
             </div>
           </div>
@@ -145,7 +158,9 @@ export function CaseHeader({
       {/* Research Mode Restriction Notice (§46, §139) */}
       {isResearch && (
         <aside className="case-research-notice" role="alert">
-          <strong>RESEARCH CASE CONTEXT:</strong> All candidate targets and connectivity maps in this case are hypothesis-generating and for exploratory analysis. Clinical decision sign-off is disabled.
+          <strong>RESEARCH CASE CONTEXT:</strong> All candidate targets and connectivity maps in
+          this case are hypothesis-generating and for exploratory analysis. Clinical decision
+          sign-off is disabled.
         </aside>
       )}
     </div>

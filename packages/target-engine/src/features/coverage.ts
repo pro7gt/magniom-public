@@ -9,18 +9,19 @@ import type { ClinicalCoverageProfile, PhenotypeSnapshot, TargetCandidate } from
 export function calculateClinicalCoverageProfile(
   primaryCandidates: readonly TargetCandidate[],
   additionalCandidates: readonly TargetCandidate[],
-  phenotype: PhenotypeSnapshot
+  phenotype: PhenotypeSnapshot,
 ): ClinicalCoverageProfile {
-  const priorities = phenotype.symptomPriorities && phenotype.symptomPriorities.length > 0
-    ? phenotype.symptomPriorities
-    : [
-        {
-          domainCode: 'DOMAIN-MDD-DYSPHORIC-001',
-          priorityRank: 1,
-          clinicianWeight: phenotype.symptomScores?.dysphoriaScore ?? 0.9,
-          evidenceMappability: 'direct' as const,
-        },
-      ];
+  const priorities =
+    phenotype.symptomPriorities && phenotype.symptomPriorities.length > 0
+      ? phenotype.symptomPriorities
+      : [
+          {
+            domainCode: 'DOMAIN-MDD-DYSPHORIC-001',
+            priorityRank: 1,
+            clinicianWeight: phenotype.symptomScores?.dysphoriaScore ?? 0.9,
+            evidenceMappability: 'direct' as const,
+          },
+        ];
 
   const sortedPriorities = [...priorities].sort((a, b) => a.priorityRank - b.priorityRank);
   const primaryDomain = sortedPriorities[0]?.domainCode ?? 'DOMAIN-MDD-DYSPHORIC-001';
@@ -32,11 +33,17 @@ export function calculateClinicalCoverageProfile(
     if (!priority) continue;
     const domain = priority.domainCode;
     // Check if any primary or additional candidate covers this domain
-    const isCovered = [...primaryCandidates, ...additionalCandidates].some((c) => {
-      if (domain === 'DOMAIN-MDD-DYSPHORIC-001' && (c.circuitId?.includes('LDLPFC') || c.familyId?.includes('LDLPFC'))) {
+    const isCovered = [...primaryCandidates, ...additionalCandidates].some(c => {
+      if (
+        domain === 'DOMAIN-MDD-DYSPHORIC-001' &&
+        (c.circuitId?.includes('LDLPFC') || c.familyId?.includes('LDLPFC'))
+      ) {
         return true;
       }
-      if (domain === 'DOMAIN-MDD-ANXIOSOMATIC-001' && (c.circuitId?.includes('ANXIOSOMATIC') || c.familyId?.includes('ANXIOSOMATIC'))) {
+      if (
+        domain === 'DOMAIN-MDD-ANXIOSOMATIC-001' &&
+        (c.circuitId?.includes('ANXIOSOMATIC') || c.familyId?.includes('ANXIOSOMATIC'))
+      ) {
         return true;
       }
       return false;

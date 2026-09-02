@@ -6,12 +6,7 @@
 export type MagniomMode = 'RESEARCH' | 'CLINICAL' | 'VALIDATION';
 
 export type CandidateRole =
-  | 'PRIMARY_1'
-  | 'PRIMARY_2'
-  | 'PRIMARY_3'
-  | 'ADDITIONAL_A'
-  | 'ADDITIONAL_B'
-  | 'RESERVE';
+  'PRIMARY_1' | 'PRIMARY_2' | 'PRIMARY_3' | 'ADDITIONAL_A' | 'ADDITIONAL_B' | 'RESERVE';
 
 export type EvidenceTier = 'T1' | 'T2' | 'T3' | 'T4' | 'T_EXP';
 
@@ -56,10 +51,7 @@ export type ObjectLifecycleStatus =
   | 'ARCHIVED';
 
 export type ScientificChangeClass =
-  | 'PATCH'
-  | 'MINOR_METHODOLOGICAL'
-  | 'MAJOR_METHODOLOGICAL'
-  | 'INDICATION_EXPANSION';
+  'PATCH' | 'MINOR_METHODOLOGICAL' | 'MAJOR_METHODOLOGICAL' | 'INDICATION_EXPANSION';
 
 export type ValidationType =
   | 'unit'
@@ -76,11 +68,7 @@ export type ValidationType =
 
 export type ImagingQualityStatus = 'pass' | 'conditional' | 'fail';
 
-export type PersonalisationQualification =
-  | 'qualified'
-  | 'limited'
-  | 'not_available'
-  | 'ineligible';
+export type PersonalisationQualification = 'qualified' | 'limited' | 'not_available' | 'ineligible';
 
 export type AppRole =
   | 'tms_specialist'
@@ -116,10 +104,7 @@ export type SnapshotState = 'draft' | 'ready_for_review' | 'approved' | 'superse
 export type DataQualityState = 'verified' | 'reviewed' | 'unverified' | 'incomplete' | 'invalid';
 
 export type EpisodeSeverity =
-  | 'MILD'
-  | 'MODERATE'
-  | 'SEVERE_WITHOUT_PSYCHOSIS'
-  | 'SEVERE_WITH_PSYCHOSIS';
+  'MILD' | 'MODERATE' | 'SEVERE_WITHOUT_PSYCHOSIS' | 'SEVERE_WITH_PSYCHOSIS';
 
 export type ClinicalSafetyClearance = 'cleared' | 'escalated_review' | 'contraindicated';
 
@@ -128,16 +113,12 @@ export type CandidateDecisionAction = 'accept' | 'reject' | 'modify' | 'replace'
 export type MagniomInfluence = 'none' | 'minor' | 'moderate' | 'major';
 
 export type SlateStatus =
-  | 'draft'
-  | 'generated'
-  | 'ready_for_review'
-  | 'reviewed'
-  | 'superseded'
-  | 'abstained';
+  'draft' | 'generated' | 'ready_for_review' | 'reviewed' | 'superseded' | 'abstained';
 
 export type DecisionStatus = 'in_review' | 'completed' | 'deferred' | 'superseded';
 
-export type CandidateStatus = 'generated' | 'eligible' | 'ineligible' | 'suppressed' | 'research_only';
+export type CandidateStatus =
+  'generated' | 'eligible' | 'ineligible' | 'suppressed' | 'research_only';
 
 export type FinalTargetSource = 'magniom_candidate' | 'clinician_defined' | 'standard_target';
 
@@ -168,51 +149,20 @@ export type StorageBucket =
   | 'research-derived';
 
 export type ImagingStudyStatus =
-  | 'uploaded'
-  | 'validated'
-  | 'processing'
-  | 'qc_pass'
-  | 'qc_conditional'
-  | 'qc_fail'
-  | 'superseded';
+  'uploaded' | 'validated' | 'processing' | 'qc_pass' | 'qc_conditional' | 'qc_fail' | 'superseded';
 
-export type ImagingSeriesType =
-  | 'T1w'
-  | 'rest_bold'
-  | 'fieldmap'
-  | 'dwi'
-  | 'other';
+export type ImagingSeriesType = 'T1w' | 'rest_bold' | 'fieldmap' | 'dwi' | 'other';
 
-export type ConnectomicsRunStatus =
-  | 'queued'
-  | 'running'
-  | 'succeeded'
-  | 'failed'
-  | 'superseded';
+export type ConnectomicsRunStatus = 'queued' | 'running' | 'succeeded' | 'failed' | 'superseded';
 
-export type SurfaceMeshType =
-  | 'white'
-  | 'pial'
-  | 'midthickness'
-  | 'inflated'
-  | 'sphere_reg';
+export type SurfaceMeshType = 'white' | 'pial' | 'midthickness' | 'inflated' | 'sphere_reg';
 
-export type MeshFormat =
-  | 'gifti_surf'
-  | 'gifti_metric'
-  | 'cifti'
-  | 'freesurfer_surf';
+export type MeshFormat = 'gifti_surf' | 'gifti_metric' | 'cifti' | 'freesurfer_surf';
 
-export type QCWarningSeverity =
-  | 'info'
-  | 'warning'
-  | 'critical';
+export type QCWarningSeverity = 'info' | 'warning' | 'critical';
 
 export type ClinicalImpact =
-  | 'none'
-  | 'possible'
-  | 'target_family_specific'
-  | 'personalisation_invalid';
+  'none' | 'possible' | 'target_family_specific' | 'personalisation_invalid';
 
 export type StructuralPipelineStage =
   | 'INGEST'
@@ -243,21 +193,11 @@ export type ArtifactType =
   | 'CLINICAL_REPORT_PDF';
 
 export type CameraOrientationPreset =
-  | 'LEFT_LATERAL'
-  | 'RIGHT_LATERAL'
-  | 'SUPERIOR'
-  | 'MEDIAL'
-  | 'ANTERIOR'
-  | 'POSTERIOR'
-  | 'RESET';
+  'LEFT_LATERAL' | 'RIGHT_LATERAL' | 'SUPERIOR' | 'MEDIAL' | 'ANTERIOR' | 'POSTERIOR' | 'RESET';
 
 export type CoordinateOrientation = 'RAS' | 'LPS';
 
-export type TransformType =
-  | 'AFFINE'
-  | 'NONLINEAR_WARP'
-  | 'SPHERICAL_REGISTRATION'
-  | 'IDENTITY';
+export type TransformType = 'AFFINE' | 'NONLINEAR_WARP' | 'SPHERICAL_REGISTRATION' | 'IDENTITY';
 
 export type NeuronavigationFormat = 'BRAINSIGHT' | 'LOCALITE' | 'GENERIC_JSON';
 
@@ -270,16 +210,7 @@ export type OutboxEventType =
   | 'TARGET_DECISION_SIGNED'
   | 'JOB_DISPATCH_REQUESTED';
 
-export type MaturityStage =
-  | 'M0'
-  | 'M1'
-  | 'M2'
-  | 'M3'
-  | 'M4'
-  | 'M5'
-  | 'M6'
-  | 'M7'
-  | 'M8';
+export type MaturityStage = 'M0' | 'M1' | 'M2' | 'M3' | 'M4' | 'M5' | 'M6' | 'M7' | 'M8';
 
 export type DefectSeverity = 'CRITICAL' | 'MAJOR' | 'MINOR';
 

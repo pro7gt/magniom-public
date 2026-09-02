@@ -1,16 +1,16 @@
 # Magniom Backup & Disaster Recovery Plan v1.0
 
 **Standard Reference:** HIPAA Security Rule (§ 164.308(a)(7)(ii)(A) & (B)) / ISO 22301 / NIST SP 800-34  
-**Document Status:** Controlled Engineering Disaster Recovery Baseline  
+**Document Status:** Controlled Engineering Disaster Recovery Baseline
 
 ---
 
 ## 1. Objectives: RPO & RTO Baselines
 
-| Parameter | Objective | Enforcement Mechanism |
-|---|---|---|
+| Parameter                          | Objective         | Enforcement Mechanism                                                           |
+| ---------------------------------- | ----------------- | ------------------------------------------------------------------------------- |
 | **Recovery Point Objective (RPO)** | **<= 15 minutes** | PostgreSQL continuous Point-in-Time Recovery (PITR) & Write-Ahead Logging (WAL) |
-| **Recovery Time Objective (RTO)** | **<= 2 hours** | Automated infrastructure-as-code recovery scripts and cloud database failover |
+| **Recovery Time Objective (RTO)**  | **<= 2 hours**    | Automated infrastructure-as-code recovery scripts and cloud database failover   |
 
 ---
 
@@ -60,6 +60,7 @@ PostgreSQL database backup alone does not restore binary neuroimaging files (DIC
 ## 4. Automated Backup & Restore Drill Verification
 
 Restoration drills are executed automatically via `scripts/security/backup-restore-drill.ts` to verify that:
+
 1. Data dumps restore cleanly into sandboxed test environments.
 2. Row counts across all 11 schemas match the pre-backup state.
 3. Immutability triggers remain active and enforce record locks in restored databases.

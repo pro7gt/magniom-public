@@ -33,18 +33,22 @@ export class StructuralProcessingJobHandler implements JobHandler<Record<string,
       await ctx.reportProgress(
         'VALIDATING_INPUTS',
         'Validating zero-PHI DICOM/BIDS ingest and structural job parameters',
-        10
+        10,
       );
 
       const rawPayload = ctx.envelope.payload;
       const jobParams = validateStructuralProcessingJobPayload({
         organisationId: ctx.envelope.organisationId,
         caseId: ctx.envelope.caseId,
-        imagingStudyId: (rawPayload['imagingStudyId'] as string) ?? '11111111-1111-1111-1111-111111111111',
+        imagingStudyId:
+          (rawPayload['imagingStudyId'] as string) ?? '11111111-1111-1111-1111-111111111111',
         connectomicsRunId: (rawPayload['connectomicsRunId'] as string) ?? ctx.envelope.jobId,
         bidsDatasetBucket: (rawPayload['bidsDatasetBucket'] as string) ?? 'clinical-ingest',
-        bidsDatasetPath: (rawPayload['bidsDatasetPath'] as string) ?? `org/${ctx.envelope.organisationId}/case/${ctx.envelope.caseId}/bids`,
-        pipelineVersionId: (rawPayload['pipelineVersionId'] as string) ?? 'a0000000-0000-0000-0000-000000000001',
+        bidsDatasetPath:
+          (rawPayload['bidsDatasetPath'] as string) ??
+          `org/${ctx.envelope.organisationId}/case/${ctx.envelope.caseId}/bids`,
+        pipelineVersionId:
+          (rawPayload['pipelineVersionId'] as string) ?? 'a0000000-0000-0000-0000-000000000001',
         atlasId: (rawPayload['atlasId'] as string) ?? 'b0000000-0000-0000-0000-000000000001',
         mode: (rawPayload['mode'] as any) ?? 'RESEARCH',
       });
@@ -53,28 +57,28 @@ export class StructuralProcessingJobHandler implements JobHandler<Record<string,
       await ctx.reportProgress(
         'BIDS_VERIFICATION',
         'Verifying BIDS 1.11.1 dataset tree and standardized sidecars',
-        30
+        30,
       );
 
       // Step 3: Anatomical T1w Structural Preprocessing
       await ctx.reportProgress(
         'STRUCTURAL_PREPROCESSING',
         'Executing N4 bias-correction, brain extraction, and MNI152NLin2009cAsym registration',
-        60
+        60,
       );
 
       // Step 4: Cortical Surface Extraction & fsLR-32k Resampling
       await ctx.reportProgress(
         'SURFACE_RECONSTRUCTION',
         'Reconstructing white, pial, midthickness, and inflated cortical meshes (fsLR-32k)',
-        80
+        80,
       );
 
       // Step 5: Structural QC Gate Evaluation
       await ctx.reportProgress(
         'QC_GATE_EVALUATION',
         'Computing SNR, CNR, Euler defect holes, and cortical thickness distribution',
-        90
+        90,
       );
 
       // Step 6: Immutable Manifest Registration
@@ -108,7 +112,7 @@ export class StructuralProcessingJobHandler implements JobHandler<Record<string,
       await ctx.reportProgress(
         'COMPLETED',
         'Sprint 8 NeuroCompute Structural processing successfully finished',
-        100
+        100,
       );
 
       return {

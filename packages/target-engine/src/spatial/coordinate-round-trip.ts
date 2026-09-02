@@ -77,7 +77,7 @@ export function exportNeuronavigationTarget(
     patientId?: string;
     nativeCoord?: SubjectCoordinate;
     normalVector?: Vector3D;
-  }
+  },
 ): NeuronavigationExportSimulation {
   const patientId = options?.patientId ?? 'sub-MGN7F3A92';
   const worldCoord: Vector3D = options?.nativeCoord
@@ -126,7 +126,7 @@ export function exportNeuronavigationTarget(
         exportedAt: now,
       },
       null,
-      2
+      2,
     );
   }
 
@@ -150,7 +150,7 @@ export function exportNeuronavigationTarget(
  */
 export function importNeuronavigationTarget(
   payloadText: string,
-  format: NeuronavigationFormat
+  format: NeuronavigationFormat,
 ): {
   worldCoordinate: Vector3D;
   normalVector: Vector3D;
@@ -158,14 +158,16 @@ export function importNeuronavigationTarget(
   coordinateSpace: string;
 } {
   if (format === 'BRAINSIGHT') {
-    const lines = payloadText.split('\n').filter((l) => l.trim().length > 0 && !l.startsWith('#'));
+    const lines = payloadText.split('\n').filter(l => l.trim().length > 0 && !l.startsWith('#'));
     const targetLine = lines[0];
     if (!targetLine) {
       throw new Error('Invalid Brainsight payload: no data lines found.');
     }
     const parts = targetLine.split('\t');
     if (parts.length < 8) {
-      throw new Error(`Invalid Brainsight format: expected 8 tab-delimited columns, got ${parts.length}.`);
+      throw new Error(
+        `Invalid Brainsight format: expected 8 tab-delimited columns, got ${parts.length}.`,
+      );
     }
 
     return {
@@ -236,19 +238,25 @@ export function executeCoordinateRoundTripTest(input: {
   const trace: string[] = [];
 
   const now = new Date().toISOString();
-  trace.push(`[${now}] Stage 1: Initiating coordinate round-trip test for target ${input.target.id} (${input.target.role}).`);
-  trace.push(`[${now}] Source Native T1w: (${input.nativeCoord.x}, ${input.nativeCoord.y}, ${input.nativeCoord.z}) mm [${transform.orientation}].`);
+  trace.push(
+    `[${now}] Stage 1: Initiating coordinate round-trip test for target ${input.target.id} (${input.target.role}).`,
+  );
+  trace.push(
+    `[${now}] Source Native T1w: (${input.nativeCoord.x}, ${input.nativeCoord.y}, ${input.nativeCoord.z}) mm [${transform.orientation}].`,
+  );
 
   // Step 1: Forward Affine transform (Native -> MNI)
   const forwardMni = nativeToMniAffine(input.nativeCoord, transform);
-  trace.push(`[${now}] Stage 2: Forward affine mapped to MNI: (${forwardMni.x}, ${forwardMni.y}, ${forwardMni.z}) mm.`);
+  trace.push(
+    `[${now}] Stage 2: Forward affine mapped to MNI: (${forwardMni.x}, ${forwardMni.y}, ${forwardMni.z}) mm.`,
+  );
 
   // Step 2: Laterality verification (Section 175)
   const hemisphere = input.target.mniCoordinate.x < 0 ? 'L' : 'R';
   const lateralityCheck = verifyLaterality(
     { x: forwardMni.x, y: forwardMni.y, z: forwardMni.z },
     hemisphere,
-    transform.orientation
+    transform.orientation,
   );
 
   if (!lateralityCheck.valid) {
@@ -261,24 +269,32 @@ export function executeCoordinateRoundTripTest(input: {
   const exportSim = exportNeuronavigationTarget(input.target, format, {
     nativeCoord: input.nativeCoord,
   });
-  trace.push(`[${now}] Stage 4: Exported to ${format} neuronavigation format (${exportSim.payloadText.length} bytes).`);
+  trace.push(
+    `[${now}] Stage 4: Exported to ${format} neuronavigation format (${exportSim.payloadText.length} bytes).`,
+  );
 
   // Step 4: Import from Neuronavigation Format
   const imported = importNeuronavigationTarget(exportSim.payloadText, format);
-  trace.push(`[${now}] Stage 5: Imported coordinate from ${format}: (${imported.worldCoordinate.x}, ${imported.worldCoordinate.y}, ${imported.worldCoordinate.z}) mm.`);
+  trace.push(
+    `[${now}] Stage 5: Imported coordinate from ${format}: (${imported.worldCoordinate.x}, ${imported.worldCoordinate.y}, ${imported.worldCoordinate.z}) mm.`,
+  );
 
   // Step 5: Inverse Affine Transform (MNI -> Native)
   const roundTripNative = mniToNativeAffine(forwardMni, transform);
-  trace.push(`[${now}] Stage 6: Inverse affine mapped back to Native: (${roundTripNative.x}, ${roundTripNative.y}, ${roundTripNative.z}) mm.`);
+  trace.push(
+    `[${now}] Stage 6: Inverse affine mapped back to Native: (${roundTripNative.x}, ${roundTripNative.y}, ${roundTripNative.z}) mm.`,
+  );
 
   // Step 6: Error calculation
   const errorMm = computeEuclideanDistance3D(
     { x: input.nativeCoord.x, y: input.nativeCoord.y, z: input.nativeCoord.z },
-    { x: roundTripNative.x, y: roundTripNative.y, z: roundTripNative.z }
+    { x: roundTripNative.x, y: roundTripNative.y, z: roundTripNative.z },
   );
 
   const passRoundTrip = errorMm <= tolerance;
-  trace.push(`[${now}] Stage 7: Round-trip delta error: ${errorMm.toFixed(6)} mm (Tolerance: ${tolerance} mm) -> ${passRoundTrip ? 'PASS' : 'FAIL'}.`);
+  trace.push(
+    `[${now}] Stage 7: Round-trip delta error: ${errorMm.toFixed(6)} mm (Tolerance: ${tolerance} mm) -> ${passRoundTrip ? 'PASS' : 'FAIL'}.`,
+  );
 
   return {
     testId: `RT-${input.target.id}-${format}`,

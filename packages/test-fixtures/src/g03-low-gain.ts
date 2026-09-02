@@ -1,4 +1,9 @@
-import type { PhenotypeSnapshot, TargetCandidate, TargetSlate, TargetReliabilityProfile } from '@magniom/domain';
+import type {
+  PhenotypeSnapshot,
+  TargetCandidate,
+  TargetSlate,
+  TargetReliabilityProfile,
+} from '@magniom/domain';
 import { computeSha256 } from '@magniom/scientific-policy';
 import { EvidenceKnowledgeGraph, CANONICAL_EVIDENCE_RELEASE_1_0_0 } from '@magniom/evidence';
 
@@ -7,7 +12,8 @@ const graph = new EvidenceKnowledgeGraph(CANONICAL_EVIDENCE_RELEASE_1_0_0);
 export const G03_PHENOTYPE: PhenotypeSnapshot = {
   id: 'snap-golden-03',
   patientId: 'synth-pat-g03',
-  primaryDiagnosis: 'Major Depressive Disorder, Single Episode, Moderate without Psychotic Features',
+  primaryDiagnosis:
+    'Major Depressive Disorder, Single Episode, Moderate without Psychotic Features',
   episodeSeverity: 'MODERATE',
   diagnosisAssertion: {
     code: 'MDD',
@@ -42,7 +48,8 @@ export const G03_PHENOTYPE: PhenotypeSnapshot = {
     priorTmsExposure: false,
   },
   phenotypeConfidence: 'HIGH',
-  clinicianSummary: 'Synthetic moderate MDD case where connectome provides minimal gain over evidence baseline.',
+  clinicianSummary:
+    'Synthetic moderate MDD case where connectome provides minimal gain over evidence baseline.',
   confirmedByClinicianId: 'clin-demo-001',
   confirmedAt: '2026-09-01T10:00:00.000Z',
   snapshotHash: computeSha256({
@@ -74,7 +81,7 @@ export const G03_CONNECTOME = {
       targetFamilyCode: 'TF-MDD-CONVERGENT-LDLPFC-001',
       reliabilityScore: 0.78,
       circuitConcordance: 0.76,
-      baselineCircuitConcordance: 0.70, // gain = 0.06 (< 0.10 threshold)
+      baselineCircuitConcordance: 0.7, // gain = 0.06 (< 0.10 threshold)
       mniCoordinate: {
         space: 'MNI152NLin2009cAsym' as const,
         x: -42,
@@ -109,7 +116,9 @@ export const G03_PRIMARY_1: TargetCandidate = {
   isSuppressedOrRedundant: false,
   evidencePaths: graph.findEvidencePaths('TF-MDD-LDLPFC-EST-001'),
   conflictingEvidence: graph.getConflictingClaims('TF-MDD-LDLPFC-EST-001'),
-  counterarguments: ['Fixed group anchor does not account for patient-specific functional anatomy variations.'],
+  counterarguments: [
+    'Fixed group anchor does not account for patient-specific functional anatomy variations.',
+  ],
 };
 
 export const G03_SUPPRESSED_CANDIDATE: TargetCandidate = {
@@ -130,7 +139,8 @@ export const G03_SUPPRESSED_CANDIDATE: TargetCandidate = {
   phenotypeConcordanceScore: 0.76,
   connectomeRefinementScore: 0.76,
   overallScore: 0.82,
-  rationale: 'Suppressed: connectome candidate demonstrated insufficient incremental value (< 0.10) over evidence baseline.',
+  rationale:
+    'Suppressed: connectome candidate demonstrated insufficient incremental value (< 0.10) over evidence baseline.',
   contraindicationsOrConflicts: [],
   isSuppressedOrRedundant: true,
   suppressionReason: 'LOW_INCREMENTAL_VALUE',

@@ -9,11 +9,7 @@ import {
 } from '@magniom/presentation';
 import { TargetComparison } from '../../../../components/target-comparison';
 
-export default function ComparePage({
-  params,
-}: {
-  params: Promise<{ caseId: string }>;
-}) {
+export default function ComparePage({ params }: { params: Promise<{ caseId: string }> }) {
   const resolvedParams = use(params);
   const caseId = resolvedParams.caseId;
   const record = caseStore.getCaseRecord(caseId);

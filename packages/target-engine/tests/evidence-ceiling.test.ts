@@ -49,7 +49,9 @@ describe('Sprint 4 — Evidence Graph & Evidence Ceiling Verification', () => {
       const conflicts = graph.getConflictingClaims('TF-MDD-CONVERGENT-LDLPFC-001');
       expect(conflicts.length).toBeGreaterThanOrEqual(1);
 
-      const superiorityConflict = conflicts.find((c) => c.claimCode === 'EC-PERSONALISED-SUPERIORITY-001');
+      const superiorityConflict = conflicts.find(
+        c => c.claimCode === 'EC-PERSONALISED-SUPERIORITY-001',
+      );
       expect(superiorityConflict).toBeDefined();
       expect(superiorityConflict?.sourceCitation).toContain('Lancet Psychiatry');
       expect(superiorityConflict?.clinicalImplication).toContain('Counterargument');
@@ -81,13 +83,15 @@ describe('Sprint 4 — Evidence Graph & Evidence Ceiling Verification', () => {
 
       // The Tier 4 research candidate (Cingulum L8Av) was prohibited from occupying a clinical slot
       const researchCandidateInPrimary = slate.primaryCandidates.find(
-        (c) => c.familyId === 'TF-RES-CING-L8AV-001'
+        c => c.familyId === 'TF-RES-CING-L8AV-001',
       );
       expect(researchCandidateInPrimary).toBeUndefined();
 
       // Clinical coverage profile is strictly calculated on approved clinical indications
       expect(slate.clinicalCoverageProfile.primaryDomainCovered).toBe('DOMAIN-MDD-DYSPHORIC-001');
-      expect(slate.clinicalCoverageProfile.secondaryDomainsCovered).toContain('DOMAIN-MDD-ANXIOSOMATIC-001');
+      expect(slate.clinicalCoverageProfile.secondaryDomainsCovered).toContain(
+        'DOMAIN-MDD-ANXIOSOMATIC-001',
+      );
 
       // Verify matching with G08 fixture
       expect(slate).toEqual(GOLDEN_CASE_08_CLINICAL_SLATE);
@@ -105,7 +109,7 @@ describe('Sprint 4 — Evidence Graph & Evidence Ceiling Verification', () => {
 
       // In Research Mode, the Tier 4 connectome candidate is permitted in the candidate slate
       expect(slate.additionalCandidates.length).toBeGreaterThanOrEqual(1);
-      const candidate = slate.additionalCandidates.find((c) => c.familyId === 'TF-RES-CING-L8AV-001');
+      const candidate = slate.additionalCandidates.find(c => c.familyId === 'TF-RES-CING-L8AV-001');
       expect(candidate).toBeDefined();
       expect(candidate?.evidenceTier).toBe('T4');
       expect(candidate?.method).toBe('CONNECTOME_REFINED');

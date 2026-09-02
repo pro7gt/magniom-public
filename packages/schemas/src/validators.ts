@@ -190,7 +190,9 @@ export function validateEnqueueJobInput(data: unknown): EnqueueJobInput {
   return EnqueueJobInputSchema.parse(data) as unknown as EnqueueJobInput;
 }
 
-export function validateQueueEnvelope<T = Record<string, unknown>>(data: unknown): QueueEnvelope<T> {
+export function validateQueueEnvelope<T = Record<string, unknown>>(
+  data: unknown,
+): QueueEnvelope<T> {
   return QueueEnvelopeSchema.parse(data) as unknown as QueueEnvelope<T>;
 }
 
@@ -309,6 +311,3 @@ export function validateCoordinateTransformMatrix4x4(data: unknown) {
 export function validateNeuronavigationExportSimulation(data: unknown) {
   return NeuronavigationExportSimulationSchema.parse(data);
 }
-
-
-

@@ -17,10 +17,7 @@ export class WorkflowWorker {
   private isRunning = false;
   private runTimer: ReturnType<typeof setTimeout> | null = null;
 
-  constructor(
-    dbClient: WorkflowDatabaseClient,
-    configOverrides?: Partial<WorkerConfig>
-  ) {
+  constructor(dbClient: WorkflowDatabaseClient, configOverrides?: Partial<WorkerConfig>) {
     this.config = getWorkerConfig(configOverrides);
     this.dbClient = dbClient;
     this.consumer = new QueueConsumer(this.config, dbClient);
@@ -31,7 +28,9 @@ export class WorkflowWorker {
     this.consumer.registerHandler(handler);
   }
 
-  async runOnce(queues: string[] = ['target_generation', 'neurocompute', 'imaging_ingest']): Promise<{
+  async runOnce(
+    queues: string[] = ['target_generation', 'neurocompute', 'imaging_ingest'],
+  ): Promise<{
     dispatchedEvents: number;
     processedJobs: number;
   }> {

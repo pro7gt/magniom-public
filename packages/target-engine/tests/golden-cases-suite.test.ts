@@ -78,7 +78,7 @@ describe('Sprint 12 — Golden Cases Verification (G01–G18) with Real NeuroCom
       expect(p1.convergenceProfile).toBeDefined();
       expect(p1.convergenceProfile?.convergenceClassification).toBe('high');
       expect(p1.convergenceProfile?.distanceToEvidenceBaselineMm).toBeCloseTo(8.25, 1);
-      expect(p1.convergenceProfile?.incrementalGainOverBaseline).toBeGreaterThanOrEqual(0.10);
+      expect(p1.convergenceProfile?.incrementalGainOverBaseline).toBeGreaterThanOrEqual(0.1);
 
       // Additional candidate must contain the counterfactual baseline prior
       expect(slate.additionalCandidates).toHaveLength(1);
@@ -126,11 +126,15 @@ describe('Sprint 12 — Golden Cases Verification (G01–G18) with Real NeuroCom
       expect(slate.personalisationQualification).toBe('ineligible');
       expect(slate.primaryCandidates).toHaveLength(1);
       expect(slate.primaryCandidates[0].familyId).toBe('TF-MDD-LDLPFC-EST-001');
-      expect(slate.primaryCandidates[0].contraindicationsOrConflicts).toContain('LIMITED_FC_RELIABILITY');
+      expect(slate.primaryCandidates[0].contraindicationsOrConflicts).toContain(
+        'LIMITED_FC_RELIABILITY',
+      );
 
       expect(slate.suppressedCandidates).toHaveLength(1);
       expect(slate.suppressedCandidates[0].suppressionReason).toBe('LOW_RELIABILITY');
-      expect(slate.suppressedCandidates[0].contraindicationsOrConflicts).toContain('LIMITED_FC_RELIABILITY');
+      expect(slate.suppressedCandidates[0].contraindicationsOrConflicts).toContain(
+        'LIMITED_FC_RELIABILITY',
+      );
     });
   });
 
@@ -201,7 +205,9 @@ describe('Sprint 12 — Golden Cases Verification (G01–G18) with Real NeuroCom
       });
 
       // Clinical slate must NOT contain L8Av target in primary candidates
-      expect(clinicalSlate.primaryCandidates.some((c) => c.familyId === 'TF-MDD-L8AV-001')).toBe(false);
+      expect(clinicalSlate.primaryCandidates.some(c => c.familyId === 'TF-MDD-L8AV-001')).toBe(
+        false,
+      );
 
       const researchSlate = runTargetEngine({
         phenotypeSnapshot: G08_CASE_PHENOTYPE,
@@ -210,7 +216,9 @@ describe('Sprint 12 — Golden Cases Verification (G01–G18) with Real NeuroCom
       });
 
       // Research slate displays L8Av candidate in exploratory additional position
-      expect(researchSlate.additionalCandidates.some((c) => c.familyId === 'TF-MDD-L8AV-001')).toBe(true);
+      expect(researchSlate.additionalCandidates.some(c => c.familyId === 'TF-MDD-L8AV-001')).toBe(
+        true,
+      );
     });
   });
 
@@ -226,7 +234,9 @@ describe('Sprint 12 — Golden Cases Verification (G01–G18) with Real NeuroCom
       });
 
       expect(slate.primaryCandidates[0].familyId).toBe('TF-MDD-LDLPFC-EST-001');
-      expect(slate.suppressedCandidates.some((c) => c.suppressionReason === 'MAJOR_DIVERGENCE')).toBe(true);
+      expect(slate.suppressedCandidates.some(c => c.suppressionReason === 'MAJOR_DIVERGENCE')).toBe(
+        true,
+      );
     });
   });
 
@@ -245,7 +255,7 @@ describe('Sprint 12 — Golden Cases Verification (G01–G18) with Real NeuroCom
       expect(slate.primaryCandidates).toHaveLength(1);
       // Redundant candidates are placed in suppressed list with REDUNDANT_ANATOMICAL
       const redundantCount = slate.suppressedCandidates.filter(
-        (c) => c.suppressionReason === 'REDUNDANT_ANATOMICAL'
+        c => c.suppressionReason === 'REDUNDANT_ANATOMICAL',
       ).length;
       expect(redundantCount).toBeGreaterThanOrEqual(4);
     });
@@ -263,7 +273,9 @@ describe('Sprint 12 — Golden Cases Verification (G01–G18) with Real NeuroCom
       });
 
       // Inaccessible candidate suppressed
-      expect(slate.suppressedCandidates.some((c) => c.suppressionReason === 'ANATOMICALLY_INACCESSIBLE')).toBe(true);
+      expect(
+        slate.suppressedCandidates.some(c => c.suppressionReason === 'ANATOMICALLY_INACCESSIBLE'),
+      ).toBe(true);
       // Accessible candidate promoted
       expect(slate.primaryCandidates[0].id).toBe('can-acc-g11-2');
     });
@@ -283,7 +295,13 @@ describe('Sprint 12 — Golden Cases Verification (G01–G18) with Real NeuroCom
             hemisphere: 'L',
             surfaceVertexIndex: 999,
             parcelName: 'p9-46v_L',
-            subjectT1Coordinate: { space: 'MNI152NLin2009cAsym', x: -30, y: 40, z: 120, unit: 'mm' },
+            subjectT1Coordinate: {
+              space: 'MNI152NLin2009cAsym',
+              x: -30,
+              y: 40,
+              z: 120,
+              unit: 'mm',
+            },
             mniCoordinate: { space: 'MNI152NLin2009cAsym', x: -30, y: 40, z: 120, unit: 'mm' },
             clusterAreaMm2: 95.0,
             circuitConcordanceRaw: 0.95,
@@ -326,7 +344,7 @@ describe('Sprint 12 — Golden Cases Verification (G01–G18) with Real NeuroCom
             clusterAreaMm2: 150.0,
             circuitConcordanceRaw: 0.99,
             circuitConcordancePercentile: 0.99,
-            baselineCircuitConcordance: 0.50,
+            baselineCircuitConcordance: 0.5,
             accessibility: 'good',
             reliabilityScore: 0.95,
             fitInterpretation: 'Exploratory attempt',
@@ -340,8 +358,8 @@ describe('Sprint 12 — Golden Cases Verification (G01–G18) with Real NeuroCom
         mode: 'CLINICAL',
       });
 
-      expect(slate.primaryCandidates.some((c) => c.familyId === 'TF-MDD-L8AV-001')).toBe(false);
-      expect(slate.additionalCandidates.some((c) => c.familyId === 'TF-MDD-L8AV-001')).toBe(false);
+      expect(slate.primaryCandidates.some(c => c.familyId === 'TF-MDD-L8AV-001')).toBe(false);
+      expect(slate.additionalCandidates.some(c => c.familyId === 'TF-MDD-L8AV-001')).toBe(false);
     });
   });
 
@@ -406,7 +424,10 @@ describe('Sprint 12 — Golden Cases Verification (G01–G18) with Real NeuroCom
   describe('G17: Connectome Pipeline Version Upgrades', () => {
     it('preserves historical slate immutability under new connectome run versions', () => {
       const connectomeV1 = createConnectomeInput({ connectomeRunId: 'run-pipe-v1-001' });
-      const connectomeV2 = createConnectomeInput({ connectomeRunId: 'run-pipe-v2-002', pipelineVersion: 'MAGNIOM-CONNECTOME-2.0.0' });
+      const connectomeV2 = createConnectomeInput({
+        connectomeRunId: 'run-pipe-v2-002',
+        pipelineVersion: 'MAGNIOM-CONNECTOME-2.0.0',
+      });
 
       const slate1 = runTargetEngine({
         phenotypeSnapshot: G17_CASE_PHENOTYPE,
@@ -473,7 +494,9 @@ describe('Sprint 12 — Golden Cases Verification (G01–G18) with Real NeuroCom
         mode: 'CLINICAL',
       });
 
-      expect(slate.primaryCandidates[0].contraindicationsOrConflicts).toContain('SCIENTIFICALLY_EQUIVALENT');
+      expect(slate.primaryCandidates[0].contraindicationsOrConflicts).toContain(
+        'SCIENTIFICALLY_EQUIVALENT',
+      );
     });
   });
 });

@@ -5,11 +5,7 @@ import Link from 'next/link';
 import { caseStore } from '../../../../lib/case-store';
 import { toPhenotypeViewModel } from '@magniom/presentation';
 
-export default function CaseAssessmentPage({
-  params,
-}: {
-  params: Promise<{ caseId: string }>;
-}) {
+export default function CaseAssessmentPage({ params }: { params: Promise<{ caseId: string }> }) {
   const resolvedParams = use(params);
   const caseId = resolvedParams.caseId;
   const record = caseStore.getCaseRecord(caseId);
@@ -20,13 +16,22 @@ export default function CaseAssessmentPage({
 
   return (
     <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '1rem',
+        }}
+      >
         <div>
           <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)' }}>
             Clinical Assessment & Baseline Evaluation
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-            Referral diagnostic history, baseline psychometric scores, and clinical eligibility for TMS therapy.
+            Referral diagnostic history, baseline psychometric scores, and clinical eligibility for
+            TMS therapy.
           </p>
         </div>
 
@@ -37,13 +42,33 @@ export default function CaseAssessmentPage({
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          gap: '1.5rem',
+        }}
+      >
         {/* Baseline Diagnostic Profile */}
         <div className="card">
-          <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--accent-cyan)', marginBottom: '0.75rem' }}>
+          <h3
+            style={{
+              fontSize: '1.125rem',
+              fontWeight: 700,
+              color: 'var(--accent-cyan)',
+              marginBottom: '0.75rem',
+            }}
+          >
             Diagnostic Formulation
           </h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: '0.875rem' }}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.75rem',
+              fontSize: '0.875rem',
+            }}
+          >
             <div>
               <span style={{ color: 'var(--text-secondary)' }}>Primary Diagnosis:</span>
               <div style={{ fontWeight: 600, color: '#f8fafc', marginTop: '0.125rem' }}>
@@ -67,19 +92,57 @@ export default function CaseAssessmentPage({
 
         {/* Baseline Psychometric Ratings */}
         <div className="card">
-          <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--accent-cyan)', marginBottom: '0.75rem' }}>
+          <h3
+            style={{
+              fontSize: '1.125rem',
+              fontWeight: 700,
+              color: 'var(--accent-cyan)',
+              marginBottom: '0.75rem',
+            }}
+          >
             Baseline Clinical Instruments
           </h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.875rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem', background: 'var(--bg-surface-elevated)', borderRadius: '0.375rem' }}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.5rem',
+              fontSize: '0.875rem',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                padding: '0.5rem',
+                background: 'var(--bg-surface-elevated)',
+                borderRadius: '0.375rem',
+              }}
+            >
               <span>MADRS Total Score</span>
               <strong style={{ color: '#f59e0b' }}>34 (Severe Depression)</strong>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem', background: 'var(--bg-surface-elevated)', borderRadius: '0.375rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                padding: '0.5rem',
+                background: 'var(--bg-surface-elevated)',
+                borderRadius: '0.375rem',
+              }}
+            >
               <span>GAD-7 Anxiety Score</span>
               <strong style={{ color: '#38bdf8' }}>14 (Moderate-Severe)</strong>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem', background: 'var(--bg-surface-elevated)', borderRadius: '0.375rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                padding: '0.5rem',
+                background: 'var(--bg-surface-elevated)',
+                borderRadius: '0.375rem',
+              }}
+            >
               <span>PHQ-9 Total Score</span>
               <strong style={{ color: '#f59e0b' }}>19 (Moderately Severe)</strong>
             </div>

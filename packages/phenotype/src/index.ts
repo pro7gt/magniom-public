@@ -88,4 +88,3 @@ export function verifyPhenotypeOntologyIntegrity(bundle: FrozenPhenotypeOntology
     bundle.verificationSignature.length > 0
   );
 }
-

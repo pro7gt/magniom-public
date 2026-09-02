@@ -62,19 +62,22 @@ export function getTierBadgeLabel(tier: EvidenceTier | string): {
       return {
         label: 'Tier 1 — Established',
         className: 'badge-tier1',
-        description: 'Supported by replicated randomized prospective trials and established international consensus.',
+        description:
+          'Supported by replicated randomized prospective trials and established international consensus.',
       };
     case 'T2':
       return {
         label: 'Tier 2 — Prospectively Supported',
         className: 'badge-tier2',
-        description: 'Supported by prospective clinical trials with predefined circuit engagement outcomes.',
+        description:
+          'Supported by prospective clinical trials with predefined circuit engagement outcomes.',
       };
     case 'T3':
       return {
         label: 'Tier 3 — Retrospectively Supported',
         className: 'badge-tier3',
-        description: 'Supported by retrospective cohort associations or large clinical registry analyses.',
+        description:
+          'Supported by retrospective cohort associations or large clinical registry analyses.',
       };
     case 'T4':
       return {
@@ -87,7 +90,8 @@ export function getTierBadgeLabel(tier: EvidenceTier | string): {
       return {
         label: 'Tier Exp — Research Only',
         className: 'badge-tierexp',
-        description: 'Hypothesis-generating experimental target. Strictly excluded from standard Clinical Mode.',
+        description:
+          'Hypothesis-generating experimental target. Strictly excluded from standard Clinical Mode.',
       };
   }
 }
@@ -149,7 +153,8 @@ export function formatReliabilityBadge(reliability?: TargetReliabilityProfile | 
       label: 'Reliability: N/A',
       level: 'NOT_APPLICABLE',
       badgeClass: 'badge-neutral',
-      explanation: 'Evidence-only target; does not depend on patient-specific connectomic measurements.',
+      explanation:
+        'Evidence-only target; does not depend on patient-specific connectomic measurements.',
     };
   }
 
@@ -175,14 +180,16 @@ export function formatReliabilityBadge(reliability?: TargetReliabilityProfile | 
       label: 'Reliability: Low (Context Only)',
       level: 'LOW',
       badgeClass: 'badge-reliability-low',
-      explanation: 'Low cross-run reproducibility. Not qualified to drive candidate ranking in Clinical Mode.',
+      explanation:
+        'Low cross-run reproducibility. Not qualified to drive candidate ranking in Clinical Mode.',
     };
   }
   return {
     label: 'Reliability: Unusable',
     level: 'UNUSABLE',
     badgeClass: 'badge-reliability-unusable',
-    explanation: 'Measurement reliability below minimum qualification threshold. Personalisation abstained.',
+    explanation:
+      'Measurement reliability below minimum qualification threshold. Personalisation abstained.',
   };
 }
 
@@ -253,11 +260,13 @@ export interface CandidateCardViewModel {
     readonly rating: 'Optimal' | 'Acceptable' | 'Suboptimal';
     readonly explanation: string;
   };
-  readonly counterfactualTarget?: {
-    readonly name: string;
-    readonly coordinateFormatted: string;
-    readonly distanceMm: number;
-  } | undefined;
+  readonly counterfactualTarget?:
+    | {
+        readonly name: string;
+        readonly coordinateFormatted: string;
+        readonly distanceMm: number;
+      }
+    | undefined;
   readonly conflictingEvidence: readonly string[];
   readonly whyThisMayBeWrong: readonly string[];
   readonly hasConflicts: boolean;
@@ -266,14 +275,22 @@ export interface CandidateCardViewModel {
 
 export function toCandidateCardViewModel(
   candidate: TargetCandidate,
-  slateBaseline?: MniCoordinate
+  slateBaseline?: MniCoordinate,
 ): CandidateCardViewModel {
   const roleInfo = getRoleTitleAndSubtitle(candidate.role);
   const tierInfo = getTierBadgeLabel(candidate.evidenceTier);
 
-  const baselineCoord = slateBaseline || { space: 'MNI152NLin2009cAsym', x: -42.0, y: 38.0, z: 31.0 };
-  const distanceMoved = candidate.convergenceProfile?.distanceToEvidenceBaselineMm ??
-    (candidate.method === 'CONNECTOME_REFINED' ? calculateEuclideanDistance(candidate.mniCoordinate, baselineCoord) : 0);
+  const baselineCoord = slateBaseline || {
+    space: 'MNI152NLin2009cAsym',
+    x: -42.0,
+    y: 38.0,
+    z: 31.0,
+  };
+  const distanceMoved =
+    candidate.convergenceProfile?.distanceToEvidenceBaselineMm ??
+    (candidate.method === 'CONNECTOME_REFINED'
+      ? calculateEuclideanDistance(candidate.mniCoordinate, baselineCoord)
+      : 0);
 
   // Compile mandatory "Why this may be wrong" points (Safeguard 6 / Section 59)
   const whyWrongPoints: string[] = [];
@@ -284,15 +301,23 @@ export function toCandidateCardViewModel(
     whyWrongPoints.push(...candidate.contraindicationsOrConflicts);
   }
   if (candidate.method === 'CONNECTOME_REFINED') {
-    whyWrongPoints.push('Personalised targeting has not demonstrated universal superiority over high-quality standard targeting in all patient subgroups.');
+    whyWrongPoints.push(
+      'Personalised targeting has not demonstrated universal superiority over high-quality standard targeting in all patient subgroups.',
+    );
     if (distanceMoved > 15) {
-      whyWrongPoints.push(`This candidate is ${distanceMoved} mm from the established evidence-only group reference.`);
+      whyWrongPoints.push(
+        `This candidate is ${distanceMoved} mm from the established evidence-only group reference.`,
+      );
     }
   } else if (candidate.method === 'EVIDENCE_ONLY_PRIOR') {
-    whyWrongPoints.push('Standard group coordinates do not account for individual variations in functional connectome architecture.');
+    whyWrongPoints.push(
+      'Standard group coordinates do not account for individual variations in functional connectome architecture.',
+    );
   }
   if (whyWrongPoints.length === 0) {
-    whyWrongPoints.push('Clinical response rates vary by patient treatment history and individual cortical geometry.');
+    whyWrongPoints.push(
+      'Clinical response rates vary by patient treatment history and individual cortical geometry.',
+    );
   }
 
   return {
@@ -311,7 +336,8 @@ export function toCandidateCardViewModel(
     evidenceTierBadgeClass: tierInfo.className,
     evidenceTierDescription: tierInfo.description,
     reliabilityBadge: formatReliabilityBadge(null),
-    clinicalPurpose: candidate.rationale || 'Target hypothesis addressing specific symptom-circuit pathology.',
+    clinicalPurpose:
+      candidate.rationale || 'Target hypothesis addressing specific symptom-circuit pathology.',
     whyNominated: `Nominated via ${candidate.method.toLowerCase().replace(/_/g, ' ')} with ${tierInfo.label.toLowerCase()}.`,
     evidenceBasisSummary: 'Derived from canonical evidence releases for Major Depressive Disorder.',
     whatMriChanged: {
@@ -324,15 +350,17 @@ export function toCandidateCardViewModel(
       depthMm: 14.2,
       skullDistanceMm: 8.5,
       rating: 'Optimal',
-      explanation: 'Focal target located in superficial cortical grey matter accessible to standard figure-8 coil geometries.',
+      explanation:
+        'Focal target located in superficial cortical grey matter accessible to standard figure-8 coil geometries.',
     },
-    counterfactualTarget: candidate.method === 'CONNECTOME_REFINED'
-      ? {
-          name: 'Evidence-Only Standard Reference',
-          coordinateFormatted: formatMniCoordinate(baselineCoord),
-          distanceMm: distanceMoved,
-        }
-      : undefined,
+    counterfactualTarget:
+      candidate.method === 'CONNECTOME_REFINED'
+        ? {
+            name: 'Evidence-Only Standard Reference',
+            coordinateFormatted: formatMniCoordinate(baselineCoord),
+            distanceMm: distanceMoved,
+          }
+        : undefined,
     conflictingEvidence: candidate.contraindicationsOrConflicts || [],
     whyThisMayBeWrong: whyWrongPoints,
     hasConflicts: (candidate.contraindicationsOrConflicts?.length || 0) > 0,
@@ -364,11 +392,13 @@ export interface TargetSlateViewModel {
 
 export function toTargetSlateViewModel(
   slate: TargetSlate,
-  options?: { isStale?: boolean | undefined; staleReason?: string | undefined }
+  options?: { isStale?: boolean | undefined; staleReason?: string | undefined },
 ): TargetSlateViewModel {
   const baseline = slate.counterfactualSummary?.evidenceBaselineCoordinate;
   const primaryCards = slate.primaryCandidates.map(c => toCandidateCardViewModel(c, baseline));
-  const additionalCards = slate.additionalCandidates.map(c => toCandidateCardViewModel(c, baseline));
+  const additionalCards = slate.additionalCandidates.map(c =>
+    toCandidateCardViewModel(c, baseline),
+  );
 
   const suppressed = slate.suppressedCandidates.map((c, idx) => ({
     id: c.id || `suppressed-${idx}`,
@@ -603,33 +633,43 @@ export function toEvidenceDrawerViewModel(candidate: TargetCandidate): EvidenceD
     {
       id: 'SOURCE-FOX-2012',
       citation: 'Fox MD et al. (2012) PNAS 109(8):E438-E445',
-      title: 'Efficacy of transcranial magnetic stimulation targets for depression is related to intrinsic functional connectivity with the subgenual cingulate.',
+      title:
+        'Efficacy of transcranial magnetic stimulation targets for depression is related to intrinsic functional connectivity with the subgenual cingulate.',
       authors: 'Fox MD, Buckner RL, White MP, Greicius MD, Pascual-Leone A.',
       year: 2012,
       journal: 'Proc Natl Acad Sci USA',
       doi: '10.1073/pnas.1120275109',
-      clinicalQuestion: 'Does the clinical efficacy of prefrontal TMS stimulation sites relate systematically to functional connectivity with the sgACC?',
-      studyPopulation: 'Adults with treatment-resistant MDD across multiple published clinical trial cohorts (N = 106).',
-      targetingMethod: 'Retrospective resting-state fMRI seed connectivity mapping to sgACC (Brodmann area 25).',
+      clinicalQuestion:
+        'Does the clinical efficacy of prefrontal TMS stimulation sites relate systematically to functional connectivity with the sgACC?',
+      studyPopulation:
+        'Adults with treatment-resistant MDD across multiple published clinical trial cohorts (N = 106).',
+      targetingMethod:
+        'Retrospective resting-state fMRI seed connectivity mapping to sgACC (Brodmann area 25).',
       protocolDelivered: 'High-frequency 10 Hz rTMS and low-frequency 1 Hz rTMS protocols.',
-      clinicalOutcome: 'Antidepressant efficacy correlated significantly (r = -0.58) with negative functional correlation between DLPFC target and sgACC.',
-      whyMagniomUsesIt: 'Foundational scientific justification for sgACC-anti-correlated left prefrontal target selection.',
-      whatItDoesNotProve: 'Does not establish individual prospective superiority over structural or group coordinates in unstratified populations.',
+      clinicalOutcome:
+        'Antidepressant efficacy correlated significantly (r = -0.58) with negative functional correlation between DLPFC target and sgACC.',
+      whyMagniomUsesIt:
+        'Foundational scientific justification for sgACC-anti-correlated left prefrontal target selection.',
+      whatItDoesNotProve:
+        'Does not establish individual prospective superiority over structural or group coordinates in unstratified populations.',
     },
     {
       id: 'SOURCE-BLUMBERG-2022',
       citation: 'Blumberger DM et al. (2022) Lancet 399:771-782',
-      title: 'Effectiveness of theta burst versus high-frequency repetitive transcranial magnetic stimulation in patients with depression: a randomized non-inferiority trial.',
+      title:
+        'Effectiveness of theta burst versus high-frequency repetitive transcranial magnetic stimulation in patients with depression: a randomized non-inferiority trial.',
       authors: 'Blumberger DM, Vila-Rodriguez F, Thorpe KE, et al.',
       year: 2022,
       journal: 'The Lancet',
       doi: '10.1016/S0140-6736(22)00012-3',
-      clinicalQuestion: 'Is standard evidence-anchored prefrontal TMS effective and reproducible without individualized connectivity mapping?',
+      clinicalQuestion:
+        'Is standard evidence-anchored prefrontal TMS effective and reproducible without individualized connectivity mapping?',
       studyPopulation: 'Treatment-resistant MDD outpatients (N = 414).',
       targetingMethod: 'Standard Beam F3 / 5.5 cm structural-anatomical method.',
       protocolDelivered: 'iTBS (3 min) vs 10 Hz rTMS (37.5 min), 5 days/week for 4-6 weeks.',
       clinicalOutcome: '49% response rate and 32% remission rate across both arms.',
-      whyMagniomUsesIt: 'Establishes the robust clinical baseline and evidence ceiling for DLPFC target families.',
+      whyMagniomUsesIt:
+        'Establishes the robust clinical baseline and evidence ceiling for DLPFC target families.',
       whatItDoesNotProve: 'Does not evaluate incremental gain of connectome-refined coordinates.',
     },
   ];
@@ -654,17 +694,20 @@ export function toEvidenceDrawerViewModel(candidate: TargetCandidate): EvidenceD
       'Connectivity peak coordinates can demonstrate spatial variance depending on motion censoring and scan duration.',
       'Individual target engagement does not guarantee clinical remission if secondary symptom circuits (e.g. anxiosomatic) are dominant.',
     ],
-    populationApplicability: 'High for adult Major Depressive Disorder with prominent dysphoric burden.',
+    populationApplicability:
+      'High for adult Major Depressive Disorder with prominent dysphoric burden.',
     evidencePath: [
       {
         nodeType: 'INDICATION',
         label: 'Major Depressive Disorder (MDD)',
-        description: 'Indication defined by DSM-5 / ICD-11 criteria with treatment resistance history.',
+        description:
+          'Indication defined by DSM-5 / ICD-11 criteria with treatment resistance history.',
       },
       {
         nodeType: 'CLAIM',
         label: 'sgACC Anti-Correlation Efficacy Claim',
-        description: 'Antidepressant response scales with functional connectivity to Brodmann area 25.',
+        description:
+          'Antidepressant response scales with functional connectivity to Brodmann area 25.',
       },
       {
         nodeType: 'CIRCUIT',
@@ -712,13 +755,16 @@ export interface ComparisonTableViewModel {
   readonly totalCandidates: number;
 }
 
-export function toComparisonTableViewModel(candidates: readonly TargetCandidate[]): ComparisonTableViewModel {
+export function toComparisonTableViewModel(
+  candidates: readonly TargetCandidate[],
+): ComparisonTableViewModel {
   const rows: ComparisonTableRowViewModel[] = candidates.map(candidate => {
     const roleInfo = getRoleTitleAndSubtitle(candidate.role);
     const tierInfo = getTierBadgeLabel(candidate.evidenceTier);
     const reliabilityInfo = formatReliabilityBadge(null);
 
-    const distance = candidate.convergenceProfile?.distanceToEvidenceBaselineMm ??
+    const distance =
+      candidate.convergenceProfile?.distanceToEvidenceBaselineMm ??
       (candidate.method === 'CONNECTOME_REFINED' ? 8.2 : 0);
 
     const displacementText =
@@ -730,8 +776,8 @@ export function toComparisonTableViewModel(candidates: readonly TargetCandidate[
       candidate.method === 'CONNECTOME_REFINED'
         ? 'Incremental personalisation efficacy vs standard baseline'
         : candidate.evidenceTier === 'T1'
-        ? 'Individual connectomic variation not captured'
-        : 'Smaller prospective trial evidence base';
+          ? 'Individual connectomic variation not captured'
+          : 'Smaller prospective trial evidence base';
 
     return {
       candidateId: candidate.id,
@@ -741,8 +787,10 @@ export function toComparisonTableViewModel(candidates: readonly TargetCandidate[
       coordinateFormatted: formatMniCoordinate(candidate.mniCoordinate),
       evidenceTierLabel: tierInfo.label,
       evidenceTierBadgeClass: tierInfo.className,
-      clinicalDomain: candidate.role === 'PRIMARY_2' ? 'Anxiosomatic distress' : 'Dysphoric / Depressed mood',
-      patientFCConcordance: candidate.method === 'CONNECTOME_REFINED' ? 'High anti-correlation' : 'Not used',
+      clinicalDomain:
+        candidate.role === 'PRIMARY_2' ? 'Anxiosomatic distress' : 'Dysphoric / Depressed mood',
+      patientFCConcordance:
+        candidate.method === 'CONNECTOME_REFINED' ? 'High anti-correlation' : 'Not used',
       reliabilityLabel: reliabilityInfo.label,
       reliabilityBadgeClass: reliabilityInfo.badgeClass,
       personalisationDisplacement: displacementText,
@@ -770,7 +818,9 @@ export interface ConvergenceViewModel {
   }[];
 }
 
-export function toConvergenceViewModel(candidates: readonly TargetCandidate[]): ConvergenceViewModel {
+export function toConvergenceViewModel(
+  candidates: readonly TargetCandidate[],
+): ConvergenceViewModel {
   if (candidates.length < 2 || !candidates[0] || !candidates[1]) {
     return {
       convergenceLevel: 'HIGH',
@@ -791,12 +841,18 @@ export function toConvergenceViewModel(candidates: readonly TargetCandidate[]): 
       convergenceLevel: 'HIGH',
       badgeClass: 'badge-convergence-high',
       headline: 'High Target Convergence (Δ ≤ 12 mm)',
-      summary: 'Multiple independent reasoning paths (evidence anchor, individual FC, symptom circuits) converge on approximately the same cortical subregion.',
+      summary:
+        'Multiple independent reasoning paths (evidence anchor, individual FC, symptom circuits) converge on approximately the same cortical subregion.',
       pairwiseDistanceMm: dist,
       details: [
         {
           sourceName: 'Evidence Anchor Reference',
-          coordinateFormatted: formatMniCoordinate({ space: 'MNI152NLin2009cAsym', x: -42, y: 38, z: 31 }),
+          coordinateFormatted: formatMniCoordinate({
+            space: 'MNI152NLin2009cAsym',
+            x: -42,
+            y: 38,
+            z: 31,
+          }),
           deltaFromAnchorMm: 0,
         },
         {
@@ -818,7 +874,8 @@ export function toConvergenceViewModel(candidates: readonly TargetCandidate[]): 
       convergenceLevel: 'MODERATE',
       badgeClass: 'badge-convergence-moderate',
       headline: 'Moderate Convergence / Multi-Circuit Architecture',
-      summary: 'Primary target candidates address distinct but related therapeutic circuits (e.g., dysphoric vs anxiosomatic).',
+      summary:
+        'Primary target candidates address distinct but related therapeutic circuits (e.g., dysphoric vs anxiosomatic).',
       pairwiseDistanceMm: dist,
       details: [
         {
@@ -839,7 +896,8 @@ export function toConvergenceViewModel(candidates: readonly TargetCandidate[]): 
     convergenceLevel: 'LOW',
     badgeClass: 'badge-convergence-low',
     headline: 'Low Convergence — Divergent Target Hypotheses',
-    summary: 'The principal evidence anchor, patient-specific connectivity peak, and secondary phenotype nominate materially different cortical locations. Decision uncertainty is elevated.',
+    summary:
+      'The principal evidence anchor, patient-specific connectivity peak, and secondary phenotype nominate materially different cortical locations. Decision uncertainty is elevated.',
     pairwiseDistanceMm: dist,
     details: [
       {
@@ -886,7 +944,7 @@ export interface DecisionReviewViewModel {
 
 export function toDecisionReviewViewModel(
   decision: ClinicianDecision,
-  slate: TargetSlate
+  slate: TargetSlate,
 ): DecisionReviewViewModel {
   const targetMap = new Map<string, TargetCandidate>();
   [...slate.primaryCandidates, ...slate.additionalCandidates].forEach(c => targetMap.set(c.id, c));
@@ -897,9 +955,14 @@ export function toDecisionReviewViewModel(
       sequence: index + 1,
       source: cd.action === 'modify' ? 'Modified Clinician Coordinate' : 'Magniom Slate Candidate',
       targetName: candidate?.familyId || `Target ${cd.targetCandidateId}`,
-      coordinateFormatted: cd.modifiedTarget && typeof cd.modifiedTarget === 'object' && 'mniCoordinate' in cd.modifiedTarget
-        ? formatMniCoordinate(cd.modifiedTarget.mniCoordinate as MniCoordinate)
-        : candidate ? formatMniCoordinate(candidate.mniCoordinate) : '(—, —, —)',
+      coordinateFormatted:
+        cd.modifiedTarget &&
+        typeof cd.modifiedTarget === 'object' &&
+        'mniCoordinate' in cd.modifiedTarget
+          ? formatMniCoordinate(cd.modifiedTarget.mniCoordinate as MniCoordinate)
+          : candidate
+            ? formatMniCoordinate(candidate.mniCoordinate)
+            : '(—, —, —)',
       actionTaken: cd.action.toUpperCase(),
       clinicalReasons: cd.reasonCodes || [],
     };
@@ -916,7 +979,8 @@ export function toDecisionReviewViewModel(
     clinicianLicense: decision.attestation?.licenseNumber,
     digitalSignatureHash: decision.digitalSignatureHash,
     selectedTargetsSummary: targetSummaries,
-    overallReasoning: decision.overallReasoning || 'Clinical reasoning captured in decision record.',
+    overallReasoning:
+      decision.overallReasoning || 'Clinical reasoning captured in decision record.',
     magniomInfluence: decision.magniomInfluence || 'moderate',
     disagreementWithMagniom: decision.disagreementWithMagniom,
     supersedesId: decision.supersedesId,
@@ -1033,7 +1097,7 @@ export interface Clinical3DViewerViewModel {
 export function toTargetRoiViewModel(
   candidate: TargetCandidate,
   isSelected: boolean,
-  options?: { subjectT1?: SubjectCoordinate }
+  options?: { subjectT1?: SubjectCoordinate },
 ): TargetRoiViewModel {
   const roleInfo = getRoleTitleAndSubtitle(candidate.role);
   const mni = candidate.mniCoordinate;
@@ -1053,7 +1117,11 @@ export function toTargetRoiViewModel(
 
   // HCP-MMP1.0 parcel heuristics based on coordinate territory
   const parcelName =
-    mni.y > 42 ? 'HCP-MMP1.0 46 / a9-46v' : mni.y > 34 ? 'HCP-MMP1.0 p9-46v / 8Av' : 'HCP-MMP1.0 9-46d / 8C';
+    mni.y > 42
+      ? 'HCP-MMP1.0 46 / a9-46v'
+      : mni.y > 34
+        ? 'HCP-MMP1.0 p9-46v / 8Av'
+        : 'HCP-MMP1.0 9-46d / 8C';
 
   return {
     id: candidate.id,
@@ -1070,7 +1138,8 @@ export function toTargetRoiViewModel(
     coilNormal: { x: -0.32, y: 0.65, z: 0.69 },
     depthMm: 14.2,
     accessibilityRating: 'Optimal',
-    reliabilityBadgeClass: candidate.method === 'CONNECTOME_REFINED' ? 'badge-reliability-high' : 'badge-neutral',
+    reliabilityBadgeClass:
+      candidate.method === 'CONNECTOME_REFINED' ? 'badge-reliability-high' : 'badge-neutral',
     reliabilityLevel: candidate.method === 'CONNECTOME_REFINED' ? 'HIGH' : 'N/A',
     isPrimary: roleInfo.isPrimary,
     isSelected,
@@ -1080,7 +1149,7 @@ export function toTargetRoiViewModel(
 
 export function toCounterfactual3DViewModel(
   candidate: TargetCandidate,
-  slateBaseline?: MniCoordinate
+  slateBaseline?: MniCoordinate,
 ): Counterfactual3DViewModel | undefined {
   if (candidate.method !== 'CONNECTOME_REFINED') {
     return undefined;
@@ -1093,7 +1162,8 @@ export function toCounterfactual3DViewModel(
     z: 31.0,
   };
 
-  const distance = candidate.convergenceProfile?.distanceToEvidenceBaselineMm ??
+  const distance =
+    candidate.convergenceProfile?.distanceToEvidenceBaselineMm ??
     calculateEuclideanDistance(candidate.mniCoordinate, baseline);
 
   const dispVector: Vector3D = {
@@ -1102,9 +1172,10 @@ export function toCounterfactual3DViewModel(
     z: Number((candidate.mniCoordinate.z - baseline.z).toFixed(1)),
   };
 
-  const interpretation = distance <= 12
-    ? 'Modest within-family connectomic refinement preserving standard evidence boundaries.'
-    : 'Substantial connectomic displacement from group evidence baseline. Review clinical coverage trade-offs.';
+  const interpretation =
+    distance <= 12
+      ? 'Modest within-family connectomic refinement preserving standard evidence boundaries.'
+      : 'Substantial connectomic displacement from group evidence baseline. Review clinical coverage trade-offs.';
 
   return {
     hasCounterfactual: true,
@@ -1118,13 +1189,14 @@ export function toCounterfactual3DViewModel(
     targetFamilyComparison: 'SAME_FAMILY',
     therapeuticCircuitComparison: 'SAME_CIRCUIT',
     expectedGainText: '+18% expected sgACC anti-correlation concordance',
-    justificationText: 'Connectome refinement towards patient-specific maximal anti-correlation focus.',
+    justificationText:
+      'Connectome refinement towards patient-specific maximal anti-correlation focus.',
     interpretationText: interpretation,
   };
 }
 
 export function toConfidenceRegion3DViewModel(
-  candidate: TargetCandidate
+  candidate: TargetCandidate,
 ): ConfidenceRegion3DViewModel {
   const isPersonalised = candidate.method === 'CONNECTOME_REFINED';
   const radius = isPersonalised ? 5.8 : 4.0;
@@ -1138,7 +1210,8 @@ export function toConfidenceRegion3DViewModel(
     reliabilityLevel: isPersonalised ? 'HIGH' : 'HIGH',
     badgeClass: 'badge-reliability-high',
     description: `± approx. ${radius} mm spatial reliability region derived from cross-run and split-half series.`,
-    coilContextDescription: 'Spatial dispersion is substantially narrower than standard figure-8 coil E-field footprint (~20 mm FWHM).',
+    coilContextDescription:
+      'Spatial dispersion is substantially narrower than standard figure-8 coil E-field footprint (~20 mm FWHM).',
   };
 }
 
@@ -1171,7 +1244,8 @@ export function getCanonicalCircuitOverlays(): CircuitOverlayViewModel[] {
       colormap: 'viridis',
       hemisphere: 'L',
       defaultOpacity: 0.65,
-      description: 'Dorsomedial prefrontal cortex to centromedial amygdala fear and arousal circuit.',
+      description:
+        'Dorsomedial prefrontal cortex to centromedial amygdala fear and arousal circuit.',
       isActive: false,
     },
     {
@@ -1188,7 +1262,7 @@ export function getCanonicalCircuitOverlays(): CircuitOverlayViewModel[] {
 }
 
 export function toComparison3DViewModel(
-  candidates3D: readonly TargetRoiViewModel[]
+  candidates3D: readonly TargetRoiViewModel[],
 ): Comparison3DViewModel {
   const pairwise: {
     candidateAId: string;
@@ -1243,10 +1317,12 @@ export function toClinical3DViewerViewModel(
     activeSurfaceType?: SurfaceMeshType;
     activeHemisphere?: 'L' | 'R' | 'BOTH';
     visibleLayers?: Partial<ViewerLayerVisibilityViewModel>;
-  }
+  },
 ): Clinical3DViewerViewModel {
-  const activeId = selectedCandidateId || slate.primaryCandidates[0]?.id || allCandidates[0]?.id || '';
-  const selectedCandidate = allCandidates.find(c => c.id === activeId) || slate.primaryCandidates[0] || allCandidates[0]!;
+  const activeId =
+    selectedCandidateId || slate.primaryCandidates[0]?.id || allCandidates[0]?.id || '';
+  const selectedCandidate =
+    allCandidates.find(c => c.id === activeId) || slate.primaryCandidates[0] || allCandidates[0]!;
 
   const baselineMni = slate.counterfactualSummary?.evidenceBaselineCoordinate;
 
@@ -1487,7 +1563,9 @@ export interface ReleaseContextSummaryViewModel {
 // Adapters for Application Shell View Models
 // ------------------------------------------
 
-export function toEnvironmentModeBadgeViewModel(mode: EnvironmentMode = 'CLINICAL'): EnvironmentModeBadgeViewModel {
+export function toEnvironmentModeBadgeViewModel(
+  mode: EnvironmentMode = 'CLINICAL',
+): EnvironmentModeBadgeViewModel {
   switch (mode) {
     case 'RESEARCH':
       return {
@@ -1529,7 +1607,8 @@ export function toTopBarViewModel(options?: {
     displayName: options?.user?.displayName || 'Dr A. Smith',
     roleTitle: options?.user?.roleTitle || 'TMS Specialist',
     hasSigningAuthority: options?.user?.hasSigningAuthority ?? true,
-    signingAuthorityLevel: options?.user?.signingAuthorityLevel || 'Full Specialist Target Attestation',
+    signingAuthorityLevel:
+      options?.user?.signingAuthorityLevel || 'Full Specialist Target Attestation',
     organizationId: options?.organization?.organizationId || 'org-melb-tms',
     organizationName: options?.organization?.organizationName || 'Melbourne TMS Centre',
     siteName: options?.organization?.siteName || 'Site 1 — Parkville',
@@ -1555,24 +1634,36 @@ export function toTopBarViewModel(options?: {
   };
 }
 
-export function toCaseShellContextViewModel(
-  record: {
-    clinicalCase: { id: string; caseCode: string; patientId: string; indicationCode: string; mode: string; state: string };
-    phenotype?: { snapshotHash?: string; state?: string };
-    slate?: { qualification?: { level?: string }; primaryCandidates?: readonly unknown[]; deterministicManifestHash?: string };
-    decision?: { isImmutable?: boolean };
-    isStale?: boolean;
-    staleReason?: string;
-  }
-): CaseShellContextViewModel {
+export function toCaseShellContextViewModel(record: {
+  clinicalCase: {
+    id: string;
+    caseCode: string;
+    patientId: string;
+    indicationCode: string;
+    mode: string;
+    state: string;
+  };
+  phenotype?: { snapshotHash?: string; state?: string };
+  slate?: {
+    qualification?: { level?: string };
+    primaryCandidates?: readonly unknown[];
+    deterministicManifestHash?: string;
+  };
+  decision?: { isImmutable?: boolean };
+  isStale?: boolean;
+  staleReason?: string;
+}): CaseShellContextViewModel {
   const isPhenotypeApproved = Boolean(record.phenotype?.snapshotHash);
   const isDecisionSigned = Boolean(record.decision?.isImmutable);
   const isStale = Boolean(record.isStale);
   const candidateCount = record.slate?.primaryCandidates?.length || 0;
 
   const mode: EnvironmentMode =
-    record.clinicalCase.mode === 'RESEARCH' ? 'RESEARCH' :
-    record.clinicalCase.mode === 'VALIDATION' ? 'VALIDATION' : 'CLINICAL';
+    record.clinicalCase.mode === 'RESEARCH'
+      ? 'RESEARCH'
+      : record.clinicalCase.mode === 'VALIDATION'
+        ? 'VALIDATION'
+        : 'CLINICAL';
 
   const stalenessItem: CaseStalenessItemViewModel = {
     isStale,
@@ -1597,8 +1688,8 @@ export function toCaseShellContextViewModel(
     clinicalTask: isDecisionSigned
       ? 'Immutable Decision Signed'
       : isPhenotypeApproved
-      ? 'Target Planning & Slate Review'
-      : 'Phenotype Formulation',
+        ? 'Target Planning & Slate Review'
+        : 'Phenotype Formulation',
     mode,
     workflowStage: record.clinicalCase.state,
     phenotypeStatus: {
@@ -1612,7 +1703,10 @@ export function toCaseShellContextViewModel(
       badgeClass: 'badge-tier1',
     },
     connectomeStatus: {
-      label: record.slate?.qualification?.level === 'LOW' ? 'Connectome Low Reliability' : 'Connectome Qualified',
+      label:
+        record.slate?.qualification?.level === 'LOW'
+          ? 'Connectome Low Reliability'
+          : 'Connectome Qualified',
       isQualified: record.slate?.qualification?.level !== 'LOW',
       badgeClass: record.slate?.qualification?.level === 'LOW' ? 'badge-tier3' : 'badge-tier1',
     },
@@ -1693,4 +1787,3 @@ export function toReleaseContextSummaryViewModel(): ReleaseContextSummaryViewMod
       'Magniom provides connectome-informed candidate target slates for specialist clinician review and does not autonomously prescribe treatment.',
   };
 }
-

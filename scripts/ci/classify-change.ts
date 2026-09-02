@@ -14,7 +14,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { execSync } from 'node:child_process';
 
-export type ChangeClass = 'SCIENTIFIC' | 'DATABASE_RLS' | 'UX_HUMAN_FACTORS' | 'SECURITY' | 'ORDINARY_APP';
+export type ChangeClass =
+  'SCIENTIFIC' | 'DATABASE_RLS' | 'UX_HUMAN_FACTORS' | 'SECURITY' | 'ORDINARY_APP';
 
 export interface PRPolicyEvaluation {
   passed: boolean;
@@ -57,7 +58,10 @@ export class ChangeClassifier {
         cwd: this.repoRoot,
         encoding: 'utf8',
       });
-      return output.split('\n').map((s) => s.trim()).filter(Boolean);
+      return output
+        .split('\n')
+        .map(s => s.trim())
+        .filter(Boolean);
     } catch {
       // If git diff against origin/main is not available (e.g. local repo without remote origin),
       // inspect recent commit or git status
@@ -66,7 +70,10 @@ export class ChangeClassifier {
           cwd: this.repoRoot,
           encoding: 'utf8',
         });
-        return output.split('\n').map((s) => s.trim()).filter(Boolean);
+        return output
+          .split('\n')
+          .map(s => s.trim())
+          .filter(Boolean);
       } catch {
         return [];
       }
@@ -113,12 +120,19 @@ export class ChangeClassifier {
     // PR Policy Validation (Section 20-23, 44)
     if (prDescription !== undefined) {
       if (!/REQ-[A-Z]+-\d+/i.test(prDescription) && !/MAG-[A-Z]+-\d+/i.test(prDescription)) {
-        errors.push('PR policy violation: PR body must reference at least one linked Requirement (e.g., REQ-TGT-001 or MAG-TGT-001).');
+        errors.push(
+          'PR policy violation: PR body must reference at least one linked Requirement (e.g., REQ-TGT-001 or MAG-TGT-001).',
+        );
       }
 
       if (isScientific) {
-        if (!/SCIENTIFIC_CHANGE:\s*(YES|TRUE)/i.test(prDescription) && !/\[x\]\s*Scientific Change/i.test(prDescription)) {
-          warnings.push('Scientific files detected but PR description does not explicitly declare a Scientific Change.');
+        if (
+          !/SCIENTIFIC_CHANGE:\s*(YES|TRUE)/i.test(prDescription) &&
+          !/\[x\]\s*Scientific Change/i.test(prDescription)
+        ) {
+          warnings.push(
+            'Scientific files detected but PR description does not explicitly declare a Scientific Change.',
+          );
         }
       }
     }
@@ -151,19 +165,27 @@ if (process.argv[1]?.endsWith('classify-change.ts')) {
 
   console.log('\n📊 Change Classification Result:');
   console.log(`  - Change Classes: ${result.changeClasses.join(', ')}`);
-  console.log(`  - Requires Scientific Impact Report: ${result.requiresScientificImpactReport ? 'YES' : 'NO'}`);
-  console.log(`  - Requires DB Zero-State Test:       ${result.requiresDatabaseZeroStateTest ? 'YES' : 'NO'}`);
-  console.log(`  - Requires Human Factors E2E:        ${result.requiresHumanFactorsE2E ? 'YES' : 'NO'}`);
-  console.log(`  - Requires Security Probe:           ${result.requiresSecurityProbe ? 'YES' : 'NO'}`);
+  console.log(
+    `  - Requires Scientific Impact Report: ${result.requiresScientificImpactReport ? 'YES' : 'NO'}`,
+  );
+  console.log(
+    `  - Requires DB Zero-State Test:       ${result.requiresDatabaseZeroStateTest ? 'YES' : 'NO'}`,
+  );
+  console.log(
+    `  - Requires Human Factors E2E:        ${result.requiresHumanFactorsE2E ? 'YES' : 'NO'}`,
+  );
+  console.log(
+    `  - Requires Security Probe:           ${result.requiresSecurityProbe ? 'YES' : 'NO'}`,
+  );
 
   if (result.warnings.length > 0) {
     console.log('\n⚠️ Warnings:');
-    result.warnings.forEach((w) => console.log(`  - ${w}`));
+    result.warnings.forEach(w => console.log(`  - ${w}`));
   }
 
   if (result.errors.length > 0) {
     console.log('\n❌ Policy Errors:');
-    result.errors.forEach((e) => console.log(`  - ${e}`));
+    result.errors.forEach(e => console.log(`  - ${e}`));
     process.exit(1);
   } else {
     console.log('\n✅ PR Policy & Change Classification Passed.');

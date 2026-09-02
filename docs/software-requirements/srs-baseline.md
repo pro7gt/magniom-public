@@ -2,7 +2,7 @@
 
 **Document Reference:** MAG-SRS-1.0  
 **Standard Reference:** IEC 62304 Section 5.2 / ISO 13485 / TGA SaMD Guidelines  
-**Status:** Controlled Requirements Baseline  
+**Status:** Controlled Requirements Baseline
 
 ---
 
@@ -17,6 +17,7 @@ All requirements are formally tracked in `docs/software-requirements/requirement
 ## 2. Requirement ID Standard
 
 Requirements adhere to the immutable naming schema: `MAG-<DOMAIN>-<NUMBER>`, where canonical domains include:
+
 - `MAG-SYS`: System-wide invariants
 - `MAG-CLI`: Clinical authority & workflow
 - `MAG-PHE`: Phenotype formulation

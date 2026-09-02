@@ -49,7 +49,8 @@ export const G01_PHENOTYPE: PhenotypeSnapshot = {
     priorTmsExposure: false,
   },
   phenotypeConfidence: 'HIGH',
-  clinicianSummary: 'Synthetic severe MDD case with predominantly dysphoric burden. Connectome is not acquired.',
+  clinicianSummary:
+    'Synthetic severe MDD case with predominantly dysphoric burden. Connectome is not acquired.',
   confirmedByClinicianId: 'clin-demo-001',
   confirmedAt: '2026-09-01T10:00:00.000Z',
   snapshotHash: computeSha256({
@@ -83,7 +84,9 @@ export const G01_PRIMARY_1: TargetCandidate = {
   isSuppressedOrRedundant: false,
   evidencePaths: graph.findEvidencePaths('TF-MDD-LDLPFC-EST-001'),
   conflictingEvidence: graph.getConflictingClaims('TF-MDD-LDLPFC-EST-001'),
-  counterarguments: ['Fixed group anchor does not account for patient-specific functional anatomy variations.'],
+  counterarguments: [
+    'Fixed group anchor does not account for patient-specific functional anatomy variations.',
+  ],
 };
 
 const g01SlatePayload = {

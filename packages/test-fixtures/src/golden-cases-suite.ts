@@ -34,14 +34,14 @@ export function createPhenotypeSnapshot(overrides: Partial<PhenotypeSnapshot>): 
     symptomScores: {
       dysphoriaScore: 0.85,
       anhedoniaScore: 0.75,
-      anxiousSomaticScore: 0.20,
-      ruminationScore: 0.60,
+      anxiousSomaticScore: 0.2,
+      ruminationScore: 0.6,
     },
     symptomPriorities: [
       {
         domainCode: 'DOMAIN-MDD-DYSPHORIC-001',
         priorityRank: 1,
-        clinicianWeight: 0.90,
+        clinicianWeight: 0.9,
         evidenceMappability: 'direct',
         rationale: 'Core depressive symptoms priority.',
       },
@@ -71,7 +71,9 @@ export function createPhenotypeSnapshot(overrides: Partial<PhenotypeSnapshot>): 
 }
 
 // Helper to create canonical reliability profile
-export function createReliabilityProfile(overrides: Partial<CanonicalTargetReliabilityProfile>): CanonicalTargetReliabilityProfile {
+export function createReliabilityProfile(
+  overrides: Partial<CanonicalTargetReliabilityProfile>,
+): CanonicalTargetReliabilityProfile {
   const base: CanonicalTargetReliabilityProfile = {
     id: 'rel-profile-001',
     version: '1.0.0',
@@ -92,7 +94,7 @@ export function createReliabilityProfile(overrides: Partial<CanonicalTargetRelia
     crossRunSpatialDistanceMm: 2.4,
     connectivityReliabilityMetric: 0.86,
     connectivityReliabilityMethod: 'pearson_correlation',
-    spatialReliabilityScore: 0.90,
+    spatialReliabilityScore: 0.9,
     connectivityReliabilityScore: 0.88,
     qcReliabilityScore: 0.92,
     overallReliabilityScore: 0.89,
@@ -109,7 +111,9 @@ export function createReliabilityProfile(overrides: Partial<CanonicalTargetRelia
 }
 
 // Helper to create ConnectomeTargetInput
-export function createConnectomeInput(overrides: Partial<ConnectomeTargetInput>): ConnectomeTargetInput {
+export function createConnectomeInput(
+  overrides: Partial<ConnectomeTargetInput>,
+): ConnectomeTargetInput {
   const base: ConnectomeTargetInput = {
     connectomeRunId: 'run-test-001',
     pipelineVersion: 'MAGNIOM-CONNECTOME-1.0.0',
@@ -142,11 +146,13 @@ export const G02_CASE_PHENOTYPE = createPhenotypeSnapshot({
 export const G02_CASE_CONNECTOME = createConnectomeInput({
   connectomeRunId: 'run-g02-01',
   retainedMinutes: 15.0,
-  reliabilityProfiles: [createReliabilityProfile({
-    caseId: 'case-g02',
-    overallReliabilityScore: 0.88,
-    isReliableForPersonalisation: true,
-  })],
+  reliabilityProfiles: [
+    createReliabilityProfile({
+      caseId: 'case-g02',
+      overallReliabilityScore: 0.88,
+      isReliableForPersonalisation: true,
+    }),
+  ],
   candidateRegions: [
     {
       targetFamilyVersionId: 'TF-MDD-CONVERGENT-LDLPFC-001',
@@ -179,11 +185,13 @@ export const G03_CASE_PHENOTYPE = createPhenotypeSnapshot({
 export const G03_CASE_CONNECTOME = createConnectomeInput({
   connectomeRunId: 'run-g03-01',
   retainedMinutes: 14.0,
-  reliabilityProfiles: [createReliabilityProfile({
-    caseId: 'case-g03',
-    overallReliabilityScore: 0.85,
-    isReliableForPersonalisation: true,
-  })],
+  reliabilityProfiles: [
+    createReliabilityProfile({
+      caseId: 'case-g03',
+      overallReliabilityScore: 0.85,
+      isReliableForPersonalisation: true,
+    }),
+  ],
   candidateRegions: [
     {
       targetFamilyVersionId: 'TF-MDD-CONVERGENT-LDLPFC-001',
@@ -216,17 +224,19 @@ export const G04_CASE_PHENOTYPE = createPhenotypeSnapshot({
 export const G04_CASE_CONNECTOME = createConnectomeInput({
   connectomeRunId: 'run-g04-01',
   retainedMinutes: 8.5,
-  reliabilityProfiles: [createReliabilityProfile({
-    caseId: 'case-g04',
-    meanFramewiseDisplacementMm: 0.38,
-    censoredVolumeFraction: 0.35,
-    compositeSpatialDistanceMm: 9.8,
-    overallReliabilityScore: 0.42,
-    reliabilityClass: 'unreliable',
-    isReliableForPersonalisation: false,
-    warnings: ['HIGH_MOTION_ARTIFACT', 'EXCESSIVE_SPATIAL_DISPERSION'],
-    limitingFactors: ['HIGH_MOTION_ARTIFACT'],
-  })],
+  reliabilityProfiles: [
+    createReliabilityProfile({
+      caseId: 'case-g04',
+      meanFramewiseDisplacementMm: 0.38,
+      censoredVolumeFraction: 0.35,
+      compositeSpatialDistanceMm: 9.8,
+      overallReliabilityScore: 0.42,
+      reliabilityClass: 'unreliable',
+      isReliableForPersonalisation: false,
+      warnings: ['HIGH_MOTION_ARTIFACT', 'EXCESSIVE_SPATIAL_DISPERSION'],
+      limitingFactors: ['HIGH_MOTION_ARTIFACT'],
+    }),
+  ],
   candidateRegions: [
     {
       targetFamilyVersionId: 'TF-MDD-CONVERGENT-LDLPFC-001',
@@ -255,8 +265,8 @@ export const G05_CASE_PHENOTYPE = createPhenotypeSnapshot({
   id: 'snap-golden-05',
   patientId: 'pat-g05-anxiosomatic',
   symptomScores: {
-    dysphoriaScore: 0.70,
-    anhedoniaScore: 0.60,
+    dysphoriaScore: 0.7,
+    anhedoniaScore: 0.6,
     anxiousSomaticScore: 0.88,
     ruminationScore: 0.65,
   },
@@ -280,11 +290,13 @@ export const G05_CASE_PHENOTYPE = createPhenotypeSnapshot({
 export const G05_CASE_CONNECTOME = createConnectomeInput({
   connectomeRunId: 'run-g05-01',
   retainedMinutes: 15.0,
-  reliabilityProfiles: [createReliabilityProfile({
-    caseId: 'case-g05',
-    overallReliabilityScore: 0.89,
-    isReliableForPersonalisation: true,
-  })],
+  reliabilityProfiles: [
+    createReliabilityProfile({
+      caseId: 'case-g05',
+      overallReliabilityScore: 0.89,
+      isReliableForPersonalisation: true,
+    }),
+  ],
   candidateRegions: [
     {
       targetFamilyVersionId: 'TF-MDD-ANXIOSOMATIC-DMPFC-001',
@@ -298,9 +310,9 @@ export const G05_CASE_CONNECTOME = createConnectomeInput({
       clusterAreaMm2: 85.0,
       circuitConcordanceRaw: 0.88,
       circuitConcordancePercentile: 0.88,
-      baselineCircuitConcordance: 0.60,
+      baselineCircuitConcordance: 0.6,
       accessibility: 'good',
-      reliabilityScore: 0.90,
+      reliabilityScore: 0.9,
       fitInterpretation: 'Dorsomedial prefrontal cortex target for anxious-somatic depression.',
     },
   ],
@@ -315,8 +327,8 @@ export const G06_CASE_PHENOTYPE = createPhenotypeSnapshot({
   symptomScores: {
     dysphoriaScore: 0.95,
     anhedoniaScore: 0.85,
-    anxiousSomaticScore: 0.10,
-    ruminationScore: 0.70,
+    anxiousSomaticScore: 0.1,
+    ruminationScore: 0.7,
   },
   symptomPriorities: [
     {
@@ -331,7 +343,9 @@ export const G06_CASE_PHENOTYPE = createPhenotypeSnapshot({
 export const G06_CASE_CONNECTOME = createConnectomeInput({
   connectomeRunId: 'run-g06-01',
   retainedMinutes: 14.5,
-  reliabilityProfiles: [createReliabilityProfile({ caseId: 'case-g06', overallReliabilityScore: 0.91 })],
+  reliabilityProfiles: [
+    createReliabilityProfile({ caseId: 'case-g06', overallReliabilityScore: 0.91 }),
+  ],
   candidateRegions: [
     {
       targetFamilyVersionId: 'TF-MDD-CONVERGENT-LDLPFC-001',
@@ -361,7 +375,7 @@ export const G07_CASE_PHENOTYPE = createPhenotypeSnapshot({
   patientId: 'pat-g07-mixed',
   symptomScores: {
     dysphoriaScore: 0.88,
-    anhedoniaScore: 0.80,
+    anhedoniaScore: 0.8,
     anxiousSomaticScore: 0.82,
     ruminationScore: 0.75,
   },
@@ -384,7 +398,9 @@ export const G07_CASE_PHENOTYPE = createPhenotypeSnapshot({
 export const G07_CASE_CONNECTOME = createConnectomeInput({
   connectomeRunId: 'run-g07-01',
   retainedMinutes: 15.0,
-  reliabilityProfiles: [createReliabilityProfile({ caseId: 'case-g07', overallReliabilityScore: 0.88 })],
+  reliabilityProfiles: [
+    createReliabilityProfile({ caseId: 'case-g07', overallReliabilityScore: 0.88 }),
+  ],
   candidateRegions: [
     {
       targetFamilyVersionId: 'TF-MDD-CONVERGENT-LDLPFC-001',
@@ -415,7 +431,7 @@ export const G07_CASE_CONNECTOME = createConnectomeInput({
       clusterAreaMm2: 80.0,
       circuitConcordanceRaw: 0.84,
       circuitConcordancePercentile: 0.84,
-      baselineCircuitConcordance: 0.60,
+      baselineCircuitConcordance: 0.6,
       accessibility: 'good',
       reliabilityScore: 0.87,
       fitInterpretation: 'Anxiosomatic distinct target in DMPFC.',
@@ -434,7 +450,9 @@ export const G08_CASE_PHENOTYPE = createPhenotypeSnapshot({
 export const G08_CASE_CONNECTOME = createConnectomeInput({
   connectomeRunId: 'run-g08-01',
   retainedMinutes: 15.0,
-  reliabilityProfiles: [createReliabilityProfile({ caseId: 'case-g08', overallReliabilityScore: 0.90 })],
+  reliabilityProfiles: [
+    createReliabilityProfile({ caseId: 'case-g08', overallReliabilityScore: 0.9 }),
+  ],
   candidateRegions: [
     {
       targetFamilyVersionId: 'TF-MDD-L8AV-001',
@@ -448,9 +466,9 @@ export const G08_CASE_CONNECTOME = createConnectomeInput({
       clusterAreaMm2: 120.0,
       circuitConcordanceRaw: 0.94,
       circuitConcordancePercentile: 0.94,
-      baselineCircuitConcordance: 0.50,
+      baselineCircuitConcordance: 0.5,
       accessibility: 'good',
-      reliabilityScore: 0.90,
+      reliabilityScore: 0.9,
       fitInterpretation: 'Research-only exploratory normative deviation candidate in Area 8Av.',
     },
   ],
@@ -467,7 +485,9 @@ export const G09_CASE_PHENOTYPE = createPhenotypeSnapshot({
 export const G09_CASE_CONNECTOME = createConnectomeInput({
   connectomeRunId: 'run-g09-01',
   retainedMinutes: 14.5,
-  reliabilityProfiles: [createReliabilityProfile({ caseId: 'case-g09', overallReliabilityScore: 0.88 })],
+  reliabilityProfiles: [
+    createReliabilityProfile({ caseId: 'case-g09', overallReliabilityScore: 0.88 }),
+  ],
   candidateRegions: [
     {
       targetFamilyVersionId: 'TF-MDD-CONVERGENT-LDLPFC-001',
@@ -500,7 +520,9 @@ export const G10_CASE_PHENOTYPE = createPhenotypeSnapshot({
 export const G10_CASE_CONNECTOME = createConnectomeInput({
   connectomeRunId: 'run-g10-01',
   retainedMinutes: 15.0,
-  reliabilityProfiles: [createReliabilityProfile({ caseId: 'case-g10', overallReliabilityScore: 0.89 })],
+  reliabilityProfiles: [
+    createReliabilityProfile({ caseId: 'case-g10', overallReliabilityScore: 0.89 }),
+  ],
   candidateRegions: [
     {
       targetFamilyVersionId: 'TF-MDD-CONVERGENT-LDLPFC-001',
@@ -601,7 +623,9 @@ export const G11_CASE_PHENOTYPE = createPhenotypeSnapshot({
 export const G11_CASE_CONNECTOME = createConnectomeInput({
   connectomeRunId: 'run-g11-01',
   retainedMinutes: 14.5,
-  reliabilityProfiles: [createReliabilityProfile({ caseId: 'case-g11', overallReliabilityScore: 0.88 })],
+  reliabilityProfiles: [
+    createReliabilityProfile({ caseId: 'case-g11', overallReliabilityScore: 0.88 }),
+  ],
   candidateRegions: [
     {
       targetFamilyVersionId: 'TF-MDD-CONVERGENT-LDLPFC-001',
@@ -670,10 +694,10 @@ export const G14_CASE_PHENOTYPE_V2 = createPhenotypeSnapshot({
   patientId: 'pat-g14-stale',
   confirmedAt: '2026-09-01T12:00:00.000Z',
   symptomScores: {
-    dysphoriaScore: 0.90,
-    anhedoniaScore: 0.80,
+    dysphoriaScore: 0.9,
+    anhedoniaScore: 0.8,
     anxiousSomaticScore: 0.85,
-    ruminationScore: 0.70,
+    ruminationScore: 0.7,
   },
 });
 

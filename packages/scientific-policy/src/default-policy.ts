@@ -6,7 +6,8 @@ const policyPayload = {
   code: 'MAGNIOM-POLICY-MDD-1.0.0',
   semanticVersion: '1.0.0',
   title: 'Canonical MDD Decision Support Scientific Policy Release v1.0',
-  description: 'Governs evidence-based and connectome-refined target selection for Major Depressive Disorder',
+  description:
+    'Governs evidence-based and connectome-refined target selection for Major Depressive Disorder',
   lifecycleStatus: 'ACTIVE' as const,
   validationStatus: 'VALIDATED' as const,
   modeScope: ['CLINICAL', 'RESEARCH', 'VALIDATION'] as const,
@@ -90,7 +91,13 @@ const policyPayload = {
         standaloneAdditional: true,
         mayRefineParentTiers: [],
         maySupplySupportingContext: true,
-        permittedCandidateRoles: ['PRIMARY_1', 'PRIMARY_2', 'PRIMARY_3', 'ADDITIONAL_A', 'ADDITIONAL_B'] as const,
+        permittedCandidateRoles: [
+          'PRIMARY_1',
+          'PRIMARY_2',
+          'PRIMARY_3',
+          'ADDITIONAL_A',
+          'ADDITIONAL_B',
+        ] as const,
         permittedGenerationMethods: ['EVIDENCE_ONLY_PRIOR', 'CONNECTOME_REFINED'] as const,
       },
       {
@@ -99,7 +106,12 @@ const policyPayload = {
         standaloneAdditional: true,
         mayRefineParentTiers: ['T1'] as const,
         maySupplySupportingContext: true,
-        permittedCandidateRoles: ['PRIMARY_2', 'PRIMARY_3', 'ADDITIONAL_A', 'ADDITIONAL_B'] as const,
+        permittedCandidateRoles: [
+          'PRIMARY_2',
+          'PRIMARY_3',
+          'ADDITIONAL_A',
+          'ADDITIONAL_B',
+        ] as const,
         permittedGenerationMethods: ['EVIDENCE_ONLY_PRIOR', 'CONNECTOME_REFINED'] as const,
       },
       {
@@ -130,8 +142,8 @@ const policyPayload = {
         permittedGenerationMethods: [],
       },
     ],
-    minReliabilityForPersonalisation: 0.70,
-    minIncrementalGainThreshold: 0.10,
+    minReliabilityForPersonalisation: 0.7,
+    minIncrementalGainThreshold: 0.1,
   },
   parameters: {
     maxAllowableDisplacementMm: 15.0,

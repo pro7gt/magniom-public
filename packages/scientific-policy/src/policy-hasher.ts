@@ -56,14 +56,14 @@ function sha256Universal(msg: string): string {
         0xf0 | (charcode >> 18),
         0x80 | ((charcode >> 12) & 0x3f),
         0x80 | ((charcode >> 6) & 0x3f),
-        0x80 | (charcode & 0x3f)
+        0x80 | (charcode & 0x3f),
       );
     }
   }
 
   const bitLength = utf8.length * 8;
   utf8.push(0x80);
-  while ((utf8.length % 64) !== 56) {
+  while (utf8.length % 64 !== 56) {
     utf8.push(0);
   }
 

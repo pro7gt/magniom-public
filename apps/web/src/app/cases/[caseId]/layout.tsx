@@ -47,15 +47,18 @@ export default function CaseLayout({
   else if (pathname.includes('/audit')) activeStage = 'audit';
 
   const isPhenotypeApproved = Boolean(
-    record.phenotype.confirmedByClinicianId && record.phenotype.snapshotHash
+    record.phenotype.confirmedByClinicianId && record.phenotype.snapshotHash,
   );
   const isDecisionSigned = Boolean(record.decision?.isImmutable);
   const isConnectomeQualified = record.slate?.personalisationQualification === 'qualified';
   const isSlateReady = Boolean(record.slate?.primaryCandidates?.length && !record.isStale);
 
   const mode: EnvironmentMode =
-    record.clinicalCase.mode === 'RESEARCH' ? 'RESEARCH' :
-    record.clinicalCase.mode === 'VALIDATION' ? 'VALIDATION' : 'CLINICAL';
+    record.clinicalCase.mode === 'RESEARCH'
+      ? 'RESEARCH'
+      : record.clinicalCase.mode === 'VALIDATION'
+        ? 'VALIDATION'
+        : 'CLINICAL';
 
   return (
     <div className="case-workspace-layout">

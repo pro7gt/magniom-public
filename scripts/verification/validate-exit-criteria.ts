@@ -55,7 +55,9 @@ export class ExitCriteriaValidator {
   }> {
     console.log('================================================================================');
     console.log('🔬 MAGNIOM FORMAL SOFTWARE VERIFICATION EXIT CRITERIA VALIDATION (SECTION 122)');
-    console.log('================================================================================\n');
+    console.log(
+      '================================================================================\n',
+    );
 
     const results: ExitCriterionValidationResult[] = [];
 
@@ -86,7 +88,9 @@ export class ExitCriteriaValidator {
     // Criterion 9: Research/Clinical separation verified
     results.push(await this.validateCriterion9_ResearchClinicalSeparation());
 
-    console.log('\n================================================================================');
+    console.log(
+      '\n================================================================================',
+    );
     console.log('📊 VERIFICATION EXIT CRITERIA EVALUATION SUMMARY:');
     console.log('================================================================================');
 
@@ -99,8 +103,12 @@ export class ExitCriteriaValidator {
     }
 
     console.log('================================================================================');
-    console.log(`OVERALL EXIT CRITERIA STATUS: ${allPassed ? '✅ ALL 9 CRITERIA SATISFIED' : '❌ CRITERIA UNMET'}`);
-    console.log('================================================================================\n');
+    console.log(
+      `OVERALL EXIT CRITERIA STATUS: ${allPassed ? '✅ ALL 9 CRITERIA SATISFIED' : '❌ CRITERIA UNMET'}`,
+    );
+    console.log(
+      '================================================================================\n',
+    );
 
     // Generate formal markdown report
     this.generateExitCriteriaReport(results, allPassed);
@@ -165,10 +173,30 @@ export class ExitCriteriaValidator {
 
     const goldenCases = [
       { id: 'G01', name: 'G01: Evidence Baseline', p: G01_PHENOTYPE, c: null },
-      { id: 'G02', name: 'G02: Personalized FC MDD', p: G02_CASE_PHENOTYPE, c: G02_CASE_CONNECTOME },
-      { id: 'G04', name: 'G04: Unreliable FC QC Fallback', p: G04_CASE_PHENOTYPE, c: G04_CASE_CONNECTOME },
-      { id: 'G05', name: 'G05: Anxiosomatic Multi-Circuit', p: G05_CASE_PHENOTYPE, c: G05_CASE_CONNECTOME },
-      { id: 'G07', name: 'G07: Mixed Phenotype Slate', p: G07_CASE_PHENOTYPE, c: G07_CASE_CONNECTOME },
+      {
+        id: 'G02',
+        name: 'G02: Personalized FC MDD',
+        p: G02_CASE_PHENOTYPE,
+        c: G02_CASE_CONNECTOME,
+      },
+      {
+        id: 'G04',
+        name: 'G04: Unreliable FC QC Fallback',
+        p: G04_CASE_PHENOTYPE,
+        c: G04_CASE_CONNECTOME,
+      },
+      {
+        id: 'G05',
+        name: 'G05: Anxiosomatic Multi-Circuit',
+        p: G05_CASE_PHENOTYPE,
+        c: G05_CASE_CONNECTOME,
+      },
+      {
+        id: 'G07',
+        name: 'G07: Mixed Phenotype Slate',
+        p: G07_CASE_PHENOTYPE,
+        c: G07_CASE_CONNECTOME,
+      },
     ];
 
     let passedCount = 0;
@@ -239,9 +267,9 @@ export class ExitCriteriaValidator {
     console.log('🔍 [5/9] Validating Criterion 5: RLS tests pass across all schemas...');
 
     const migrationsDir = path.join(this.repoRoot, 'supabase/migrations');
-    const migrationFiles = fs.readdirSync(migrationsDir).filter((f) => f.endsWith('.sql'));
+    const migrationFiles = fs.readdirSync(migrationsDir).filter(f => f.endsWith('.sql'));
 
-    const rlsActivations = migrationFiles.filter((f) => {
+    const rlsActivations = migrationFiles.filter(f => {
       const content = fs.readFileSync(path.join(migrationsDir, f), 'utf8');
       return content.includes('ENABLE ROW LEVEL SECURITY');
     });
@@ -268,14 +296,16 @@ export class ExitCriteriaValidator {
     console.log('🔍 [6/9] Validating Criterion 6: Signed decisions immutable...');
 
     const migrationsDir = path.join(this.repoRoot, 'supabase/migrations');
-    const migrationFiles = fs.readdirSync(migrationsDir).filter((f) => f.endsWith('.sql'));
+    const migrationFiles = fs.readdirSync(migrationsDir).filter(f => f.endsWith('.sql'));
 
     let hasImmutabilityTrigger = false;
     for (const f of migrationFiles) {
       const content = fs.readFileSync(path.join(migrationsDir, f), 'utf8');
       if (
         (content.includes('clinician_decisions') || content.includes('clinical_decisions')) &&
-        (content.includes('immutable') || content.includes('guard_signed_decision') || content.includes('trg_clinician_decisions_immutable'))
+        (content.includes('immutable') ||
+          content.includes('guard_signed_decision') ||
+          content.includes('trg_clinician_decisions_immutable'))
       ) {
         hasImmutabilityTrigger = true;
         break;
@@ -310,7 +340,12 @@ export class ExitCriteriaValidator {
     for (const cand of slate.primaryCandidates) {
       const fid = (cand.familyId || '').toLowerCase();
       const cid = (cand.circuitId || '').toLowerCase();
-      if (fid.includes('ldlpfc') || fid.includes('sgacc') || cid.includes('sgacc') || cid.includes('ldlpfc')) {
+      if (
+        fid.includes('ldlpfc') ||
+        fid.includes('sgacc') ||
+        cid.includes('sgacc') ||
+        cid.includes('ldlpfc')
+      ) {
         if (cand.mniCoordinate.x >= 0 || cand.mniCoordinate.x < -70 || cand.mniCoordinate.x > -20) {
           lateralityViolations++;
         }
@@ -337,7 +372,10 @@ export class ExitCriteriaValidator {
   private async validateCriterion8_ManifestsReproducible(): Promise<ExitCriterionValidationResult> {
     console.log('🔍 [8/9] Validating Criterion 8: Scientific manifests reproducible...');
 
-    const manifestPath = path.join(this.repoRoot, 'docs/verification/verification-build-m3-manifest.json');
+    const manifestPath = path.join(
+      this.repoRoot,
+      'docs/verification/verification-build-m3-manifest.json',
+    );
     const hasManifest = fs.existsSync(manifestPath);
 
     let matchCount = 0;
@@ -415,19 +453,25 @@ export class ExitCriteriaValidator {
   /**
    * Generates formal markdown report
    */
-  private generateExitCriteriaReport(results: ExitCriterionValidationResult[], allPassed: boolean): void {
-    const reportPath = path.join(this.repoRoot, 'docs/verification/reports/09-verification-exit-criteria-report.md');
+  private generateExitCriteriaReport(
+    results: ExitCriterionValidationResult[],
+    allPassed: boolean,
+  ): void {
+    const reportPath = path.join(
+      this.repoRoot,
+      'docs/verification/reports/10-verification-exit-criteria-report.md',
+    );
 
     const rows = results
       .map(
-        (r) =>
-          `| \`${r.criterionId}\` | **${r.statement}** | ${r.passed ? '✅ PASSED' : '❌ FAILED'} | ${r.evidenceSummary} |`
+        r =>
+          `| \`${r.criterionId}\` | **${r.statement}** | ${r.passed ? '✅ PASSED' : '❌ FAILED'} | ${r.evidenceSummary} |`,
       )
       .join('\n');
 
     const content = `# Formal Verification Exit Criteria Report (Build M3)
 
-**Document ID:** VR-EXIT-M3-009  
+**Document ID:** VR-EXIT-M3-010  
 **Roadmap Reference:** Section 122 — Verification Exit Criteria  
 **Build Milestone:** M3 — Verification Build Freeze  
 **Execution Timestamp:** ${new Date().toISOString()}  
@@ -487,7 +531,7 @@ The Magniom Verification Build M3 has satisfied all technical, scientific, datab
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const validator = new ExitCriteriaValidator();
-  validator.validateAll().catch((err) => {
+  validator.validateAll().catch(err => {
     console.error('❌ Exit Criteria validation failed:', err);
     process.exit(1);
   });

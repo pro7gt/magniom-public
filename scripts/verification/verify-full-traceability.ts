@@ -33,7 +33,10 @@ interface TraceabilityEntry {
  * Maps requirement domain prefixes to the implementation artifacts
  * that are expected to provide evidence for them.
  */
-const DOMAIN_ARTIFACT_MAP: Record<string, { packages: string[]; migrations: RegExp[]; tests: string[] }> = {
+const DOMAIN_ARTIFACT_MAP: Record<
+  string,
+  { packages: string[]; migrations: RegExp[]; tests: string[] }
+> = {
   'MAG-SYS': {
     packages: ['packages/domain', 'packages/target-engine', 'packages/scientific-policy'],
     migrations: [/003_system_types/, /002_schemas/],
@@ -51,8 +54,18 @@ const DOMAIN_ARTIFACT_MAP: Record<string, { packages: string[]; migrations: RegE
   },
   'MAG-EVD': {
     packages: ['packages/evidence', 'packages/domain'],
-    migrations: [/018_evidence/, /019_evidence/, /020_evidence/, /021_evidence/, /022_evidence/, /023_evidence/],
-    tests: ['packages/evidence/src/evidence.test.ts', 'packages/target-engine/tests/evidence-ceiling.test.ts'],
+    migrations: [
+      /018_evidence/,
+      /019_evidence/,
+      /020_evidence/,
+      /021_evidence/,
+      /022_evidence/,
+      /023_evidence/,
+    ],
+    tests: [
+      'packages/evidence/src/evidence.test.ts',
+      'packages/target-engine/tests/evidence-ceiling.test.ts',
+    ],
   },
   'MAG-POL': {
     packages: ['packages/scientific-policy', 'packages/domain'],
@@ -62,7 +75,10 @@ const DOMAIN_ARTIFACT_MAP: Record<string, { packages: string[]; migrations: RegE
   'MAG-IMG': {
     packages: ['services/neurocompute', 'packages/target-engine/src/spatial'],
     migrations: [/038_imaging/, /039_connectomics/],
-    tests: ['packages/target-engine/tests/imaging-validation.test.ts', 'packages/target-engine/tests/coordinate-round-trip.test.ts'],
+    tests: [
+      'packages/target-engine/tests/imaging-validation.test.ts',
+      'packages/target-engine/tests/coordinate-round-trip.test.ts',
+    ],
   },
   'MAG-TGT': {
     packages: ['packages/target-engine'],
@@ -123,14 +139,14 @@ function fileExists(repoRoot: string, relPath: string): boolean {
 function findMatchingMigrations(repoRoot: string, patterns: RegExp[]): string[] {
   const migrationsDir = path.join(repoRoot, 'supabase/migrations');
   if (!fs.existsSync(migrationsDir)) return [];
-  const files = fs.readdirSync(migrationsDir).filter((f) => f.endsWith('.sql'));
-  return files.filter((f) => patterns.some((p) => p.test(f)));
+  const files = fs.readdirSync(migrationsDir).filter(f => f.endsWith('.sql'));
+  return files.filter(f => patterns.some(p => p.test(f)));
 }
 
 function findGoldenCases(repoRoot: string): string[] {
   const gcDir = path.join(repoRoot, 'validation/golden-cases');
   if (!fs.existsSync(gcDir)) return [];
-  return fs.readdirSync(gcDir).filter((f) => {
+  return fs.readdirSync(gcDir).filter(f => {
     const full = path.join(gcDir, f);
     return fs.statSync(full).isDirectory();
   });
@@ -146,7 +162,8 @@ function main(): void {
   }
 
   const inventory = JSON.parse(fs.readFileSync(inventoryPath, 'utf8'));
-  const requirements: Array<{ id: string; domain: string; safetyClass: string }> = inventory.requirements;
+  const requirements: Array<{ id: string; domain: string; safetyClass: string }> =
+    inventory.requirements;
 
   console.log('🔬 MAGNIOM FULL TRACEABILITY VERIFIER');
   console.log('=====================================\n');
@@ -180,8 +197,8 @@ function main(): void {
       continue;
     }
 
-    const implementationFiles = mapping.packages.filter((p) => fileExists(repoRoot, p));
-    const testFiles = mapping.tests.filter((t) => fileExists(repoRoot, t));
+    const implementationFiles = mapping.packages.filter(p => fileExists(repoRoot, p));
+    const testFiles = mapping.tests.filter(t => fileExists(repoRoot, t));
     const migrationFiles = findMatchingMigrations(repoRoot, mapping.migrations);
 
     const hasImpl = implementationFiles.length > 0;
@@ -220,19 +237,31 @@ function main(): void {
   // Summary
   console.log('TRACEABILITY COVERAGE SUMMARY');
   console.log('─────────────────────────────────────────');
-  console.log(`  TRACED:    ${String(traced).padStart(4)} / ${requirements.length}  (${((traced / requirements.length) * 100).toFixed(1)}%)`);
-  console.log(`  PARTIAL:   ${String(partial).padStart(4)} / ${requirements.length}  (${((partial / requirements.length) * 100).toFixed(1)}%)`);
-  console.log(`  UNTRACED:  ${String(untraced).padStart(4)} / ${requirements.length}  (${((untraced / requirements.length) * 100).toFixed(1)}%)`);
-  console.log(`  DEFERRED:  ${String(deferred).padStart(4)} / ${requirements.length}  (${((deferred / requirements.length) * 100).toFixed(1)}%)`);
+  console.log(
+    `  TRACED:    ${String(traced).padStart(4)} / ${requirements.length}  (${((traced / requirements.length) * 100).toFixed(1)}%)`,
+  );
+  console.log(
+    `  PARTIAL:   ${String(partial).padStart(4)} / ${requirements.length}  (${((partial / requirements.length) * 100).toFixed(1)}%)`,
+  );
+  console.log(
+    `  UNTRACED:  ${String(untraced).padStart(4)} / ${requirements.length}  (${((untraced / requirements.length) * 100).toFixed(1)}%)`,
+  );
+  console.log(
+    `  DEFERRED:  ${String(deferred).padStart(4)} / ${requirements.length}  (${((deferred / requirements.length) * 100).toFixed(1)}%)`,
+  );
   console.log('─────────────────────────────────────────');
   console.log(`  Golden Cases Available: ${allGoldenCases.length} (${allGoldenCases.join(', ')})`);
   console.log(`  Migrations Available:  ${findMatchingMigrations(repoRoot, [/.*/]).length}`);
   console.log('─────────────────────────────────────────\n');
 
   // Domain breakdown
-  const domainStats: Record<string, { traced: number; partial: number; untraced: number; total: number }> = {};
+  const domainStats: Record<
+    string,
+    { traced: number; partial: number; untraced: number; total: number }
+  > = {};
   for (const e of entries) {
-    if (!domainStats[e.domain]) domainStats[e.domain] = { traced: 0, partial: 0, untraced: 0, total: 0 };
+    if (!domainStats[e.domain])
+      domainStats[e.domain] = { traced: 0, partial: 0, untraced: 0, total: 0 };
     domainStats[e.domain].total++;
     if (e.traceabilityStatus === 'TRACED') domainStats[e.domain].traced++;
     else if (e.traceabilityStatus === 'PARTIAL') domainStats[e.domain].partial++;
@@ -242,7 +271,9 @@ function main(): void {
   console.log('DOMAIN BREAKDOWN:');
   for (const [domain, stats] of Object.entries(domainStats).sort()) {
     const pct = ((stats.traced / stats.total) * 100).toFixed(0);
-    console.log(`  ${domain.padEnd(12)} ${String(stats.traced).padStart(3)}/${String(stats.total).padStart(3)} traced  (${pct}%)`);
+    console.log(
+      `  ${domain.padEnd(12)} ${String(stats.traced).padStart(3)}/${String(stats.total).padStart(3)} traced  (${pct}%)`,
+    );
   }
 
   // Write output
@@ -262,9 +293,9 @@ function main(): void {
         entries,
       },
       null,
-      2
+      2,
     ),
-    'utf8'
+    'utf8',
   );
 
   console.log(`\n📄 Traceability coverage report written to: ${outputPath}\n`);

@@ -220,7 +220,7 @@ describe('Canonical Domain Types & Invariants', () => {
       brainMaskVolumeMm3: 1450000,
       csfFraction: 0.15,
       gmFraction: 0.45,
-      wmFraction: 0.40,
+      wmFraction: 0.4,
       mniRegistrationOverlapDice: 0.94,
       mniMutualInformation: 0.82,
     };
@@ -253,7 +253,12 @@ describe('Canonical Domain Types & Invariants', () => {
         { path: 'dicom.zip', sha256: 'abc123...', sizeBytes: 150000000, artifactType: 'RAW_DICOM' },
       ],
       outputFiles: [
-        { path: 'sub-MGN01_T1w.nii.gz', sha256: 'def456...', sizeBytes: 15000000, artifactType: 'T1_RECONSTRUCTION' },
+        {
+          path: 'sub-MGN01_T1w.nii.gz',
+          sha256: 'def456...',
+          sizeBytes: 15000000,
+          artifactType: 'T1_RECONSTRUCTION',
+        },
       ],
       transformGraph: [
         {
@@ -291,4 +296,3 @@ describe('Canonical Domain Types & Invariants', () => {
     expect(pipelineManifest.stages.length).toBe(1);
   });
 });
-

@@ -83,7 +83,7 @@ export class SBOMGenerator {
         const pkg = JSON.parse(readFileSync(fullPath, 'utf-8'));
         if (pkg.dependencies) {
           for (const [name, version] of Object.entries(pkg.dependencies)) {
-            if (!components.some((c) => c.name === name)) {
+            if (!components.some(c => c.name === name)) {
               components.push({
                 type: 'library',
                 name,

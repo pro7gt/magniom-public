@@ -18,7 +18,7 @@ export async function GET() {
     mode: versionStatus.systemMode,
     failClosedActive: versionStatus.failClosedActive,
     manifestTimestamp: versionStatus.manifestTimestamp,
-    subsystems: versionStatus.subsystemChecks.map((s) => ({
+    subsystems: versionStatus.subsystemChecks.map(s => ({
       name: s.subsystem,
       verified: s.matched,
       digest: s.actualHash,

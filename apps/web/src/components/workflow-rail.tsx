@@ -54,7 +54,9 @@ export function WorkflowRail({
       id: 'targets',
       label: '3. Target Slate',
       path: `/cases/${caseId}/targets`,
-      isCompleted: isDecisionSigned || ['target_slate_ready', 'clinician_review', 'decision_signed'].includes(caseState),
+      isCompleted:
+        isDecisionSigned ||
+        ['target_slate_ready', 'clinician_review', 'decision_signed'].includes(caseState),
       isLocked: !isPhenotypeApproved && caseState === 'draft',
     },
     {

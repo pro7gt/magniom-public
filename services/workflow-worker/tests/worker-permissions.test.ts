@@ -14,7 +14,11 @@ describe('MAG-SEC-010 & MAG-SEC-011: Worker Scoped Permissions & M2M Authenticat
   });
 
   it('generates valid bounded M2M token for registered worker ID', () => {
-    const { token, claims } = authManager.generateWorkerToken('neurocompute-worker-01', ['compute.execute', 'artifact.write'], 300);
+    const { token, claims } = authManager.generateWorkerToken(
+      'neurocompute-worker-01',
+      ['compute.execute', 'artifact.write'],
+      300,
+    );
 
     expect(token).toBeDefined();
     expect(claims.sub).toBe('neurocompute-worker-01');
@@ -65,7 +69,7 @@ describe('MAG-SEC-010 & MAG-SEC-011: Worker Scoped Permissions & M2M Authenticat
       'job-101',
       'neurocompute-worker-01',
       'case-404',
-      'org-alpha'
+      'org-alpha',
     );
 
     expect(context.jobId).toBe('job-101');

@@ -10,11 +10,7 @@ import {
 } from '@magniom/presentation';
 import { TargetSlateWorkspace } from '../../../../components/target-slate-workspace';
 
-export default function TargetsPage({
-  params,
-}: {
-  params: Promise<{ caseId: string }>;
-}) {
+export default function TargetsPage({ params }: { params: Promise<{ caseId: string }> }) {
   const resolvedParams = use(params);
   const caseId = resolvedParams.caseId;
   const searchParams = useSearchParams();

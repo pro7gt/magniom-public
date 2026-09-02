@@ -19,7 +19,7 @@ export function serializeTargetCandidateForDatabase(
     caseId: string;
     phenotypeSnapshotId: string;
     evidenceReleaseId: string;
-  }
+  },
 ) {
   return {
     organisationId: options.organisationId,
@@ -66,7 +66,7 @@ export function serializeTargetSlateForDatabase(
     organisationId: string;
     caseId: string;
     evidenceReleaseId?: string;
-  }
+  },
 ): PublishTargetSlateInput {
   const allCandidates: TargetCandidate[] = [
     ...slate.primaryCandidates,
@@ -76,13 +76,13 @@ export function serializeTargetSlateForDatabase(
 
   const evidenceReleaseId = options.evidenceReleaseId ?? 'e0000000-0000-0000-0000-000000000001';
 
-  const candidatesPayload = allCandidates.map((cand) =>
+  const candidatesPayload = allCandidates.map(cand =>
     serializeTargetCandidateForDatabase(cand, {
       organisationId: options.organisationId,
       caseId: options.caseId,
       phenotypeSnapshotId: slate.phenotypeSnapshotId,
       evidenceReleaseId,
-    })
+    }),
   );
 
   const outputPayload = {
@@ -127,7 +127,7 @@ export function serializeTargetSlateForDatabase(
 export function computeSignedDecisionManifest(
   decision: ClinicianDecision,
   finalTargets: readonly FinalTarget[],
-  clinicianDetails?: { fullName?: string; registrationIdentifier?: string }
+  clinicianDetails?: { fullName?: string; registrationIdentifier?: string },
 ): {
   canonicalPayload: Record<string, unknown>;
   digitalSignatureHash: string;
@@ -146,7 +146,7 @@ export function computeSignedDecisionManifest(
     reviewedCounterfactuals: decision.reviewedCounterfactuals,
     reviewedConflictingEvidence: decision.reviewedConflictingEvidence,
     attestationStatement: decision.attestation?.statement ?? '',
-    finalTargets: finalTargets.map((t) => ({
+    finalTargets: finalTargets.map(t => ({
       sequenceOrder: t.sequenceOrder,
       source: t.source,
       sourceCandidateId: t.sourceCandidateId,

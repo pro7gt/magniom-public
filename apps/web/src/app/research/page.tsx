@@ -7,30 +7,42 @@ import { caseStore } from '../../lib/case-store';
 export default function ResearchWorkspacePage() {
   const allCases = caseStore.getAllCases();
   const researchCases = allCases.filter(
-    (c) => c.title.toLowerCase().includes('research') || c.code === 'MGN-26-0005'
+    c => c.title.toLowerCase().includes('research') || c.code === 'MGN-26-0005',
   );
 
   return (
     <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       {/* Research Mode Warning Banner (§13, §155) */}
       <div className="research-banner" style={{ margin: 0 }}>
-        <strong>RESEARCH MODE — NOT FOR CLINICAL USE:</strong> Experimental neuroimaging and exploratory circuit targets. Clinical decision signing is strictly restricted in this environment.
+        <strong>RESEARCH MODE — NOT FOR CLINICAL USE:</strong> Experimental neuroimaging and
+        exploratory circuit targets. Clinical decision signing is strictly restricted in this
+        environment.
       </div>
 
       <div>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.25rem' }}>
+        <div
+          style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.25rem' }}
+        >
           <span className="badge badge-tierexp">RESEARCH ENVIRONMENT</span>
         </div>
         <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)' }}>
           Research & Exploratory Neuroimaging Workspace
         </h1>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginTop: '0.25rem' }}>
-          Experimental connectomic hypotheses, novel symptom-to-circuit formulations, and Tier-Exp exploratory targets (Section 32).
+          Experimental connectomic hypotheses, novel symptom-to-circuit formulations, and Tier-Exp
+          exploratory targets (Section 32).
         </p>
       </div>
 
       <div className="card">
-        <h2 style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '1rem', color: 'var(--accent-cyan)' }}>
+        <h2
+          style={{
+            fontSize: '1.125rem',
+            fontWeight: 700,
+            marginBottom: '1rem',
+            color: 'var(--accent-cyan)',
+          }}
+        >
           Active Research Cases
         </h2>
 
@@ -46,7 +58,7 @@ export default function ResearchWorkspacePage() {
               </tr>
             </thead>
             <tbody>
-              {researchCases.map((c) => (
+              {researchCases.map(c => (
                 <tr key={c.id}>
                   <td>
                     <strong style={{ fontFamily: 'var(--font-mono)', color: '#f87171' }}>

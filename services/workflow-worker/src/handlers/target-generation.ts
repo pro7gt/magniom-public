@@ -11,10 +11,7 @@ import type {
   JobHandlerResult,
   WorkflowDatabaseClient,
 } from '../types.js';
-import type {
-  TargetGenerationMessage,
-  PhenotypeSnapshot,
-} from '@magniom/domain';
+import type { TargetGenerationMessage, PhenotypeSnapshot } from '@magniom/domain';
 import {
   runTargetEngine,
   serializeTargetSlateForDatabase,
@@ -41,10 +38,7 @@ export class TargetGenerationJobHandler implements JobHandler<Record<string, unk
   private readonly contextLoader: TargetEngineContextLoader;
   private readonly storageClient: StorageClient;
 
-  constructor(
-    dbClient: WorkflowDatabaseClient,
-    contextLoader: TargetEngineContextLoader
-  ) {
+  constructor(dbClient: WorkflowDatabaseClient, contextLoader: TargetEngineContextLoader) {
     this.dbClient = dbClient;
     this.contextLoader = contextLoader;
     this.storageClient = new StorageClient(dbClient);
@@ -56,7 +50,7 @@ export class TargetGenerationJobHandler implements JobHandler<Record<string, unk
       await ctx.reportProgress(
         'VALIDATING_JOB_INPUTS',
         'Validating zero-PHI target generation envelope and job parameters',
-        10
+        10,
       );
 
       const rawPayload = ctx.envelope.payload as Record<string, unknown>;
@@ -66,9 +60,13 @@ export class TargetGenerationJobHandler implements JobHandler<Record<string, unk
         organisationId: ctx.envelope.organisationId,
         caseId: ctx.envelope.caseId,
         phenotypeSnapshotId: rawPayload['phenotypeSnapshotId'] as string,
-        ...(rawPayload['connectomeRunId'] ? { connectomeRunId: rawPayload['connectomeRunId'] as string } : {}),
+        ...(rawPayload['connectomeRunId']
+          ? { connectomeRunId: rawPayload['connectomeRunId'] as string }
+          : {}),
         targetEngineVersionId: (rawPayload['targetEngineVersionId'] as string) ?? '1.0.0',
-        evidenceLibraryReleaseId: (rawPayload['evidenceLibraryReleaseId'] as string) ?? 'e0000000-0000-0000-0000-000000000001',
+        evidenceLibraryReleaseId:
+          (rawPayload['evidenceLibraryReleaseId'] as string) ??
+          'e0000000-0000-0000-0000-000000000001',
         correlationId: ctx.envelope.correlationId,
       });
 
@@ -76,7 +74,7 @@ export class TargetGenerationJobHandler implements JobHandler<Record<string, unk
       await ctx.reportProgress(
         'LOADING_CLINICAL_CONTEXT',
         'Retrieving approved phenotype snapshot and connectome matrices',
-        30
+        30,
       );
 
       const context = await this.contextLoader.loadContext({
@@ -90,7 +88,7 @@ export class TargetGenerationJobHandler implements JobHandler<Record<string, unk
       await ctx.reportProgress(
         'COMPUTING_TARGET_SLATE',
         'Executing pure deterministic target engine algorithm with 3+2 ranking',
-        60
+        60,
       );
 
       const slate = runTargetEngine({
@@ -104,7 +102,7 @@ export class TargetGenerationJobHandler implements JobHandler<Record<string, unk
       await ctx.reportProgress(
         'SERIALIZING_PERSISTENCE_PAYLOAD',
         'Serializing candidate coordinates, convergence metrics, and manifest hashes',
-        80
+        80,
       );
 
       const publishInput = serializeTargetSlateForDatabase(slate, {
@@ -117,7 +115,7 @@ export class TargetGenerationJobHandler implements JobHandler<Record<string, unk
       await ctx.reportProgress(
         'PUBLISHING_TO_DATABASE',
         'Persisting immutable Target Slate and candidate members to database',
-        90
+        90,
       );
 
       const publishResult = await this.dbClient.publishTargetSlate(publishInput);
@@ -126,7 +124,7 @@ export class TargetGenerationJobHandler implements JobHandler<Record<string, unk
       await ctx.reportProgress(
         'REGISTERING_ARTIFACTS',
         'Registering immutable scientific artifacts with SHA-256 integrity hash',
-        95
+        95,
       );
 
       const artifactPath = this.storageClient.buildStoragePath({
@@ -149,7 +147,7 @@ export class TargetGenerationJobHandler implements JobHandler<Record<string, unk
       await ctx.reportProgress(
         'COMPLETED',
         'Target Slate successfully generated, published, and registered in artifact registry',
-        100
+        100,
       );
 
       return {

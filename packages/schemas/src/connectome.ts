@@ -3,12 +3,12 @@
  * Conforms to MAGNIOM-Neuroimaging & Functional Connectomics Pipeline Specification v1.0 Sections 72-84
  */
 
-import { z } from "zod";
+import { z } from 'zod';
 
 export const HcpMmpParcelSchema = z.object({
   parcelIndex: z.number().int().min(1).max(360),
   parcelName: z.string(),
-  hemisphere: z.enum(["L", "R"]),
+  hemisphere: z.enum(['L', 'R']),
   cortexArea: z.string(),
   vertexCount: z.number().int().positive(),
   vertexIndices: z.array(z.number().int().nonnegative()),
@@ -20,7 +20,7 @@ export type HcpMmpParcel = z.infer<typeof HcpMmpParcelSchema>;
 export const SubcorticalROISchema = z.object({
   roiIndex: z.number().int().min(1).max(14),
   roiName: z.string(),
-  hemisphere: z.enum(["L", "R"]),
+  hemisphere: z.enum(['L', 'R']),
   voxelCount: z.number().int().positive(),
   centroidMni: z.tuple([z.number(), z.number(), z.number()]),
 });
@@ -34,7 +34,7 @@ export const ParcelCoverageQCSchema = z.object({
   coverageFraction: z.number().min(0).max(1),
   meanTsnr: z.number().nonnegative(),
   temporalVariance: z.number().nonnegative(),
-  coverageStatus: z.enum(["VALID", "CONDITIONAL", "INVALID"]),
+  coverageStatus: z.enum(['VALID', 'CONDITIONAL', 'INVALID']),
   isUsableForTargeting: z.boolean(),
 });
 export type ParcelCoverageQC = z.infer<typeof ParcelCoverageQCSchema>;
@@ -42,8 +42,8 @@ export type ParcelCoverageQC = z.infer<typeof ParcelCoverageQCSchema>;
 export const ParcelTimeSeriesResultSchema = z.object({
   subjectId: z.string(),
   runIndex: z.number().int().min(1),
-  atlasName: z.string().default("HCP-MMP1.0"),
-  projectionMethod: z.string().default("MagniomAtlasProjection v1"),
+  atlasName: z.string().default('HCP-MMP1.0'),
+  projectionMethod: z.string().default('MagniomAtlasProjection v1'),
   numTimepoints: z.number().int().positive(),
   retainedTimepoints: z.number().int().nonnegative(),
   parcelNames: z.array(z.string()),
@@ -57,10 +57,10 @@ export type ParcelTimeSeriesResult = z.infer<typeof ParcelTimeSeriesResultSchema
 export const RunFunctionalConnectivitySchema = z.object({
   subjectId: z.string(),
   runIndex: z.number().int().min(1),
-  denoisingConfiguration: z.enum(["CD-1", "SD-1"]),
-  atlasName: z.string().default("HCP-MMP1.0"),
-  metric: z.string().default("Pearson correlation"),
-  transform: z.string().default("Fisher z"),
+  denoisingConfiguration: z.enum(['CD-1', 'SD-1']),
+  atlasName: z.string().default('HCP-MMP1.0'),
+  metric: z.string().default('Pearson correlation'),
+  transform: z.string().default('Fisher z'),
   retainedTimepoints: z.number().int().nonnegative(),
   retainedMinutes: z.number().nonnegative(),
   numParcels: z.number().int().positive(),
@@ -75,8 +75,8 @@ export type RunFunctionalConnectivity = z.infer<typeof RunFunctionalConnectivity
 
 export const CombinedFunctionalConnectivitySchema = z.object({
   subjectId: z.string(),
-  denoisingConfiguration: z.enum(["CD-1", "SD-1"]),
-  atlasName: z.string().default("HCP-MMP1.0"),
+  denoisingConfiguration: z.enum(['CD-1', 'SD-1']),
+  atlasName: z.string().default('HCP-MMP1.0'),
   totalRetainedTimepoints: z.number().int().nonnegative(),
   totalRetainedMinutes: z.number().nonnegative(),
   runIndices: z.array(z.number().int()),

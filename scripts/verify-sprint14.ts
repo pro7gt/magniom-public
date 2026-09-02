@@ -49,7 +49,7 @@ export class Sprint14VerificationOrchestrator {
     await this.verifyGate8_BackupRestore();
     await this.verifyGate9_RequirementsTraceability();
 
-    const allPassed = this.results.every((r) => r.passed);
+    const allPassed = this.results.every(r => r.passed);
     return { passed: allPassed, results: this.results };
   }
 
@@ -62,13 +62,24 @@ export class Sprint14VerificationOrchestrator {
       gateId: 'SEC-RLS-001',
       deliverable: '1. Full RLS Suite',
       passed: hasFiles,
-      summary: 'RLS enabled across all 11 schemas; default deny for anon; immutability triggers on signed decisions & slates.',
-      requirements: ['MAG-SEC-001', 'MAG-SEC-007', 'MAG-SEC-012', 'MAG-SEC-022', 'MAG-SEC-024', 'MAG-SEC-025'],
+      summary:
+        'RLS enabled across all 11 schemas; default deny for anon; immutability triggers on signed decisions & slates.',
+      requirements: [
+        'MAG-SEC-001',
+        'MAG-SEC-007',
+        'MAG-SEC-012',
+        'MAG-SEC-022',
+        'MAG-SEC-024',
+        'MAG-SEC-025',
+      ],
     });
   }
 
   private async verifyGate2_WorkerPermissions(): Promise<void> {
-    const workerMigration = join(this.repoRoot, 'supabase/migrations/041_worker_roles_and_permissions.sql');
+    const workerMigration = join(
+      this.repoRoot,
+      'supabase/migrations/041_worker_roles_and_permissions.sql',
+    );
     const workerAuthSrc = join(this.repoRoot, 'services/workflow-worker/src/worker-auth.ts');
     const hasFiles = existsSync(workerMigration) && existsSync(workerAuthSrc);
 
@@ -76,7 +87,8 @@ export class Sprint14VerificationOrchestrator {
       gateId: 'SEC-WRK-001',
       deliverable: '2. Worker Permissions',
       passed: hasFiles,
-      summary: 'M2M token generation validated; storage access bounded to org/case prefixes; direct patient table access revoked.',
+      summary:
+        'M2M token generation validated; storage access bounded to org/case prefixes; direct patient table access revoked.',
       requirements: ['MAG-SEC-010', 'MAG-SEC-011', 'MAG-SEC-029'],
     });
   }
@@ -117,7 +129,8 @@ export class Sprint14VerificationOrchestrator {
       gateId: 'SEC-TRM-001',
       deliverable: '4. SaMD Threat Model',
       passed: exists && has8Threats,
-      summary: 'Formal threat model covers all 8 threat vectors with STRIDE analysis and ISO 14971 risk mitigations.',
+      summary:
+        'Formal threat model covers all 8 threat vectors with STRIDE analysis and ISO 14971 risk mitigations.',
       requirements: ['MAG-SEC-001', 'MAG-SEC-012', 'MAG-SEC-020', 'MAG-DAT-004', 'MAG-UX-031'],
     });
   }
@@ -151,21 +164,26 @@ export class Sprint14VerificationOrchestrator {
       gateId: 'SEC-ROT-001',
       deliverable: '6. Secret Rotation & Hygiene',
       passed: existsSync(runbook) && findings.length === 0 && drill.dualAcceptanceVerified,
-      summary: 'Zero hardcoded secrets in repository; 4-tier secret rotation runbook with dual-key overlap verified.',
+      summary:
+        'Zero hardcoded secrets in repository; 4-tier secret rotation runbook with dual-key overlap verified.',
       requirements: ['MAG-SEC-009', 'MAG-SEC-028'],
     });
   }
 
   private async verifyGate7_LoggingControls(): Promise<void> {
     const loggerFile = join(this.repoRoot, 'packages/domain/src/logger.ts');
-    const auditFuncFile = join(this.repoRoot, 'supabase/migrations/042_audit_hash_verification.sql');
+    const auditFuncFile = join(
+      this.repoRoot,
+      'supabase/migrations/042_audit_hash_verification.sql',
+    );
     const policyDoc = join(this.repoRoot, 'docs/security/logging-and-monitoring-policy.md');
 
     this.results.push({
       gateId: 'SEC-LOG-001',
       deliverable: '7. Logging Controls & Redaction',
       passed: existsSync(loggerFile) && existsSync(auditFuncFile) && existsSync(policyDoc),
-      summary: 'Automated PHI redaction active; high-risk SOC security alerts defined; cryptographic audit chaining intact.',
+      summary:
+        'Automated PHI redaction active; high-risk SOC security alerts defined; cryptographic audit chaining intact.',
       requirements: ['MAG-SEC-030', 'MAG-SEC-031', 'MAG-SEC-032', 'MAG-AUD-001'],
     });
   }
@@ -193,14 +211,16 @@ export class Sprint14VerificationOrchestrator {
       const catalog = JSON.parse(readFileSync(catalogPath, 'utf-8'));
       const matrix = readFileSync(matrixPath, 'utf-8');
       const secReqs = catalog.requirements.filter((r: any) => r.domain === 'SEC');
-      passed = secReqs.length >= 8 && matrix.includes('SEC-RLS-001') && matrix.includes('SEC-BKP-001');
+      passed =
+        secReqs.length >= 8 && matrix.includes('SEC-RLS-001') && matrix.includes('SEC-BKP-001');
     }
 
     this.results.push({
       gateId: 'SEC-REQ-001',
       deliverable: '9. Requirements & Traceability Alignment',
       passed,
-      summary: 'Software Requirements Catalog and Forward/Backward Traceability Matrix updated with all Sprint 14 gates.',
+      summary:
+        'Software Requirements Catalog and Forward/Backward Traceability Matrix updated with all Sprint 14 gates.',
       requirements: ['MAG-SEC-001', 'MAG-SEC-035'],
     });
   }
@@ -210,9 +230,13 @@ export class Sprint14VerificationOrchestrator {
 if (import.meta.url === `file://${process.argv[1]}`) {
   const orchestrator = new Sprint14VerificationOrchestrator();
   orchestrator.runAllGates().then(({ passed, results }) => {
-    console.log('\n================================================================================');
+    console.log(
+      '\n================================================================================',
+    );
     console.log('             SPRINT 14 — SECURITY HARDENING MASTER VERIFICATION REPORT          ');
-    console.log('================================================================================\n');
+    console.log(
+      '================================================================================\n',
+    );
 
     for (const r of results) {
       const status = r.passed ? '✓ PASS' : '✗ FAIL';

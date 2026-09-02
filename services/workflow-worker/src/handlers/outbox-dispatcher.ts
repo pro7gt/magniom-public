@@ -15,7 +15,9 @@ export class OutboxDispatcher {
     this.dbClient = dbClient;
   }
 
-  async dispatchPendingEvents(batchSize = 50): Promise<{ dispatchedCount: number; errors: number }> {
+  async dispatchPendingEvents(
+    batchSize = 50,
+  ): Promise<{ dispatchedCount: number; errors: number }> {
     const events = await this.dbClient.fetchPendingOutboxEvents(batchSize);
     let dispatchedCount = 0;
     let errors = 0;

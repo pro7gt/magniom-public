@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   design-controls:
     name: ISO 14971 Risk & IEC 62304 Design Control Validation
@@ -18,9 +21,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: 'npm'
 
-      - name: Install tsx
-        run: npm install -g tsx
+      - name: Install Dependencies
+        run: npm ci
 
-      - name: Run Traceability & Risk Verification
-        run: tsx scripts/verify-requirements.ts
+      - name: Run Requirements & Risk Traceability Verification
+        run: npm run verify:requirements
+
+      - name: Validate Verification Exit Criteria
+        run: npm run verify:exit-criteria

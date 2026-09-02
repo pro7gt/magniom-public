@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { runTargetEngine, evaluateClinicalScopeGate, evaluateReliabilityGate } from '../src/index.js';
+import {
+  runTargetEngine,
+  evaluateClinicalScopeGate,
+  evaluateReliabilityGate,
+} from '../src/index.js';
 import {
   GOLDEN_CASE_01_PHENOTYPE,
   GOLDEN_CASE_01_SLATE,
@@ -91,13 +95,17 @@ describe('Sprint 2 — Target Engine Skeleton Verification', () => {
       expect(slate.primaryCandidates).toHaveLength(1);
       expect(slate.primaryCandidates[0].role).toBe('PRIMARY_1');
       expect(slate.primaryCandidates[0].method).toBe('EVIDENCE_ONLY_PRIOR');
-      expect(slate.primaryCandidates[0].contraindicationsOrConflicts).toContain('LIMITED_FC_RELIABILITY');
+      expect(slate.primaryCandidates[0].contraindicationsOrConflicts).toContain(
+        'LIMITED_FC_RELIABILITY',
+      );
 
       // Unreliable connectome candidate is stored in suppressedCandidates
       expect(slate.suppressedCandidates).toHaveLength(1);
       expect(slate.suppressedCandidates[0].isSuppressedOrRedundant).toBe(true);
       expect(slate.suppressedCandidates[0].suppressionReason).toBe('LOW_RELIABILITY');
-      expect(slate.suppressedCandidates[0].contraindicationsOrConflicts).toContain('LIMITED_FC_RELIABILITY');
+      expect(slate.suppressedCandidates[0].contraindicationsOrConflicts).toContain(
+        'LIMITED_FC_RELIABILITY',
+      );
 
       expect(slate).toEqual(GOLDEN_CASE_04_SLATE);
     });
@@ -113,7 +121,7 @@ describe('Sprint 2 — Target Engine Skeleton Verification', () => {
       expect(slate.primaryCandidates.length).toBeGreaterThanOrEqual(1);
 
       // Primary 1 is the evidence anchor and Primary 2 is the distinct Anxiosomatic DMPFC circuit target
-      const primary2 = slate.primaryCandidates.find((c) => c.role === 'PRIMARY_2');
+      const primary2 = slate.primaryCandidates.find(c => c.role === 'PRIMARY_2');
       expect(primary2).toBeDefined();
       expect(primary2?.familyId).toBe('TF-MDD-ANXIOSOMATIC-DMPFC-001');
       expect(primary2?.evidenceTier).toBe('T2');

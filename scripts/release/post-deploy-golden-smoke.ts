@@ -27,7 +27,8 @@ export async function runPostDeploySmokeTest(): Promise<boolean> {
   console.log(`   - Generated Manifest Hash: ${slate.deterministicManifestHash}`);
   console.log(`   - Expected Manifest Hash:  ${GOLDEN_CASE_01_SLATE.deterministicManifestHash}`);
 
-  const hashMatches = slate.deterministicManifestHash === GOLDEN_CASE_01_SLATE.deterministicManifestHash;
+  const hashMatches =
+    slate.deterministicManifestHash === GOLDEN_CASE_01_SLATE.deterministicManifestHash;
   if (!hashMatches) {
     console.error('❌ Post-deployment smoke test failed: Manifest hash mismatch.');
     return false;
@@ -49,7 +50,7 @@ export async function runPostDeploySmokeTest(): Promise<boolean> {
 }
 
 if (process.argv[1]?.endsWith('post-deploy-golden-smoke.ts')) {
-  runPostDeploySmokeTest().then((passed) => {
+  runPostDeploySmokeTest().then(passed => {
     if (!passed) process.exit(1);
   });
 }

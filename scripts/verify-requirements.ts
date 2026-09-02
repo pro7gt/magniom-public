@@ -104,7 +104,9 @@ function verifyRequirements() {
   for (const hazard of riskRegister.hazards) {
     for (const mit of hazard.mitigations) {
       if (!requirementIds.has(mit.requirementId)) {
-        console.error(`❌ Hazard ${hazard.id} references non-existent Requirement ID '${mit.requirementId}'`);
+        console.error(
+          `❌ Hazard ${hazard.id} references non-existent Requirement ID '${mit.requirementId}'`,
+        );
         errors++;
       }
     }
@@ -115,7 +117,9 @@ function verifyRequirements() {
     process.exit(1);
   }
 
-  console.log(`✅ All ${requirementIds.size} requirements and ${hazardIds.size} risk controls verified successfully.`);
+  console.log(
+    `✅ All ${requirementIds.size} requirements and ${hazardIds.size} risk controls verified successfully.`,
+  );
 }
 
 verifyRequirements();

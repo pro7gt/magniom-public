@@ -45,7 +45,10 @@ export class ScientificVersionGuard {
     }
 
     const repoRoot = path.resolve(process.cwd());
-    const manifestPath = path.join(repoRoot, 'docs/verification/verification-build-m3-manifest.json');
+    const manifestPath = path.join(
+      repoRoot,
+      'docs/verification/verification-build-m3-manifest.json',
+    );
 
     if (!fs.existsSync(manifestPath)) {
       const failStatus: RuntimeVersionStatus = {
@@ -74,10 +77,16 @@ export class ScientificVersionGuard {
         if (stats.isDirectory()) {
           const pkgJson = path.join(fullPath, 'package.json');
           if (fs.existsSync(pkgJson)) {
-            actualSha256 = crypto.createHash('sha256').update(fs.readFileSync(pkgJson)).digest('hex');
+            actualSha256 = crypto
+              .createHash('sha256')
+              .update(fs.readFileSync(pkgJson))
+              .digest('hex');
           }
         } else {
-          actualSha256 = crypto.createHash('sha256').update(fs.readFileSync(fullPath)).digest('hex');
+          actualSha256 = crypto
+            .createHash('sha256')
+            .update(fs.readFileSync(fullPath))
+            .digest('hex');
         }
       }
 
@@ -102,7 +111,9 @@ export class ScientificVersionGuard {
       releaseId: manifest.buildId,
       manifestTimestamp: manifest.freezeTimestamp,
       subsystemChecks,
-      ...(failClosedActive ? { reason: 'Runtime scientific digest mismatch detected. Fail-closed active.' } : {}),
+      ...(failClosedActive
+        ? { reason: 'Runtime scientific digest mismatch detected. Fail-closed active.' }
+        : {}),
     };
 
     this.cachedStatus = status;

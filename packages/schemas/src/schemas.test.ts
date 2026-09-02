@@ -8,7 +8,6 @@ import {
   TargetReliabilityProfileSchema,
   CanonicalTargetReliabilityProfileSchema,
   PatientSchema,
-
   ClinicalCaseSchema,
   ClinicalObservationSchema,
   ApprovePhenotypeInputSchema,
@@ -295,7 +294,8 @@ describe('Zod Runtime Schemas & Domain Invariants', () => {
       disagreementWithMagniom: undefined,
       reviewedCounterfactuals: true,
       reviewedConflictingEvidence: true,
-      attestationStatement: 'I have independently reviewed the clinical context and evidence provenance.',
+      attestationStatement:
+        'I have independently reviewed the clinical context and evidence provenance.',
       finalTargets: [finalTarget],
       decisionType: 'ACCEPTED_PRIMARY' as const,
     };
@@ -313,7 +313,8 @@ describe('Zod Runtime Schemas & Domain Invariants', () => {
       caseId: 'e0000000-0000-0000-0000-000000000001',
       artifactType: 'TARGET_SLATE_PAYLOAD' as const,
       bucket: 'clinical-derived',
-      objectPath: 'org/a0000000-0000-0000-0000-000000000001/case/e0000000-0000-0000-0000-000000000001/slate/slate-001/target_slate.json',
+      objectPath:
+        'org/a0000000-0000-0000-0000-000000000001/case/e0000000-0000-0000-0000-000000000001/slate/slate-001/target_slate.json',
       mimeType: 'application/json',
       sha256: 'a'.repeat(64),
       sizeBytes: 4096,
@@ -406,7 +407,7 @@ describe('Zod Runtime Schemas & Domain Invariants', () => {
       metadata: { coil: '32-channel' },
       createdAt: '2026-09-02T08:30:00Z',
     };
-    const parsedStudy = import('./schemas.js').then((m) => m.ImagingStudySchema.parse(study));
+    const parsedStudy = import('./schemas.js').then(m => m.ImagingStudySchema.parse(study));
 
     const series = {
       id: '22222222-2222-2222-2222-222222222222',
@@ -429,13 +430,13 @@ describe('Zod Runtime Schemas & Domain Invariants', () => {
       surfaceSelfIntersectionsRh: 0,
       corticalThicknessMeanMm: 2.55,
       corticalThicknessStdMm: 0.38,
-      corticalThicknessMinMm: 1.20,
-      corticalThicknessMaxMm: 4.80,
+      corticalThicknessMinMm: 1.2,
+      corticalThicknessMaxMm: 4.8,
       corticalThicknessOutlierFraction: 0.001,
       brainMaskVolumeMm3: 1520000,
       csfFraction: 0.14,
       gmFraction: 0.46,
-      wmFraction: 0.40,
+      wmFraction: 0.4,
       mniRegistrationOverlapDice: 0.95,
       mniMutualInformation: 0.85,
     };
@@ -453,10 +454,20 @@ describe('Zod Runtime Schemas & Domain Invariants', () => {
         { name: 'bids-validator', version: '1.11.1' },
       ],
       inputFiles: [
-        { path: 'dicom.tar.gz', sha256: 'a'.repeat(64), sizeBytes: 250000000, artifactType: 'RAW_DICOM' as const },
+        {
+          path: 'dicom.tar.gz',
+          sha256: 'a'.repeat(64),
+          sizeBytes: 250000000,
+          artifactType: 'RAW_DICOM' as const,
+        },
       ],
       outputFiles: [
-        { path: 'sub-MGN01_T1w.nii.gz', sha256: 'b'.repeat(64), sizeBytes: 18000000, artifactType: 'T1_RECONSTRUCTION' as const },
+        {
+          path: 'sub-MGN01_T1w.nii.gz',
+          sha256: 'b'.repeat(64),
+          sizeBytes: 18000000,
+          artifactType: 'T1_RECONSTRUCTION' as const,
+        },
       ],
       transformGraph: [
         {
@@ -514,7 +525,7 @@ describe('Zod Runtime Schemas & Domain Invariants', () => {
       connectivity_reliability_metric: 0.92,
       connectivity_reliability_method: 'Pearson correlation across search-space vertices',
       spatial_reliability_score: 0.88,
-      connectivity_reliability_score: 0.90,
+      connectivity_reliability_score: 0.9,
       qc_reliability_score: 0.95,
       overall_reliability_score: 0.88,
       reliability_class: 'high' as const,
@@ -549,14 +560,38 @@ describe('Zod Runtime Schemas & Domain Invariants', () => {
         distance_mm: 2.8,
         geodesic_distance_mm: 3.0,
         map_similarity: 0.92,
-        spearman_similarity: 0.90,
+        spearman_similarity: 0.9,
         cluster_dice: 0.88,
         cluster_jaccard: 0.78,
         cluster_area_delta_mm2: 3.5,
-        half_a_peak_mni: { space: 'MNI152NLin2009cAsym' as const, x: -38.0, y: 44.0, z: 28.0, unit: 'mm' },
-        half_a_medoid_mni: { space: 'MNI152NLin2009cAsym' as const, x: -38.0, y: 44.0, z: 26.0, unit: 'mm' },
-        half_b_peak_mni: { space: 'MNI152NLin2009cAsym' as const, x: -38.0, y: 44.0, z: 28.0, unit: 'mm' },
-        half_b_medoid_mni: { space: 'MNI152NLin2009cAsym' as const, x: -37.0, y: 43.0, z: 27.0, unit: 'mm' },
+        half_a_peak_mni: {
+          space: 'MNI152NLin2009cAsym' as const,
+          x: -38.0,
+          y: 44.0,
+          z: 28.0,
+          unit: 'mm',
+        },
+        half_a_medoid_mni: {
+          space: 'MNI152NLin2009cAsym' as const,
+          x: -38.0,
+          y: 44.0,
+          z: 26.0,
+          unit: 'mm',
+        },
+        half_b_peak_mni: {
+          space: 'MNI152NLin2009cAsym' as const,
+          x: -38.0,
+          y: 44.0,
+          z: 28.0,
+          unit: 'mm',
+        },
+        half_b_medoid_mni: {
+          space: 'MNI152NLin2009cAsym' as const,
+          x: -37.0,
+          y: 43.0,
+          z: 27.0,
+          unit: 'mm',
+        },
         partition_strategy: 'TEMPORAL_INTERLEAVED_BLOCKS_V1',
         half_a_retained_minutes: 18.0,
         half_b_retained_minutes: 18.0,
@@ -565,13 +600,14 @@ describe('Zod Runtime Schemas & Domain Invariants', () => {
         assessed: true,
         distance_mm: 3.2,
         geodesic_distance_mm: 3.5,
-        map_similarity: 0.90,
+        map_similarity: 0.9,
         spearman_similarity: 0.88,
         cluster_dice: 0.85,
         runs_evaluated: [1, 2],
       },
       limiting_factors: [],
-      interpretation: 'High target reliability meeting criteria for personalised clinical refinement.',
+      interpretation:
+        'High target reliability meeting criteria for personalised clinical refinement.',
       pipeline_version: 'MAGNIOM-CONNECTOME-1.0.0',
       atlas_versions: ['HCP-MMP1.0'],
     };
@@ -585,7 +621,3 @@ describe('Zod Runtime Schemas & Domain Invariants', () => {
     }
   });
 });
-
-
-
-

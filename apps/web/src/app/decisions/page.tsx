@@ -10,14 +10,17 @@ export default function DecisionsPage() {
   return (
     <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       <div>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.25rem' }}>
+        <div
+          style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.25rem' }}
+        >
           <span className="badge badge-tier1">CLINICAL DECISION GOVERNANCE</span>
         </div>
         <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)' }}>
           Clinical Decisions & Cryptographic Sign-Off History
         </h1>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginTop: '0.25rem' }}>
-          Authoritative record of clinician-authored target selections, clinical justifications, and immutable SHA-256 digital signatures.
+          Authoritative record of clinician-authored target selections, clinical justifications, and
+          immutable SHA-256 digital signatures.
         </p>
       </div>
 
@@ -35,14 +38,16 @@ export default function DecisionsPage() {
               </tr>
             </thead>
             <tbody>
-              {allCases.map((c) => {
+              {allCases.map(c => {
                 const record = caseStore.getCaseRecord(c.id);
                 const isSigned = Boolean(record?.decision?.isImmutable);
 
                 return (
                   <tr key={c.id}>
                     <td>
-                      <strong style={{ fontFamily: 'var(--font-mono)', color: 'var(--accent-cyan)' }}>
+                      <strong
+                        style={{ fontFamily: 'var(--font-mono)', color: 'var(--accent-cyan)' }}
+                      >
                         {c.code}
                       </strong>
                     </td>

@@ -17,10 +17,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import type {
-  VerificationBuildM3Manifest,
-  SubsystemFreezeRecord,
-} from '@magniom/domain';
+import type { VerificationBuildM3Manifest, SubsystemFreezeRecord } from '@magniom/domain';
 
 function computeSha256(filePath: string): string {
   if (!fs.existsSync(filePath)) {
@@ -44,16 +41,30 @@ export class ClinicalReleaseManifestGenerator {
     console.log('🔒 MAGNIOM CLINICAL RELEASE MANIFEST GENERATOR');
     console.log('=============================================\n');
 
-    const manifestPath = path.join(this.repoRoot, 'docs/verification/verification-build-m3-manifest.json');
-    const existingManifest: VerificationBuildM3Manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    const manifestPath = path.join(
+      this.repoRoot,
+      'docs/verification/verification-build-m3-manifest.json',
+    );
+    const existingManifest: VerificationBuildM3Manifest = JSON.parse(
+      fs.readFileSync(manifestPath, 'utf8'),
+    );
 
     console.log(`Auditing 6 Core Subsystems for Build [${existingManifest.buildId}]...`);
 
     const sub1Path = path.join(this.repoRoot, 'packages/target-engine/package.json');
     const sub2Path = path.join(this.repoRoot, 'evidence/releases/evidence-library-v1.0.0.json');
-    const sub3Path = path.join(this.repoRoot, 'packages/phenotype/releases/phenotype-ontology-v1.0.0.json');
-    const sub4Path = path.join(this.repoRoot, 'services/neurocompute/releases/neuro-pipeline-v1.0.0.json');
-    const sub5Path = path.join(this.repoRoot, 'scientific-config/releases/scientific-policy-v1.0.0.json');
+    const sub3Path = path.join(
+      this.repoRoot,
+      'packages/phenotype/releases/phenotype-ontology-v1.0.0.json',
+    );
+    const sub4Path = path.join(
+      this.repoRoot,
+      'services/neurocompute/releases/neuro-pipeline-v1.0.0.json',
+    );
+    const sub5Path = path.join(
+      this.repoRoot,
+      'scientific-config/releases/scientific-policy-v1.0.0.json',
+    );
     const sub6Path = path.join(this.repoRoot, 'apps/web/package.json');
 
     const updatedSubsystems: SubsystemFreezeRecord[] = [
@@ -114,7 +125,9 @@ export class ClinicalReleaseManifestGenerator {
     ];
 
     for (const sub of updatedSubsystems) {
-      console.log(`  ✅ [${sub.subsystem}] ${sub.version} -> SHA-256: ${sub.sha256.slice(0, 16)}...`);
+      console.log(
+        `  ✅ [${sub.subsystem}] ${sub.version} -> SHA-256: ${sub.sha256.slice(0, 16)}...`,
+      );
     }
 
     const sealedManifest: VerificationBuildM3Manifest = {

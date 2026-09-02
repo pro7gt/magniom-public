@@ -68,7 +68,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     console.log(`[✓ PASS] ${res.tier}`);
     console.log(`       Old Key: ${res.oldKeyFingerprint}`);
     console.log(`       New Key: ${res.newKeyFingerprint}`);
-    console.log(`       Dual Validation: Verified | Downtime: ${res.downtimeSeconds}s | Audit: Logged\n`);
+    console.log(
+      `       Dual Validation: Verified | Downtime: ${res.downtimeSeconds}s | Audit: Logged\n`,
+    );
     if (!res.dualAcceptanceVerified) allSuccess = false;
   }
 

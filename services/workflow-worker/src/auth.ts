@@ -41,7 +41,9 @@ export class WorkerAuthService {
       'connectome.read',
     ]);
     if (!allowedPermissions.has(permission)) {
-      throw new Error(`WORKER_PERMISSION_DENIED: Machine worker does not possess permission '${permission}'`);
+      throw new Error(
+        `WORKER_PERMISSION_DENIED: Machine worker does not possess permission '${permission}'`,
+      );
     }
     return true;
   }

@@ -87,7 +87,14 @@ class CaseStore {
     });
   }
 
-  public getAllCases(): Array<{ id: string; code: string; title: string; state: string; indication: string; isStale: boolean }> {
+  public getAllCases(): Array<{
+    id: string;
+    code: string;
+    title: string;
+    state: string;
+    indication: string;
+    isStale: boolean;
+  }> {
     return ALL_UX_GOLDEN_CASES.map(bundle => {
       const record = this.cases.get(bundle.id);
       return {
@@ -117,7 +124,11 @@ class CaseStore {
   /**
    * Approves a PhenotypeSnapshot, sealing it with a SHA-256 equivalent hash
    */
-  public approvePhenotype(caseId: string, clinicianId = 'clin-specialist-001', clinicianNotes?: string): PhenotypeSnapshot {
+  public approvePhenotype(
+    caseId: string,
+    clinicianId = 'clin-specialist-001',
+    clinicianNotes?: string,
+  ): PhenotypeSnapshot {
     const record = this.cases.get(caseId);
     if (!record) throw new Error(`Case ${caseId} not found`);
 
@@ -165,15 +176,16 @@ class CaseStore {
   /**
    * Saves candidate decisions
    */
-  public saveCandidateDecision(
-    caseId: string,
-    candidateDecision: CandidateDecision
-  ): void {
+  public saveCandidateDecision(caseId: string, candidateDecision: CandidateDecision): void {
     const record = this.cases.get(caseId);
     if (!record) throw new Error(`Case ${caseId} not found`);
 
-    const existingDecisions = record.decision?.candidateDecisions ? [...record.decision.candidateDecisions] : [];
-    const index = existingDecisions.findIndex(d => d.targetCandidateId === candidateDecision.targetCandidateId);
+    const existingDecisions = record.decision?.candidateDecisions
+      ? [...record.decision.candidateDecisions]
+      : [];
+    const index = existingDecisions.findIndex(
+      d => d.targetCandidateId === candidateDecision.targetCandidateId,
+    );
 
     if (index >= 0) {
       existingDecisions[index] = candidateDecision;
@@ -187,7 +199,9 @@ class CaseStore {
       slateId: record.slate.id,
       clinicianId: 'clin-specialist-001',
       decisionType: 'ACCEPTED_PRIMARY',
-      selectedCandidateIds: existingDecisions.filter(d => d.action === 'accept').map(d => d.targetCandidateId),
+      selectedCandidateIds: existingDecisions
+        .filter(d => d.action === 'accept')
+        .map(d => d.targetCandidateId),
       candidateDecisions: existingDecisions,
       reviewedCounterfactuals: true,
       reviewedConflictingEvidence: true,
@@ -261,7 +275,9 @@ class CaseStore {
       selectedCandidateIds: finalTargets.map(ft => ft.sourceCandidateId || ''),
       overallReasoning: params.overallReasoning,
       magniomInfluence: params.magniomInfluence,
-      ...(params.disagreementWithMagniom ? { disagreementWithMagniom: params.disagreementWithMagniom } : {}),
+      ...(params.disagreementWithMagniom
+        ? { disagreementWithMagniom: params.disagreementWithMagniom }
+        : {}),
       candidateDecisions,
       finalTargets,
       reviewedCounterfactuals: true,

@@ -38,7 +38,8 @@ export const UX_GOLDEN_CASE_01: UXGoldenCaseBundle = {
   id: 'case-ux-g01',
   code: 'MGN-26-0001',
   title: 'UX Golden Case 1 — High Convergence MDD',
-  expectedPattern: 'One strong Primary 1 with evidence-only reference visible as alternative; high convergence (Δ ≤ 12mm); no artificial Primary 2 duplication.',
+  expectedPattern:
+    'One strong Primary 1 with evidence-only reference visible as alternative; high convergence (Δ ≤ 12mm); no artificial Primary 2 duplication.',
   clinicalCase: {
     id: 'case-ux-g01',
     organisationId: 'org-synthetic-001',
@@ -64,7 +65,8 @@ export const UX_GOLDEN_CASE_02: UXGoldenCaseBundle = {
   id: 'case-ux-g02',
   code: 'MGN-26-0002',
   title: 'UX Golden Case 2 — Anxious Depression Dual Circuit',
-  expectedPattern: 'Evidence anchor (Primary 1) and anxiosomatic hypothesis (Primary 2) both visible with distinct clinical purposes; neither displayed as universal winner.',
+  expectedPattern:
+    'Evidence anchor (Primary 1) and anxiosomatic hypothesis (Primary 2) both visible with distinct clinical purposes; neither displayed as universal winner.',
   clinicalCase: {
     id: 'case-ux-g02',
     organisationId: 'org-synthetic-001',
@@ -90,7 +92,8 @@ export const UX_GOLDEN_CASE_03: UXGoldenCaseBundle = {
   id: 'case-ux-g03',
   code: 'MGN-26-0003',
   title: 'UX Golden Case 3 — Low Reliability Connectome',
-  expectedPattern: 'Personalised location displayed for context only with prominent "Not used for ranking" badge; evidence anchor dominates by scientific reason.',
+  expectedPattern:
+    'Personalised location displayed for context only with prominent "Not used for ranking" badge; evidence anchor dominates by scientific reason.',
   clinicalCase: {
     id: 'case-ux-g03',
     organisationId: 'org-synthetic-001',
@@ -124,7 +127,9 @@ const lowConvergencePrimary2: TargetCandidate = {
   phenotypeConcordanceScore: 0.82,
   overallScore: 0.72,
   rationale: 'Divergent functional connectivity cluster located in dorsal superior frontal cortex.',
-  contraindicationsOrConflicts: ['Peak coordinate is > 30 mm away from standard evidence reference.'],
+  contraindicationsOrConflicts: [
+    'Peak coordinate is > 30 mm away from standard evidence reference.',
+  ],
   isSuppressedOrRedundant: false,
 };
 
@@ -142,7 +147,8 @@ export const UX_GOLDEN_CASE_04: UXGoldenCaseBundle = {
   id: 'case-ux-g04',
   code: 'MGN-26-0004',
   title: 'UX Golden Case 4 — Low Convergence Divergence',
-  expectedPattern: 'Disagreement clearly visible with Low Convergence warning; no compromise target invented; clinician prompted to inspect competing bases.',
+  expectedPattern:
+    'Disagreement clearly visible with Low Convergence warning; no compromise target invented; clinician prompted to inspect competing bases.',
   clinicalCase: {
     id: 'case-ux-g04',
     organisationId: 'org-synthetic-001',
@@ -168,7 +174,8 @@ export const UX_GOLDEN_CASE_05: UXGoldenCaseBundle = {
   id: 'case-ux-g05',
   code: 'MGN-26-0005',
   title: 'UX Golden Case 5 — Research Mode Anomaly',
-  expectedPattern: 'Prominent Research Mode Banner; Tier Exp experimental targets visible; Clinical "Accept & Sign" disabled for experimental targets.',
+  expectedPattern:
+    'Prominent Research Mode Banner; Tier Exp experimental targets visible; Clinical "Accept & Sign" disabled for experimental targets.',
   clinicalCase: {
     id: 'case-ux-g05',
     organisationId: 'org-synthetic-001',
@@ -194,7 +201,8 @@ export const UX_GOLDEN_CASE_06: UXGoldenCaseBundle = {
   id: 'case-ux-g06',
   code: 'MGN-26-0006',
   title: 'UX Golden Case 6 — Stale Target Slate',
-  expectedPattern: 'Staleness warning immediately displayed in header; Sign Target Decision button disabled; "Regenerate Slate" prompt visible.',
+  expectedPattern:
+    'Staleness warning immediately displayed in header; Sign Target Decision button disabled; "Regenerate Slate" prompt visible.',
   clinicalCase: {
     id: 'case-ux-g06',
     organisationId: 'org-synthetic-001',
@@ -214,9 +222,14 @@ export const UX_GOLDEN_CASE_06: UXGoldenCaseBundle = {
     id: 'snap-synth-new-006',
     symptomScores: { ...G01_PHENOTYPE.symptomScores, anxiousSomaticScore: 9 },
   },
-  slate: { ...GOLDEN_CASE_01_SLATE, caseId: 'case-ux-g06', phenotypeSnapshotId: 'snap-synth-old-006' },
+  slate: {
+    ...GOLDEN_CASE_01_SLATE,
+    caseId: 'case-ux-g06',
+    phenotypeSnapshotId: 'snap-synth-old-006',
+  },
   isStale: true,
-  staleReason: 'Target Slate was generated before the latest clinical phenotype update (Anxiosomatic score changed).',
+  staleReason:
+    'Target Slate was generated before the latest clinical phenotype update (Anxiosomatic score changed).',
 };
 
 // -------------------------------------------------------------
@@ -235,7 +248,8 @@ const SIGNED_OVERRIDE_DECISION: ClinicianDecision = {
       targetCandidateId: GOLDEN_CASE_02_SLATE.primaryCandidates[0]?.id || 'tc-p1-fallback',
       action: 'reject',
       reasonCodes: ['Patient preference / prior response', 'Clinician judgement'],
-      freeTextReason: 'Patient had excellent previous remission on standard F3 protocol; opting for established baseline.',
+      freeTextReason:
+        'Patient had excellent previous remission on standard F3 protocol; opting for established baseline.',
       evidenceReviewed: true,
       reliabilityReviewed: true,
       counterargumentsReviewed: true,
@@ -250,15 +264,18 @@ const SIGNED_OVERRIDE_DECISION: ClinicianDecision = {
       counterargumentsReviewed: true,
     },
   ],
-  overallReasoning: 'Treating clinician selected standard evidence reference over connectome refinement based on documented past treatment response.',
+  overallReasoning:
+    'Treating clinician selected standard evidence reference over connectome refinement based on documented past treatment response.',
   magniomInfluence: 'minor',
-  disagreementWithMagniom: 'Prior treatment history favored standard coordinates over novel personalised displacement.',
+  disagreementWithMagniom:
+    'Prior treatment history favored standard coordinates over novel personalised displacement.',
   decidedAt: '2026-09-01T16:20:00Z',
   attestation: {
     clinicianId: 'clin-specialist-001',
     clinicianName: 'Dr. Sarah Lin, MD, FRANZCP',
     licenseNumber: 'MED-TMS-99281',
-    statement: 'I have independently reviewed the clinical context, evidence provenance, target reliability, alternatives and limitations. The final target selection represents my clinical decision and not an autonomous Magniom prescription.',
+    statement:
+      'I have independently reviewed the clinical context, evidence provenance, target reliability, alternatives and limitations. The final target selection represents my clinical decision and not an autonomous Magniom prescription.',
     signedAt: '2026-09-01T16:20:00Z',
     digitalSignatureHash: 'a1b2c3d4e5f67890abcdef1234567890abcdef1234567890abcdef1234567890',
   },
@@ -272,7 +289,8 @@ export const UX_GOLDEN_CASE_07: UXGoldenCaseBundle = {
   id: 'case-ux-g07',
   code: 'MGN-26-0007',
   title: 'UX Golden Case 7 — Clinician Override Decision',
-  expectedPattern: 'Override straightforward; structured rationale required; no threatening "Are you sure?" language; immutable signed state.',
+  expectedPattern:
+    'Override straightforward; structured rationale required; no threatening "Are you sure?" language; immutable signed state.',
   clinicalCase: {
     id: 'case-ux-g07',
     organisationId: 'org-synthetic-001',
@@ -308,20 +326,23 @@ const SIGNED_NO_TARGET_DECISION: ClinicianDecision = {
       targetCandidateId: GOLDEN_CASE_01_SLATE.primaryCandidates[0]?.id || 'tc-p1-fallback',
       action: 'defer',
       reasonCodes: ['Clinical reassessment needed', 'Patient preference'],
-      freeTextReason: 'Patient developed emergent medical condition requiring pharmacological stabilization prior to TMS course.',
+      freeTextReason:
+        'Patient developed emergent medical condition requiring pharmacological stabilization prior to TMS course.',
       evidenceReviewed: true,
       reliabilityReviewed: true,
       counterargumentsReviewed: true,
     },
   ],
-  overallReasoning: 'TMS course deferred pending medical stabilization. No cortical target selected at this time.',
+  overallReasoning:
+    'TMS course deferred pending medical stabilization. No cortical target selected at this time.',
   magniomInfluence: 'none',
   decidedAt: '2026-09-01T17:00:00Z',
   attestation: {
     clinicianId: 'clin-specialist-001',
     clinicianName: 'Dr. Sarah Lin, MD, FRANZCP',
     licenseNumber: 'MED-TMS-99281',
-    statement: 'I have independently reviewed the clinical context and determined that TMS treatment is deferred.',
+    statement:
+      'I have independently reviewed the clinical context and determined that TMS treatment is deferred.',
     signedAt: '2026-09-01T17:00:00Z',
     digitalSignatureHash: 'b2c3d4e5f67890a1bcdef1234567890abcdef1234567890abcdef1234567890a',
   },
@@ -335,7 +356,8 @@ export const UX_GOLDEN_CASE_08: UXGoldenCaseBundle = {
   id: 'case-ux-g08',
   code: 'MGN-26-0008',
   title: 'UX Golden Case 8 — No Target / TMS Plan Deferred',
-  expectedPattern: 'Clinician can complete decision with no target selected; no error; valid clinical deferral pathway.',
+  expectedPattern:
+    'Clinician can complete decision with no target selected; no error; valid clinical deferral pathway.',
   clinicalCase: {
     id: 'case-ux-g08',
     organisationId: 'org-synthetic-001',
@@ -362,7 +384,8 @@ export const UX_GOLDEN_CASE_09: UXGoldenCaseBundle = {
   id: 'case-ux-g09',
   code: 'MGN-26-0009',
   title: 'UX Golden Case 9 — Modified Target Coordinate',
-  expectedPattern: 'Clinician adjusts MNI coordinate; live delta distance calculated; original candidate preserved immutably.',
+  expectedPattern:
+    'Clinician adjusts MNI coordinate; live delta distance calculated; original candidate preserved immutably.',
   clinicalCase: {
     id: 'case-ux-g09',
     organisationId: 'org-synthetic-001',

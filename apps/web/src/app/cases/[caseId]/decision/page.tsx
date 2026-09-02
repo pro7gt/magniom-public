@@ -2,18 +2,11 @@
 
 import React, { use, useState } from 'react';
 import { caseStore } from '../../../../lib/case-store';
-import {
-  toTargetSlateViewModel,
-  toDecisionReviewViewModel,
-} from '@magniom/presentation';
+import { toTargetSlateViewModel, toDecisionReviewViewModel } from '@magniom/presentation';
 import { DecisionWorkspace } from '../../../../components/decision-workspace';
 import type { CandidateDecisionAction, MagniomInfluence, MniCoordinate } from '@magniom/domain';
 
-export default function DecisionPage({
-  params,
-}: {
-  params: Promise<{ caseId: string }>;
-}) {
+export default function DecisionPage({ params }: { params: Promise<{ caseId: string }> }) {
   const resolvedParams = use(params);
   const caseId = resolvedParams.caseId;
   const [record, setRecord] = useState(() => caseStore.getCaseRecord(caseId));
@@ -36,7 +29,7 @@ export default function DecisionPage({
     action: CandidateDecisionAction,
     reasonCodes: string[],
     freeTextReason?: string,
-    modifiedCoord?: MniCoordinate
+    modifiedCoord?: MniCoordinate,
   ) => {
     caseStore.saveCandidateDecision(caseId, {
       targetCandidateId: candidateId,

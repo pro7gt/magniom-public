@@ -1,4 +1,9 @@
-import type { PhenotypeSnapshot, TargetCandidate, TargetSlate, TargetReliabilityProfile } from '@magniom/domain';
+import type {
+  PhenotypeSnapshot,
+  TargetCandidate,
+  TargetSlate,
+  TargetReliabilityProfile,
+} from '@magniom/domain';
 import { computeSha256 } from '@magniom/scientific-policy';
 import { EvidenceKnowledgeGraph, CANONICAL_EVIDENCE_RELEASE_1_0_0 } from '@magniom/evidence';
 
@@ -124,7 +129,8 @@ export const G05_PRIMARY_1: TargetCandidate = {
   phenotypeConcordanceScore: 0.82,
   connectomeRefinementScore: 0.82,
   overallScore: 0.88,
-  rationale: 'Qualified connectome-refined left prefrontal depression target addressing core depressive symptoms.',
+  rationale:
+    'Qualified connectome-refined left prefrontal depression target addressing core depressive symptoms.',
   contraindicationsOrConflicts: [],
   isSuppressedOrRedundant: false,
   convergenceProfile: {
@@ -162,7 +168,9 @@ export const G05_PRIMARY_2: TargetCandidate = {
   isSuppressedOrRedundant: false,
   evidencePaths: graph.findEvidencePaths('TF-MDD-ANXIOSOMATIC-DMPFC-001'),
   conflictingEvidence: graph.getConflictingClaims('TF-MDD-ANXIOSOMATIC-DMPFC-001'),
-  counterarguments: ['Fixed group anchor does not account for patient-specific functional anatomy variations.'],
+  counterarguments: [
+    'Fixed group anchor does not account for patient-specific functional anatomy variations.',
+  ],
 };
 
 export const G05_ADDITIONAL_A: TargetCandidate = {
@@ -187,7 +195,9 @@ export const G05_ADDITIONAL_A: TargetCandidate = {
   isSuppressedOrRedundant: false,
   evidencePaths: graph.findEvidencePaths('TF-MDD-LDLPFC-EST-001'),
   conflictingEvidence: graph.getConflictingClaims('TF-MDD-LDLPFC-EST-001'),
-  counterarguments: ['Fixed group anchor does not account for patient-specific functional anatomy variations.'],
+  counterarguments: [
+    'Fixed group anchor does not account for patient-specific functional anatomy variations.',
+  ],
 };
 
 const g05SlatePayload = {
@@ -207,7 +217,8 @@ const g05SlatePayload = {
     candidateCoordinate: G05_PRIMARY_1.mniCoordinate,
     displacementDistanceMm: 8.25,
     expectedMechanisticGain: 0.16,
-    justificationSummary: 'Qualified connectome refinement shows +0.16 gain over standard baseline within 8.25mm.',
+    justificationSummary:
+      'Qualified connectome refinement shows +0.16 gain over standard baseline within 8.25mm.',
   },
   clinicalCoverageProfile: {
     primaryDomainCovered: 'DOMAIN-MDD-ANXIOSOMATIC-001',

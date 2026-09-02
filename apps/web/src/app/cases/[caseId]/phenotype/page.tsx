@@ -5,11 +5,7 @@ import { caseStore } from '../../../../lib/case-store';
 import { toPhenotypeViewModel } from '@magniom/presentation';
 import { PhenotypeWorkspace } from '../../../../components/phenotype-workspace';
 
-export default function PhenotypePage({
-  params,
-}: {
-  params: Promise<{ caseId: string }>;
-}) {
+export default function PhenotypePage({ params }: { params: Promise<{ caseId: string }> }) {
   const resolvedParams = use(params);
   const caseId = resolvedParams.caseId;
   const [record, setRecord] = useState(() => caseStore.getCaseRecord(caseId));
@@ -25,10 +21,5 @@ export default function PhenotypePage({
     setRecord(caseStore.getCaseRecord(caseId));
   };
 
-  return (
-    <PhenotypeWorkspace
-      initialViewModel={phenotypeVM}
-      onApprove={handleApprove}
-    />
-  );
+  return <PhenotypeWorkspace initialViewModel={phenotypeVM} onApprove={handleApprove} />;
 }

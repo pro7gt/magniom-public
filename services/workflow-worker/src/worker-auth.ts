@@ -28,7 +28,14 @@ export class WorkerAuthManager {
   private allowedWorkerIds: Set<string>;
   private activeTokens: Map<string, WorkerClaims>;
 
-  constructor(allowedWorkerIds: string[] = ['neurocompute-worker-01', 'workflow-worker-01', 'efield-worker-01', 'report-worker-01']) {
+  constructor(
+    allowedWorkerIds: string[] = [
+      'neurocompute-worker-01',
+      'workflow-worker-01',
+      'efield-worker-01',
+      'report-worker-01',
+    ],
+  ) {
     this.allowedWorkerIds = new Set(allowedWorkerIds);
     this.activeTokens = new Map();
   }
@@ -36,9 +43,15 @@ export class WorkerAuthManager {
   /**
    * Generates a signed M2M Worker Token with bounded TTL
    */
-  public generateWorkerToken(workerId: string, scope: string[] = ['job.process', 'artifact.write'], ttlSeconds: number = 900): { token: string; claims: WorkerClaims } {
+  public generateWorkerToken(
+    workerId: string,
+    scope: string[] = ['job.process', 'artifact.write'],
+    ttlSeconds: number = 900,
+  ): { token: string; claims: WorkerClaims } {
     if (!this.allowedWorkerIds.has(workerId)) {
-      throw new Error(`MAG-SEC-010: Worker ID '${workerId}' is not registered in authorized worker registry.`);
+      throw new Error(
+        `MAG-SEC-010: Worker ID '${workerId}' is not registered in authorized worker registry.`,
+      );
     }
 
     const now = Math.floor(Date.now() / 1000);
@@ -52,7 +65,9 @@ export class WorkerAuthManager {
     };
 
     const tokenPayload = Buffer.from(JSON.stringify(claims)).toString('base64url');
-    const signature = createHash('sha256').update(tokenPayload + ':MAGNIOM_WORKER_SECRET_KEY').digest('base64url');
+    const signature = createHash('sha256')
+      .update(tokenPayload + ':MAGNIOM_WORKER_SECRET_KEY')
+      .digest('base64url');
     const token = `${tokenPayload}.${signature}`;
 
     this.activeTokens.set(claims.jti, claims);
@@ -62,7 +77,11 @@ export class WorkerAuthManager {
   /**
    * Validates M2M Worker Token
    */
-  public validateWorkerToken(token: string): { valid: boolean; claims?: WorkerClaims | undefined; error?: string | undefined } {
+  public validateWorkerToken(token: string): {
+    valid: boolean;
+    claims?: WorkerClaims | undefined;
+    error?: string | undefined;
+  } {
     try {
       const parts = token.split('.');
       if (parts.length !== 2) {
@@ -75,7 +94,9 @@ export class WorkerAuthManager {
         return { valid: false, error: 'Malformed token structure' };
       }
 
-      const expectedSignature = createHash('sha256').update(payload + ':MAGNIOM_WORKER_SECRET_KEY').digest('base64url');
+      const expectedSignature = createHash('sha256')
+        .update(payload + ':MAGNIOM_WORKER_SECRET_KEY')
+        .digest('base64url');
       if (signature !== expectedSignature) {
         return { valid: false, error: 'Invalid token signature' };
       }
@@ -100,7 +121,13 @@ export class WorkerAuthManager {
   /**
    * Builds de-identified job execution context (MAG-SEC-029: No patient PII in queue/logs)
    */
-  public createJobContext(jobId: string, workerId: string, caseId: string, orgId: string, incomingCorrelationId?: string | undefined): WorkerJobContext {
+  public createJobContext(
+    jobId: string,
+    workerId: string,
+    caseId: string,
+    orgId: string,
+    incomingCorrelationId?: string | undefined,
+  ): WorkerJobContext {
     return {
       jobId,
       workerId,
@@ -114,7 +141,12 @@ export class WorkerAuthManager {
   /**
    * Validates storage path bounded access (MAG-SEC-014, Section 107)
    */
-  public validateStorageAccess(workerScope: string[], requestedPath: string, allowedOrgId: string, allowedCaseId: string): boolean {
+  public validateStorageAccess(
+    workerScope: string[],
+    requestedPath: string,
+    allowedOrgId: string,
+    allowedCaseId: string,
+  ): boolean {
     if (!workerScope.includes('artifact.write') && !workerScope.includes('artifact.read')) {
       return false;
     }

@@ -7,14 +7,11 @@ import { VersionManifestDisclosure } from '../components/shell/version-manifest-
 
 export const metadata: Metadata = {
   title: 'Magniom — Clinician Decision Support Workspace',
-  description: 'Connectome-Informed TMS Target Decision Support System (IEC 62304 / ISO 14971 Aligned)',
+  description:
+    'Connectome-Informed TMS Target Decision Support System (IEC 62304 / ISO 14971 Aligned)',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>

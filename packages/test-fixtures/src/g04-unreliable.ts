@@ -1,4 +1,9 @@
-import type { PhenotypeSnapshot, TargetCandidate, TargetSlate, TargetReliabilityProfile } from '@magniom/domain';
+import type {
+  PhenotypeSnapshot,
+  TargetCandidate,
+  TargetSlate,
+  TargetReliabilityProfile,
+} from '@magniom/domain';
 import { computeSha256 } from '@magniom/scientific-policy';
 import { EvidenceKnowledgeGraph, CANONICAL_EVIDENCE_RELEASE_1_0_0 } from '@magniom/evidence';
 
@@ -60,7 +65,12 @@ export const G04_RELIABILITY_PROFILE: TargetReliabilityProfile = {
   temporalSnr: 45.0, // Failed tSNR (< 80)
   overallReliabilityScore: 0.42, // Composite reliability score below 0.70 threshold
   isReliableForPersonalisation: false,
-  warnings: ['EXCESSIVE_MOTION_FD_EXCEEDED', 'SCAN_DURATION_INSUFFICIENT', 'LOW_TEMPORAL_SNR', 'HIGH_MOTION_ARTIFACT'],
+  warnings: [
+    'EXCESSIVE_MOTION_FD_EXCEEDED',
+    'SCAN_DURATION_INSUFFICIENT',
+    'LOW_TEMPORAL_SNR',
+    'HIGH_MOTION_ARTIFACT',
+  ],
 };
 
 export const G04_CONNECTOME = {
@@ -103,7 +113,8 @@ export const G04_PRIMARY_1: TargetCandidate = {
   evidenceScore: 0.95,
   phenotypeConcordanceScore: 1.0,
   overallScore: 0.97,
-  rationale: 'Standard evidence baseline enforced because FC failed reliability gate (reliability 0.42 < 0.70 threshold).',
+  rationale:
+    'Standard evidence baseline enforced because FC failed reliability gate (reliability 0.42 < 0.70 threshold).',
   contraindicationsOrConflicts: ['LIMITED_FC_RELIABILITY'],
   isSuppressedOrRedundant: false,
   evidencePaths: graph.findEvidencePaths('TF-MDD-LDLPFC-EST-001'),
@@ -132,7 +143,8 @@ export const G04_SUPPRESSED_CANDIDATE: TargetCandidate = {
   phenotypeConcordanceScore: 1.0,
   connectomeRefinementScore: 0.95,
   overallScore: 0.45,
-  rationale: 'Suppressed: extreme connectivity concordance (0.95) disqualified due to severe unreliability (score 0.42).',
+  rationale:
+    'Suppressed: extreme connectivity concordance (0.95) disqualified due to severe unreliability (score 0.42).',
   contraindicationsOrConflicts: ['LIMITED_FC_RELIABILITY', 'HIGH_MOTION_ARTIFACT'],
   isSuppressedOrRedundant: true,
   suppressionReason: 'LOW_RELIABILITY',

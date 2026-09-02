@@ -1,7 +1,7 @@
 # Magniom Coding Standards & Software Safety Rules
 
 **Standard Reference:** IEC 62304 Section 5.5 / ISO 13485  
-**Document Status:** Controlled Engineering Baseline  
+**Document Status:** Controlled Engineering Baseline
 
 ---
 

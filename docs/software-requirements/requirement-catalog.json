@@ -7,7 +7,10 @@
       "id": "MAG-SYS-001",
       "domain": "SYS",
       "statement": "The system shall provide a deterministic target candidate slate comprising up to 3 Primary Candidates and up to 2 Additional Candidates.",
-      "sourceSpecification": ["MAGNIOM-Technical Architecture v1.0", "MAGNIOM-Canonical Target Data Specification v1.0"],
+      "sourceSpecification": [
+        "MAGNIOM-Technical Architecture v1.0",
+        "MAGNIOM-Canonical Target Data Specification v1.0"
+      ],
       "safetyClass": "critical",
       "appliesToMode": "all",
       "verificationMethod": "unit_test",
@@ -29,7 +32,10 @@
       "id": "MAG-CLI-002",
       "domain": "CLI",
       "statement": "The final target selection authority shall rest solely with an authorized human clinician. Software shall never automatically prescribe a treatment target.",
-      "sourceSpecification": ["MAGNIOM-Clinical & Scientific Specification v1.0", "MAGNIOM-Technical Architecture v1.0"],
+      "sourceSpecification": [
+        "MAGNIOM-Clinical & Scientific Specification v1.0",
+        "MAGNIOM-Technical Architecture v1.0"
+      ],
       "safetyClass": "critical",
       "appliesToMode": "all",
       "verificationMethod": "human_factors",
@@ -51,7 +57,9 @@
       "id": "MAG-EVD-001",
       "domain": "EVD",
       "statement": "Every nominated target candidate shall be bounded by an evidence ceiling derived from an approved Evidence Library release.",
-      "sourceSpecification": ["MAGNIOM-Evidence Knowledge Graph & Therapeutic Circuit Library v1.0"],
+      "sourceSpecification": [
+        "MAGNIOM-Evidence Knowledge Graph & Therapeutic Circuit Library v1.0"
+      ],
       "safetyClass": "critical",
       "appliesToMode": "all",
       "verificationMethod": "unit_test",
@@ -62,7 +70,9 @@
       "id": "MAG-POL-001",
       "domain": "POL",
       "statement": "No clinical target candidate generation shall execute without a pinned, approved ScientificPolicyRelease manifest.",
-      "sourceSpecification": ["MAGNIOM-Scientific Policy & Algorithm Configuration Specification v1.0"],
+      "sourceSpecification": [
+        "MAGNIOM-Scientific Policy & Algorithm Configuration Specification v1.0"
+      ],
       "safetyClass": "critical",
       "appliesToMode": "all",
       "verificationMethod": "unit_test",
@@ -73,7 +83,9 @@
       "id": "MAG-IMG-001",
       "domain": "IMG",
       "statement": "Patient functional connectomics shall require quality control qualification (mean framewise displacement < 0.25 mm, retained duration >= 10 min) before influencing candidate refinement.",
-      "sourceSpecification": ["MAGNIOM-Neuroimaging & Functional Connectomics Pipeline Specification v1.0"],
+      "sourceSpecification": [
+        "MAGNIOM-Neuroimaging & Functional Connectomics Pipeline Specification v1.0"
+      ],
       "safetyClass": "critical",
       "appliesToMode": "clinical",
       "verificationMethod": "golden_case",
@@ -95,7 +107,10 @@
       "id": "MAG-UX-031",
       "domain": "UX",
       "statement": "The clinician workspace user interface shall not preselect any target candidate by default, preventing automation bias.",
-      "sourceSpecification": ["MAGNIOM-Clinician Workspace & UX Specification v1.0", "MAGNIOM-Implementation & Validation Roadmap v1.0"],
+      "sourceSpecification": [
+        "MAGNIOM-Clinician Workspace & UX Specification v1.0",
+        "MAGNIOM-Implementation & Validation Roadmap v1.0"
+      ],
       "safetyClass": "critical",
       "appliesToMode": "all",
       "verificationMethod": "human_factors",
@@ -117,7 +132,10 @@
       "id": "MAG-SEC-001",
       "domain": "SEC",
       "statement": "MAGNIOM shall authenticate clinical users before granting access to patient-specific resources.",
-      "sourceSpecification": ["MAGNIOM-System Requirements Specification v1.0", "MAGNIOM-Supabase Database & Security Specification v1.0"],
+      "sourceSpecification": [
+        "MAGNIOM-System Requirements Specification v1.0",
+        "MAGNIOM-Supabase Database & Security Specification v1.0"
+      ],
       "safetyClass": "critical",
       "appliesToMode": "all",
       "verificationMethod": "security_test",
@@ -128,7 +146,10 @@
       "id": "MAG-SEC-009",
       "domain": "SEC",
       "statement": "Browser clients shall not receive privileged service credentials capable of bypassing RLS.",
-      "sourceSpecification": ["MAGNIOM-Technical Architecture v1.0", "MAGNIOM-Supabase Database & Security Specification v1.0"],
+      "sourceSpecification": [
+        "MAGNIOM-Technical Architecture v1.0",
+        "MAGNIOM-Supabase Database & Security Specification v1.0"
+      ],
       "safetyClass": "critical",
       "appliesToMode": "all",
       "verificationMethod": "security_test",
@@ -139,7 +160,10 @@
       "id": "MAG-SEC-010",
       "domain": "SEC",
       "statement": "Privileged compute workers shall authenticate machine-to-machine with scoped tokens and bounded TTLs.",
-      "sourceSpecification": ["MAGNIOM-System Requirements Specification v1.0", "MAGNIOM-Technical Architecture v1.0"],
+      "sourceSpecification": [
+        "MAGNIOM-System Requirements Specification v1.0",
+        "MAGNIOM-Technical Architecture v1.0"
+      ],
       "safetyClass": "critical",
       "appliesToMode": "all",
       "verificationMethod": "security_test",
@@ -194,7 +218,10 @@
       "id": "MAG-SEC-029",
       "domain": "SEC",
       "statement": "Queue payloads and worker messages shall avoid unnecessary patient-identifying information.",
-      "sourceSpecification": ["MAGNIOM-Supabase Database & Security Specification v1.0", "MAGNIOM-Technical Architecture v1.0"],
+      "sourceSpecification": [
+        "MAGNIOM-Supabase Database & Security Specification v1.0",
+        "MAGNIOM-Technical Architecture v1.0"
+      ],
       "safetyClass": "major",
       "appliesToMode": "all",
       "verificationMethod": "security_test",
@@ -326,7 +353,10 @@
       "id": "MAG-REL-011",
       "domain": "REL",
       "statement": "Clinical scientific versions SHALL be frozen for formal verification.",
-      "sourceSpecification": ["MAGNIOM-System Requirements Specification v1.0", "MAGNIOM-Implementation & Validation Roadmap v1.0"],
+      "sourceSpecification": [
+        "MAGNIOM-System Requirements Specification v1.0",
+        "MAGNIOM-Implementation & Validation Roadmap v1.0"
+      ],
       "safetyClass": "critical",
       "appliesToMode": "all",
       "verificationMethod": "unit_test",
@@ -337,7 +367,10 @@
       "id": "MAG-REL-012",
       "domain": "REL",
       "statement": "Feature and scientific changes after M3 freeze SHALL undergo formal change-control impact assessment.",
-      "sourceSpecification": ["MAGNIOM-System Requirements Specification v1.0", "MAGNIOM-Implementation & Validation Roadmap v1.0"],
+      "sourceSpecification": [
+        "MAGNIOM-System Requirements Specification v1.0",
+        "MAGNIOM-Implementation & Validation Roadmap v1.0"
+      ],
       "safetyClass": "critical",
       "appliesToMode": "all",
       "verificationMethod": "inspection",

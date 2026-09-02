@@ -33,7 +33,7 @@
       "subsystem": "PHENOTYPE_ONTOLOGY",
       "version": "MAGNIOM-PHENOTYPE-1.0.0",
       "frozenArtifactPath": "packages/phenotype/releases/phenotype-ontology-v1.0.0.json",
-      "sha256": "8407ea25cece3179a5aca84138516aee7a3f5b28f2f5045377451843bea19f7f",
+      "sha256": "840a9145e9887ac35ccffcbd4b3542e120c5519b3927e219b3e207fb13b7f74e",
       "status": "FROZEN",
       "changeControlLocked": true,
       "freezeTimestamp": "2026-09-02T05:56:25.757Z"
@@ -60,7 +60,7 @@
       "subsystem": "UX_WORKSPACE",
       "version": "MAGNIOM-UX-1.0.0",
       "frozenArtifactPath": "apps/web",
-      "sha256": "0631c040537c321f98fa2083ac27b6c784a6f0a0fa26d767b041ed3c1028cece",
+      "sha256": "91bd1aefd783769bec9684a48fe1c87233485217ef2a7c273c13730c88b4bf42",
       "status": "FROZEN",
       "changeControlLocked": true,
       "freezeTimestamp": "2026-09-02T05:56:25.757Z"

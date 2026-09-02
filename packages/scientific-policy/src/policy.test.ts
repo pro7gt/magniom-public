@@ -1,9 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  DEFAULT_MDD_SCIENTIFIC_POLICY,
-  computeSha256,
-  canonicalJsonStringify,
-} from './index.js';
+import { DEFAULT_MDD_SCIENTIFIC_POLICY, computeSha256, canonicalJsonStringify } from './index.js';
 import { validateScientificPolicyRelease } from '@magniom/schemas';
 
 describe('Scientific Policy & Release Governance', () => {

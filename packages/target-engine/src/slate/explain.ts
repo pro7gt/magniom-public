@@ -4,15 +4,12 @@
  * Pure deterministic rule-based rationales for clinician decision support.
  */
 
-import type {
-  TargetCandidate,
-  PersonalisationQualification,
-} from '@magniom/domain';
+import type { TargetCandidate, PersonalisationQualification } from '@magniom/domain';
 import { EvidenceKnowledgeGraph } from '@magniom/evidence';
 
 export function generateCandidateRationale(
   candidate: TargetCandidate,
-  qualification?: PersonalisationQualification
+  qualification?: PersonalisationQualification,
 ): string {
   if (candidate.isSuppressedOrRedundant) {
     if (candidate.suppressionReason === 'LOW_RELIABILITY') {
@@ -58,7 +55,7 @@ export function generateCandidateRationale(
 export function enrichCandidateWithGraphEvidence(
   candidate: TargetCandidate,
   graph: EvidenceKnowledgeGraph,
-  qualification?: PersonalisationQualification
+  qualification?: PersonalisationQualification,
 ): TargetCandidate {
   const evidencePaths = graph.findEvidencePaths(candidate.familyId);
   const conflictingEvidence = graph.getConflictingClaims(candidate.familyId);
@@ -70,12 +67,14 @@ export function enrichCandidateWithGraphEvidence(
 
   if (candidate.method === 'CONNECTOME_REFINED') {
     counterarguments.push(
-      'Personalised fMRI targeting does not establish universal superiority across all unselected patients (EC-PERSONALISED-SUPERIORITY-001).'
+      'Personalised fMRI targeting does not establish universal superiority across all unselected patients (EC-PERSONALISED-SUPERIORITY-001).',
     );
   }
 
   if (candidate.method === 'EVIDENCE_ONLY_PRIOR') {
-    counterarguments.push('Fixed group anchor does not account for patient-specific functional anatomy variations.');
+    counterarguments.push(
+      'Fixed group anchor does not account for patient-specific functional anatomy variations.',
+    );
   }
 
   return {

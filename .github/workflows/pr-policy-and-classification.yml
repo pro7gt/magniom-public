@@ -22,7 +22,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
 
       - name: Evaluate PR Policy & Classify Changes
-        run: |
-          npx tsx scripts/ci/classify-change.ts
+        run: npm run verify:stage0

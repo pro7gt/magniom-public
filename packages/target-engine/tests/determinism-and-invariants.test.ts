@@ -22,10 +22,18 @@ describe('Sprint 12 — Determinism & Scientific Invariants Verification (M2 Exi
   describe('Determinism Invariant (100 Iterations per Case)', () => {
     const cases = [
       { name: 'G01 Evidence-Only', phenotype: G01_CASE_PHENOTYPE, connectome: null },
-      { name: 'G02 High-Convergence', phenotype: G02_CASE_PHENOTYPE, connectome: G02_CASE_CONNECTOME },
+      {
+        name: 'G02 High-Convergence',
+        phenotype: G02_CASE_PHENOTYPE,
+        connectome: G02_CASE_CONNECTOME,
+      },
       { name: 'G04 Unreliable', phenotype: G04_CASE_PHENOTYPE, connectome: G04_CASE_CONNECTOME },
       { name: 'G05 Anxiosomatic', phenotype: G05_CASE_PHENOTYPE, connectome: G05_CASE_CONNECTOME },
-      { name: 'G07 Mixed Phenotype', phenotype: G07_CASE_PHENOTYPE, connectome: G07_CASE_CONNECTOME },
+      {
+        name: 'G07 Mixed Phenotype',
+        phenotype: G07_CASE_PHENOTYPE,
+        connectome: G07_CASE_CONNECTOME,
+      },
     ];
 
     for (const testCase of cases) {
@@ -64,7 +72,7 @@ describe('Sprint 12 — Determinism & Scientific Invariants Verification (M2 Exi
             clusterAreaMm2: 90.0,
             circuitConcordanceRaw: 0.75,
             circuitConcordancePercentile: 0.75,
-            baselineCircuitConcordance: 0.60,
+            baselineCircuitConcordance: 0.6,
             accessibility: 'good',
             reliabilityScore: 0.72,
             fitInterpretation: 'Low reliability',
@@ -84,9 +92,9 @@ describe('Sprint 12 — Determinism & Scientific Invariants Verification (M2 Exi
             subjectT1Coordinate: { space: 'MNI152NLin2009cAsym', x: -44, y: 40, z: 34, unit: 'mm' },
             mniCoordinate: { space: 'MNI152NLin2009cAsym', x: -44, y: 40, z: 34, unit: 'mm' },
             clusterAreaMm2: 90.0,
-            circuitConcordanceRaw: 0.90,
-            circuitConcordancePercentile: 0.90,
-            baselineCircuitConcordance: 0.60,
+            circuitConcordanceRaw: 0.9,
+            circuitConcordancePercentile: 0.9,
+            baselineCircuitConcordance: 0.6,
             accessibility: 'good',
             reliabilityScore: 0.95,
             fitInterpretation: 'High reliability',
@@ -105,7 +113,7 @@ describe('Sprint 12 — Determinism & Scientific Invariants Verification (M2 Exi
       });
 
       expect(slateHigh.primaryCandidates[0].overallScore).toBeGreaterThanOrEqual(
-        slateLow.primaryCandidates[0].overallScore
+        slateLow.primaryCandidates[0].overallScore,
       );
     });
   });
@@ -118,14 +126,14 @@ describe('Sprint 12 — Determinism & Scientific Invariants Verification (M2 Exi
       const checkValidLeft = evaluateAccessibilityGate(
         { space: 'MNI152NLin2009cAsym', x: -44, y: 40, z: 34, unit: 'mm' },
         undefined,
-        'TF-MDD-CONVERGENT-LDLPFC-001'
+        'TF-MDD-CONVERGENT-LDLPFC-001',
       );
       expect(checkValidLeft.accessible).toBe(true);
 
       const checkFlippedRight = evaluateAccessibilityGate(
         { space: 'MNI152NLin2009cAsym', x: 44, y: 40, z: 34, unit: 'mm' },
         undefined,
-        'TF-MDD-CONVERGENT-LDLPFC-001'
+        'TF-MDD-CONVERGENT-LDLPFC-001',
       );
       expect(checkFlippedRight.accessible).toBe(false);
       expect(checkFlippedRight.lateralityViolation).toBe(true);
@@ -144,10 +152,7 @@ describe('Sprint 12 — Determinism & Scientific Invariants Verification (M2 Exi
         mode: 'CLINICAL',
       });
 
-      const allCandidates = [
-        ...slate.primaryCandidates,
-        ...slate.additionalCandidates,
-      ];
+      const allCandidates = [...slate.primaryCandidates, ...slate.additionalCandidates];
 
       for (const candidate of allCandidates) {
         expect(candidate.evidenceTier).not.toBe('T4');
@@ -172,7 +177,7 @@ describe('Sprint 12 — Determinism & Scientific Invariants Verification (M2 Exi
 
       // Additional candidate slot must contain the evidence baseline
       const counterfactual = slate.additionalCandidates.find(
-        (c) => c.familyId === 'TF-MDD-LDLPFC-EST-001' && c.method === 'EVIDENCE_ONLY_PRIOR'
+        c => c.familyId === 'TF-MDD-LDLPFC-EST-001' && c.method === 'EVIDENCE_ONLY_PRIOR',
       );
       expect(counterfactual).toBeDefined();
       expect(counterfactual?.role).toBe('ADDITIONAL_A');

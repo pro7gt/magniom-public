@@ -206,7 +206,6 @@ export interface SymptomMapping {
   readonly mappingStrength: number;
 }
 
-
 // ==========================================
 // 1. Common Supporting Primitives
 // ==========================================
@@ -304,7 +303,10 @@ export interface ConfidenceRegion3D {
   readonly maxRadiusMm: number;
   readonly surfaceAreaMm2: number;
   readonly surfaceVertexIndices: readonly number[];
-  readonly boundingBoxMni: readonly [readonly [number, number, number], readonly [number, number, number]];
+  readonly boundingBoxMni: readonly [
+    readonly [number, number, number],
+    readonly [number, number, number],
+  ];
   readonly reliabilityLevel: 'HIGH' | 'MODERATE' | 'LOW' | 'UNUSABLE';
   readonly coilSpreadFwhmMm: number; // e.g. 20.0 mm
 }
@@ -346,7 +348,6 @@ export interface NeuronavigationExportSimulation {
   readonly roundTripErrorMm: number;
 }
 
-
 // ==========================================
 // 3. Evidence Knowledge Graph & Circuit Library
 // ==========================================
@@ -357,7 +358,14 @@ export interface EvidenceSource {
   readonly doi?: string;
   readonly pubmedId?: string;
   readonly year?: number;
-  readonly studyDesign?: 'RCT' | 'OPEN_LABEL' | 'OBSERVATIONAL' | 'META_ANALYSIS' | 'COMPUTATIONAL' | 'PRECLINICAL' | string;
+  readonly studyDesign?:
+    | 'RCT'
+    | 'OPEN_LABEL'
+    | 'OBSERVATIONAL'
+    | 'META_ANALYSIS'
+    | 'COMPUTATIONAL'
+    | 'PRECLINICAL'
+    | string;
   readonly sampleSize?: number;
   readonly provenance?: CommonProvenance;
 }
@@ -375,7 +383,8 @@ export interface EvidenceClaim {
   readonly version?: string;
   readonly mode?: MagniomMode;
   readonly sourceId?: string;
-  readonly claimType?: 'EFFICACY' | 'CIRCUIT_ENGAGEMENT' | 'SAFETY' | 'LOCALISATION_PRECISION' | string;
+  readonly claimType?:
+    'EFFICACY' | 'CIRCUIT_ENGAGEMENT' | 'SAFETY' | 'LOCALISATION_PRECISION' | string;
   readonly targetFamilyId?: string;
   readonly circuitId?: string;
   readonly tier: EvidenceTier;
@@ -443,7 +452,8 @@ export interface TargetDefinition {
   readonly code: string; // e.g. "TD-MDD-LDLPFC-BA46-MNI-001"
   readonly targetFamilyId: string;
   readonly name: string;
-  readonly targetType: 'group_reference' | 'individualized_rule' | 'anatomical_landmark' | 'scalp_landmark';
+  readonly targetType:
+    'group_reference' | 'individualized_rule' | 'anatomical_landmark' | 'scalp_landmark';
   readonly mniCoordinate: MniCoordinate;
   readonly hcpParcel?: string;
   readonly metadata?: Record<string, unknown>;
@@ -490,7 +500,6 @@ export interface EvidenceLibraryRelease {
   readonly searchSpaces?: readonly SearchSpace[];
   readonly targetDefinitions?: readonly TargetDefinition[];
 }
-
 
 // ==========================================
 // 4. Target Reliability & QC
@@ -812,7 +821,13 @@ export interface SignClinicianDecisionInput {
 
 export interface StalenessEvaluation {
   readonly isStale: boolean;
-  readonly reason: 'CURRENT' | 'STALE_PHENOTYPE_SNAPSHOT' | 'TARGET_SLATE_SUPERSEDED' | 'CASE_NOT_FOUND' | 'SLATE_NOT_FOUND' | string;
+  readonly reason:
+    | 'CURRENT'
+    | 'STALE_PHENOTYPE_SNAPSHOT'
+    | 'TARGET_SLATE_SUPERSEDED'
+    | 'CASE_NOT_FOUND'
+    | 'SLATE_NOT_FOUND'
+    | string;
 }
 
 // ==========================================
@@ -1111,7 +1126,7 @@ export interface CorticalConfidenceRegion {
   readonly centroidMni: readonly [number, number, number];
   readonly boundingBoxMni: readonly [
     readonly [number, number, number],
-    readonly [number, number, number]
+    readonly [number, number, number],
   ];
   readonly maxRadiusMm: number;
 }
@@ -1208,7 +1223,9 @@ export interface ConnectomeTargetInput {
   readonly candidateRegions: readonly ImagingCandidateRegion[];
   readonly candidateMaps?: readonly CandidateMapRef[];
   readonly normativeFindings?: readonly NormativeFinding[];
-  readonly reliabilityProfiles?: readonly (TargetReliabilityProfile | CanonicalTargetReliabilityProfile)[];
+  readonly reliabilityProfiles?: readonly (
+    TargetReliabilityProfile | CanonicalTargetReliabilityProfile
+  )[];
   readonly reliabilityProfile?: TargetReliabilityProfile | CanonicalTargetReliabilityProfile;
   readonly surfaceManifestId?: string;
   readonly connectomeManifestId?: string;
@@ -1217,7 +1234,6 @@ export interface ConnectomeTargetInput {
   readonly quality?: 'pass' | 'conditional' | 'fail';
   readonly candidates?: readonly any[];
 }
-
 
 // ==========================================
 // 12. Pipeline Manifests & Provenance
@@ -1440,4 +1456,3 @@ export interface VerificationBuildM3Manifest {
     readonly releaseReadiness: 'FROZEN_FOR_FORMAL_VERIFICATION';
   };
 }
-
