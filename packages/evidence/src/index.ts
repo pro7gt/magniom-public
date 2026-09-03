@@ -21,3 +21,7 @@ export function isTierPermittedInClinicalMode(tier: EvidenceTier): boolean {
 export * from './canonical-manifest.js';
 export * from './release.js';
 export * from './graph.js';
+export * from './seeds/index.js';
+export * from './graph-v2.js';
+export * from './canonical-manifest-v2.js';
+

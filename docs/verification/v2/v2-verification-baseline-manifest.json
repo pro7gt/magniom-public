@@ -1,0 +1,179 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "baselineName": "MAGNIOM v2.0 Formal Verification Baseline (Phase 6)",
+  "baselineVersion": "2.0.0",
+  "baselineId": "VB-v2-2026.09",
+  "status": "VERIFICATION_BASELINE_FROZEN",
+  "governanceStandards": [
+    "IEC 62304:2006+AMD1:2015 §5.5-§5.7",
+    "ISO 13485:2016 §7.3.5",
+    "ISO 14971:2019",
+    "TGA SaMD Guidance"
+  ],
+  "sealedDate": "2026-09-03T22:00:00.000Z",
+  "sealingAuthority": "MAGNIOM Enterprise Verification & Scientific Governance Board",
+  "changeControlClassification": "Level 1 (Critical) - Changes require formal multidisciplinary change assessment",
+  "frozenComponents": {
+    "v2_requirements": {
+      "name": "System Requirements Specification v2.0",
+      "version": "2.0.0",
+      "status": "FROZEN",
+      "totalRequirements": 332,
+      "criticalRequirements": 96,
+      "majorRequirements": 5,
+      "standardRequirements": 231,
+      "domains": 20,
+      "untracedRequirements": 0,
+      "inventoryFile": "docs/verification/requirement-inventory-v2.json",
+      "inventorySha256": "58305342ac0680e2a5c93d2e6d02890cbc01adb1a36daef52279ae3732a68e7c",
+      "catalogFile": "docs/software-requirements/requirement-catalog.json",
+      "catalogSha256": "2b9733834c7c90b393332ca2e6f444fce8b783a6fb19c982180d8171bd1659b4"
+    },
+    "data_contracts": {
+      "name": "Canonical Multi-Indication Data Contracts v2.0",
+      "version": "2.0.0",
+      "status": "FROZEN",
+      "packages": ["@magniom/domain", "@magniom/schemas"],
+      "domainIndexSha256": "14a40b5a699155d05ef499099c72cc5b3de7a12f35c5d0a5b9756899327111fa",
+      "schemasIndexSha256": "aed89dd49821af9e15b9afad0a8bafde5d159e48726c4cad691849aba7bb5032",
+      "specificationSha256": "781df4fa703154ebd625c4b61b752b71687632df261ea15dd9947821ecf65c2c"
+    },
+    "plugin_contracts": {
+      "name": "Target Engine Indication Plugin SDK Contracts v2.0",
+      "version": "2.0.0",
+      "status": "FROZEN",
+      "packages": ["@magniom/target-engine"],
+      "targetEngineIndexSha256": "a5d098e9b6ea031c9f45610a26d15b22b102b37651a1d04ba4e0f5be8e25d025",
+      "specificationSha256": "02d7f689fe53ec2dba46cc480a4eed2e511062d8e3a037dd7299017d2fdbeefc"
+    },
+    "evidence_library_release": {
+      "name": "Evidence Knowledge Graph Library v2.0",
+      "releaseId": "EVD-v2-2026.09",
+      "version": "2.0.0",
+      "status": "FROZEN",
+      "packages": ["@magniom/evidence"],
+      "manifestSha256": "a23f77b6d7a8aee5eadcc526aef2401e24a0e05f0a9c58c28d5c04271ef22f51",
+      "specificationSha256": "1e6cc2fca945e3ba88e426467a44e17baf4d9c0bc106f562ed8924a455d02253",
+      "curatedIndications": ["MDD", "OCD", "NEUROPATHIC_PAIN", "STROKE_MOTOR", "STROKE_APHASIA", "TBI", "PTSD", "TINNITUS"]
+    },
+    "scientific_policy": {
+      "name": "Scientific Policy & Algorithm Configuration v2.0",
+      "releaseId": "POL-v2-2026.09",
+      "version": "2.0.0",
+      "status": "FROZEN",
+      "specificationSha256": "9936191e180edc4be007beb2c6930547277e57df3e6f4cceec43a7ecfdc23b5b",
+      "modeAuthorizations": {
+        "MDD": ["clinical", "research"],
+        "OCD": ["validation", "research"],
+        "NEUROPATHIC_PAIN": ["validation", "research"],
+        "STROKE_MOTOR": ["validation", "research"],
+        "STROKE_APHASIA": ["research"],
+        "TBI": ["research"],
+        "PTSD": ["research"],
+        "TINNITUS": ["research"]
+      }
+    },
+    "measurement_pipelines": {
+      "name": "Multimodal Measurement Platform v2.0",
+      "version": "2.0.0",
+      "status": "FROZEN",
+      "packages": ["@magniom/measurement-core", "@magniom/modalities"],
+      "specificationSha256": "e2c3cd0d8a6d13e24f066b9b19c0393e741802ca881201e0e38519faa8eb7152",
+      "modalities": ["sMRI", "rs-fMRI", "task-fMRI", "MEP", "DWI", "Audiology", "LesionSegmentation"]
+    },
+    "application_shell": {
+      "name": "Clinician Workspace & Application Shell v2.0",
+      "version": "2.0.0",
+      "status": "FROZEN",
+      "packages": ["apps/web", "@magniom/presentation"],
+      "presentationIndexSha256": "855849a7bbfb29c657e8df983cd58333e97279508346189948c13725b6ec7a1e",
+      "decisionWorkspaceSha256": "a8ba6a2154c4b90a12b03a7b7d1af4230a19808bcdbeb972c5190881b30ad274",
+      "specificationSha256": "0a5a5b34af1c8e5ff0f724481f223b326c8ed207419ac4dee10223bc69f71acb"
+    }
+  },
+  "indicationModules": [
+    {
+      "moduleCode": "MDD",
+      "pluginId": "mdd-targeting-plugin",
+      "version": "2.0.0",
+      "goldenCases": 10,
+      "gateTarget": "Q3",
+      "qualificationStatus": "Q3_VERIFICATION_QUALIFIED",
+      "permittedModes": ["clinical", "research"]
+    },
+    {
+      "moduleCode": "OCD",
+      "pluginId": "ocd-targeting-plugin",
+      "version": "2.0.0",
+      "goldenCases": 8,
+      "gateTarget": "Q3",
+      "qualificationStatus": "Q3_VERIFICATION_QUALIFIED",
+      "permittedModes": ["validation", "research"]
+    },
+    {
+      "moduleCode": "NEUROPATHIC_PAIN",
+      "pluginId": "neuropathic-pain-targeting-plugin",
+      "version": "2.0.0",
+      "goldenCases": 8,
+      "gateTarget": "Q3",
+      "qualificationStatus": "Q3_VERIFICATION_QUALIFIED",
+      "permittedModes": ["validation", "research"]
+    },
+    {
+      "moduleCode": "STROKE_MOTOR",
+      "pluginId": "stroke-motor-targeting-plugin",
+      "version": "2.0.0",
+      "goldenCases": 10,
+      "gateTarget": "Q3",
+      "qualificationStatus": "Q3_VERIFICATION_QUALIFIED",
+      "permittedModes": ["validation", "research"]
+    },
+    {
+      "moduleCode": "STROKE_APHASIA",
+      "pluginId": "stroke-aphasia-targeting-plugin",
+      "version": "2.0.0",
+      "goldenCases": 10,
+      "gateTarget": "Q3",
+      "qualificationStatus": "Q3_VERIFICATION_QUALIFIED",
+      "permittedModes": ["research"]
+    },
+    {
+      "moduleCode": "TBI",
+      "pluginId": "tbi-targeting-plugin",
+      "version": "2.0.0",
+      "goldenCases": 9,
+      "gateTarget": "Q3",
+      "qualificationStatus": "Q3_VERIFICATION_QUALIFIED",
+      "permittedModes": ["research"]
+    },
+    {
+      "moduleCode": "PTSD",
+      "pluginId": "ptsd-targeting-plugin",
+      "version": "2.0.0",
+      "goldenCases": 7,
+      "gateTarget": "Q3",
+      "qualificationStatus": "Q3_VERIFICATION_QUALIFIED",
+      "permittedModes": ["research"]
+    },
+    {
+      "moduleCode": "TINNITUS",
+      "pluginId": "tinnitus-targeting-plugin",
+      "version": "2.0.0",
+      "goldenCases": 10,
+      "gateTarget": "Q3",
+      "qualificationStatus": "Q3_VERIFICATION_QUALIFIED",
+      "permittedModes": ["research"]
+    }
+  ],
+  "verificationSummary": {
+    "totalGoldenCases": 72,
+    "goldenCasesPassing": 72,
+    "goldenCasesFailing": 0,
+    "commonCoreReportsRequired": 11,
+    "commonCoreReportsPassed": 11,
+    "moduleVerificationPackagesRequired": 8,
+    "moduleVerificationPackagesPassed": 8,
+    "criticalDefectsOpen": 0,
+    "q3Declaration": "Q3 is formal software and scientific verification. Q3 IS NOT CLINICAL VALIDATION."
+  }
+}

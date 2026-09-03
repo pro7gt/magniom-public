@@ -1,0 +1,1 @@
+{"root":["./src/index.ts","./src/audiology/provider.ts","./src/diffusion/provider.ts","./src/efield/provider.ts","./src/lesion-mapping/provider.ts","./src/mep/provider.ts","./src/motor-mapping/provider.ts","./src/resting-state/provider.ts","./src/structural-mri/provider.ts","./src/task-fmri/provider.ts"],"version":"5.9.3"}

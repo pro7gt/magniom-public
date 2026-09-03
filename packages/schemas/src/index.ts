@@ -3,3 +3,6 @@ export * from './validators.js';
 export * from './bold.js';
 export * from './connectome.js';
 export * from './circuits.js';
+export * from './v2-schemas.js';
+export * from './v2-validators.js';
+export * from './release-v2.js';

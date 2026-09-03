@@ -1,0 +1,51 @@
+name: Magniom PR Fast Pipeline (ci-pr)
+
+# Conforms to MAGNIOM-Enterprise Verification, Testing & CI/CD Specification v2.0 (§25, §193)
+# Goal: Rapid developer feedback (< 5 min) on every Pull Request
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  pr-fast-verification:
+    name: PR Fast Verification & Static Governance
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Stage 0 — Scientific Change Classifier (C0–C4) (§112–118)
+        run: npx tsx scripts/ci/classify-change.ts
+
+      - name: Stage 1A — Architectural Boundary & Forbidden Import Verification (§34–35)
+        run: npm run verify:boundaries
+
+      - name: Stage 1B — Target Engine Static Rules & Purity Check (§34)
+        run: npm run verify:static-rules
+
+      - name: Stage 1C — TypeScript Strict Typecheck
+        run: npm run typecheck
+
+      - name: Stage 1D — Code Formatting Verification (Prettier)
+        run: npm run format:check
+
+      - name: Stage 2 — Monorepo Unit Tests (Vitest) (§36)
+        run: npm test
+
+      - name: Stage 3 — Target Engine Mathematical Property Invariants (fast-check) (§38)
+        run: npm run verify:properties

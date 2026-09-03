@@ -129,6 +129,44 @@ const DOMAIN_ARTIFACT_MAP: Record<
     migrations: [],
     tests: ['packages/target-engine/tests/golden-cases-suite.test.ts'],
   },
+  'MAG-IND': {
+    packages: ['packages/domain', 'packages/target-engine', 'packages/scientific-policy'],
+    migrations: [/003_system/, /007_clinical/, /024_target/],
+    tests: [
+      'packages/target-engine/tests/synthetic-workflow.test.ts',
+      'packages/domain/src/domain.test.ts',
+    ],
+  },
+  'MAG-MEA': {
+    packages: ['services/neurocompute', 'packages/domain', 'packages/target-engine/src/spatial'],
+    migrations: [/038_imaging/, /039_connectomics/],
+    tests: ['packages/target-engine/tests/imaging-validation.test.ts'],
+  },
+  'MAG-STR': {
+    packages: ['packages/domain', 'packages/target-engine'],
+    migrations: [/024_target/],
+    tests: ['packages/target-engine/tests/target-engine.test.ts'],
+  },
+  'MAG-PAI': {
+    packages: ['packages/domain', 'packages/target-engine'],
+    migrations: [/024_target/],
+    tests: ['packages/target-engine/tests/target-engine.test.ts'],
+  },
+  'MAG-TBI': {
+    packages: ['packages/domain', 'packages/target-engine', 'services/neurocompute'],
+    migrations: [/024_target/, /038_imaging/],
+    tests: ['packages/target-engine/tests/target-engine.test.ts'],
+  },
+  'MAG-TIN': {
+    packages: ['packages/domain', 'packages/target-engine'],
+    migrations: [/024_target/],
+    tests: ['packages/target-engine/tests/target-engine.test.ts'],
+  },
+  'MAG-OCD': {
+    packages: ['packages/domain', 'packages/target-engine', 'packages/scientific-policy'],
+    migrations: [/024_target/],
+    tests: ['packages/target-engine/tests/target-engine.test.ts'],
+  },
 };
 
 function fileExists(repoRoot: string, relPath: string): boolean {
@@ -278,27 +316,28 @@ function main(): void {
 
   // Write output
   const outputPath = path.join(repoRoot, 'docs/verification/traceability-coverage.json');
-  fs.writeFileSync(
-    outputPath,
-    JSON.stringify(
-      {
-        verificationDate: new Date().toISOString(),
-        totalRequirements: requirements.length,
-        traced,
-        partial,
-        untraced,
-        deferred,
-        goldenCasesAvailable: allGoldenCases.length,
-        domainStats,
-        entries,
-      },
-      null,
-      2,
-    ),
-    'utf8',
+  const outputPathV2 = path.join(repoRoot, 'docs/verification/traceability-coverage-v2.json');
+  const reportPayload = JSON.stringify(
+    {
+      verificationDate: new Date().toISOString(),
+      totalRequirements: requirements.length,
+      traced,
+      partial,
+      untraced,
+      deferred,
+      goldenCasesAvailable: allGoldenCases.length,
+      domainStats,
+      entries,
+    },
+    null,
+    2,
   );
+  fs.writeFileSync(outputPath, reportPayload, 'utf8');
+  fs.writeFileSync(outputPathV2, reportPayload, 'utf8');
 
-  console.log(`\n📄 Traceability coverage report written to: ${outputPath}\n`);
+  console.log(`\n📄 Traceability coverage reports written to:`);
+  console.log(`   - ${outputPath}`);
+  console.log(`   - ${outputPathV2}\n`);
 
   if (untraced > 0) {
     console.log(`⚠️  ${untraced} requirements lack full traceability. See report for details.`);

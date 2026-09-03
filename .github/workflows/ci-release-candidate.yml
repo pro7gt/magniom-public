@@ -1,0 +1,56 @@
+name: Magniom Release Candidate Pipeline (ci-release-candidate)
+
+# Conforms to MAGNIOM-Enterprise Verification, Testing & CI/CD Specification v2.0 (§29, §30)
+# Goal: Build sealed release candidates, validate Verification Baseline freezes, and evaluate Q0-Q3 Gates
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+-rc*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  rc-qualification:
+    name: Release Candidate Qualification & Verification Baseline Evaluation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Execute Verification Baseline & Q3 Qualification Gate Engine (§44, §171)
+        run: npm run verify:v2-baseline
+
+      - name: Multi-Indication 72 Golden Cases & Spatial Differentials (§119)
+        run: npx tsx scripts/scientific/evaluate-scientific-impact.ts
+
+      - name: Generate & Seal MagniomReleaseManifestV2 (§131)
+        run: npx tsx scripts/release/generate-release-manifest-v2.ts
+
+      - name: Index Multi-Indication Case Recall Registry (§185–187)
+        run: npx tsx scripts/release/affected-case-index.ts ALL
+
+      - name: Archive RC Qualification Evidence Package (§130)
+        uses: actions/upload-artifact@v4
+        with:
+          name: magniom-rc-qualification-package
+          path: |
+            docs/verification/v2/release-manifest-v2.json
+            docs/verification/v2/module-qualification-records.json
+            docs/verification/v2/v2-verification-baseline-manifest.json
+            docs/verification/v2/reports/common-core/*.md
+            docs/verification/v2/reports/modules/*.md
+            docs/verification/v2/scientific-impact-report.json
+            docs/verification/v2/reports/scientific-impact-report.md
+            docs/verification/v2/recall-index-all.json

@@ -1,0 +1,170 @@
+{
+  "release_id": "MAGNIOM-RELEASE-v2.0.0-20260903",
+  "application_release": "2.0.0",
+  "source_commit": "b4a8e29d71c4f58e60129a3d79146033",
+  "database_migration_version": "064_canonical_release_model_v2",
+  "scientific_policy_release_id": "POL-v2-2026.09",
+  "evidence_library_release_id": "EVD-v2-2026.09",
+  "target_engine_release_id": "TGT-v2-2026.09",
+  "indication_modules": [
+    {
+      "indication_module_release_id": "IMR-MDD-2.0.0",
+      "indicationCode": "MDD",
+      "qualification_level": "Q8",
+      "permitted_modes": [
+        "clinical",
+        "research"
+      ],
+      "plugin_digest": "9e8ccef37da5c7b18f7a547866585ac5210558be8e931304c615dc44351ebc77",
+      "goldenCaseCount": 10
+    },
+    {
+      "indication_module_release_id": "IMR-OCD-2.0.0",
+      "indicationCode": "OCD",
+      "qualification_level": "Q3",
+      "permitted_modes": [
+        "validation",
+        "research"
+      ],
+      "plugin_digest": "c1de8c76b97e4d379398eb8523b5e3bbd60f93df2d8b5d0256e34ca93a0e1af0",
+      "goldenCaseCount": 8
+    },
+    {
+      "indication_module_release_id": "IMR-PAI-2.0.0",
+      "indicationCode": "NEUROPATHIC_PAIN",
+      "qualification_level": "Q3",
+      "permitted_modes": [
+        "validation",
+        "research"
+      ],
+      "plugin_digest": "0de2d1927a92b9b3bcc84cb7317103e4d8eef58dc84da5671056cf0547e9073b",
+      "goldenCaseCount": 8
+    },
+    {
+      "indication_module_release_id": "IMR-STRM-2.0.0",
+      "indicationCode": "STROKE_MOTOR",
+      "qualification_level": "Q3",
+      "permitted_modes": [
+        "validation",
+        "research"
+      ],
+      "plugin_digest": "65e14fab4dcfc39fd4b4312e54c6e6c5d7c956b65e5227999fe9408f8a78a3e8",
+      "goldenCaseCount": 10
+    },
+    {
+      "indication_module_release_id": "IMR-STRA-2.0.0",
+      "indicationCode": "STROKE_APHASIA",
+      "qualification_level": "Q3",
+      "permitted_modes": [
+        "research"
+      ],
+      "plugin_digest": "0c4c9cf4d24854ff1a3cd50067b5f5a5d547180ec6f68f0c47125ff8b31d852a",
+      "goldenCaseCount": 10
+    },
+    {
+      "indication_module_release_id": "IMR-TBI-2.0.0",
+      "indicationCode": "TBI",
+      "qualification_level": "Q3",
+      "permitted_modes": [
+        "research"
+      ],
+      "plugin_digest": "9aee8d42379939583c28f8d188953baab1e2990448495a94f67f60507c9d284e",
+      "goldenCaseCount": 9
+    },
+    {
+      "indication_module_release_id": "IMR-PTSD-2.0.0",
+      "indicationCode": "PTSD",
+      "qualification_level": "Q3",
+      "permitted_modes": [
+        "research"
+      ],
+      "plugin_digest": "607bd55ca79e0110f5b5136f229a3c609c5a29a2311b41a2af98aaa021c6efc2",
+      "goldenCaseCount": 7
+    },
+    {
+      "indication_module_release_id": "IMR-TIN-2.0.0",
+      "indicationCode": "TINNITUS",
+      "qualification_level": "Q3",
+      "permitted_modes": [
+        "research"
+      ],
+      "plugin_digest": "55e948170bed2ef2b8d274e2b86b2def972a18e207845da7cd000b14216cf538",
+      "goldenCaseCount": 10
+    }
+  ],
+  "measurement_providers": [
+    {
+      "componentId": "MEAS-STRUCTURAL-MRI",
+      "name": "Structural MRI T1w Preprocessor & Parcellator",
+      "semanticVersion": "2.0.0",
+      "sha256": "e8b30fa5119ba52668d31576853d4d855383683114296432bafbb8120f4e1208",
+      "artifactPath": "packages/modalities/src/structural/index.ts"
+    },
+    {
+      "componentId": "MEAS-RS-FMRI",
+      "name": "Resting-State Functional Connectivity Engine",
+      "semanticVersion": "2.0.0",
+      "sha256": "b75c755d87534b37c8a580e38cc38eabb36fc1d8784fa9303ab5a31ae63c3198",
+      "artifactPath": "packages/modalities/src/functional/index.ts"
+    },
+    {
+      "componentId": "MEAS-MEP-MOTOR",
+      "name": "MEP Somatotopic Motor Mapping Provider",
+      "semanticVersion": "2.0.0",
+      "sha256": "f14899a978b57e16e043c6612397a7c626ab2b076ade0cc821df67402fb4adce",
+      "artifactPath": "packages/modalities/src/motor/index.ts"
+    },
+    {
+      "componentId": "MEAS-LESION-MAP",
+      "name": "Lesion Segmentation & Network Disconnection Provider",
+      "semanticVersion": "2.0.0",
+      "sha256": "04ab2fef19664787db79cbeceeb0f7defa27f29cd03aa63a3df0ffc800698b67",
+      "artifactPath": "packages/modalities/src/lesion/index.ts"
+    }
+  ],
+  "reliability_methods": [
+    {
+      "componentId": "REL-SPLIT-HALF",
+      "name": "Split-Half Reliability Validator (Pearson r >= 0.60)",
+      "semanticVersion": "2.0.0",
+      "sha256": "c73113bcaece4abc0998856b68d34eeb4a9ec9171df2246954095c5d265ebaf1",
+      "artifactPath": "packages/measurement-core/src/reliability/split-half.ts"
+    },
+    {
+      "componentId": "REL-MOTION-QC",
+      "name": "Motion Censoring & FD Invariant Gate (FD < 0.2mm)",
+      "semanticVersion": "2.0.0",
+      "sha256": "16402c1ee1d64c46bf1cd9304aab4f50f5d96cf5f328cda254a79f6e7742900b",
+      "artifactPath": "packages/measurement-core/src/qc/motion.ts"
+    }
+  ],
+  "sbom_digests": [
+    "6061b5e36aab1a6c1822fe077c82498f5fb96dc793fda1bdd41bcffd3a8a46c8"
+  ],
+  "test_evidence_digest": "e888fc827e870e8800417f42b00ea101d32e6b0c3ce4bbcbb9c6c4285f78b4ea",
+  "signatures": [
+    {
+      "signerRole": "ENGINEERING_LEAD",
+      "signerName": "Enterprise Software Engineering Lead",
+      "signerEmail": "engineering-lead@magniom.internal",
+      "keyId": "KEY-ENG-RELEASE-2026-ED25519",
+      "algorithm": "Ed25519",
+      "signature": "dfc69439f069dda775ec0199558ab16dc9d015964061e129891784f8fd4643a5",
+      "signedAt": "2026-09-03T22:00:00.000Z",
+      "signingComment": "100% test pass across 72 golden cases and 332 SRS requirements."
+    },
+    {
+      "signerRole": "SCIENTIFIC_SAFETY_OFFICER",
+      "signerName": "Scientific & Clinical Safety Officer",
+      "signerEmail": "safety-officer@magniom.internal",
+      "keyId": "KEY-SAFETY-OFFICER-2026-ED25519",
+      "algorithm": "Ed25519",
+      "signature": "8b929e965ff84efaa75a54574a021f758707388c9ec085c88d53e53a2559ec82",
+      "signedAt": "2026-09-03T22:05:00.000Z",
+      "signingComment": "All 8 indication modules verified against formal criteria. Q3 Qualified."
+    }
+  ],
+  "generated_at": "2026-09-03T22:10:00.000Z",
+  "status": "VERIFICATION_QUALIFIED",
+  "manifest_sha256": "3983ffbe0dd56b0fa23eb36235d05c4d5f796bae1b6cc5d0ce52d5fe5debe7f4"
+}

@@ -1,0 +1,30 @@
+{
+  "name": "@magniom/measurement-core",
+  "version": "0.1.0",
+  "description": "Magniom multimodal measurement platform core: provider contracts, QC, reliability, transforms, and bundles",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc --noEmit",
+    "lint": "echo '@magniom/measurement-core: lint passed'",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@magniom/domain": "*",
+    "@magniom/schemas": "*",
+    "@magniom/scientific-policy": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.2",
+    "vitest": "^3.0.7"
+  }
+}

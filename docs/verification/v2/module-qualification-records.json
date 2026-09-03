@@ -1,0 +1,242 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "recordSetId": "MQR-v2-2026.09",
+  "evaluationDate": "2026-09-03T22:00:00.000Z",
+  "governanceGate": "Q3 - Module Verification Gate",
+  "governanceReference": "MAGNIOM-Implementation & Multi-Indication Validation Roadmap v2.0 §44 / Testing Spec v2.0 §171",
+  "disclaimer": "CRITICAL REGULATORY NOTICE: Q3 Qualification confirms that the software, plugins, generators, evidence paths, geometries, and reliability rules behave deterministically according to their specifications. Q3 IS NOT CLINICAL VALIDATION. Clinical validation requires subsequent Retrospective (Q4), Silent Prospective (Q5), Clinician-Assisted (Q6), and Clinical Release (Q8) evaluations.",
+  "moduleRecords": [
+    {
+      "moduleCode": "MDD",
+      "moduleName": "Major Depressive Disorder",
+      "moduleReleaseId": "IMR-MDD-2.0.0",
+      "pluginId": "mdd-targeting-plugin",
+      "qualificationStatus": "Q3_VERIFICATION_QUALIFIED",
+      "clinicalValidationStatus": "Q8_CLINICALLY_VALIDATED_HISTORICAL_BASELINE",
+      "permittedModes": ["clinical", "research"],
+      "goldenSuite": {
+        "suiteCode": "MDD_GOLDEN_SUITE",
+        "totalCases": 10,
+        "passingCases": 10,
+        "failingCases": 0,
+        "passRate": 1.0
+      },
+      "q3GateEvaluation": {
+        "allApplicableCriticalSrsPass": true,
+        "zeroUnresolvedCriticalDefects": true,
+        "moduleGoldenSuitePass": true,
+        "exactScientificPolicyResolves": true,
+        "pluginGeneratorIntegrityPass": true,
+        "evidenceProvenanceReconstructs": true,
+        "permittedGeometryPass": true,
+        "moduleModeIsolationPass": true,
+        "requiredMeasurementsReliabilityPass": true,
+        "fallbackAbstentionPass": true,
+        "gateResult": "PASS"
+      }
+    },
+    {
+      "moduleCode": "OCD",
+      "moduleName": "Obsessive-Compulsive Disorder",
+      "moduleReleaseId": "IMR-OCD-2.0.0",
+      "pluginId": "ocd-targeting-plugin",
+      "qualificationStatus": "Q3_VERIFICATION_QUALIFIED",
+      "clinicalValidationStatus": "NOT_CLINICALLY_VALIDATED",
+      "permittedModes": ["validation", "research"],
+      "goldenSuite": {
+        "suiteCode": "OCD_GOLDEN_SUITE",
+        "totalCases": 8,
+        "passingCases": 8,
+        "failingCases": 0,
+        "passRate": 1.0
+      },
+      "q3GateEvaluation": {
+        "allApplicableCriticalSrsPass": true,
+        "zeroUnresolvedCriticalDefects": true,
+        "moduleGoldenSuitePass": true,
+        "exactScientificPolicyResolves": true,
+        "pluginGeneratorIntegrityPass": true,
+        "evidenceProvenanceReconstructs": true,
+        "permittedGeometryPass": true,
+        "moduleModeIsolationPass": true,
+        "requiredMeasurementsReliabilityPass": true,
+        "fallbackAbstentionPass": true,
+        "gateResult": "PASS"
+      }
+    },
+    {
+      "moduleCode": "NEUROPATHIC_PAIN",
+      "moduleName": "Chronic Neuropathic Pain",
+      "moduleReleaseId": "IMR-PAI-2.0.0",
+      "pluginId": "neuropathic-pain-targeting-plugin",
+      "qualificationStatus": "Q3_VERIFICATION_QUALIFIED",
+      "clinicalValidationStatus": "NOT_CLINICALLY_VALIDATED",
+      "permittedModes": ["validation", "research"],
+      "goldenSuite": {
+        "suiteCode": "PAIN_GOLDEN_SUITE",
+        "totalCases": 8,
+        "passingCases": 8,
+        "failingCases": 0,
+        "passRate": 1.0
+      },
+      "q3GateEvaluation": {
+        "allApplicableCriticalSrsPass": true,
+        "zeroUnresolvedCriticalDefects": true,
+        "moduleGoldenSuitePass": true,
+        "exactScientificPolicyResolves": true,
+        "pluginGeneratorIntegrityPass": true,
+        "evidenceProvenanceReconstructs": true,
+        "permittedGeometryPass": true,
+        "moduleModeIsolationPass": true,
+        "requiredMeasurementsReliabilityPass": true,
+        "fallbackAbstentionPass": true,
+        "gateResult": "PASS"
+      }
+    },
+    {
+      "moduleCode": "STROKE_MOTOR",
+      "moduleName": "Post-Stroke Motor Recovery",
+      "moduleReleaseId": "IMR-STRM-2.0.0",
+      "pluginId": "stroke-motor-targeting-plugin",
+      "qualificationStatus": "Q3_VERIFICATION_QUALIFIED",
+      "clinicalValidationStatus": "NOT_CLINICALLY_VALIDATED",
+      "permittedModes": ["validation", "research"],
+      "goldenSuite": {
+        "suiteCode": "STROKE_MOTOR_GOLDEN_SUITE",
+        "totalCases": 10,
+        "passingCases": 10,
+        "failingCases": 0,
+        "passRate": 1.0
+      },
+      "q3GateEvaluation": {
+        "allApplicableCriticalSrsPass": true,
+        "zeroUnresolvedCriticalDefects": true,
+        "moduleGoldenSuitePass": true,
+        "exactScientificPolicyResolves": true,
+        "pluginGeneratorIntegrityPass": true,
+        "evidenceProvenanceReconstructs": true,
+        "permittedGeometryPass": true,
+        "moduleModeIsolationPass": true,
+        "requiredMeasurementsReliabilityPass": true,
+        "fallbackAbstentionPass": true,
+        "gateResult": "PASS"
+      }
+    },
+    {
+      "moduleCode": "STROKE_APHASIA",
+      "moduleName": "Post-Stroke Aphasia",
+      "moduleReleaseId": "IMR-STRA-2.0.0",
+      "pluginId": "stroke-aphasia-targeting-plugin",
+      "qualificationStatus": "Q3_VERIFICATION_QUALIFIED",
+      "clinicalValidationStatus": "NOT_CLINICALLY_VALIDATED",
+      "permittedModes": ["research"],
+      "goldenSuite": {
+        "suiteCode": "STROKE_APHASIA_GOLDEN_SUITE",
+        "totalCases": 10,
+        "passingCases": 10,
+        "failingCases": 0,
+        "passRate": 1.0
+      },
+      "q3GateEvaluation": {
+        "allApplicableCriticalSrsPass": true,
+        "zeroUnresolvedCriticalDefects": true,
+        "moduleGoldenSuitePass": true,
+        "exactScientificPolicyResolves": true,
+        "pluginGeneratorIntegrityPass": true,
+        "evidenceProvenanceReconstructs": true,
+        "permittedGeometryPass": true,
+        "moduleModeIsolationPass": true,
+        "requiredMeasurementsReliabilityPass": true,
+        "fallbackAbstentionPass": true,
+        "gateResult": "PASS"
+      }
+    },
+    {
+      "moduleCode": "TBI",
+      "moduleName": "Traumatic Brain Injury",
+      "moduleReleaseId": "IMR-TBI-2.0.0",
+      "pluginId": "tbi-targeting-plugin",
+      "qualificationStatus": "Q3_VERIFICATION_QUALIFIED",
+      "clinicalValidationStatus": "NOT_CLINICALLY_VALIDATED",
+      "permittedModes": ["research"],
+      "goldenSuite": {
+        "suiteCode": "TBI_GOLDEN_SUITE",
+        "totalCases": 9,
+        "passingCases": 9,
+        "failingCases": 0,
+        "passRate": 1.0
+      },
+      "q3GateEvaluation": {
+        "allApplicableCriticalSrsPass": true,
+        "zeroUnresolvedCriticalDefects": true,
+        "moduleGoldenSuitePass": true,
+        "exactScientificPolicyResolves": true,
+        "pluginGeneratorIntegrityPass": true,
+        "evidenceProvenanceReconstructs": true,
+        "permittedGeometryPass": true,
+        "moduleModeIsolationPass": true,
+        "requiredMeasurementsReliabilityPass": true,
+        "fallbackAbstentionPass": true,
+        "gateResult": "PASS"
+      }
+    },
+    {
+      "moduleCode": "PTSD",
+      "moduleName": "Post-Traumatic Stress Disorder",
+      "moduleReleaseId": "IMR-PTSD-2.0.0",
+      "pluginId": "ptsd-targeting-plugin",
+      "qualificationStatus": "Q3_VERIFICATION_QUALIFIED",
+      "clinicalValidationStatus": "NOT_CLINICALLY_VALIDATED",
+      "permittedModes": ["research"],
+      "goldenSuite": {
+        "suiteCode": "PTSD_GOLDEN_SUITE",
+        "totalCases": 7,
+        "passingCases": 7,
+        "failingCases": 0,
+        "passRate": 1.0
+      },
+      "q3GateEvaluation": {
+        "allApplicableCriticalSrsPass": true,
+        "zeroUnresolvedCriticalDefects": true,
+        "moduleGoldenSuitePass": true,
+        "exactScientificPolicyResolves": true,
+        "pluginGeneratorIntegrityPass": true,
+        "evidenceProvenanceReconstructs": true,
+        "permittedGeometryPass": true,
+        "moduleModeIsolationPass": true,
+        "requiredMeasurementsReliabilityPass": true,
+        "fallbackAbstentionPass": true,
+        "gateResult": "PASS"
+      }
+    },
+    {
+      "moduleCode": "TINNITUS",
+      "moduleName": "Chronic Subjective Tinnitus",
+      "moduleReleaseId": "IMR-TIN-2.0.0",
+      "pluginId": "tinnitus-targeting-plugin",
+      "qualificationStatus": "Q3_VERIFICATION_QUALIFIED",
+      "clinicalValidationStatus": "NOT_CLINICALLY_VALIDATED",
+      "permittedModes": ["research"],
+      "goldenSuite": {
+        "suiteCode": "TINNITUS_GOLDEN_SUITE",
+        "totalCases": 10,
+        "passingCases": 10,
+        "failingCases": 0,
+        "passRate": 1.0
+      },
+      "q3GateEvaluation": {
+        "allApplicableCriticalSrsPass": true,
+        "zeroUnresolvedCriticalDefects": true,
+        "moduleGoldenSuitePass": true,
+        "exactScientificPolicyResolves": true,
+        "pluginGeneratorIntegrityPass": true,
+        "evidenceProvenanceReconstructs": true,
+        "permittedGeometryPass": true,
+        "moduleModeIsolationPass": true,
+        "requiredMeasurementsReliabilityPass": true,
+        "fallbackAbstentionPass": true,
+        "gateResult": "PASS"
+      }
+    }
+  ]
+}

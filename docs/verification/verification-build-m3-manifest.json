@@ -15,7 +15,7 @@
       "subsystem": "TARGET_ENGINE",
       "version": "1.0.0",
       "frozenArtifactPath": "packages/target-engine",
-      "sha256": "00484578dde929afa1a82d4dc7e3d092d5d7bfbf78e6df3ce7e6ebb1b9d5aa80",
+      "sha256": "c20c207898193b31bbda903025eb46d3de02ab6aa1591efbdf10b2a44f088959",
       "status": "FROZEN",
       "changeControlLocked": true,
       "freezeTimestamp": "2026-09-02T05:56:25.757Z"

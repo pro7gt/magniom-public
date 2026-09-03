@@ -1,9 +1,9 @@
 {
-  "version": "1.0.0",
+  "version": "2.0.0",
   "hazards": [
     {
       "id": "HAZ-001",
-      "title": "Automation Bias Leading to Unreviewed Target Approval",
+      "title": "Clinician Automation Bias Leading to Unreviewed Target Approval",
       "severityInitial": "Serious",
       "probabilityInitial": "Probable",
       "initialRiskLevel": "Medium",
@@ -15,6 +15,14 @@
         {
           "requirementId": "MAG-CLI-002",
           "description": "System enforces human clinician as sole prescriptive authority."
+        },
+        {
+          "requirementId": "MAG-CLI-045",
+          "description": "Specialist shall be able to reject all candidates and record no selected target."
+        },
+        {
+          "requirementId": "MAG-SYS-048",
+          "description": "Software shall not autonomously prescribe frequency, intensity, pulse count, or session schedule."
         }
       ],
       "verificationMethod": "human_factors",
@@ -24,18 +32,26 @@
     },
     {
       "id": "HAZ-002",
-      "title": "Coordinate Space Mismatch in Target Export",
+      "title": "Coordinate Space Mismatch and Spatial Transformation Inversion in Target Export",
       "severityInitial": "Serious",
       "probabilityInitial": "Occasional",
       "initialRiskLevel": "Medium",
       "mitigations": [
         {
           "requirementId": "MAG-DAT-004",
-          "description": "Explicit coordinate space metadata and validation checksums."
+          "description": "Canonical coordinate object explicitly includes coordinate space metadata and validation checksums."
         },
         {
           "requirementId": "MAG-TGT-001",
-          "description": "Deterministic spatial bounds checking in Target Engine."
+          "description": "Deterministic spatial bounds checking and offline coordinate validation in Target Engine."
+        },
+        {
+          "requirementId": "MAG-IMG-041",
+          "description": "Structural and functional registration preserves anatomical coordinate space integrity."
+        },
+        {
+          "requirementId": "MAG-IMG-042",
+          "description": "Laterality flip prevention enforced across all coordinate transformation pipelines."
         }
       ],
       "verificationMethod": "unit_test",
@@ -52,11 +68,19 @@
       "mitigations": [
         {
           "requirementId": "MAG-IMG-001",
-          "description": "Automated motion QC filtering and fallback to evidence priors."
+          "description": "Automated motion QC filtering (mean FD < 0.25 mm) and fallback to evidence priors."
+        },
+        {
+          "requirementId": "MAG-IMG-044",
+          "description": "Motion QC filtering gates functional connectivity personalisation."
         },
         {
           "requirementId": "MAG-EVD-001",
-          "description": "Strict evidence ceiling bounds."
+          "description": "Strict evidence ceiling bounds on target candidates."
+        },
+        {
+          "requirementId": "MAG-POL-044",
+          "description": "Reliability thresholds enforced as hard gates prior to compensable score calculation."
         }
       ],
       "verificationMethod": "golden_case",
@@ -77,7 +101,15 @@
         },
         {
           "requirementId": "MAG-PHE-001",
-          "description": "Formal phenotype ontology validation."
+          "description": "Formal phenotype ontology and DSM-5 symptom dimension validation."
+        },
+        {
+          "requirementId": "MAG-WFL-001",
+          "description": "Strict state transitions on clinical cases and snapshot validity expiration."
+        },
+        {
+          "requirementId": "MAG-CLI-052",
+          "description": "Material change in clinician-approved indication context requires new analysis rather than slate mutation."
         }
       ],
       "verificationMethod": "integration_test",
@@ -93,15 +125,446 @@
       "initialRiskLevel": "Medium",
       "mitigations": [
         {
+          "requirementId": "MAG-SEC-001",
+          "description": "Mandatory clinical user authentication and gateway access validation."
+        },
+        {
           "requirementId": "MAG-SEC-012",
-          "description": "Database-level Row Level Security isolation across organizations."
+          "description": "Database-level Row Level Security (RLS) isolation across organizations."
         },
         {
           "requirementId": "MAG-AUD-001",
-          "description": "Immutable audit logging of all clinical record access."
+          "description": "Immutable audit logging of all clinical record access with cryptographic chaining."
         }
       ],
       "verificationMethod": "security_test",
+      "severityResidual": "Serious",
+      "probabilityResidual": "Improbable",
+      "residualRiskLevel": "Acceptable"
+    },
+    {
+      "id": "HAZ-006",
+      "title": "Incorrect Indication Module Activation in Multi-Indication Environment",
+      "severityInitial": "Critical",
+      "probabilityInitial": "Occasional",
+      "initialRiskLevel": "High",
+      "mitigations": [
+        {
+          "requirementId": "MAG-IND-001",
+          "description": "Target Slate references exactly one immutable IndicationModuleRelease."
+        },
+        {
+          "requirementId": "MAG-SYS-043",
+          "description": "Clinical authority resolved per CaseIndication and IndicationModuleRelease, not global flag."
+        },
+        {
+          "requirementId": "MAG-IND-030",
+          "description": "Fail closed if active module cannot positively resolve to approved compatibility configuration."
+        },
+        {
+          "requirementId": "MAG-POL-041",
+          "description": "Scientific policy binds exact IndicationModuleRelease to permitted generator and measurement manifests."
+        }
+      ],
+      "verificationMethod": "integration_test",
+      "severityResidual": "Critical",
+      "probabilityResidual": "Improbable",
+      "residualRiskLevel": "Acceptable"
+    },
+    {
+      "id": "HAZ-007",
+      "title": "Cross-Module Evidence or Scientific Parameter Leakage",
+      "severityInitial": "Critical",
+      "probabilityInitial": "Occasional",
+      "initialRiskLevel": "High",
+      "mitigations": [
+        {
+          "requirementId": "MAG-IND-017",
+          "description": "EvidencePaths prohibited from automatically transferring between indication modules."
+        },
+        {
+          "requirementId": "MAG-EVD-041",
+          "description": "Multi-indication evidence graphs strictly isolated by indication scope."
+        },
+        {
+          "requirementId": "MAG-EVD-045",
+          "description": "Evidence Governance Classification strictly distinguishes Research vs Clinical evidence tiers."
+        },
+        {
+          "requirementId": "MAG-EVD-048",
+          "description": "Target candidate without valid EvidencePath prohibited from entering Target Slate."
+        }
+      ],
+      "verificationMethod": "scientific_verification",
+      "severityResidual": "Critical",
+      "probabilityResidual": "Improbable",
+      "residualRiskLevel": "Acceptable"
+    },
+    {
+      "id": "HAZ-008",
+      "title": "Research Science or Unvalidated Generator Leaking into Clinical Operation",
+      "severityInitial": "Critical",
+      "probabilityInitial": "Occasional",
+      "initialRiskLevel": "High",
+      "mitigations": [
+        {
+          "requirementId": "MAG-IND-012",
+          "description": "Module with research_only status structurally prohibited from Clinical slates."
+        },
+        {
+          "requirementId": "MAG-CLI-051",
+          "description": "Clinician override cannot convert Research-only scientific object into Clinical candidate."
+        },
+        {
+          "requirementId": "MAG-SYS-044",
+          "description": "Same deployment supports modules at different maturity states without authority leakage."
+        },
+        {
+          "requirementId": "MAG-SYS-045",
+          "description": "Clinical shell warns that executable scientific capability shall not be represented as validated solely by existence."
+        }
+      ],
+      "verificationMethod": "integration_test",
+      "severityResidual": "Critical",
+      "probabilityResidual": "Improbable",
+      "residualRiskLevel": "Acceptable"
+    },
+    {
+      "id": "HAZ-009",
+      "title": "Lesion Laterality, Anatomical Distortion, or Necrotic Core Targeting",
+      "severityInitial": "Critical",
+      "probabilityInitial": "Occasional",
+      "initialRiskLevel": "High",
+      "mitigations": [
+        {
+          "requirementId": "MAG-STR-002",
+          "description": "Lesion laterality explicitly represented as left hemisphere, right hemisphere, bilateral, or non-lesional."
+        },
+        {
+          "requirementId": "MAG-STR-003",
+          "description": "Stroke motor targeting preserves affected limb laterality without hemisphere crossover."
+        },
+        {
+          "requirementId": "MAG-STR-004",
+          "description": "Structural lesion distortion invalidating standard stereotaxy causes module abstention."
+        },
+        {
+          "requirementId": "MAG-TBI-007",
+          "description": "Preservation of lesion context and cranioplasty structural distortion boundaries."
+        }
+      ],
+      "verificationMethod": "golden_case",
+      "severityResidual": "Critical",
+      "probabilityResidual": "Improbable",
+      "residualRiskLevel": "Acceptable"
+    },
+    {
+      "id": "HAZ-010",
+      "title": "Motor Mapping Somatotopy Misinterpretation or Body-Region Mismatch",
+      "severityInitial": "Critical",
+      "probabilityInitial": "Occasional",
+      "initialRiskLevel": "High",
+      "mitigations": [
+        {
+          "requirementId": "MAG-STR-010",
+          "description": "Motor-map candidates require explicit SomatotopicTargetGeometry matching clinical territory."
+        },
+        {
+          "requirementId": "MAG-STR-023",
+          "description": "Muscle recording, affected body region, and target geometry must match without somatotopic mismatch."
+        },
+        {
+          "requirementId": "MAG-PAI-004",
+          "description": "Somatotopic M1 candidates require validated SomatotopicTargetGeometry."
+        },
+        {
+          "requirementId": "MAG-PAI-005",
+          "description": "Somatotopic pain target preserves affected body region without generic M1 point substitution."
+        },
+        {
+          "requirementId": "MAG-PAI-006",
+          "description": "Generic universal M1 point prohibited from replacing required somatotopic search region."
+        },
+        {
+          "requirementId": "MAG-PAI-008",
+          "description": "Bilateral or ambiguous pain shall not result in arbitrary hemisphere selection."
+        }
+      ],
+      "verificationMethod": "golden_case",
+      "severityResidual": "Critical",
+      "probabilityResidual": "Improbable",
+      "residualRiskLevel": "Acceptable"
+    },
+    {
+      "id": "HAZ-011",
+      "title": "Audiological / Tinnitus Overinterpretation Generating Invalid Cortical Target",
+      "severityInitial": "Serious",
+      "probabilityInitial": "Occasional",
+      "initialRiskLevel": "Medium",
+      "mitigations": [
+        {
+          "requirementId": "MAG-TIN-007",
+          "description": "Tinnitus pitch/loudness matching prohibited from autonomously generating targets."
+        },
+        {
+          "requirementId": "MAG-TIN-008",
+          "description": "Hearing-loss pattern shall not autonomously generate an auditory-cortex target coordinate."
+        },
+        {
+          "requirementId": "MAG-TIN-010",
+          "description": "Initial Tinnitus targeting module remains Research-only until prospective qualification."
+        },
+        {
+          "requirementId": "MAG-TIN-018",
+          "description": "Clinical target generation for tinnitus fails closed without approved Clinical release."
+        }
+      ],
+      "verificationMethod": "scientific_verification",
+      "severityResidual": "Serious",
+      "probabilityResidual": "Improbable",
+      "residualRiskLevel": "Acceptable"
+    },
+    {
+      "id": "HAZ-012",
+      "title": "Target Geometry Corruption or Lossy Downcasting (e.g. Deep-TMS Field to Point)",
+      "severityInitial": "Critical",
+      "probabilityInitial": "Occasional",
+      "initialRiskLevel": "High",
+      "mitigations": [
+        {
+          "requirementId": "MAG-OCD-003",
+          "description": "mPFC/ACC deep-TMS targets preserve coil_field geometry without lossy downcasting."
+        },
+        {
+          "requirementId": "MAG-OCD-004",
+          "description": "Target Engine prohibited from downcasting coil_field target to single point coordinate."
+        },
+        {
+          "requirementId": "MAG-OCD-006",
+          "description": "Incompatible device / coil class fails target-geometry / candidate validation."
+        }
+      ],
+      "verificationMethod": "unit_test",
+      "severityResidual": "Critical",
+      "probabilityResidual": "Improbable",
+      "residualRiskLevel": "Acceptable"
+    },
+    {
+      "id": "HAZ-013",
+      "title": "Treatment Context Omission for Evidence-Dependent Protocol Requirements",
+      "severityInitial": "Serious",
+      "probabilityInitial": "Occasional",
+      "initialRiskLevel": "Medium",
+      "mitigations": [
+        {
+          "requirementId": "MAG-OCD-010",
+          "description": "Symptom provocation requirement explicitly verified before targeting analysis."
+        },
+        {
+          "requirementId": "MAG-OCD-011",
+          "description": "Absence or uncertainty of required treatment context produces explicit slate warning or abstention."
+        },
+        {
+          "requirementId": "MAG-IND-027",
+          "description": "Treatment-context restrictions enforceable where declared evidence-relevant."
+        },
+        {
+          "requirementId": "MAG-STR-019",
+          "description": "Where evidence depends on concurrent speech therapy, treatment context requirement is enforceable."
+        }
+      ],
+      "verificationMethod": "system_test",
+      "severityResidual": "Serious",
+      "probabilityResidual": "Remote",
+      "residualRiskLevel": "Acceptable"
+    },
+    {
+      "id": "HAZ-014",
+      "title": "Wrong Indication or Clinical Objective Mismatch in Multi-Indication Cases",
+      "severityInitial": "Serious",
+      "probabilityInitial": "Occasional",
+      "initialRiskLevel": "Medium",
+      "mitigations": [
+        {
+          "requirementId": "MAG-CLI-041",
+          "description": "Every targeting analysis shall identify the principal CaseIndication being addressed."
+        },
+        {
+          "requirementId": "MAG-CLI-043",
+          "description": "Specialist shall explicitly approve clinical objective(s) prior to target generation."
+        },
+        {
+          "requirementId": "MAG-CLI-044",
+          "description": "Software shall not infer treatment objective solely from diagnosis."
+        },
+        {
+          "requirementId": "MAG-UX-043",
+          "description": "Persistent Case Header exposes active principal CaseIndication and prevents cross-indication slate reuse."
+        }
+      ],
+      "verificationMethod": "human_factors",
+      "severityResidual": "Serious",
+      "probabilityResidual": "Improbable",
+      "residualRiskLevel": "Acceptable"
+    },
+    {
+      "id": "HAZ-015",
+      "title": "Unreliable TMS-MEP Motor Mapping Influencing Cortical Target Refinement",
+      "severityInitial": "Serious",
+      "probabilityInitial": "Probable",
+      "initialRiskLevel": "Medium",
+      "mitigations": [
+        {
+          "requirementId": "MAG-MEA-002",
+          "description": "Each measurement modality carries independent QC status and reliability metric."
+        },
+        {
+          "requirementId": "MAG-MEA-005",
+          "description": "Non-MRI modalities (MEP, motor mapping, audiology) conform to canonical schema with provenance."
+        },
+        {
+          "requirementId": "MAG-STR-011",
+          "description": "Unreliable motor mapping falls back to evidence baseline rather than distorted coordinates."
+        },
+        {
+          "requirementId": "MAG-PAI-009",
+          "description": "Motor-map refinement requires qualified motor-hotspot / motor-map confidence metrics."
+        }
+      ],
+      "verificationMethod": "golden_case",
+      "severityResidual": "Serious",
+      "probabilityResidual": "Remote",
+      "residualRiskLevel": "Acceptable"
+    },
+    {
+      "id": "HAZ-016",
+      "title": "Misleading Task-fMRI Interpretation and Task Failure Conflation",
+      "severityInitial": "Serious",
+      "probabilityInitial": "Occasional",
+      "initialRiskLevel": "Medium",
+      "mitigations": [
+        {
+          "requirementId": "MAG-MEA-010",
+          "description": "Failed mandatory modality causes target engine abstention rather than silent omission."
+        },
+        {
+          "requirementId": "MAG-SYS-051",
+          "description": "Patient-specific sophistication shall not automatically outrank evidence-supported non-personalised baseline."
+        },
+        {
+          "requirementId": "MAG-STR-019",
+          "description": "Failure of a task-fMRI language paradigm shall not be represented as absence of language cortex."
+        },
+        {
+          "requirementId": "MAG-STR-025",
+          "description": "Failure of mandatory lesion/stage requirement causes module abstention."
+        }
+      ],
+      "verificationMethod": "golden_case",
+      "severityResidual": "Serious",
+      "probabilityResidual": "Remote",
+      "residualRiskLevel": "Acceptable"
+    },
+    {
+      "id": "HAZ-017",
+      "title": "Invalid Tractography Interpretation as Biological Ground Truth",
+      "severityInitial": "Serious",
+      "probabilityInitial": "Occasional",
+      "initialRiskLevel": "Medium",
+      "mitigations": [
+        {
+          "requirementId": "MAG-MEA-001",
+          "description": "Patient measurements encapsulated inside versioned MeasurementBundle objects with tractography method provenance."
+        },
+        {
+          "requirementId": "MAG-SYS-051",
+          "description": "Patient-specific tractography maximum prohibited from autonomously outranking evidence baseline."
+        },
+        {
+          "requirementId": "MAG-POL-044",
+          "description": "Structural connectivity reliability thresholds enforced as hard gates prior to candidate scoring."
+        }
+      ],
+      "verificationMethod": "scientific_verification",
+      "severityResidual": "Serious",
+      "probabilityResidual": "Improbable",
+      "residualRiskLevel": "Acceptable"
+    },
+    {
+      "id": "HAZ-018",
+      "title": "Hidden or Heuristic Multimodal Fusion Collapsing Discordant Modalities",
+      "severityInitial": "Critical",
+      "probabilityInitial": "Occasional",
+      "initialRiskLevel": "High",
+      "mitigations": [
+        {
+          "requirementId": "MAG-MEA-011",
+          "description": "Multimodal fusion prohibited without explicit indication-module scientific policy permission."
+        },
+        {
+          "requirementId": "MAG-POL-041",
+          "description": "Scientific policy defaults to multimodal_fusion_policy = prohibited or descriptive_only."
+        },
+        {
+          "requirementId": "MAG-SYS-046",
+          "description": "Separate patient measurement, scientific evidence, algorithmic inference, and clinician decision."
+        }
+      ],
+      "verificationMethod": "unit_test",
+      "severityResidual": "Critical",
+      "probabilityResidual": "Improbable",
+      "residualRiskLevel": "Acceptable"
+    },
+    {
+      "id": "HAZ-019",
+      "title": "Incompatible Coil or Delivery Device Applied to Field-Defined Evidence",
+      "severityInitial": "Critical",
+      "probabilityInitial": "Occasional",
+      "initialRiskLevel": "High",
+      "mitigations": [
+        {
+          "requirementId": "MAG-OCD-006",
+          "description": "Incompatible device / coil class fails target-geometry / candidate validation."
+        },
+        {
+          "requirementId": "MAG-TGT-050",
+          "description": "Hard safety gates strictly precede compensable ranking weight calculations."
+        },
+        {
+          "requirementId": "MAG-SYS-048",
+          "description": "Software shall not autonomously prescribe frequency, intensity, or device setup."
+        }
+      ],
+      "verificationMethod": "unit_test",
+      "severityResidual": "Critical",
+      "probabilityResidual": "Improbable",
+      "residualRiskLevel": "Acceptable"
+    },
+    {
+      "id": "HAZ-020",
+      "title": "Silent Target Drift or Provenance Invalidation Across Module Upgrades",
+      "severityInitial": "Serious",
+      "probabilityInitial": "Occasional",
+      "initialRiskLevel": "Medium",
+      "mitigations": [
+        {
+          "requirementId": "MAG-SYS-050",
+          "description": "Historical v1 and v2 Target Slates reconstructable from original scientific release configuration."
+        },
+        {
+          "requirementId": "MAG-POL-046",
+          "description": "Modifying scientific policy parameters creates a new immutable release version without mutating existing slates."
+        },
+        {
+          "requirementId": "MAG-REL-011",
+          "description": "Clinical scientific versions frozen for formal verification."
+        },
+        {
+          "requirementId": "MAG-VAL-002",
+          "description": "Bit-for-bit Target Engine determinism across runs."
+        }
+      ],
+      "verificationMethod": "regression_test",
       "severityResidual": "Serious",
       "probabilityResidual": "Improbable",
       "residualRiskLevel": "Acceptable"

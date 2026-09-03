@@ -1,19 +1,19 @@
 /**
- * MAGNIOM LOCAL CONTINUOUS INTEGRATION & VERIFICATION RUNNER
- * Aligned with MAGNIOM-Enterprise Verification, Testing & CI/CD Specification v1.0 (Stages 0–10)
+ * MAGNIOM LOCAL CONTINUOUS INTEGRATION & VERIFICATION RUNNER v2.0
+ * Conforms to MAGNIOM-Enterprise Verification, Testing & CI/CD Specification v2.0 (Stages 0–10)
  *
  * Runs the full end-to-end 10-Stage verification pipeline locally:
- * Stage 0: PR Policy & Automated Change Classification
- * Stage 1: Static Verification & Deterministic Target Engine Rules
- * Stage 2: Monorepo Unit Tests & Requirements Traceability
+ * Stage 0: C0–C4 Scientific Change Classifier & PR Policy Check
+ * Stage 1: Static Verification, Package Boundaries & Target Engine Rules
+ * Stage 2: Monorepo Unit Tests & 332 SRS Requirements Traceability
  * Stage 3: Property-Based Invariant Verification (fast-check)
  * Stage 4: Database Zero-State Rebuild & 11-Domain RLS Security Matrix
- * Stage 5: Golden Target Engine Suite & Scientific Impact Evaluator
- * Stage 6: Application Integration, Synthetic Workflow Worker & Queue Contracts
- * Stage 7: Presentation, UX View Models & Visual Safety Assertions
- * Stage 8: Security Analysis, CycloneDX 1.5 SBOM, Secret Hygiene & Pentest Readiness
- * Stage 9: Controlled Reproducible Monorepo Build & Sealed Verification Manifest
- * Stage 10: Clinical Release Gate, Recall Indexing & Post-Deploy Smoke Verification
+ * Stage 5: Multi-Indication 72 Golden Cases & Spatial Differential Engine
+ * Stage 6: Release-Blocking Laterality, Adversarial Boundaries & Kill Switch
+ * Stage 7: Presentation, UX View Models & Synthetic Workflow Workers
+ * Stage 8: Security Analysis, CycloneDX 1.5 SBOM, Secret Hygiene & Pentest Probe
+ * Stage 9: Controlled Reproducible Monorepo Build & MagniomReleaseManifestV2 Sealing
+ * Stage 10: Multi-Indication Post-Deployment Smoke Test & Case Recall Indexing
  */
 
 import { execSync } from 'node:child_process';
@@ -29,147 +29,141 @@ interface StageDefinition {
 const STAGES: StageDefinition[] = [
   {
     stageNumber: 0,
-    name: 'Stage 0 — PR Policy & Automated Change Classification',
-    command: 'tsx scripts/ci/classify-change.ts',
-    description: 'Validates change classes (C1–C10) and enforces PR metadata rules.',
+    name: 'Stage 0 — C0–C4 Scientific Change Classifier & PR Policy',
+    command: 'npx tsx scripts/ci/classify-change.ts',
+    description: 'Validates change classes (C0–C4) and enforces PR metadata rules (§112–118).',
   },
   {
     stageNumber: 1,
     name: 'Stage 1 — Static Verification & Target Engine Rules',
     command:
       'npm run verify:boundaries && npm run verify:static-rules && npm run typecheck && npm run format:check',
-    description: 'Enforces architectural isolation, Target Engine purity & strict typing.',
+    description: 'Enforces architectural isolation, Target Engine purity & strict typing (§34–35).',
   },
   {
     stageNumber: 2,
-    name: 'Stage 2 — Unit Tests & Requirements Traceability',
+    name: 'Stage 2 — Unit Tests & 332 SRS Requirements Traceability',
     command: 'npm run verify:requirements && npm test',
-    description: 'Executes monorepo unit tests (Vitest) and validates 35 SRS requirements.',
+    description:
+      'Executes monorepo unit tests (Vitest) and validates 332 SRS requirements (§126–127).',
   },
   {
     stageNumber: 3,
     name: 'Stage 3 — Property-Based Invariant Verification',
     command: 'npm run verify:properties',
-    description: 'Verifies 8 Target Engine mathematical invariants via fast-check.',
+    description: 'Verifies Target Engine mathematical invariants via fast-check (§38).',
   },
   {
     stageNumber: 4,
     name: 'Stage 4 — Database Zero-State Rebuild & 11-Domain RLS',
     command: 'npm run verify:db:from-zero',
-    description: 'Audits 28 sequential migrations and default-deny RLS policies.',
+    description: 'Audits sequential migrations (001–064) and default-deny RLS policies (§42, §45).',
   },
   {
     stageNumber: 5,
-    name: 'Stage 5 — Golden Target Engine Suite & Scientific Impact',
-    command: 'npm run verify:scientific-impact',
-    description: 'Executes Golden Cases (G01–G20) and gates on S0–S4 scientific materiality.',
+    name: 'Stage 5 — Multi-Indication 72 Golden Cases & Spatial Differentials',
+    command: 'npx tsx scripts/scientific/evaluate-scientific-impact.ts',
+    description:
+      'Executes 72 Golden Cases across all 8 modules and computes spatial differentials (§50–65, §119–121).',
   },
   {
     stageNumber: 6,
-    name: 'Stage 6 — Application Integration & Worker Ingestion',
+    name: 'Stage 6 — Release-Blocking Laterality & Adversarial Boundaries',
     command:
-      'vitest run services/workflow-worker/tests/synthetic-e2e.test.ts services/workflow-worker/tests/structural-verification.test.ts services/workflow-worker/tests/functional-verification.test.ts',
-    description: 'Validates synthetic background workers, DICOM/BIDS ingest & queue contracts.',
+      'npx vitest run packages/target-engine/tests/v2/laterality-release-blocking.test.ts packages/target-engine/tests/v2/adversarial-boundaries.test.ts packages/target-engine/tests/v2/module-kill-switch.test.ts',
+    description:
+      'Asserts laterality invariance, wrong-module rejection, and kill-switch operation (§46, §65, §76, §183).',
   },
   {
     stageNumber: 7,
-    name: 'Stage 7 — Presentation & UX Visual Safety Assertions',
-    command: 'vitest run packages/presentation/src/presentation.test.ts',
+    name: 'Stage 7 — Presentation & Workflow Worker Integration',
+    command:
+      'npx vitest run packages/presentation/src/presentation.test.ts services/workflow-worker/tests/synthetic-e2e.test.ts',
     description:
-      'Validates clinician workspace view models, stale warnings & anti-bias safety views.',
+      'Validates clinician workspace view models, anti-bias UI & synthetic workers (§86–89).',
   },
   {
     stageNumber: 8,
     name: 'Stage 8 — Security, SBOM, Secrets & Pentest Readiness',
     command:
       'npm run sbom:generate && npm run sbom:verify && npm run security:secrets && npm run security:probe',
-    description: 'Generates CycloneDX 1.5 SBOM, scans secret hygiene & runs pentest probes.',
+    description:
+      'Generates CycloneDX 1.5 SBOM, scans secret hygiene & runs pentest probes (§99–103).',
   },
   {
     stageNumber: 9,
-    name: 'Stage 9 — Reproducible Build & Sealed Manifest',
-    command: 'npm run build && npm run release:manifest',
-    description: 'Builds all monorepo workspaces and seals cryptographic release manifest.',
+    name: 'Stage 9 — Reproducible Monorepo Build & MagniomReleaseManifestV2',
+    command: 'npm run build && npx tsx scripts/release/generate-release-manifest-v2.ts',
+    description:
+      'Builds all monorepo workspaces and seals canonical MagniomReleaseManifestV2 (§131).',
   },
   {
     stageNumber: 10,
-    name: 'Stage 10 — Clinical Release Gate & Post-Deploy Smoke',
-    command: 'npm run release:affected-cases && npm run postdeploy:smoke',
-    description: 'Indexes case recall audit log and executes post-deployment golden smoke test.',
+    name: 'Stage 10 — Multi-Indication Smoke Test & Recall Indexing',
+    command:
+      'npx tsx scripts/release/post-deploy-golden-smoke.ts && npx tsx scripts/release/affected-case-index.ts ALL',
+    description:
+      'Runs non-mutating smoke tests across all 8 modules and indexes case recall registry (§148–149, §185–187).',
   },
 ];
 
-async function main() {
-  console.log('================================================================================');
-  console.log('🚀 MAGNIOM 10-STAGE CONTINUOUS INTEGRATION & VERIFICATION SUITE');
-  console.log(
-    '   Aligned with MAGNIOM-Enterprise Verification, Testing & CI/CD Specification v1.0',
-  );
-  console.log('================================================================================\n');
+export class LocalContinuousIntegrationRunner {
+  private repoRoot: string;
 
-  const startTime = Date.now();
-  const stageResults: {
-    stage: StageDefinition;
-    passed: boolean;
-    durationMs: number;
-    error?: string;
-  }[] = [];
-
-  for (const stage of STAGES) {
-    console.log(`--------------------------------------------------------------------------------`);
-    console.log(`▶ Running ${stage.name}...`);
-    console.log(`  Description: ${stage.description}`);
-    console.log(`  Command:     ${stage.command}`);
-    console.log(`--------------------------------------------------------------------------------`);
-
-    const stageStart = Date.now();
-    try {
-      execSync(stage.command, {
-        cwd: path.resolve(process.cwd()),
-        stdio: 'inherit',
-      });
-      const durationMs = Date.now() - stageStart;
-      stageResults.push({ stage, passed: true, durationMs });
-      console.log(`\n✅ ${stage.name} PASSED (${(durationMs / 1000).toFixed(2)}s)\n`);
-    } catch (err: any) {
-      const durationMs = Date.now() - stageStart;
-      stageResults.push({ stage, passed: false, durationMs, error: err.message });
-      console.error(`\n❌ ${stage.name} FAILED (${(durationMs / 1000).toFixed(2)}s)\n`);
-      console.error(err.message);
-      break;
-    }
+  constructor(repoRoot: string = path.resolve(process.cwd())) {
+    this.repoRoot = repoRoot;
   }
 
-  const totalDuration = ((Date.now() - startTime) / 1000).toFixed(2);
-
-  console.log('================================================================================');
-  console.log('📊 MAGNIOM 10-STAGE CI/CD EXECUTION SUMMARY');
-  console.log('================================================================================');
-
-  let allPassed = true;
-  for (const res of stageResults) {
-    const status = res.passed ? '✅ PASSED' : '❌ FAILED';
-    const timing = `(${(res.durationMs / 1000).toFixed(2)}s)`.padStart(9);
+  public runPipeline(): boolean {
+    console.log('='.repeat(90));
+    console.log('🚀 MAGNIOM LOCAL CONTINUOUS INTEGRATION & VERIFICATION PIPELINE v2.0');
     console.log(
-      `[Stage ${res.stage.stageNumber.toString().padStart(2, '0')}] ${res.stage.name.padEnd(55)} ${timing} -> ${status}`,
+      'Governing Specification: public/guides/MAGNIOM-Enterprise Verification, Testing CICD Specification v2.0.md',
     );
-    if (!res.passed) allPassed = false;
-  }
+    console.log('='.repeat(90) + '\n');
 
-  console.log('================================================================================');
-  console.log(`Total Stages Executed: ${stageResults.length}/${STAGES.length}`);
-  console.log(`Total Execution Time:  ${totalDuration}s`);
-  console.log(
-    `Overall CI Pipeline Status: ${allPassed ? '✅ ALL STAGES PASSED (100% COMPLIANT)' : '❌ PIPELINE FAILED'}`,
-  );
-  console.log('================================================================================\n');
+    const totalStart = Date.now();
+    let passedCount = 0;
 
-  if (!allPassed) {
-    process.exit(1);
+    for (const stage of STAGES) {
+      console.log(`\n▶️ [STAGE ${stage.stageNumber}/10]: ${stage.name}`);
+      console.log(`   Command:     ${stage.command}`);
+      console.log(`   Description: ${stage.description}`);
+
+      const stageStart = Date.now();
+      try {
+        execSync(stage.command, {
+          cwd: this.repoRoot,
+          stdio: 'inherit',
+          env: { ...process.env, CI: 'true' },
+        });
+        const durationSec = ((Date.now() - stageStart) / 1000).toFixed(2);
+        console.log(`✅ [STAGE ${stage.stageNumber} PASSED] (${durationSec}s)`);
+        passedCount++;
+      } catch {
+        const durationSec = ((Date.now() - stageStart) / 1000).toFixed(2);
+        console.error(`\n❌ [STAGE ${stage.stageNumber} FAILED] after ${durationSec}s!`);
+        console.error(`Command failed: ${stage.command}`);
+        return false;
+      }
+    }
+
+    const totalDurationSec = ((Date.now() - totalStart) / 1000).toFixed(2);
+    console.log('\n' + '='.repeat(90));
+    console.log(
+      `🎉 ALL ${passedCount}/10 LOCAL CI STAGES PASSED SUCCESSFULLY (${totalDurationSec}s)`,
+    );
+    console.log(
+      '100% CONFORMANCE WITH ENTERPRISE VERIFICATION, TESTING & CI/CD SPECIFICATION v2.0',
+    );
+    console.log('='.repeat(90) + '\n');
+
+    return true;
   }
 }
 
-main().catch(err => {
-  console.error('Fatal CI Execution Error:', err);
-  process.exit(1);
-});
+if (process.argv[1]?.endsWith('run-full-local-ci.ts')) {
+  const runner = new LocalContinuousIntegrationRunner();
+  const ok = runner.runPipeline();
+  if (!ok) process.exit(1);
+}

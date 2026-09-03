@@ -18,6 +18,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import type { VerificationBuildM3Manifest, SubsystemFreezeRecord } from '@magniom/domain';
+import { ReleaseManifestV2Generator } from './generate-release-manifest-v2.js';
 
 function computeSha256(filePath: string): string {
   if (!fs.existsSync(filePath)) {
@@ -145,6 +146,10 @@ export class ClinicalReleaseManifestGenerator {
     } else {
       console.log('\n🔒 Manifest Verification Only: Valid and Consistent.');
     }
+
+    // Also generate and seal MagniomReleaseManifestV2 (§131)
+    const v2Gen = new ReleaseManifestV2Generator(this.repoRoot);
+    v2Gen.generateAndSealManifest(isVerifyOnly);
 
     console.log('\n=============================================');
     console.log('🎉 RELEASE MANIFEST GENERATION: COMPLETE');

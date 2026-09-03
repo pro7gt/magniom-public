@@ -1,3091 +1,3046 @@
 # MAGNIOM
 
-## Neuroimaging, Neurophysiology & Multimodal Measurement Specification v2.0
+## Scientific Policy & Algorithm Configuration Specification v2.0
 
-**Document status:** Canonical multimodal scientific-measurement specification
+**Document status:** Canonical multi-indication scientific-governance specification
 **Version:** 2.0
 **Date:** 2 September 2026
-**Supersedes:** MAGNIOM Neuroimaging & Functional Connectomics Pipeline Specification v1.0 for new development
-**Backward compatibility:** Historical v1 imaging/connectome runs remain immutable and reproducible
-**Primary architectural change:** rs-fMRI-centric NeuroCompute → modular multimodal measurement platform
-**Primary purpose:** Produce versioned, QC-qualified patient measurements for indication-specific MAGNIOM Target Engine plugins
+**Supersedes:** MAGNIOM Scientific Policy & Algorithm Configuration Specification v1.0 for new multi-indication development
+**Backward compatibility:** Historical v1 Scientific Policy releases remain immutable and authoritative for historical v1 Target Slates
+**Primary architectural change:** indication as a simple scope variable → immutable `IndicationModuleRelease` as a first-class member of the scientific compatibility configuration
+**Primary purpose:** Define exactly which scientific components, algorithms, measurements, evidence paths and parameters may influence a MAGNIOM targeting analysis
 **Clinical authority:** Specialist clinician
-**Scientific-compute authority:** Approved pipeline releases + Scientific Policy + Indication Module compatibility
-**Modalities covered:** Structural MRI, lesion mapping, resting-state fMRI, task fMRI, diffusion MRI/tractography, motor mapping, motor-evoked potentials, audiology, E-field-related anatomical inputs
-**Future-compatible modalities:** EEG, TMS-EEG, additional neurophysiology
+**Scientific-release authority:** Controlled scientific, clinical, engineering and quality governance
+
+**Depends on:**
+
+* MAGNIOM Clinical & Scientific Specification v1.0
+* MAGNIOM Scientific Policy & Algorithm Configuration Specification v1.0
+* MAGNIOM Canonical Multi-Indication Data Specification v2.0
+* MAGNIOM Evidence Knowledge Graph & Therapeutic Circuit Library v2.0
+* MAGNIOM Target Engine & Ranking Algorithm Specification v2.0
+* MAGNIOM Neuroimaging, Neurophysiology & Multimodal Measurement Specification v2.0
+* MAGNIOM System Requirements Specification v1.0
+* MAGNIOM Application Shell, Navigation & Clinical Context Specification v1.0
+
+The v1 architecture already required clinically meaningful thresholds, ranking weights, redundancy rules and evidence permissions to reside in a versioned Scientific Policy rather than ordinary application configuration.  The database architecture likewise treated scientific configuration as immutable release data rather than editable production settings. 
 
 ---
 
-## 1. PURPOSE
+# 1. PURPOSE
 
-MAGNIOM v2 extends the original neuroimaging pipeline into a general:
+MAGNIOM v2 supports multiple indications whose scientific models are materially different.
 
-# Multimodal Measurement Architecture.
-
-The v1 system correctly separated **measurement precision from measurement reliability**, required patient-specific functional localisation to demonstrate reproducibility before influencing Clinical Mode, and treated NeuroCompute as a measurement service rather than the clinical Target Engine. Those principles remain unchanged. 
-
-v2 must answer a broader set of questions:
-
-### Anatomy
-
-What anatomy does the patient actually have?
-
-### Lesions
-
-Has disease or injury removed, distorted or displaced relevant tissue?
-
-### Functional organisation
-
-What reproducible functional relationships or task activations are measurable?
-
-### Structural connectivity
-
-Which white-matter pathways can be reconstructed, and how reliable is that reconstruction?
-
-### Motor physiology
-
-Where is the relevant motor representation, and how reproducibly can it be stimulated?
-
-### Corticospinal function
-
-Are reproducible motor-evoked responses detectable?
-
-### Audiology
-
-What tinnitus/hearing phenotype has been objectively characterised?
-
-### Stimulation physics
-
-What anatomical and field-model constraints affect accessibility?
-
-And critically:
-
-# How trustworthy is each of these measurements for the particular targeting capability MAGNIOM proposes to use?
-
----
-
-# 2. GOVERNING PRINCIPLE
-
-MAGNIOM v2 SHALL distinguish:
+Therefore a scientific policy can no longer mean merely:
 
 ```text
-measurement exists
-```
-
-from:
-
-```text
-measurement passed QC
-```
-
-from:
-
-```text
-measurement is reproducible
-```
-
-from:
-
-```text
-measurement is qualified for this scientific capability
-```
-
-from:
-
-```text
-measurement is permitted to influence Clinical Mode.
-```
-
-These are different states.
-
----
-
-# 3. MULTIMODAL SCIENTIFIC CONTRACT
-
-The canonical relationship is:
-
-```text
-RAW ACQUISITION
-      ↓
-VERSIONED PROCESSING
-      ↓
-MEASUREMENT
-      ↓
-QC
-      ↓
-RELIABILITY
-      ↓
-CAPABILITY QUALIFICATION
-      ↓
-MeasurementBundle
-      ↓
-ReliabilityBundle
-      ↓
-Target Engine
-```
-
-The measurement system SHALL NOT itself determine:
-
-* treatment indication;
-* final target rank;
-* treatment protocol;
-* clinical efficacy;
-* whether an observed abnormality is causal.
-
-The v1 pipeline already explicitly prohibited NeuroCompute from outputting `best_target`; v2 preserves this boundary across every modality. 
-
----
-
-# 4. WHY v2 MUST BE MULTIMODAL
-
-The original MDD architecture could reasonably prioritise:
-
-```text
-Structural MRI
+MDD
 +
-resting-state fMRI.
+Target Engine 1.0
++
+Evidence Library 1.0
++
+Pipeline 1.0
 ```
 
-That assumption does not generalise.
+It must answer:
 
-For example:
+> **Which exact indication model is being used, what evidence paths are permitted for that indication, which candidate generators may run, which patient measurements may influence them, which reliability requirements apply, which target geometries are allowed, which device/coil dependencies matter, how candidates may be compared, when personalisation may displace an evidence baseline, and whether the resulting configuration is permitted in Research, Validation or Clinical use?**
 
-### Neuropathic pain
+The canonical v2 authority object remains:
 
-Somatotopic motor mapping may be more directly relevant than rs-fMRI.
+# `ScientificPolicyRelease`
 
-### Stroke
+but its central unit of scientific scope becomes:
 
-Lesion anatomy, motor physiology, disease stage and corticospinal integrity may matter more than depression-style resting-state targeting.
+# `IndicationModuleRelease`.
 
-### Aphasia
+---
 
-Task-based language localisation may become relevant.
+# 2. v2 GOVERNING PRINCIPLE
 
-### TBI
+MAGNIOM v2 SHALL implement:
 
-Structural distortion and skull changes may dominate measurement validity.
+```text
+One governance framework
+        +
+Multiple independently governed indication models.
+```
 
-### Tinnitus
+A deployed MAGNIOM installation may simultaneously contain:
 
-Audiology is a necessary clinical measurement domain.
+```text
+MDD
+Clinical
+
+Neuropathic Pain
+Validation
+
+Stroke Motor
+Validation
+
+OCD
+Validation
+
+TBI
+Research
+
+Tinnitus
+Research
+```
+
+without allowing the maturity of one module to confer authority on another.
+
+---
+
+# 3. CENTRAL v2 RULE
+
+> **No indication becomes clinically authoritative merely because MAGNIOM contains code capable of generating targets for it.**
+
+Clinical target generation requires an explicitly approved combination of:
+
+```text
+CaseIndication
+×
+IndicationModuleRelease
+×
+EvidenceLibraryRelease
+×
+EvidencePath permissions
+×
+ScientificPolicyRelease
+×
+TargetEngineRelease
+×
+Indication Plugin
+×
+Candidate Generator versions
+×
+Measurement capability configuration
+×
+Reliability configuration
+×
+Normative/E-field/device components where applicable
+×
+Mode
+```
+
+---
+
+# 4. `IndicationModuleRelease` BECOMES FIRST-CLASS
+
+v1 policies effectively treated indication as a relatively simple scope predicate.
+
+v2 replaces this with:
+
+```text
+indication
+→ IndicationModuleRelease
+```
+
+because a clinically meaningful indication model now contains:
+
+* intended population;
+* clinical objectives;
+* phenotype schema;
+* disease-stage definitions;
+* target-family scope;
+* target geometry scope;
+* measurement requirements;
+* treatment-context requirements;
+* permitted candidate-generation methods;
+* validation maturity.
+
+This is the core scientific-policy change in v2.
+
+---
+
+# 5. POLICY IS NOT THE INDICATION MODULE
+
+The two objects have different responsibilities.
+
+### `IndicationModuleRelease`
+
+Defines:
+
+> **what the scientific model for this indication is.**
+
+### `ScientificPolicyRelease`
+
+Defines:
+
+> **which parts of that model may currently influence a particular MAGNIOM mode and under exactly which validated configuration.**
 
 Therefore:
 
-# no modality is universally privileged across MAGNIOM v2.
+```text
+IndicationModule exists
+```
 
----
+does not imply:
 
-# 5. MEASUREMENT PROVIDER ARCHITECTURE
-
-Each modality SHALL implement a common conceptual contract:
-
-```ts
-interface MeasurementProvider {
-  manifest: MeasurementProviderManifest;
-
-  validateAcquisition(
-    acquisition: AcquisitionRecord
-  ): AcquisitionValidation;
-
-  process(
-    acquisition: AcquisitionRecord,
-    context: MeasurementProcessingContext
-  ): ProcessingResult;
-
-  evaluateQuality(
-    result: ProcessingResult
-  ): QualityAssessment;
-
-  calculateReliability?(
-    result: ProcessingResult,
-    context: ReliabilityContext
-  ): MeasurementReliability;
-
-  buildCanonicalMeasurement(
-    result: ProcessingResult
-  ): CanonicalMeasurement;
-}
+```text
+IndicationModule clinically enabled.
 ```
 
 ---
 
-# 6. MEASUREMENT PROVIDER MANIFEST
+# 6. POLICY IS ALSO NOT THE EVIDENCE LIBRARY
+
+The Evidence Library answers:
+
+> What does the scientific literature support, challenge or leave unresolved?
+
+Scientific Policy answers:
+
+> Which approved EvidencePaths may affect MAGNIOM target generation in this release?
+
+This separation becomes especially important in v2 because claims may legitimately exist with:
+
+```text
+MAGNIOM evidence tier = unassigned
+```
+
+while remaining useful for Research or Validation.
+
+---
+
+# 7. POLICY IS NOT THE TARGET ENGINE
+
+Target Engine implements deterministic scientific operations.
+
+Scientific Policy determines:
+
+* whether those operations are permitted;
+* with which parameters;
+* for which indication module;
+* in which mode;
+* using which measurements and evidence paths.
+
+The engine SHALL NOT decide its own scientific authority.
+
+---
+
+# 8. POLICY IS NOT APPLICATION CONFIGURATION
+
+Ordinary application configuration may govern:
+
+```text
+queue concurrency
+cache TTL
+logging verbosity
+UI feature presentation
+worker timeout
+```
+
+Scientific Policy governs:
+
+```text
+evidence eligibility
+candidate-generation eligibility
+measurement capability
+reliability threshold
+ranking profile
+refinement adoption
+redundancy
+abstention
+E-field role
+normative role
+```
+
+The distinction from v1 remains absolute. 
+
+---
+
+# 9. SCIENTIFIC-CONFIGURATION TEST
+
+Any configuration value SHALL be considered scientific if changing it could alter:
+
+* whether a candidate exists;
+* target location;
+* target geometry;
+* candidate role;
+* evidence applicability;
+* eligibility;
+* rank/order;
+* refinement adoption;
+* suppression;
+* abstention;
+* uncertainty;
+* treatment-context interpretation;
+* clinically material explanation.
+
+If yes:
+
+# it belongs under controlled scientific configuration.
+
+---
+
+# 10. CANONICAL COMPATIBILITY MODEL v2
+
+The v2 scientific compatibility relationship is:
+
+```text
+ScientificPolicyRelease
+        ↓ authorises
+ScientificCompatibilityConfiguration
+```
+
+Each configuration represents an exact positive whitelist.
+
+Conceptually:
+
+```text
+ScientificPolicyRelease
+×
+IndicationModuleRelease
+×
+EvidenceLibraryRelease
+×
+TargetEngineRelease
+×
+IndicationTargetingPluginRelease
+×
+CandidateGeneratorReleaseSet
+×
+MeasurementProviderReleaseSet
+×
+ReliabilityMethodReleaseSet
+×
+AtlasReleaseSet
+×
+NormativeModelReleaseSet
+×
+EFieldEngineRelease
+×
+DeviceCapabilityProfile
+×
+Mode
+```
+
+with optional elements explicitly represented as:
+
+```text
+optional
+disabled
+not_applicable
+```
+
+rather than omitted ambiguously.
+
+---
+
+# 11. EXACT COMPATIBILITY IS POSITIVE, NOT NEGATIVE
+
+MAGNIOM SHALL not reason:
+
+```text
+Nothing says StrokePlugin 1.1 is incompatible,
+therefore allow it.
+```
+
+Instead:
+
+```text
+StrokePlugin 1.1 is explicitly authorised
+for StrokeMotorModule 1.0
+under ScientificPolicy 2.0
+```
+
+must be present.
+
+No positive match:
+
+# fail closed.
+
+---
+
+# 12. COMPATIBILITY IS CONJUNCTIVE
+
+Every required member must match.
+
+If:
+
+```text
+IndicationModule        compatible
+Evidence Library        compatible
+Target Engine           compatible
+Measurement Providers   compatible
+Normative Model         incompatible
+```
+
+then a profile requiring that normative model is:
+
+# incompatible.
+
+Other policy-defined fallback profiles may still exist.
+
+---
+
+# 13. COMPATIBILITY IS NON-TRANSITIVE
+
+If:
+
+```text
+A compatible with B
+B compatible with C
+```
+
+MAGNIOM SHALL NOT infer:
+
+```text
+A compatible with C.
+```
+
+Examples:
+
+```text
+StrokeModule 1.0
+compatible with
+MotorMapProvider 1.1
+
+MotorMapProvider 1.1
+compatible with
+NavigationAdapter 2.0
+```
+
+does not automatically prove the full three-component clinical combination.
+
+---
+
+# 14. CANONICAL `ScientificPolicyReleaseV2`
 
 ```ts
-interface MeasurementProviderManifest {
+interface ScientificPolicyReleaseV2 {
   id: UUID;
 
   code: string;
   semantic_version: string;
 
-  modality: MeasurementModality;
-
-  pipeline_version_id: UUID;
-
-  supported_acquisition_profile_ids: UUID[];
-
-  supported_indication_module_release_ids: UUID[];
-
-  supported_capability_codes: string[];
-
-  container_digest_sha256?: SHA256;
-
-  configuration_sha256: SHA256;
-
-  normative_model_compatibility_ids?: UUID[];
-
-  atlas_version_ids?: UUID[];
+  title: string;
+  description: string;
 
   lifecycle_status:
     | "draft"
+    | "under_review"
     | "validation"
+    | "release_candidate"
     | "active"
     | "superseded"
-    | "withdrawn";
-}
-```
-
----
-
-# 7. SUPPORTED v2 MODALITIES
-
-```ts
-type MeasurementModality =
-  | "structural_mri"
-  | "lesion_mapping"
-  | "resting_state_fmri"
-  | "task_fmri"
-  | "diffusion_mri"
-  | "structural_connectivity"
-  | "motor_mapping"
-  | "motor_evoked_potential"
-  | "audiology"
-  | "efield_anatomical_model"
-  | "eeg"
-  | "tms_eeg"
-  | "other";
-```
-
-`EEG` and `TMS-EEG` are schema-compatible but need not be implemented in the first v2 release.
-
----
-
-# 8. CANONICAL MEASUREMENT
-
-```ts
-interface CanonicalMeasurement {
-  id: UUID;
-  version: string;
-
-  case_id: UUID;
-
-  modality: MeasurementModality;
-
-  acquisition_id?: UUID;
-  processing_run_id: UUID;
-
-  status:
-    | "generated"
-    | "qualified"
-    | "qualified_with_limits"
-    | "failed"
-    | "research_only";
-
-  capability_codes: string[];
-
-  acquisition_profile_id?: UUID;
-
-  pipeline_version_id: UUID;
-
-  source_artifact_ids: UUID[];
-
-  derivative_artifact_ids: UUID[];
-
-  coordinate_space_refs?: CoordinateSpaceRef[];
-
-  qc_assessment_id: UUID;
-
-  measurement_manifest_sha256: SHA256;
-
-  mode: "clinical" | "research";
-
-  provenance: Provenance;
-}
-```
-
----
-
-# 9. ACQUISITION IS SEPARATE FROM PROCESSING
-
-MAGNIOM SHALL distinguish:
-
-```text
-what was acquired
-```
-
-from:
-
-```text
-how it was processed.
-```
-
-A raw MRI acquisition does not become a new acquisition merely because another pipeline processes it.
-
-Likewise, one motor-mapping session may generate multiple derived analyses.
-
----
-
-# 10. ACQUISITION PROFILE
-
-```ts
-interface AcquisitionProfile {
-  id: UUID;
-
-  code: string;
-  version: string;
-
-  modality: MeasurementModality;
-
-  parameters: AcquisitionParameterDefinition[];
-
-  intended_capabilities: string[];
-
-  validated_site_ids?: UUID[];
+    | "withdrawn"
+    | "archived";
 
   validation_status:
     | "design_only"
-    | "research_validated"
-    | "clinical_qualified";
+    | "engineering_verified"
+    | "retrospective_validated"
+    | "silent_prospective_validated"
+    | "clinician_assisted_validated"
+    | "clinical_release_qualified";
+
+  scope:
+    | "single_indication"
+    | "multi_indication";
+
+  indication_policy_bindings:
+    IndicationPolicyBinding[];
+
+  compatibility_configurations:
+    ScientificCompatibilityConfiguration[];
+
+  global_prohibitions:
+    ProhibitedScientificConfiguration[];
+
+  parameter_definitions:
+    ScientificPolicyParameter[];
+
+  validation_evidence_ids: UUID[];
+
+  change_classification:
+    ScientificChangeClassification;
+
+  supersedes_release_id?: UUID;
+
+  payload_sha256: SHA256;
+  compatibility_manifest_sha256: SHA256;
+  release_manifest_sha256: SHA256;
+
+  approvals: ScientificPolicyApproval[];
+
+  signatures: ScientificPolicySignature[];
+
+  created_at: ISO8601UTC;
+  released_at?: ISO8601UTC;
+}
+```
+
+---
+
+# 15. `IndicationPolicyBinding`
+
+```ts
+interface IndicationPolicyBinding {
+  id: UUID;
+
+  indication_module_release_id: UUID;
+
+  module_permission:
+    | "research_only"
+    | "validation_only"
+    | "clinical_permitted"
+    | "disabled";
+
+  permitted_modes: MagniomMode[];
+
+  evidence_policy_id: UUID;
+
+  measurement_policy_id: UUID;
+
+  reliability_policy_id: UUID;
+
+  candidate_generation_policy_id: UUID;
+
+  ranking_policy_id: UUID;
+
+  refinement_policy_id: UUID;
+
+  geometry_policy_id: UUID;
+
+  treatment_context_policy_id?: UUID;
+
+  normative_policy_id?: UUID;
+
+  efield_policy_id?: UUID;
+
+  redundancy_policy_id: UUID;
+
+  slate_assembly_policy_id: UUID;
+
+  abstention_policy_id: UUID;
+
+  explanation_policy_id: UUID;
+
+  permitted_compatibility_configuration_ids: UUID[];
 
   limitations: string[];
-
-  provenance: Provenance;
 }
 ```
 
 ---
 
-# 11. NO UNIVERSAL MRI PROTOCOL
+# 16. THE BINDING IS THE UNIT OF INDICATION AUTHORITY
 
-v2 SHALL NOT require every indication to undergo:
+A module existing in the release manifest is insufficient.
 
-```text
-T1
-+
-30 min multi-echo rs-fMRI
-+
-DWI
-+
-task fMRI
-```
-
-merely because MAGNIOM supports those modalities.
-
-The Indication Module determines required measurements.
-
----
-
-# 12. STRUCTURAL MRI REMAINS FOUNDATIONAL
-
-Structural MRI continues to support:
-
-* neuronavigation;
-* cortical reconstruction;
-* subject-space targeting;
-* lesion mapping;
-* functional registration;
-* diffusion registration;
-* scalp modelling;
-* E-field modelling.
-
-The v1 T1 requirement and emphasis on whole-brain/scalp coverage remain appropriate as the structural baseline. 
-
----
-
-# 13. STRUCTURAL MRI OBJECT
-
-```ts
-interface StructuralMRIMeasurement
-  extends CanonicalMeasurement {
-
-  modality: "structural_mri";
-
-  t1w_artifact_id: UUID;
-
-  t2w_artifact_id?: UUID;
-
-  brain_mask_artifact_id: UUID;
-
-  segmentation_artifact_ids: UUID[];
-
-  cortical_surface_artifact_ids: UUID[];
-
-  scalp_surface_artifact_id?: UUID;
-
-  native_coordinate_space: CoordinateSpaceRef;
-
-  registration_manifest_id: UUID;
-
-  structural_qc: StructuralQualityMetrics;
-}
-```
-
----
-
-# 14. STRUCTURAL QC
-
-Required QC domains:
+For clinical authority there must be:
 
 ```text
-coverage
-motion artefact
-tissue contrast
-segmentation quality
-surface reconstruction quality
-registration quality
-scalp reconstruction
-gross distortion
-```
-
-A technically successful command exit code does not equal:
-
-```text
-structural QC pass.
-```
-
----
-
-# 15. ANATOMICAL ABNORMALITY
-
-The structural pipeline MAY identify:
-
-* prior surgery;
-* encephalomalacia;
-* infarct;
-* haemorrhage;
-* mass-related distortion;
-* skull defect;
-* cranioplasty.
-
-It SHALL NOT automatically determine clinical diagnosis from those findings.
-
----
-
-# 16. LESION MAPPING
-
-Lesion mapping becomes a first-class v2 pipeline.
-
-Canonical flow:
-
-```text
-Structural MRI
-      ↓
-Lesion candidate segmentation
-      ↓
-Manual / expert review where required
-      ↓
-Lesion mask
-      ↓
-Native-space validation
-      ↓
-Atlas / surface intersection
-      ↓
-White-matter relationship
-      ↓
-Structural distortion assessment
-      ↓
-Target-family relationship
-      ↓
-LesionContext
-```
-
----
-
-# 17. LESION SEGMENTATION SOURCES
-
-A lesion mask MAY arise from:
-
-```text
-manual segmentation
-semi-automated segmentation
-validated automated segmentation
-clinical segmentation imported from another system
-```
-
-The method SHALL be explicit.
-
----
-
-# 18. LESION MASK IS NOT AUTHORITATIVE MERELY BECAUSE AUTOMATED
-
-For Clinical Mode, lesion-segmentation methods SHALL have:
-
-* method identity;
-* version;
-* validation evidence;
-* QC;
-* reviewer status where required.
-
-High Dice score in a research dataset does not automatically establish clinical suitability for every lesion type.
-
----
-
-# 19. LESION MEASUREMENT
-
-```ts
-interface LesionMeasurement
-  extends CanonicalMeasurement {
-
-  modality: "lesion_mapping";
-
-  lesion_mask_artifact_ids: UUID[];
-
-  lesion_type: string;
-
-  laterality: Laterality;
-
-  volume_cm3?: number;
-
-  cortical_intersections: AtlasRegionIntersection[];
-
-  subcortical_intersections: AtlasRegionIntersection[];
-
-  tract_intersections?: TractIntersection[];
-
-  structural_distortion_metrics: StructuralDistortionMetric[];
-
-  target_family_relationships?: TargetFamilyLesionRelationship[];
-
-  segmentation_method: string;
-
-  segmentation_review_status:
-    | "unreviewed"
-    | "reviewed"
-    | "adjudicated";
-
-  lesion_qc: LesionMappingQC;
-}
-```
-
----
-
-# 20. LESION MAPPING SHALL REMAIN NATIVE-SPACE FIRST
-
-Lesion definition should be established primarily in:
-
-# subject-native anatomy.
-
-Standard-space representations are derived.
-
-MAGNIOM SHALL NOT depend solely on:
-
-```text
-warped lesion in template space
-```
-
-for target-validity decisions when major structural distortion exists.
-
----
-
-# 21. LESION REGISTRATION PROBLEM
-
-Large lesions can cause:
-
-* nonlinear-registration error;
-* cortical correspondence failure;
-* parcel misassignment;
-* surface reconstruction failure.
-
-Therefore lesion-containing brains may require:
-
-```text
-lesion-aware registration
-```
-
-or:
-
-```text
-registration exclusion/masking strategies
-```
-
-depending on the validated pipeline.
-
-Exact method is pipeline-versioned.
-
----
-
-# 22. LESION RELATIONSHIP TO TARGET
-
-For each relevant TargetFamily, the lesion pipeline may compute:
-
-```text
-target outside lesion
-target adjacent
-target partially involved
-target substantially involved
-target tissue absent
-not assessable
-```
-
-The Target Engine, not the lesion pipeline, determines the clinical implication.
-
----
-
-# 23. LESION MAPPING RELIABILITY
-
-Reliability domains include:
-
-```text
-segmentation repeatability
-inter-rater agreement where applicable
-registration sensitivity
-atlas intersection sensitivity
-target-to-lesion distance stability
-```
-
-A lesion boundary represented to 1 mm does not imply biological boundary certainty of 1 mm.
-
----
-
-# 24. RESTING-STATE fMRI
-
-v2 preserves the v1 rs-fMRI architecture as a specialised Measurement Provider.
-
-The v1 pipeline used:
-
-* structural processing;
-* BOLD preprocessing;
-* multi-echo denoising;
-* nuisance regression/censoring;
-* surface mapping;
-* parcellation;
-* functional connectivity;
-* therapeutic-circuit maps;
-* target reliability. 
-
-That pipeline remains valid for compatible indication modules.
-
----
-
-# 25. v1 RS-FMRI PROFILE PRESERVATION
-
-Existing validated/provisional v1 acquisition profiles SHALL remain versioned.
-
-A v2 release SHALL NOT silently change:
-
-* resting state instruction;
-* run duration;
-* denoising model;
-* motion threshold;
-* smoothing;
-* atlas;
-* circuit maps.
-
-Those changes require a new pipeline/acquisition release.
-
----
-
-# 26. RS-FMRI PROCESSING
-
-Canonical flow:
-
-```text
-BIDS BOLD
-   ↓
-distortion correction
-   ↓
-motion correction
-   ↓
-multi-echo combination where applicable
-   ↓
-denoising
-   ↓
-nuisance modelling
-   ↓
-censoring
-   ↓
-surface projection
-   ↓
-parcel/circuit timeseries
-   ↓
-connectivity measurement
-   ↓
-candidate-region measurement
-   ↓
-reliability analysis
-```
-
----
-
-# 27. RETAINED TIME REMAINS MORE IMPORTANT THAN ACQUIRED TIME
-
-The v1 specification correctly distinguished:
-
-* acquired duration;
-* retained duration;
-* minimum usable duration. 
-
-v2 retains this.
-
-Do not report:
-
-```text
-30-minute scan
-```
-
-as if 30 minutes were usable when heavy censoring leaves substantially less.
-
----
-
-# 28. RS-FMRI CAPABILITIES
-
-Possible capability codes:
-
-```text
-resting_state_connectivity
-therapeutic_circuit_concordance
-individual_fc_refinement
-normative_fc_context
-network_research_hypothesis
-```
-
-An rs-fMRI scan may qualify some but not all.
-
----
-
-# 29. RS-FMRI RELIABILITY
-
-Retain:
-
-* cross-run localisation;
-* split-half localisation;
-* preprocessing sensitivity;
-* motion;
-* retained time;
-* parcel/circuit coverage.
-
-The v1 pipeline explicitly treated reproducibility, not visual appearance, as the central precision-targeting validation question. 
-
----
-
-# 30. TASK fMRI
-
-Task fMRI becomes a separate provider.
-
-Potential v2 uses include:
-
-* language localisation in post-stroke aphasia;
-* motor activation mapping;
-* research-level functional localisation;
-* future individually validated task-dependent target refinement.
-
-It SHALL NOT automatically outrank resting-state or anatomical evidence.
-
----
-
-# 31. TASK fMRI OBJECT
-
-```ts
-interface TaskFMriMeasurement
-  extends CanonicalMeasurement {
-
-  modality: "task_fmri";
-
-  task_definition_id: UUID;
-
-  task_version: string;
-
-  paradigm_type: string;
-
-  behavioural_performance?: TaskPerformanceSummary;
-
-  contrast_definitions: TaskContrastDefinition[];
-
-  activation_map_artifact_ids: UUID[];
-
-  thresholding_manifest_id: UUID;
-
-  registration_manifest_id: UUID;
-
-  task_qc: TaskFMRIQualityMetrics;
-
-  usable_for_capabilities: string[];
-}
-```
-
----
-
-# 32. TASK PARADIGM IS SCIENTIFIC INPUT
-
-A task is not adequately described as:
-
-```text
-language task
-```
-
-or:
-
-```text
-motor task.
-```
-
-Store:
-
-* instructions;
-* timing;
-* blocks/events;
-* stimuli;
-* response modality;
-* language;
-* performance metrics;
-* contrast definitions;
-* software version.
-
----
-
-# 33. TASK PERFORMANCE IS PART OF QC
-
-If a patient:
-
-* did not understand the task;
-* did not perform it;
-* fell asleep;
-* produced unusable behavioural data;
-
-the pipeline SHALL NOT interpret an absent activation as:
-
-```text
-functional area absent.
-```
-
-Task compliance and neuroimaging signal are distinct.
-
----
-
-# 34. APHASIA TASK fMRI
-
-For aphasia, candidate paradigms may eventually include:
-
-* picture naming;
-* verb generation;
-* semantic decision;
-* auditory comprehension;
-* sentence completion.
-
-But v2 SHALL NOT designate one universal language paradigm.
-
-Paradigm selection and clinical qualification require module-specific validation.
-
----
-
-# 35. TASK fMRI LATERALISATION
-
-Task fMRI MAY measure:
-
-```text
-activation laterality
-regional activation
-residual network engagement
-```
-
-but these are patient measurements.
-
-They SHALL NOT independently create a Clinical target without an EvidencePath and approved candidate generator.
-
----
-
-# 36. TASK fMRI RELIABILITY
-
-Reliability may include:
-
-```text
-test-retest activation overlap
-contrast stability
-laterality stability
-activation-centre displacement
-threshold sensitivity
-task-performance consistency
-pipeline sensitivity
-```
-
-One activation map is not inherently a precision target.
-
----
-
-# 37. THRESHOLD DEPENDENCE
-
-Task activation may move materially according to:
-
-* statistical threshold;
-* cluster threshold;
-* smoothing;
-* preprocessing;
-* model choice.
-
-MAGNIOM SHALL store the thresholding/model manifest.
-
-A visually appealing activation map SHALL NOT become the canonical target solely because a particular display threshold was chosen.
-
----
-
-# 38. DIFFUSION MRI
-
-Diffusion MRI becomes a first-class v2 Research/Validation provider.
-
-v1 explicitly reserved architecture for future DWI and prohibited casually combining structural and functional connectivity into one score. 
-
-v2 implements that extension while preserving the prohibition.
-
----
-
-# 39. DIFFUSION MRI PURPOSE
-
-DWI may support measurement of:
-
-* corticospinal tract integrity;
-* structural connectivity between candidate cortex and therapeutic network;
-* lesion-related tract disruption;
-* target-to-network structural pathways;
-* research-level individualised targeting.
-
-It SHALL NOT be treated as deterministic axonal ground truth.
-
----
-
-# 40. DWI ACQUISITION PROFILE
-
-Each validated DWI profile SHALL explicitly capture:
-
-```text
-field strength
-gradient directions
-b-values / shells
-voxel size
-phase encoding
-distortion correction acquisitions
-number of volumes
-multiband factor where used
-scanner
-gradient hardware
-coil
-```
-
-No universal numerical values are mandated by this specification.
-
-Those belong in validated acquisition profiles.
-
----
-
-# 41. DIFFUSION PROCESSING
-
-Canonical pipeline:
-
-```text
-DWI
- ↓
-metadata validation
- ↓
-denoising where validated
- ↓
-artefact correction
- ↓
-motion / eddy-current correction
- ↓
-susceptibility correction
- ↓
-bias-field correction
- ↓
-brain/tissue modelling
- ↓
-fibre-orientation estimation
- ↓
-tractography / tract reconstruction
- ↓
-tract-specific metrics
- ↓
-target/network structural connectivity
- ↓
-reliability / sensitivity
-```
-
-Exact tools and algorithms are release-controlled.
-
----
-
-# 42. STRUCTURAL CONNECTIVITY OBJECT
-
-```ts
-interface StructuralConnectivityMeasurement
-  extends CanonicalMeasurement {
-
-  modality: "structural_connectivity";
-
-  diffusion_measurement_id: UUID;
-
-  model_type: string;
-
-  tractography_method: string;
-
-  tractography_version: string;
-
-  tract_definition_ids: UUID[];
-
-  tract_metrics: TractMetric[];
-
-  target_connectivity_metrics?: StructuralTargetConnectivityMetric[];
-
-  streamline_artifact_id?: UUID;
-
-  tract_density_artifact_ids?: UUID[];
-
-  structural_connectivity_qc: StructuralConnectivityQC;
-}
-```
-
----
-
-# 43. STREAMLINE COUNT IS NOT AXON COUNT
-
-MAGNIOM SHALL NOT report:
-
-```text
-10,000 streamlines
-=
-10,000 fibres.
-```
-
-Tractography outputs are reconstruction-model-dependent.
-
-Clinician-facing language should say:
-
-```text
-tractography-derived structural connectivity
-```
-
-not:
-
-```text
-number of neural fibres.
-```
-
----
-
-# 44. TRACT INTEGRITY
-
-Stroke/TBI modules may eventually use tract-related features such as:
-
-```text
-corticospinal tract involvement
-tract volume
-anisotropy-derived measures
-tractography overlap
-lesion load
-```
-
-No single measure SHALL be assumed to be a validated clinical targeting biomarker without module-specific evidence.
-
----
-
-# 45. STRUCTURAL CONNECTIVITY RELIABILITY
-
-Possible reliability dimensions:
-
-```text
-tract reconstruction repeatability
-seed/ROI sensitivity
-model sensitivity
-angular-model sensitivity
-tractography-parameter sensitivity
-registration sensitivity
-lesion-mask sensitivity
-```
-
-This is distinct from rs-fMRI reliability.
-
----
-
-# 46. NO 50/50 MULTIMODAL SCORE
-
-Prohibited:
-
-```text
-0.5 × FC
-+
-0.5 × tractography
-```
-
-unless a future Scientific Policy contains a validated multimodal model.
-
-v1 explicitly rejected such an unvalidated mixture; v2 preserves that decision. 
-
----
-
-# 47. MOTOR MAPPING
-
-TMS motor mapping becomes a canonical neurophysiology provider.
-
-It may support:
-
-* motor hotspot identification;
-* somatotopic localisation;
-* corticospinal excitability context;
-* motor-map geometry;
-* target refinement for pain or stroke modules.
-
----
-
-# 48. MOTOR MAPPING IS NOT THE SAME AS MEP MEASUREMENT
-
-Separate:
-
-```text
-MotorMappingRun
-```
-
-from:
-
-```text
-MotorEvokedPotentialMeasurement.
-```
-
-A motor map is spatial.
-
-An MEP is a physiological response.
-
-They are related but not interchangeable.
-
----
-
-# 49. MOTOR MAPPING SESSION
-
-```ts
-interface MotorMappingRun
-  extends CanonicalMeasurement {
-
-  modality: "motor_mapping";
-
-  muscle_targets: MuscleTarget[];
-
-  stimulation_device_id: UUID;
-  coil_id: UUID;
-
-  navigation_system_id?: UUID;
-
-  scalp_coordinate_system: CoordinateSpaceRef;
-
-  cortical_coordinate_system?: CoordinateSpaceRef;
-
-  stimulation_points: MotorMappingPoint[];
-
-  hotspot_results: MotorHotspotResult[];
-
-  motor_map_regions: MotorMapRegion[];
-
-  motor_threshold_refs?: UUID[];
-
-  mapping_protocol_id: UUID;
-
-  mapping_qc: MotorMappingQC;
-}
-```
-
----
-
-# 50. MOTOR MAPPING POINT
-
-```ts
-interface MotorMappingPoint {
-  id: UUID;
-
-  scalp_position: Coordinate3D;
-
-  cortical_projection?: Coordinate3D;
-
-  coil_orientation_deg?: number;
-
-  stimulation_intensity: number;
-  intensity_unit: string;
-
-  trial_ids: UUID[];
-
-  response_summary: MEPResponseSummary;
-
-  valid: boolean;
-
-  exclusion_reason?: string;
-}
-```
-
----
-
-# 51. MOTOR HOTSPOT
-
-A hotspot SHALL be a defined measurement result.
-
-Store:
-
-```ts
-interface MotorHotspotResult {
-  muscle: MuscleTarget;
-
-  coordinate: Coordinate3D;
-
-  coordinate_space: CoordinateSpaceRef;
-
-  method_code: string;
-
-  method_version: string;
-
-  neighbourhood_region?: SpatialRegion;
-
-  reproducibility_id?: UUID;
-
-  interpretation: string;
-}
-```
-
-Avoid ambiguous labels such as:
-
-```text
-the hand area
-```
-
-without method/provenance.
-
----
-
-# 52. MOTOR MAP REGION
-
-```ts
-interface MotorMapRegion {
-  muscle: MuscleTarget;
-
-  spatial_region: SpatialRegion;
-
-  centre_of_gravity?: Coordinate3D;
-
-  hotspot?: Coordinate3D;
-
-  map_area_mm2?: number;
-
-  response_weighting_method: string;
-
-  threshold_definition: string;
-}
-```
-
----
-
-# 53. MOTOR MAPPING CAPABILITIES
-
-Potential:
-
-```text
-motor_hotspot_localisation
-motor_somatotopy
-pain_m1_refinement
-stroke_motor_refinement
-corticospinal_function_context
-```
-
-Each requires module/policy permission.
-
----
-
-# 54. MOTOR MAPPING RELIABILITY
-
-Evaluate where technically feasible:
-
-```text
-repeat hotspot distance
-within-session hotspot stability
-between-session hotspot stability
-centre-of-gravity stability
-motor-map overlap
-threshold stability
-orientation sensitivity
-response variability
-```
-
-An apparently precise navigated coordinate does not imply reproducible physiology.
-
----
-
-# 55. MOTOR-EVOKED POTENTIALS
-
-MEP measurements capture stimulation-evoked peripheral muscle responses.
-
-They may provide:
-
-* presence/absence of corticospinal response;
-* amplitude;
-* latency;
-* trial variability;
-* motor threshold context.
-
-MAGNIOM SHALL retain raw/derived provenance.
-
----
-
-# 56. MEP OBJECT
-
-```ts
-interface MotorEvokedPotentialMeasurement
-  extends CanonicalMeasurement {
-
-  modality: "motor_evoked_potential";
-
-  stimulation_device_id: UUID;
-  coil_id: UUID;
-
-  muscle: MuscleTarget;
-
-  stimulation_site?: Coordinate3D;
-
-  stimulation_intensity: number;
-  intensity_unit: string;
-
-  resting_or_active_state:
-    | "resting"
-    | "active";
-
-  trials: MEPTrial[];
-
-  amplitude_summary?: DistributionSummary;
-  latency_summary?: DistributionSummary;
-
-  response_present: boolean;
-
-  threshold_measurement_id?: UUID;
-
-  mep_qc: MEPQualityMetrics;
-}
-```
-
----
-
-# 57. MEP TRIAL
-
-```ts
-interface MEPTrial {
-  trial_id: UUID;
-
-  amplitude?: number;
-  amplitude_unit?: string;
-
-  latency_ms?: number;
-
-  background_emg_valid: boolean;
-
-  artefact_status:
-    | "clean"
-    | "questionable"
-    | "invalid";
-
-  exclusion_reason?: string;
-}
-```
-
----
-
-# 58. MEP ABSENCE IS CONTEXTUAL
-
-An absent MEP may reflect:
-
-* severe corticospinal impairment;
-* insufficient stimulation;
-* coil-position issue;
-* muscle/EMG problem;
-* state-dependent variability.
-
-MAGNIOM SHALL NOT automatically encode:
-
-```text
-MEP absent
-=
-tract destroyed.
-```
-
----
-
-# 59. MOTOR THRESHOLD
-
-If motor threshold is recorded:
-
-```ts
-interface MotorThresholdMeasurement {
-  id: UUID;
-
-  case_id: UUID;
-
-  muscle: MuscleTarget;
-
-  threshold_type:
-    | "resting"
-    | "active";
-
-  method_definition_id: UUID;
-
-  threshold_value: number;
-  threshold_unit: string;
-
-  coil_id: UUID;
-  stimulation_site: Coordinate3D;
-
-  measurement_quality: DataQualityState;
-
-  provenance: Provenance;
-}
-```
-
-The threshold is not itself a target-ranking score.
-
----
-
-# 60. MOTOR PHYSIOLOGY IN STROKE
-
-Stroke Motor Module may use motor physiology as:
-
-```text
-context
-reliability
-candidate refinement
-stratification
-```
-
-only where Scientific Policy permits.
-
-The measurement platform SHALL not assume:
-
-```text
-MEP present → ipsilesional stimulation
-MEP absent → contralesional stimulation.
-```
-
-That would be a scientific decision rule belonging in a validated Target Engine policy, not in Neurophysiology.
-
----
-
-# 61. MOTOR PHYSIOLOGY IN PAIN
-
-Neuropathic Pain Module may use motor mapping to refine the evidence-defined:
-
-```text
-somatotopic M1 target.
-```
-
-Again:
-
-```text
-motor hotspot
-```
-
-is a patient-specific measurement,
-
-not efficacy evidence.
-
----
-
-# 62. AUDIology
-
-Audiology becomes a canonical measurement domain for tinnitus modules.
-
-This is deliberately different from neuroimaging.
-
-MAGNIOM v2 therefore becomes:
-
-# a multimodal clinical measurement platform,
-
-not merely an MRI platform.
-
----
-
-# 63. AUDIOLOGY OBJECT
-
-```ts
-interface AudiologyAssessment
-  extends CanonicalMeasurement {
-
-  modality: "audiology";
-
-  assessment_type_ids: UUID[];
-
-  pure_tone_audiometry?: PureToneAudiogram;
-
-  speech_audiometry?: SpeechAudiometry;
-
-  tympanometry?: TympanometryResult;
-
-  otoacoustic_emissions?: OAEAssessment;
-
-  tinnitus_matching?: TinnitusMatchingAssessment;
-
-  hyperacusis_assessment?: HyperacusisAssessment;
-
-  audiology_qc: AudiologyQualityAssessment;
-}
-```
-
----
-
-# 64. PURE-TONE AUDIOGRAM
-
-```ts
-interface PureToneAudiogram {
-  left_ear: HearingThresholdSeries;
-  right_ear: HearingThresholdSeries;
-
-  conduction_methods: (
-    | "air"
-    | "bone"
-  )[];
-
-  test_standard_ref?: string;
-
-  transducer_ref?: string;
-
-  masking_used?: boolean;
-
-  interpretation?: string;
-}
-```
-
----
-
-# 65. TINNITUS MATCHING
-
-```ts
-interface TinnitusMatchingAssessment {
-  perceived_laterality:
-    | "left"
-    | "right"
-    | "bilateral"
-    | "central"
-    | "variable";
-
-  matched_frequency_hz?: number;
-
-  matched_loudness_db?: number;
-
-  minimum_masking_level_db?: number;
-
-  residual_inhibition?: string;
-
-  repeatability?: QualitativeConfidence;
-
-  interpretation: string;
-}
-```
-
----
-
-# 66. SUBJECTIVE TINNITUS MEASURES ARE NOT AUDIOLOGY SIGNALS
-
-Separate:
-
-```text
-THI
-TFI
-distress ratings
-```
-
-from:
-
-```text
-audiogram
-frequency matching
-loudness matching.
-```
-
-Clinical phenotype and audiologic measurement remain different canonical domains.
-
----
-
-# 67. AUDIOLOGY CAPABILITIES
-
-Potential capability codes:
-
-```text
-hearing_loss_context
-tinnitus_laterality_context
-tinnitus_frequency_context
-auditory_target_research_context
-tinnitus_module_eligibility
-```
-
-Initial tinnitus Target Engine use remains Research-governed.
-
----
-
-# 68. AUDIOLOGY RELIABILITY
-
-Relevant domains may include:
-
-```text
-test completion validity
-threshold consistency
-repeat testing
-tinnitus-match consistency
-laterality consistency
-transducer calibration
-equipment calibration state
-```
-
-Tinnitus matching can be intrinsically variable; that variability should be represented rather than hidden.
-
----
-
-# 69. AUDIOLOGY DOES NOT CREATE AUDITORY-CORTEX TARGET
-
-Prohibited:
-
-```text
-8 kHz tinnitus match
+ScientificPolicyRelease
        ↓
-8 kHz auditory cortex coordinate
+IndicationPolicyBinding
        ↓
-clinical target.
+module_permission = clinical_permitted
 ```
 
-Any such mapping requires:
-
-* EvidencePath;
-* validated targeting method;
-* Target Engine generator;
-* Research/Clinical permission.
+plus a compatible exact configuration.
 
 ---
 
-# 70. MULTIMODAL `MeasurementBundle`
+# 17. MODULE MATURITY CANNOT BE UPGRADED BY POLICY ALONE
 
-The v2 canonical data specification introduced `MeasurementBundle`.
-
-The measurement platform is responsible for producing its component measurements, but the bundle itself is assembled under indication-specific requirements.
-
-Conceptual:
+If:
 
 ```text
-Case
- ↓
-Indication Module
- ↓
-Measurement Requirements
- ↓
-Available Measurements
- ↓
-Qualification
- ↓
-MeasurementBundle
+IndicationModuleRelease.module_status
+=
+research_only
 ```
 
----
-
-# 71. EXAMPLE — MDD BUNDLE
+Scientific Policy SHALL NOT set:
 
 ```text
-Structural MRI            Qualified
-rs-fMRI                   Qualified
-E-field model             Optional
+clinical_permitted
 ```
 
-Capabilities:
+and override it.
+
+Clinical permission requires both objects to permit Clinical use.
+
+Effective authority is:
 
 ```text
-anatomical_localisation      enabled
-individual_fc_refinement     enabled
+minimum authority
+across
+Module + Policy + EvidencePath + Component validation.
 ```
 
 ---
 
-# 72. EXAMPLE — PAIN BUNDLE
-
-```text
-Structural MRI            Qualified
-Motor mapping             Qualified
-MEP                       Available
-rs-fMRI                   Not required
-```
-
-Capabilities:
-
-```text
-anatomical_localisation
-motor_somatotopy
-motor_hotspot_refinement
-```
-
----
-
-# 73. EXAMPLE — STROKE MOTOR BUNDLE
-
-```text
-Structural MRI            Qualified
-Lesion mapping            Qualified
-Motor mapping             Qualified
-MEP                       Qualified
-DWI/CST                   Research / available
-rs-fMRI                   Optional
-```
-
-This does not imply every component influences ranking.
-
----
-
-# 74. EXAMPLE — APHASIA BUNDLE
-
-Potential:
-
-```text
-Structural MRI            Qualified
-Lesion mapping            Qualified
-Task fMRI                 Qualified / Research
-rs-fMRI                   Optional
-DWI                       Optional / Research
-```
-
-Treatment-context data such as SLT lives outside the measurement bundle.
-
----
-
-# 75. EXAMPLE — TINNITUS BUNDLE
-
-```text
-Audiology                 Qualified
-Structural MRI            Optional / Research
-rs-fMRI                   Research
-```
-
-No unnecessary MRI should be made mandatory merely because MAGNIOM can process it.
-
----
-
-# 76. MEASUREMENT REQUIREMENT EVALUATION
-
-For every bundle, MAGNIOM SHALL generate:
-
-```ts
-interface MeasurementRequirementEvaluation {
-  requirement_code: string;
-
-  modality: MeasurementModality;
-
-  requirement_type:
-    | "required"
-    | "required_for_personalisation"
-    | "optional"
-    | "research_only";
-
-  status:
-    | "satisfied"
-    | "satisfied_with_limits"
-    | "missing"
-    | "failed"
-    | "not_applicable";
-
-  measurement_ids: UUID[];
-
-  resulting_capability:
-    | "enabled"
-    | "disabled"
-    | "fallback_only"
-    | "research_only";
-
-  explanation: string;
-}
-```
-
----
-
-# 77. RELIABILITY BUNDLE
-
-`ReliabilityBundle` consolidates:
-
-# capability-specific reliability,
-
-not a single generic confidence score.
+# 18. MODULE AND POLICY STATUS ARE DIFFERENT
 
 Example:
 
 ```text
-Anatomical localisation        Qualified
-Motor hotspot localisation     Qualified
-Individual FC refinement       Not qualified
-DWI tract refinement           Research only
-```
-
-This is preferable to:
-
-```text
-overall reliability = 78%.
-```
-
----
-
-# 78. RELIABILITY PROVIDER CONTRACT
-
-```ts
-interface ReliabilityProvider {
-  code: string;
-  version: string;
-
-  modality: MeasurementModality;
-
-  capability_codes: string[];
-
-  evaluate(
-    measurement: CanonicalMeasurement,
-    context: ReliabilityContext
-  ): MeasurementReliability;
-}
-```
-
----
-
-# 79. RELIABILITY SHALL BE METHOD-SPECIFIC
-
-A reliability class has meaning only with:
-
-* method;
-* metric;
-* pipeline;
-* threshold;
-* capability.
-
-For example:
-
-```text
-High reliability
-```
-
-without indicating whether this means:
-
-* rs-fMRI target stability;
-* motor-hotspot stability;
-* lesion-segmentation stability;
-
-is insufficient.
-
----
-
-# 80. MULTIMODAL DISAGREEMENT
-
-Different modalities may disagree.
-
-Example:
-
-```text
-Task fMRI language localisation
-        ≠
-resting-state language-network estimate
-```
-
-or:
-
-```text
-motor hotspot
-        ≠
-anatomical hand-knob estimate.
-```
-
-The measurement layer SHALL preserve both.
-
-It SHALL NOT automatically average them.
-
----
-
-# 81. MULTIMODAL CONVERGENCE
-
-The measurement layer MAY compute descriptive relationships:
-
-```text
-distance
-overlap
-laterality agreement
-body-region agreement
-network concordance
-```
-
-The Target Engine determines whether convergence influences candidate selection.
-
----
-
-# 82. NO HIDDEN FUSION
-
-Prohibited pipeline behaviour:
-
-```text
-structural MRI
-+
-rs-fMRI
-+
-DWI
-+
-task fMRI
-→ proprietary fused target coordinate
-```
-
-unless a separately versioned and validated multimodal scientific model explicitly defines that transformation.
-
-Fusion is an algorithm.
-
-It must not hide inside preprocessing.
-
----
-
-# 83. NORMATIVE MODELS
-
-Normative models become modality-specific.
-
-Possible:
-
-```text
-resting-state FC normative model
-
-DWI tract normative model
-
-motor-map normative reference
-
-audiologic age-adjusted reference
-```
-
-but each requires:
-
-* population definition;
-* acquisition compatibility;
-* processing compatibility;
-* validation scope.
-
----
-
-# 84. NORMATIVE MODEL CONTRACT
-
-```ts
-interface NormativeModelCompatibility {
-  normative_model_version_id: UUID;
-
-  modality: MeasurementModality;
-
-  compatible_acquisition_profile_ids: UUID[];
-
-  compatible_pipeline_version_ids: UUID[];
-
-  population_scope: PopulationDefinition;
-
-  harmonisation_method_id?: UUID;
-
-  status:
-    | "compatible"
-    | "conditionally_compatible"
-    | "incompatible";
-}
-```
-
----
-
-# 85. NO UNIVERSAL NORMATIVE BRAIN SCORE
-
-MAGNIOM SHALL NOT create:
-
-```text
-global brain abnormality = 92%
-```
-
-from heterogeneous modalities.
-
-Normative measures remain:
-
-* modality-specific;
-* feature-specific;
-* population-specific.
-
----
-
-# 86. HARMONISATION
-
-Multi-site development may require harmonisation.
-
-Any harmonisation method capable of changing clinically relevant measurement outputs SHALL be:
-
-* versioned;
-* validated;
-* included in the pipeline manifest.
-
-Harmonisation SHALL NOT be silently performed because scanner/site differs.
-
----
-
-# 87. SITE QUALIFICATION
-
-A clinical imaging acquisition profile SHOULD be site-qualified.
-
-Site qualification may include:
-
-```text
-scanner identity
-software version
-head coil
-sequence parameters
-phantom measurements where applicable
-test subject / validation acquisition
-processing compatibility
-```
-
-The v1 specification already treated scanner upgrades as possible acquisition-domain changes requiring review. 
-
----
-
-# 88. SCANNER UPGRADE
-
-Changes such as:
-
-* scanner software;
-* gradient hardware;
-* head coil;
-* reconstruction version;
-* sequence revision;
-
-may affect scientific compatibility.
-
-They SHALL trigger change-impact assessment.
-
----
-
-# 89. NON-IMAGING EQUIPMENT QUALIFICATION
-
-The same principle applies to:
-
-### Motor physiology
-
-* TMS device;
-* coil;
-* neuronavigation system;
-* EMG system;
-* amplifier;
-* filters.
-
-### Audiology
-
-* audiometer;
-* transducer;
-* calibration status.
-
-Clinical measurement provenance SHALL identify relevant equipment.
-
----
-
-# 90. EQUIPMENT OBJECT
-
-```ts
-interface MeasurementDevice {
-  id: UUID;
-
-  manufacturer: string;
-  model: string;
-
-  device_type: string;
-
-  serial_or_pseudonymous_identifier?: string;
-
-  software_version?: string;
-
-  calibration_record_id?: UUID;
-
-  site_id: UUID;
-}
-```
-
----
-
-# 91. CALIBRATION
-
-Where measurement validity depends on calibration:
-
-the run SHALL reference the relevant calibration state.
-
-Expired or invalid calibration MAY make a measurement:
-
-```text
-conditional
-```
-
-or:
-
-```text
-invalid
-```
-
-according to policy.
-
----
-
-# 92. COORDINATE SYSTEMS
-
-Spatial modalities SHALL declare coordinate space.
-
-Possible:
-
-```text
-DICOM patient space
-T1 native
-surface native
-fsLR
-MNI space
-neuronavigation space
-scalp navigation space
-```
-
-No coordinate may be exported without coordinate-system provenance.
-
----
-
-# 93. TRANSFORM GRAPH
-
-v2 SHOULD maintain an explicit transform graph:
-
-```text
-DICOM
- ↓
-T1 native
- ↓
-surface native
- ↓
-standard space
-
-T1 native
- ↓
-neuronavigation
-
-DWI native
- ↓
-T1 native
-
-task-fMRI native
- ↓
-T1 native
-```
-
-Every transform is versioned and hashed.
-
----
-
-# 94. ROUND-TRIP VALIDATION
-
-The v1 requirement for target-coordinate export/import round-trip remains mandatory for neuronavigation interfaces. 
-
-v2 extends round-trip verification to any relevant:
-
-* motor-mapping import;
-* neuronavigation export;
-* lesion overlay;
-* field-model coordinate transformation.
-
----
-
-# 95. LATERALITY INVARIANT
-
-Left/right errors remain critical.
-
-Automated validation SHALL inspect:
-
-```text
-orientation
-hemisphere
-coordinate conventions
-DICOM orientation
-RAS/LPS interpretation
-surface correspondence
-```
-
-The v1 pipeline already specified a hard laterality invariant. 
-
----
-
-# 96. LATERALITY BECOMES MORE IMPORTANT IN v2
-
-Laterality affects:
-
-* stroke lesion side;
-* affected limb;
-* pain side;
-* contralateral M1 selection;
-* tinnitus laterality;
-* aphasia lesion hemisphere.
-
-Cross-object consistency SHALL be validated.
-
-Example:
-
-```text
-Pain:
-affected hand = right
-
-Somatotopic M1 target:
-left hemisphere
-```
-
-where that relationship is required by the evidence-defined strategy.
-
----
-
-# 97. BODY-REGION CONSISTENCY
-
-For somatotopic targeting:
-
-```text
-clinical body region
-motor mapping muscle
-MEP muscle
-TargetGeometry.body_region
-```
-
-SHALL be semantically reconcilable.
-
-A hand target cannot silently inherit a lower-limb motor map.
-
----
-
-# 98. MUSCLE ONTOLOGY
-
-Motor mapping and MEP objects SHOULD use controlled muscle identifiers.
-
-```ts
-interface MuscleTarget {
-  code: string;
-  label: string;
-
-  body_region: BodyRegionRef;
-
-  laterality:
-    | "left"
-    | "right";
-}
-```
-
-Avoid uncontrolled strings such as:
-
-```text
-hand muscle
-```
-
-where scientific interpretation depends on which muscle was recorded.
-
----
-
-# 99. PIPELINE RUN
-
-Every processing operation creates an immutable run.
-
-```ts
-interface ProcessingRun {
-  id: UUID;
-
-  case_id: UUID;
-
-  modality: MeasurementModality;
-
-  pipeline_version_id: UUID;
-
-  input_artifact_ids: UUID[];
-
-  configuration_sha256: SHA256;
-
-  container_digest_sha256?: SHA256;
-
-  status:
-    | "queued"
-    | "running"
-    | "succeeded"
-    | "failed"
-    | "superseded";
-
-  started_at: ISO8601UTC;
-  completed_at?: ISO8601UTC;
-
-  output_artifact_ids: UUID[];
-
-  run_manifest_sha256?: SHA256;
-}
-```
-
----
-
-# 100. COMPLETED RUNS ARE IMMUTABLE
-
-The v1 rule remains:
-
-```text
-never overwrite completed scientific output.
-```
-
-A different preprocessing model creates:
-
-```text
-new ProcessingRun.
-```
-
-Historical output remains available. 
-
----
-
-# 101. PRIMARY VERSUS SENSITIVITY PIPELINE
-
-For modalities susceptible to meaningful pipeline dependence, MAGNIOM MAY define:
-
-```text
-Primary Clinical Pipeline
+StrokeMotorModule
+module_status = validation_candidate
 ```
 
 and:
 
 ```text
-Sensitivity Pipeline(s).
+Policy
+module_permission = validation_only
 ```
 
-Sensitivity processing exists to measure robustness.
+are consistent.
 
-It SHALL NOT be used to:
-
-# choose whichever pipeline produces the preferred target.
-
----
-
-# 102. RS-FMRI SENSITIVITY
-
-Retain v1 concepts such as:
-
-* alternative nuisance treatment;
-* alternative denoising;
-* smoothing sensitivity;
-* target displacement.
-
----
-
-# 103. DWI SENSITIVITY
-
-Potential comparisons include:
+A future module version may become:
 
 ```text
-tractography model
-seeding
-threshold
-registration
-lesion exclusion
+clinical_release_candidate
 ```
 
-Only scientifically justified sensitivity analyses are required.
+and a later policy may activate it.
+
+Historical policies remain unchanged.
 
 ---
 
-# 104. TASK-fMRI SENSITIVITY
-
-Potential:
-
-```text
-statistical threshold
-smoothing
-contrast definition
-motion model
-```
-
-The sensitivity result becomes part of reliability.
-
----
-
-# 105. LESION SENSITIVITY
-
-Potential:
-
-```text
-manual vs validated automated segmentation
-registration approach
-lesion-mask dilation/erosion sensitivity
-```
-
-where clinically meaningful.
-
----
-
-# 106. MOTOR-MAPPING SENSITIVITY
-
-Potential:
-
-```text
-stimulation intensity
-coil orientation
-number of trials
-hotspot derivation method
-mapping-grid density
-```
-
-Exact protocols require validation rather than arbitrary experimentation during Clinical runs.
-
----
-
-# 107. MODALITY QUALIFICATION STATUS
-
-Every measurement SHALL resolve to:
+# 19. SCIENTIFIC COMPATIBILITY CONFIGURATION
 
 ```ts
-type MeasurementQualification =
-  | "qualified"
-  | "qualified_with_limits"
-  | "not_qualified"
-  | "research_only"
-  | "not_assessable";
-```
+interface ScientificCompatibilityConfiguration {
+  id: UUID;
 
-This status is distinct from raw QC.
+  code: string;
+  version: string;
 
----
+  scientific_policy_release_id: UUID;
 
-# 108. WHY QC AND RELIABILITY ARE DISTINCT
+  indication_module_release_id: UUID;
 
-Example:
+  mode:
+    | "clinical"
+    | "research";
 
-```text
-Task fMRI image quality = good
+  evidence_library_release_id: UUID;
 
-but
+  target_engine_release_id: UUID;
 
-repeat localisation stability = poor.
-```
+  targeting_plugin: ComponentReleaseRef;
 
-Or:
+  candidate_generators:
+    ComponentReleaseRef[];
 
-```text
-motor mapping session technically clean
+  measurement_providers:
+    ComponentRequirementRef[];
 
-but
+  reliability_methods:
+    ComponentRequirementRef[];
 
-hotspot varies 18 mm between repeats.
-```
+  phenotype_ontology_release_id: UUID;
 
-Good QC does not guarantee reliable localisation.
+  atlas_releases:
+    ComponentRequirementRef[];
 
----
+  normative_models:
+    ComponentRequirementRef[];
 
-# 109. QUALITY REPORT v2
+  efield_engine?:
+    ComponentRequirementRef;
 
-The v1 `Magniom Connectome Quality Report` becomes:
+  device_capability_profiles:
+    ComponentRequirementRef[];
 
-# MAGNIOM Measurement Quality Report.
+  acquisition_profiles:
+    ComponentRequirementRef[];
 
-Sections vary by modality.
+  compatibility_status:
+    | "draft"
+    | "validated"
+    | "approved"
+    | "suspended"
+    | "withdrawn";
 
-Shared header:
+  validation_evidence_ids: UUID[];
 
-```text
-Acquisition
-Processing
-QC
-Reliability
-Capability Qualification
-Scientific Limitations
-Clinical/Research eligibility
-```
-
----
-
-# 110. CLINICIAN-FACING SUMMARY
-
-Preferred language:
-
-```text
-Motor hotspot localisation qualified
-
-Repeated hotspot localisation was stable within the
-validated range for this measurement protocol.
-
-This motor map may be used by the Neuropathic Pain module
-for patient-specific M1 refinement.
-```
-
-Not:
-
-```text
-Precision score 92%.
+  configuration_sha256: SHA256;
+}
 ```
 
 ---
 
-# 111. CONDITIONAL SUMMARY
+# 20. COMPONENT REQUIREMENT STATE
 
-Example:
+```ts
+interface ComponentRequirementRef {
+  component_type: string;
+
+  component_id?: UUID;
+  component_version?: string;
+
+  requirement:
+    | "required"
+    | "optional"
+    | "disabled"
+    | "not_applicable";
+
+  purpose?: string;
+}
+```
+
+This prevents ambiguity between:
 
 ```text
-Task-fMRI language localisation qualified with limitations
+not provided
+```
 
-Behavioural task performance was adequate, but activation
-laterality was sensitive to thresholding.
+and:
 
-The measurement may be displayed for context but is not
-permitted to alter Clinical target ranking.
+```text
+scientifically disabled.
 ```
 
 ---
 
-# 112. FAILED SUMMARY
+# 21. CORE V2 COMPATIBILITY EXAMPLE — MDD
 
-Example:
+Conceptually:
 
 ```text
-Patient-specific motor mapping not qualified
+Configuration:
+MDD-CONNECTOME-CLINICAL-2.0
 
-Motor responses were inconsistent across repeated mapping
-locations.
-
-MAGNIOM will not use this motor map for target refinement.
+IndicationModule       MDD 2.0
+EvidenceLibrary        2.0
+TargetEngine           2.0
+Plugin                 MDD Plugin 2.0
+Structural Provider    required
+rs-fMRI Provider       required
+FC Reliability         required
+Normative Model        optional/contextual
+E-field                optional/display/accessibility
+Mode                   clinical
 ```
 
-The system may still use another valid evidence baseline if Scientific Policy permits.
+This is one exact scientific environment.
 
 ---
 
-# 113. MEASUREMENT LANGUAGE SHALL DESCRIBE MEASUREMENT
+# 22. EXAMPLE — MDD EVIDENCE-ONLY
 
-Avoid:
-
-```text
-bad brain scan
-abnormal network failure
-motor cortex missing
-```
-
-unless literal anatomy supports such interpretation.
-
-Prefer:
+A second valid configuration may be:
 
 ```text
-registration not reliable
-motor hotspot not reproducible
-functional localisation not qualified
+MDD-EVIDENCE-BASELINE-2.0
 ```
 
-The v1 terminology policy already required this distinction. 
+with:
+
+```text
+rs-fMRI                disabled
+individual FC          disabled
+evidence baseline      enabled
+```
+
+This provides a legitimate fallback/counterfactual pathway.
 
 ---
 
-# 114. CAPABILITY MATRIX
-
-A canonical v2 mapping might be:
-
-| Modality       | Potential capability              | Typical initial module |
-| -------------- | --------------------------------- | ---------------------- |
-| Structural MRI | navigation/anatomy                | all imaging modules    |
-| Lesion mapping | lesion-aware target qualification | stroke/TBI             |
-| rs-fMRI        | network refinement                | MDD, research modules  |
-| Task fMRI      | functional localisation           | aphasia/motor research |
-| DWI            | tract integrity/connectivity      | stroke/TBI research    |
-| Motor mapping  | somatotopic refinement            | pain/stroke            |
-| MEP            | corticospinal context             | stroke                 |
-| Audiology      | tinnitus/hearing context          | tinnitus               |
-| E-field model  | accessibility/pose/field coverage | OCD, TBI, others       |
-
-This table defines architecture, not Clinical Mode permission.
-
----
-
-# 115. INDICATION-SPECIFIC DEFAULTS
-
-## MDD
-
-Primary multimodal sequence remains:
+# 23. EXAMPLE — NEUROPATHIC PAIN
 
 ```text
-Structural MRI
-→ rs-fMRI
-→ FC reliability
+PAIN-MOTOR-MAP-VALIDATION-2.0
+
+IndicationModule       Neuropathic Pain
+Structural MRI         required
+Motor Mapping          required for refinement
+MEP                    optional/context
+rs-fMRI                disabled
+Pain Plugin            exact version
+Somatotopic Generator  exact version
+MotorMap Refinement    exact version
+Mode                   research/validation
 ```
 
-Additional modalities remain separately validated.
+A future Clinical configuration is separately authorised.
 
 ---
 
-# 116. OCD
-
-Potential measurement architecture:
+# 24. EXAMPLE — STROKE MOTOR
 
 ```text
-Structural MRI
-→ field/head-model anatomy
-→ E-field where applicable
+STROKE-MOTOR-LESION-MAP-VALIDATION-2.0
+
+IndicationModule        Stroke Motor
+Structural MRI          required
+Lesion Mapping          required
+Motor Mapping           optional/refinement
+MEP                     optional/context
+DWI                     research_only
+rs-fMRI                 optional/research
+Stroke Plugin           exact version
+Mode                    research/validation
 ```
 
-rs-fMRI may remain research/supporting depending on policy.
+---
 
-Deep-TMS target evidence should not require artificial focal FC localisation if the evidence is fundamentally field-defined.
+# 25. EXAMPLE — OCD FIELD TARGET
+
+```text
+OCD-FIELD-VALIDATION-2.0
+
+IndicationModule        OCD
+OCD Plugin              exact version
+mPFC/ACC Generator      exact version
+Target geometry         coil_field
+Compatible coil class   required
+E-field                 required or optional
+                        according to validated profile
+Symptom provocation     treatment-context governed
+Mode                    research/validation
+```
 
 ---
 
-# 117. NEUROPATHIC PAIN
-
-Preferred architecture:
+# 26. EXAMPLE — TINNITUS
 
 ```text
-Structural MRI
+TINNITUS-RESEARCH-2.0
+
+IndicationModule       Tinnitus
+module permission       research_only
+Audiology              required
+Structural MRI         optional
+rs-fMRI                research
+Tinnitus Plugin         exact version
+Clinical mode           prohibited
+```
+
+No configuration can publish a Clinical Target Slate until a future controlled release explicitly enables it.
+
+---
+
+# 27. CAPABILITY PROFILE v2
+
+v1 capability concepts such as Evidence-only, Connectome-refined and E-field-assisted configurations should evolve into indication-aware profiles.
+
+Examples:
+
+```text
+EVIDENCE_BASELINE
+RSFC_REFINED
+SOMATOTOPIC_BASELINE
+MOTOR_MAP_REFINED
+LESION_AWARE
+TASK_FMRI_CONTEXTUAL
+STRUCTURAL_CONNECTIVITY_RESEARCH
+FIELD_TARGET
+FIELD_POSE_OPTIMISED
+MULTIMODAL_RESEARCH
+```
+
+A profile name is only an identifier.
+
+Its exact meaning comes from the policy release.
+
+---
+
+# 28. CAPABILITIES ARE NOT GLOBAL
+
+```text
+MOTOR_MAP_REFINED
+```
+
+for neuropathic pain may mean something entirely different from:
+
+```text
+MOTOR_MAP_REFINED
+```
+
+for stroke.
+
+Canonical identity therefore includes:
+
+```text
+IndicationModuleRelease
 +
-pain body-region phenotype
-+
-motor mapping where available
-+
-MEP/motor physiology context where useful
+CapabilityProfile.
 ```
-
-rs-fMRI may remain optional/research.
 
 ---
 
-# 118. STROKE MOTOR
+# 29. EVIDENCE POLICY v2
 
-Preferred architecture:
-
-```text
-Structural MRI
-+
-Lesion mapping
-+
-motor phenotype
-+
-motor mapping / MEP
-```
-
-with optional/research:
+The v2 Evidence Library separates:
 
 ```text
-DWI
-rs-fMRI
+EvidenceClaim
 ```
 
-until independently validated.
+from:
+
+```text
+EvidenceGovernanceClassification
+```
+
+and:
+
+```text
+EvidencePath.
+```
+
+Scientific Policy SHALL operate primarily on:
+
+# permitted EvidencePaths,
+
+not merely Evidence Tier.
 
 ---
 
-# 119. POST-STROKE APHASIA
+# 30. `EvidencePathPermission`
 
-Potential:
+```ts
+interface EvidencePathPermission {
+  evidence_path_id: UUID;
 
-```text
-Structural MRI
-+
-Lesion mapping
-+
-language phenotype
-+
-Task fMRI / language-network measurements
+  permitted_modes: MagniomMode[];
+
+  candidate_roles: CandidateRole[];
+
+  candidate_generation_method_ids: UUID[];
+
+  standalone_primary: boolean;
+
+  standalone_additional: boolean;
+
+  supporting_context: boolean;
+
+  refinement_parent_path_ids?: UUID[];
+
+  population_constraints?: UUID[];
+
+  disease_stage_constraints?: UUID[];
+
+  treatment_context_constraints?: UUID[];
+
+  target_geometry_types:
+    TargetGeometryType[];
+
+  limitations: string[];
+}
 ```
-
-with rs-fMRI/DWI initially depending on validation status.
 
 ---
 
-# 120. TBI
+# 31. EVIDENCE TIER REMAINS USEFUL BUT NOT SUFFICIENT
 
-Initial architecture emphasises:
+MAGNIOM Tier remains a governance attribute where assigned.
 
-```text
-Structural MRI
-+
-Lesion/skull context
-```
-
-Potential research extensions:
+But:
 
 ```text
-DWI
-rs-fMRI
-task fMRI
-E-field
+Tier B
 ```
 
-Structural distortion may make standard-template assumptions particularly unsafe.
+alone does not answer:
+
+* which indication?
+* which population?
+* which stage?
+* which target?
+* which targeting method?
+* which geometry?
+* which treatment context?
+* which candidate role?
+
+Therefore Clinical permission is path-specific.
 
 ---
 
-# 121. PTSD
+# 32. UNASSIGNED TIER
 
-Potential:
+If a v2 claim is:
 
 ```text
-Structural MRI
-+
-rs-fMRI Research/Validation
+classification_status = unassigned
 ```
 
-No MDD connectome pipeline automatically transfers to PTSD.
+Scientific Policy SHALL NOT invent a Tier.
+
+Such evidence may participate only in explicitly permitted:
+
+* staging;
+* Research;
+* Validation
+
+workflows.
 
 ---
 
-# 122. TINNITUS
-
-Initial architecture:
-
-```text
-Audiology
-+
-tinnitus phenotype
-```
-
-Research extension:
-
-```text
-structural MRI
-rs-fMRI
-auditory task fMRI
-```
-
-No MRI finding is required merely because the Research platform can generate one.
-
----
-
-# 123. NO MODALITY INHERITANCE
+# 33. NO TIER COERCION
 
 Prohibited:
 
 ```text
-MDD uses rs-fMRI
-→ every indication should use rs-fMRI.
+unassigned → R
+```
+
+merely for computational convenience.
+
+`unassigned` and `R` have different meanings.
+
+`R` is a governance classification.
+
+`unassigned` means governance has not yet assigned one.
+
+---
+
+# 34. ROLE-AWARE EVIDENCE POLICY
+
+Clinical eligibility remains role-aware.
+
+An EvidencePath may permit:
+
+```text
+supporting_context = true
+```
+
+while:
+
+```text
+standalone_primary = false.
+```
+
+This preserves the v1 principle that lower-maturity evidence may refine or contextualise stronger evidence without automatically becoming an independent Primary candidate.
+
+---
+
+# 35. TARGETING METHOD IS PART OF EVIDENCE PERMISSION
+
+Evidence for:
+
+```text
+fixed anatomical target
+```
+
+does not automatically validate:
+
+```text
+patient-specific FC optimisation.
 ```
 
 Likewise:
 
 ```text
-stroke uses lesion mapping
-→ all TBI lesions can use the identical pipeline.
+deep-TMS field targeting
 ```
 
-Compatibility is explicit.
+does not automatically validate:
+
+```text
+focal point-coordinate targeting.
+```
+
+Policy SHALL verify targeting method explicitly.
 
 ---
 
-# 124. MODALITY-SPECIFIC SCIENTIFIC POLICY
+# 36. TARGET GEOMETRY POLICY
 
-Scientific Policy should reference parameters such as:
+v2 must authorise geometry class.
 
-```text
-mdd.rsfc.minimum_retained_duration
-mdd.rsfc.minimum_target_reliability
+```ts
+interface TargetGeometryPolicy {
+  indication_module_release_id: UUID;
 
-stroke_motor.lesion.minimum_registration_quality
-stroke_motor.motor_map.minimum_hotspot_reliability
+  target_family_permissions: {
+    target_family_id: UUID;
 
-pain.motor_map.minimum_reliability
+    permitted_geometry_types:
+      TargetGeometryType[];
 
-aphasia.taskfmri.minimum_task_validity
+    permitted_generator_ids: UUID[];
 
-tbi.lesion.minimum_segmentation_quality
-
-tinnitus.audiology.required_assessments
-```
-
-Numeric values SHALL be validated rather than invented in this canonical schema specification.
-
----
-
-# 125. ACQUISITION COMPATIBILITY
-
-A measurement provider SHALL verify the acquisition against:
-
-```text
-supported acquisition profile
-```
-
-before claiming Clinical qualification.
-
-An arbitrary hospital sequence may still be:
-
-```text
-research_compatible
-```
-
-without being:
-
-```text
-clinical_qualified.
+    transformation_rules?: UUID[];
+  }[];
+}
 ```
 
 ---
 
-# 126. INPUT VALIDATION
+# 37. NO GEOMETRY DOWNCASTING
 
-Every acquisition ingestion SHALL validate relevant:
+Prohibited:
 
 ```text
-file integrity
-metadata
-patient/case association
-laterality/orientation
-modality
-device/scanner
-protocol identity
-acquisition completeness
+coil_field
+→ point
 ```
 
-Mis-associated patient data is a critical failure.
-
----
-
-# 127. DICOM/BIDS
-
-For MRI, DICOM ingestion → validated BIDS conversion remains the preferred data-management architecture.
-
-v2 SHOULD extend BIDS-compatible handling to:
-
-* structural;
-* BOLD;
-* DWI;
-* task metadata.
-
-Where another standard is required for neurophysiology/audiology, use an explicit adapter rather than pretending all modalities are MRI.
-
----
-
-# 128. SOURCE DATA IMMUTABILITY
-
-Preserve original acquired data wherever retention policy permits.
-
-At minimum retain sufficient provenance to know exactly:
+or:
 
 ```text
-what the processing run received.
+somatotopic target
+→ generic M1 point
 ```
 
-Derived files SHALL NOT overwrite raw sources.
+unless an explicitly validated transformation exists.
+
+Scientific Policy SHALL enforce that geometry semantics survive candidate generation.
 
 ---
 
-# 129. RAW DATA HASHING
+# 38. MEASUREMENT POLICY v2
 
-Clinically consequential source files SHOULD have content hashes or immutable object-store provenance.
-
-This is especially important for:
-
-* DICOM;
-* lesion masks;
-* EMG/MEP recordings;
-* motor-map coordinate exports;
-* audiograms imported from external systems.
-
----
-
-# 130. COMPUTE SECURITY
-
-The v1 principle remains:
-
-NeuroCompute requires:
-
-* pseudonymous Case ID;
-* scientific artefact IDs;
-* required measurement data.
-
-It does not generally require:
-
-* patient address;
-* full clinical notes;
-* unrelated identifiers. 
-
----
-
-# 131. OFFLINE EXECUTION
-
-Clinical scientific compute SHOULD support network-isolated operation.
-
-Required:
+The v2 multimodal architecture distinguishes:
 
 ```text
-containers
-atlases
-templates
-normative models
-tract definitions
-circuit maps
+measurement exists
+measurement passed QC
+measurement reproducible
+capability qualified
+clinical permission
 ```
 
-are preloaded and hash-verified.
+as separate states. 
 
-No:
-
-```text
-download latest atlas
-```
-
-during a clinical run.
-
-This extends the v1 offline-resource policy. 
+Scientific Policy controls the last two.
 
 ---
 
-# 132. WORKER ARCHITECTURE
+# 39. `MeasurementPolicy`
 
-Recommended workers:
+```ts
+interface MeasurementPolicy {
+  indication_module_release_id: UUID;
 
-```text
-StructuralWorker
-LesionWorker
-RestingStateWorker
-TaskFMRIWorker
-DiffusionWorker
-MotorMappingWorker
-NeurophysiologyWorker
-AudiologyAdapter
-EFieldWorker
-ReliabilityWorker
-MeasurementBundleAssembler
+  requirements:
+    MeasurementCapabilityPolicy[];
+
+  multimodal_fusion_policy:
+    | "prohibited"
+    | "descriptive_only"
+    | "validated_model_only";
+
+  fallback_rules:
+    MeasurementFallbackRule[];
+}
 ```
-
-Workers do scientific computation.
-
-They do not make final clinical decisions.
 
 ---
 
-# 133. PROCESSING ORCHESTRATION
+# 40. `MeasurementCapabilityPolicy`
 
-Conceptual:
+```ts
+interface MeasurementCapabilityPolicy {
+  capability_code: string;
 
-```text
-Acquisition registered
-      ↓
-measurement requirements resolved
-      ↓
-required processing jobs scheduled
-      ↓
-provider-specific pipelines
-      ↓
-QC
-      ↓
-reliability
-      ↓
-qualification
-      ↓
-MeasurementBundle frozen
+  modality: MeasurementModality;
+
+  requirement:
+    | "required"
+    | "required_for_refinement"
+    | "optional"
+    | "research_only"
+    | "disabled";
+
+  permitted_candidate_roles:
+    CandidateRole[];
+
+  permitted_generator_ids: UUID[];
+
+  minimum_qc_rule_id?: UUID;
+
+  minimum_reliability_rule_id?: UUID;
+
+  missing_measurement_behaviour:
+    | "block"
+    | "disable_capability"
+    | "fallback"
+    | "allow_with_limitation";
+
+  limitations: string[];
+}
 ```
-
-Jobs that are not required should not be run by default.
 
 ---
 
-# 134. JOB IDEMPOTENCY
+# 41. NO MODALITY PRIVILEGE
 
-Identical:
+Policy SHALL NOT assume:
 
 ```text
-input hash
+rs-fMRI
+```
+
+must influence every indication simply because it is central to MDD.
+
+Likewise:
+
+* DWI is not automatically necessary for stroke;
+* task fMRI is not automatically necessary for aphasia;
+* MRI is not automatically necessary for tinnitus Research.
+
+The Indication Module defines requirements; Scientific Policy authorises actual use.
+
+---
+
+# 42. RELIABILITY POLICY v2
+
+Reliability is now:
+
+# capability-specific,
+
+not a universal patient score.
+
+Policy may separately govern:
+
+```text
+individual_fc_refinement
+motor_hotspot_targeting
+lesion_mapping
+structural_connectivity_refinement
+task_fmri_localisation
+efield_optimisation
+```
+
+---
+
+# 43. `ReliabilityPolicy`
+
+```ts
+interface ReliabilityPolicy {
+  indication_module_release_id: UUID;
+
+  capability_rules:
+    ReliabilityCapabilityRule[];
+
+  cross_measurement_rules?: UUID[];
+
+  overall_bundle_behaviour:
+    | "capability_specific"
+    | "module_defined";
+}
+```
+
+---
+
+# 44. `ReliabilityCapabilityRule`
+
+```ts
+interface ReliabilityCapabilityRule {
+  capability_code: string;
+
+  reliability_method_ids: UUID[];
+
+  minimum_parameter_refs:
+    UUID[];
+
+  required_measurement_count?: number;
+
+  cross_run_required?: boolean;
+
+  split_half_required?: boolean;
+
+  sensitivity_analysis_required?: boolean;
+
+  failure_behaviour:
+    | "disable_capability"
+    | "fallback"
+    | "block_module";
+
+  limitations: string[];
+}
+```
+
+---
+
+# 45. NUMERICAL THRESHOLDS ARE NOT INVENTED HERE
+
+This specification deliberately does not define universal values for:
+
+* rs-fMRI retained duration;
+* split-half localisation;
+* cross-run displacement;
+* motor-hotspot reproducibility;
+* lesion-registration quality;
+* tractography stability;
+* task-fMRI reproducibility;
+* E-field coverage;
+* target redundancy.
+
+Values become controlled `ScientificPolicyParameter` instances only after empirical justification.
+
+---
+
+# 46. NO CROSS-MODAL RELIABILITY SCORE
+
+Prohibited:
+
+```text
+MRI reliability       0.8
+motor mapping         0.7
+audiology             0.9
+
+overall reliability = 0.8
+```
+
+unless a future validated model explicitly establishes the aggregation.
+
+The current v2 model is capability-specific.
+
+---
+
+# 47. MULTIMODAL FUSION POLICY
+
+The multimodal specification explicitly prohibits hidden fusion of structural MRI, rs-fMRI, DWI and task fMRI into an opaque coordinate unless a separately validated scientific model defines the transformation. 
+
+Scientific Policy SHALL therefore default to:
+
+```text
+multimodal_fusion_policy = prohibited
+```
+
+or:
+
+```text
+descriptive_only.
+```
+
+---
+
+# 48. A FUSION MODEL IS A SCIENTIFIC COMPONENT
+
+If future MAGNIOM develops:
+
+```text
+Stroke Multimodal Target Model 1.0
+```
+
+combining:
+
+```text
+lesion
 +
-pipeline version
+MEP
 +
-configuration hash
+DWI
++
+motor mapping
 ```
 
-SHOULD resolve to scientifically identical processing output.
+it becomes:
 
-Duplicate job submission SHALL NOT create scientifically divergent results.
+* versioned;
+* validated;
+* explicitly compatible;
+* governed by Scientific Policy.
+
+It SHALL not hide inside a MeasurementBundle.
 
 ---
 
-# 135. PIPELINE FAILURE
+# 49. TARGET ENGINE PLUGIN POLICY
 
-A scientific pipeline failure SHALL produce:
+v2 Target Engine uses a common core plus indication plugins.
+
+Scientific Policy SHALL authorise:
+
+* exact plugin version;
+* exact generator set;
+* permitted modes;
+* permitted roles;
+* permitted target families;
+* permitted measurement capabilities.
+
+---
+
+# 50. `CandidateGenerationPolicy`
+
+```ts
+interface CandidateGenerationPolicy {
+  indication_module_release_id: UUID;
+
+  plugin_release_id: UUID;
+
+  generators: CandidateGeneratorPermission[];
+}
+```
+
+---
+
+# 51. `CandidateGeneratorPermission`
+
+```ts
+interface CandidateGeneratorPermission {
+  generator_id: UUID;
+  generator_version: string;
+
+  status:
+    | "required"
+    | "permitted"
+    | "research_only"
+    | "disabled";
+
+  candidate_roles:
+    CandidateRole[];
+
+  evidence_path_ids: UUID[];
+
+  target_family_ids: UUID[];
+
+  geometry_types:
+    TargetGeometryType[];
+
+  required_capability_codes: string[];
+
+  fallback_generator_ids?: UUID[];
+}
+```
+
+---
+
+# 52. CODE PRESENCE ≠ PERMISSION
+
+If MAGNIOM build contains:
 
 ```text
-failed ProcessingRun
+TinnitusNetworkResearchGenerator
+```
+
+that does not mean it can execute in Clinical Mode.
+
+Runtime checks shall require:
+
+```text
+generator in build
++
+generator in compatibility manifest
++
+generator in module
++
+generator in policy
++
+mode permitted.
+```
+
+---
+
+# 53. PLUGIN DIGEST
+
+Clinical/validation policy SHOULD pin:
+
+```text
+plugin package digest
+```
+
+not just semantic version.
+
+A different build with the same display version but different scientific code is incompatible.
+
+---
+
+# 54. CANDIDATE-GENERATOR CHANGES
+
+Changing a generator so that it produces a different target geometry/location is:
+
+# a scientific change.
+
+It may require:
+
+* new generator version;
+* new TargetEngineRelease;
+* new ScientificPolicyRelease;
+* new validation evidence.
+
+---
+
+# 55. RANKING POLICY v2
+
+v2 no longer assumes all indications use the same Candidate Utility Vector.
+
+Scientific Policy defines:
+
+```text
+ComparisonDomain
++
+RankingProfile.
+```
+
+Candidate ordering is only meaningful inside a scientifically valid comparison domain.
+
+---
+
+# 56. `RankingPolicy`
+
+```ts
+interface RankingPolicy {
+  indication_module_release_id: UUID;
+
+  comparison_domain_permissions:
+    ComparisonDomainPermission[];
+
+  ranking_profiles:
+    RankingProfileRef[];
+
+  cross_domain_scalar_ranking:
+    | "prohibited"
+    | "explicitly_validated_only";
+}
+```
+
+---
+
+# 57. CROSS-DOMAIN RANKING DEFAULT
+
+Default:
+
+```text
+cross_domain_scalar_ranking = prohibited.
+```
+
+For example:
+
+```text
+OCD coil-field candidate
 ```
 
 and:
 
 ```text
-no qualified measurement
+OCD focal pre-SMA candidate
 ```
 
-not a partially complete object presented as valid.
+shall not be forced into one universal score unless a validated profile permits it.
 
 ---
 
-# 136. PARTIAL MULTIMODAL FAILURE
+# 58. INTERNAL SCORE IS NOT BIOLOGICAL TRUTH
+
+The v1 clinical/scientific specification already required any internal composite to have frozen, version-controlled, sensitivity-tested and validated weights, and warned against exposing it as biological truth. 
+
+v2 preserves that requirement.
+
+---
+
+# 59. RANKING MODEL TYPES
+
+Permitted policy-defined models may include:
+
+```text
+lexicographic
+weighted geometric mean
+ordered deterministic rules
+```
+
+No unconstrained machine-learning ranker enters Clinical Mode without a separately governed future specification.
+
+---
+
+# 60. MODULE-SPECIFIC RANKING
+
+Examples:
+
+### MDD
+
+May use:
+
+```text
+phenotype concordance
+circuit concordance
+reliability
+accessibility
+E-field
+```
+
+within compatible strata.
+
+### Pain
+
+May use:
+
+```text
+body-region concordance
+motor-map concordance
+reliability
+accessibility
+```
+
+### Stroke Motor
+
+May use:
+
+```text
+stage applicability
+lesion compatibility
+motor-map concordance
+reliability
+accessibility
+```
+
+### OCD field target
+
+May use:
+
+```text
+EvidencePath applicability
+field coverage
+pose robustness
+device compatibility
+```
+
+Scientific Policy owns the exact profile.
+
+---
+
+# 61. REFINEMENT POLICY v2
+
+v1 used a personalisation-adoption rule requiring patient-specific connectivity to earn its place over an evidence baseline.
+
+v2 generalises this to:
+
+# `RefinementPolicy`.
+
+Possible refinement types:
+
+```text
+functional_connectivity
+motor_mapping
+structural_connectivity
+lesion_aware
+task_functional
+efield_pose
+multimodal_validated
+```
+
+---
+
+# 62. `RefinementPolicy`
+
+```ts
+interface RefinementPolicy {
+  indication_module_release_id: UUID;
+
+  profiles:
+    RefinementPolicyProfile[];
+}
+```
+
+---
+
+# 63. `RefinementPolicyProfile`
+
+```ts
+interface RefinementPolicyProfile {
+  id: UUID;
+
+  refinement_kind: string;
+
+  baseline_role: CandidateRole;
+
+  refined_role: CandidateRole;
+
+  required_capability_codes: string[];
+
+  permitted_target_family_ids: UUID[];
+
+  minimum_incremental_value_parameter_refs: UUID[];
+
+  maximum_transfer_distance_parameter_refs?: UUID[];
+
+  accessibility_loss_rule_id?: UUID;
+
+  geometry_change_rule_id?: UUID;
+
+  adoption_behaviour:
+    | "prefer_if_all_pass"
+    | "show_as_alternative"
+    | "research_only";
+
+  fallback_behaviour:
+    | "retain_baseline"
+    | "abstain"
+    | "module_defined";
+}
+```
+
+---
+
+# 64. REFINEMENT MUST EARN INFLUENCE
+
+Clinical refinement SHALL NOT win merely because it is:
+
+```text
+more personalised
+```
+
+or:
+
+```text
+more technologically sophisticated.
+```
+
+The refined candidate must satisfy its policy-defined incremental-value test.
+
+This preserves the core v1 scientific caution around personalised targeting.
+
+---
+
+# 65. COUNTERFACTUAL POLICY
+
+Where refinement is permitted, Scientific Policy SHALL define the appropriate counterfactual.
+
+Examples:
+
+### MDD
+
+```text
+evidence baseline
+vs
+FC-refined target
+```
+
+### Pain
+
+```text
+somatotopic evidence baseline
+vs
+motor-map refinement
+```
+
+### Stroke
+
+```text
+evidence-defined motor strategy
+vs
+patient motor-map refinement
+```
+
+### OCD
+
+```text
+evidence-defined coil placement
+vs
+E-field pose optimisation
+```
+
+---
+
+# 66. NO REFINEMENT WITHOUT BASELINE WHERE BASELINE IS REQUIRED
+
+A refinement plugin SHALL NOT create:
+
+```text
+personalised target
+```
+
+without a traceable:
+
+```text
+baseline target/evidence hypothesis
+```
+
+where the policy defines the operation as refinement.
+
+---
+
+# 67. LESION POLICY
+
+For lesion-dependent modules, policy determines:
+
+* whether lesion mapping is mandatory;
+* minimum registration/segmentation quality;
+* target/lesion relationship permitted;
+* when a target is suppressed;
+* whether any evidence-defined fallback exists.
+
+---
+
+# 68. DESTROYED TARGET DEFAULT
+
+Unless a validated module-specific rule states otherwise:
+
+```text
+target_relationship = destroyed_or_absent
+```
+
+shall result in:
+
+# candidate ineligibility.
+
+Policy SHALL NOT permit arbitrary coordinate displacement to nearby intact tissue.
+
+---
+
+# 69. DISEASE-STAGE POLICY
+
+Where evidence applicability depends on stage:
+
+`DiseaseStageContext` becomes a gate.
+
+Policy SHALL specify:
+
+```text
+EvidencePath
+×
+allowed stage definition(s)
+```
+
+Examples:
+
+```text
+post-acute stroke
+chronic aphasia
+```
+
+A stage mismatch cannot be compensated by an attractive patient measurement.
+
+---
+
+# 70. TREATMENT-CONTEXT POLICY
+
+Treatment context may include:
+
+* rehabilitation;
+* speech-language therapy;
+* symptom provocation;
+* task state;
+* device/coil class;
+* other evidence-bound context.
+
+Policy determines the consequence of:
+
+```text
+present
+planned
+absent
+unknown.
+```
+
+---
+
+# 71. TREATMENT-CONTEXT FAILURE BEHAVIOURS
+
+Possible configured actions:
+
+```text
+ineligible
+validation_only
+research_only
+show_limitation
+downgrade_applicability
+```
+
+The behaviour must be explicit.
+
+---
+
+# 72. PROTOCOL BOUNDARY REMAINS
+
+Scientific Policy MAY govern whether a target's EvidencePath depends on a particular stimulation precedent.
+
+It SHALL NOT autonomously prescribe:
+
+* frequency;
+* pulse number;
+* intensity;
+* schedule;
+* session count.
+
+The v1 Target Engine explicitly separated target selection from protocol prescription. 
+
+---
+
+# 73. NORMATIVE MODEL POLICY v2
+
+Normative models become indication- and modality-specific.
+
+```ts
+interface NormativePolicy {
+  indication_module_release_id: UUID;
+
+  models: {
+    normative_model_release_id: UUID;
+
+    modality: MeasurementModality;
+
+    role:
+      | "disabled"
+      | "display_only"
+      | "supporting_context"
+      | "ranking_feature"
+      | "research_candidate_generation";
+
+    permitted_capabilities: string[];
+
+    compatibility_configuration_ids: UUID[];
+  }[];
+}
+```
+
+---
+
+# 74. NORMATIVE ABNORMALITY DEFAULT
+
+Default v2 rule remains:
+
+> **Normative abnormality is not an independent Clinical Target generator.**
+
+A future module may change this only through separate evidence, validation and policy.
+
+---
+
+# 75. E-FIELD POLICY v2
+
+```ts
+interface EFieldPolicy {
+  indication_module_release_id: UUID;
+
+  role:
+    | "disabled"
+    | "display_only"
+    | "accessibility"
+    | "pose_optimisation"
+    | "field_target_definition"
+    | "ranking_component";
+
+  required_geometry_types:
+    TargetGeometryType[];
+
+  permitted_device_profiles: UUID[];
+
+  completeness_policy:
+    | "all_comparable_candidates"
+    | "not_required_for_comparison";
+
+  validation_evidence_ids: UUID[];
+}
+```
+
+---
+
+# 76. E-FIELD DOES NOT MEAN EFFICACY
+
+E-field optimisation may legitimately improve:
+
+* target coverage;
+* coil pose;
+* accessibility.
+
+It does not automatically prove improved clinical response.
+
+The v1 system already recommended using E-field first for accessibility/pose optimisation before treating it as a major efficacy-ranking dimension. 
+
+---
+
+# 77. FIELD-TARGET MODULES
+
+For field-based indications such as certain OCD implementations:
+
+E-field/coil geometry may be part of:
+
+# target definition,
+
+rather than merely an optional feature.
+
+Scientific Policy SHALL therefore distinguish:
+
+```text
+field defines target
+```
+
+from:
+
+```text
+field helps optimise a point/ROI target.
+```
+
+---
+
+# 78. DEVICE AND COIL POLICY
+
+v2 permits evidence paths to be device-/coil-dependent.
+
+Policy must therefore be capable of requiring:
+
+```text
+device class
+coil class
+field geometry
+navigation capability
+```
+
+where scientific transfer to other hardware is not established.
+
+---
+
+# 79. DEVICE COMPATIBILITY IS SCIENTIFIC WHERE IT CHANGES TARGET SEMANTICS
+
+A device substitution becomes scientifically relevant if it changes:
+
+* spatial field distribution;
+* target geometry;
+* evidence applicability;
+* accessible cortex.
+
+It is not merely inventory management.
+
+---
+
+# 80. REDUNDANCY POLICY v2
+
+Redundancy becomes geometry-aware.
+
+Scientific Policy may define different comparators for:
+
+```text
+point ↔ point
+ROI ↔ ROI
+somatotopic ↔ somatotopic
+coil-field ↔ coil-field
+network ↔ network
+```
+
+No universal millimetre threshold applies to all.
+
+---
+
+# 81. `RedundancyPolicy`
+
+```ts
+interface RedundancyPolicy {
+  indication_module_release_id: UUID;
+
+  comparators:
+    RedundancyComparatorPolicy[];
+
+  cross_geometry_rules:
+    CrossGeometryRedundancyRule[];
+}
+```
+
+---
+
+# 82. CLINICAL DIVERSITY RULE
+
+The Target Slate should retain candidates that add:
+
+# distinct clinical information,
+
+not simply ranks 1–5.
+
+This principle is inherited from the v1 clinical/scientific architecture. 
+
+---
+
+# 83. SLATE-ASSEMBLY POLICY
+
+```ts
+interface SlateAssemblyPolicy {
+  indication_module_release_id: UUID;
+
+  max_primary: number;
+  max_additional: number;
+
+  role_priorities:
+    CandidateRolePriority[];
+
+  objective_coverage_rules:
+    UUID[];
+
+  diversity_rules:
+    UUID[];
+
+  mandatory_counterfactual_visibility?: boolean;
+
+  permit_empty_slate: boolean;
+
+  permit_partial_slate: boolean;
+}
+```
+
+---
+
+# 84. CARDINALITY DEFAULT
+
+For v2:
+
+```text
+maximum Primary = 3
+maximum Additional = 2
+```
+
+continues unless a future controlled product specification changes it.
+
+Policy SHALL NOT require all positions to be filled.
+
+---
+
+# 85. NO GLOBAL PRIMARY-1 SEMANTIC
+
+Scientific Policy SHALL NOT assume:
+
+```text
+Primary 1 = Evidence Anchor
+```
+
+for every indication.
+
+That may remain appropriate for a particular MDD policy.
+
+Other modules may assign different roles.
+
+---
+
+# 86. ABSTENTION POLICY
+
+```ts
+interface AbstentionPolicy {
+  indication_module_release_id: UUID;
+
+  conditions: AbstentionCondition[];
+
+  partial_capability_failure_behaviour:
+    | "fallback"
+    | "module_defined";
+
+  complete_abstention_permitted: true;
+}
+```
+
+MAGNIOM SHALL always be capable of returning:
+
+# no valid target.
+
+The v1 safety framework explicitly required abstention and fewer-than-five candidate outputs. 
+
+---
+
+# 87. PARTIAL ABSTENTION
+
+Examples:
+
+```text
+FC refinement unavailable
+→ MDD evidence baseline remains
+```
+
+```text
+DWI research capability failed
+→ Stroke anatomical/motor pathway remains
+```
+
+```text
+mandatory lesion mapping failed
+→ Stroke targeting blocked
+```
+
+The relevant policy defines which outcome applies.
+
+---
+
+# 88. EXPLANATION POLICY
+
+Scientific Policy SHALL define required explanation dimensions by module.
+
+Common minimum:
+
+* clinical objective;
+* EvidencePath;
+* target family;
+* candidate role;
+* patient-specific contribution;
+* reliability;
+* geometry;
+* material uncertainty;
+* strongest counterargument;
+* alternative/counterfactual.
+
+---
+
+# 89. MODULE-SPECIFIC EXPLANATION
+
+### Stroke
+
+also include:
+
+* disease stage;
+* lesion relationship.
+
+### Pain
+
+also include:
+
+* body-region/somatotopic relationship.
+
+### OCD field targets
+
+also include:
+
+* field geometry/device context.
+
+### Aphasia
+
+also include:
+
+* language phenotype;
+* rehabilitation context.
+
+### Tinnitus
+
+also include:
+
+* major negative/conflicting evidence.
+
+---
+
+# 90. SCIENTIFIC POLICY PARAMETERS
+
+```ts
+interface ScientificPolicyParameter {
+  id: UUID;
+
+  code: string;
+
+  namespace: string;
+
+  parameter_group: string;
+
+  value_type:
+    | "number"
+    | "integer"
+    | "boolean"
+    | "enum"
+    | "string"
+    | "structured";
+
+  value: unknown;
+
+  unit?: string;
+
+  minimum?: number;
+  maximum?: number;
+
+  permitted_values?: string[];
+
+  rationale: string;
+
+  validation_basis: string;
+
+  safety_critical: boolean;
+
+  change_impact_class:
+    | "low"
+    | "moderate"
+    | "high"
+    | "critical";
+}
+```
+
+---
+
+# 91. PARAMETER BOUNDS ARE VALIDATION, NOT CLAMPING
 
 If:
 
 ```text
-DWI failed
+value > maximum validated bound
 ```
 
-but:
+MAGNIOM SHALL NOT silently apply:
 
 ```text
-Structural MRI qualified
-Motor mapping qualified
+value = maximum.
 ```
 
-the complete Case need not fail.
+The configuration is:
 
-The `MeasurementBundle` reflects:
+# invalid.
+
+This preserves the v1 fail-closed policy concept.
+
+---
+
+# 92. MODULE-SPECIFIC PARAMETER NAMESPACES
+
+Recommended pattern:
 
 ```text
-structural localisation      enabled
-motor-map refinement         enabled
-DWI refinement               disabled
+mdd.*
+ocd.*
+pain_np.*
+stroke_motor.*
+stroke_aphasia.*
+tbi_dep.*
+tbi_cog.*
+ptsd.*
+tinnitus.*
+```
+
+Examples:
+
+```text
+mdd.rsfc.minimum_reliability
+
+pain_np.motor_map.minimum_reliability
+
+stroke_motor.lesion.minimum_registration_quality
+
+stroke_motor.motor_map.minimum_hotspot_reliability
+
+ocd.field.minimum_target_roi_coverage
+
+stroke_aphasia.treatment_context.slt_requirement
+
+tinnitus.mode.clinical_permission
 ```
 
 ---
 
-# 137. NO SILENT FALLBACK
+# 93. NO PARAMETER INHERITANCE BY NAME
 
-If a preferred measurement fails and an alternative is used:
+If:
 
-the fallback SHALL be explicit.
+```text
+mdd.rsfc.minimum_reliability
+```
+
+exists, it SHALL NOT automatically populate:
+
+```text
+ptsd.rsfc.minimum_reliability.
+```
+
+Identically named concepts across indications may require separate validation.
+
+---
+
+# 94. DEFAULT INHERITANCE RULE
+
+Default:
+
+# no scientific parameter inheritance across Indication Modules.
+
+Any shared parameter requires explicit:
+
+```text
+shared_parameter_binding
+```
+
+and documented justification.
+
+---
+
+# 95. SHARED CORE PARAMETERS
+
+Some engineering-scientific invariants may legitimately be global.
+
+Examples:
+
+* hash algorithm;
+* deterministic sorting mechanics;
+* coordinate-space validation rules;
+* maximum canonical slate cardinality.
+
+But anything that changes scientific interpretation remains module-scoped unless validated as truly universal.
+
+---
+
+# 96. MODULE-SPECIFIC CLINICAL AUTHORITY
+
+Clinical permission SHALL be evaluated as:
+
+```text
+CaseIndication
+        ↓
+IndicationModuleRelease
+        ↓
+IndicationPolicyBinding
+        ↓
+ScientificCompatibilityConfiguration
+        ↓
+Clinical permission
+```
+
+not:
+
+```text
+application is in Clinical Mode
+→ everything clinical.
+```
+
+---
+
+# 97. THERE IS NO SINGLE GLOBAL v2 `clinical_mode = true`
+
+A deployment-level UI may display:
+
+```text
+CLINICAL MODE
+```
+
+for an active case.
+
+But server authority must resolve:
+
+```text
+this CaseIndication
++
+this module
++
+this policy
++
+this compatibility configuration
+=
+clinical_permitted.
+```
+
+---
+
+# 98. EXAMPLE — MIXED-MATURITY INSTALLATION
+
+The same installation may lawfully contain:
+
+```text
+MDD
+clinical_permitted
+
+Stroke Motor
+validation_only
+
+TBI
+research_only
+```
+
+A clinician opening a Stroke Case SHALL not gain MDD-level Clinical authority merely because the product has Clinical MDD capability.
+
+---
+
+# 99. RESEARCH MODE PERMISSION
+
+Research policy may authorise:
+
+* unassigned evidence classifications;
+* Research EvidencePaths;
+* experimental generators;
+* alternative pipelines;
+* structural connectivity;
+* network hypotheses;
+* experimental multimodal fusion.
+
+Every actual Research run still records exact versions.
+
+---
+
+# 100. RESEARCH DOES NOT MEAN UNCONTROLLED
+
+Research Mode remains:
+
+* versioned;
+* reproducible;
+* provenance-complete;
+* mode-labelled.
+
+It is broader scientifically, not arbitrary.
+
+---
+
+# 101. VALIDATION MODE
+
+Although the canonical end-user modes remain Clinical and Research, policy should support:
+
+# validation permission
+
+as a scientific maturity dimension.
+
+A generator/EvidencePath may be:
+
+```text
+validation_permitted
+```
+
+while actual execution occurs within a controlled Research/Validation environment.
+
+---
+
+# 102. VALIDATION CONFIGURATION
+
+A Validation configuration SHALL identify:
+
+* dataset/study scope;
+* module;
+* policy;
+* evidence release;
+* engine;
+* plugin;
+* measurement providers;
+* parameters;
+* exact analysis plan where relevant.
+
+This prevents retrospective tuning.
+
+---
+
+# 103. PROHIBITED CONFIGURATIONS — GLOBAL
+
+Clinical Mode SHALL reject at minimum:
+
+```text
+Research-only IndicationModule
+
+Research-only EvidencePath
+
+unassigned evidence used as Clinical authority
+
+unapproved targeting plugin
+
+unapproved candidate generator
+
+generator/module mismatch
+
+module/indication mismatch
+
+unapproved target geometry
+
+Research measurement used as Clinical capability
+
+failed required reliability
+
+incompatible measurement provider
+
+incompatible acquisition profile
+
+incompatible normative model
+
+incompatible E-field engine
+
+incompatible device/coil
+
+out-of-bounds scientific parameter
+
+missing scientific provenance
+
+unsigned/invalid policy release
+
+latest/unpinned scientific selector
+
+dynamic internet/PubMed scientific input
+
+LLM-generated ranking input
+
+runtime-random scientific input
+
+automatic online-learning weights
+
+organisation-local scientific override
+
+UI-controlled scientific threshold
+```
+
+---
+
+# 104. PROHIBITED CROSS-INDICATION CONFIGURATIONS
+
+Explicitly reject:
+
+```text
+MDD EvidencePath
+→ TBI candidate
+```
+
+```text
+MDD FC reliability threshold
+→ Stroke FC targeting
+```
+
+```text
+Pain somatotopy rule
+→ Fibromyalgia automatically
+```
+
+```text
+Stroke interhemispheric rule
+→ TBI
+```
+
+```text
+OCD field evidence
+→ focal MNI point
+```
+
+without direct controlled compatibility.
+
+---
+
+# 105. PROHIBITED MEASUREMENT SHORTCUTS
+
+Reject:
+
+```text
+most abnormal parcel = target
+
+task activation = treatment target
+
+tractography streamline maximum = target
+
+MEP absent = contralesional target
+
+tinnitus pitch = auditory cortical target
+
+lesion = target
+
+motor hotspot = clinically superior target
+```
+
+unless a future approved scientific model explicitly establishes the inference.
+
+---
+
+# 106. PROHIBITED FUSION
+
+Reject hidden:
+
+```text
+rs-fMRI + DWI + lesion + task fMRI
+→ fused clinical score
+```
+
+unless a validated Multimodal Scientific Model is explicitly present in the compatibility configuration.
+
+---
+
+# 107. PROHIBITED SCORE TRANSFER
+
+Reject:
+
+```text
+Evidence Tier A = 1.0
+Tier B = 0.8
+```
+
+as a universal compensable scoring model.
+
+Evidence remains principally an eligibility/governance construct.
+
+---
+
+# 108. PROHIBITED AUTO-LEARNING
+
+Clinical outcomes SHALL NOT update:
+
+* ranking weights;
+* reliability thresholds;
+* evidence permissions;
+* candidate-generation rules;
+
+automatically.
+
+The v1 roadmap already required outcomes to pass through a Research Dataset → analysis → proposed change → validation → new release pathway. 
+
+---
+
+# 109. PROHIBITED ADMIN OVERRIDES
+
+Ordinary administrators SHALL NOT be able to edit:
+
+```text
+minimum reliability
+
+permitted EvidencePaths
+
+module clinical status
+
+ranking weights
+
+refinement threshold
+
+redundancy threshold
+
+E-field role
+
+clinical candidate generators
+```
+
+through a generic settings panel.
+
+---
+
+# 110. SCIENTIFIC CONFIGURATION FAILURE IS FAIL-CLOSED
+
+If MAGNIOM cannot prove that a scientific configuration is permitted:
+
+# it SHALL NOT generate an authoritative Clinical Target Slate.
+
+Possible fallback is used only if explicitly defined in policy.
+
+---
+
+# 111. FALLBACK IS NOT EXCEPTION HANDLING
+
+Scientific fallback means:
+
+```text
+validated alternate scientific pathway.
+```
 
 Example:
 
 ```text
-Motor-map refinement unavailable.
-Evidence-defined anatomical somatotopic baseline used.
+MDD FC unreliable
+→ MDD evidence baseline.
+```
+
+It does not mean:
+
+```text
+try something reasonable.
 ```
 
 ---
 
-# 138. DATA RETENTION
+# 112. FALLBACK CHAIN
 
-Retention policy SHOULD consider:
+Policy may define:
 
-### MRI
+```ts
+interface ScientificFallbackRule {
+  triggering_condition_code: string;
 
-* original DICOM/BIDS;
-* key derivatives;
-* transforms;
-* surfaces;
-* masks.
+  from_capability: string;
 
-### Motor mapping
+  fallback_configuration_id?: UUID;
 
-* stimulation coordinates;
-* responses;
-* raw EMG where feasible;
-* mapping protocol.
+  resulting_capability_state:
+    | "fallback_only"
+    | "disabled"
+    | "abstain";
 
-### Audiology
-
-* original test record;
-* derived structured results.
-
-Historical Target Slates remain valid records even if exact recomputation later becomes impossible because raw data were legitimately deleted; that limitation must be documented, as already specified in v1. 
+  explanation_template_id: UUID;
+}
+```
 
 ---
 
-# 139. ARTIFACT MANIFEST
+# 113. MDD FALLBACK
 
-Every measurement SHOULD maintain:
+Example:
+
+```text
+FC reliability fails
+        ↓
+disable individual_fc_refinement
+        ↓
+use EVIDENCE_BASELINE configuration
+```
+
+where permitted.
+
+---
+
+# 114. PAIN FALLBACK
+
+Example:
+
+```text
+motor mapping unreliable
+        ↓
+disable motor-map refinement
+        ↓
+use evidence-defined somatotopic anatomical baseline
+```
+
+only if independently validated.
+
+---
+
+# 115. STROKE FALLBACK
+
+If lesion mapping is mandatory and fails:
+
+```text
+no lesion-aware targeting
+```
+
+may mean:
+
+# complete module abstention,
+
+not an automatic template-space target.
+
+---
+
+# 116. TINNITUS FALLBACK
+
+A failed Research imaging measurement does not justify:
+
+```text
+generic auditory cortex target.
+```
+
+Correct result may simply be:
+
+# no Research target generated.
+
+---
+
+# 117. POLICY LIFECYCLE
+
+Canonical lifecycle:
+
+```text
+DRAFT
+  ↓
+SCIENTIFIC REVIEW
+  ↓
+TECHNICAL REVIEW
+  ↓
+VALIDATION
+  ↓
+CHANGE-IMPACT ANALYSIS
+  ↓
+RELEASE CANDIDATE
+  ↓
+GOVERNANCE APPROVAL
+  ↓
+SIGNATURE
+  ↓
+ACTIVE
+```
+
+Clinical configurations require the full release path.
+
+---
+
+# 118. LIFECYCLE STATUS AND VALIDATION STATUS REMAIN SEPARATE
+
+Example:
+
+```text
+lifecycle_status = active
+
+validation_status = retrospective_validated
+```
+
+may be legitimate for a Research/Validation policy.
+
+It does not mean:
+
+```text
+clinical_release_qualified.
+```
+
+---
+
+# 119. CLINICAL ACTIVATION REQUIREMENT
+
+A clinical IndicationPolicyBinding requires:
+
+```text
+ScientificPolicy.validation_status
+=
+clinical_release_qualified
+```
+
+or an equivalent explicitly governed release state.
+
+Additionally, the bound Indication Module must itself have sufficient clinical release maturity.
+
+---
+
+# 120. INDICATION-SPECIFIC VALIDATION EVIDENCE
+
+Validation is not transferable across modules.
+
+A policy may include:
+
+```text
+MDD binding:
+clinical_release_qualified
+
+Stroke binding:
+retrospective_validated
+
+Tinnitus binding:
+engineering_verified
+```
+
+within one multi-indication policy release.
+
+---
+
+# 121. APPROVALS
+
+Approval represents:
+
+# accountable human governance.
+
+Recommended clinical activation approvals:
+
+* scientific lead;
+* relevant indication clinical lead;
+* technical lead;
+* quality/regulatory lead.
+
+Additional specialist approval may be required depending on module.
+
+---
+
+# 122. MODULE-SPECIFIC CLINICAL REVIEW
+
+Examples:
+
+### Stroke
+
+stroke rehabilitation / neurology expertise.
+
+### Pain
+
+pain medicine / relevant neuromodulation expertise.
+
+### Aphasia
+
+stroke/language rehabilitation expertise.
+
+### Tinnitus
+
+audiology/otology expertise.
+
+### OCD/PTSD
+
+psychiatric neuromodulation expertise.
+
+One MDD specialist approval does not automatically approve every module.
+
+---
+
+# 123. APPROVAL OBJECT
 
 ```ts
-interface MeasurementArtifactManifest {
-  measurement_id: UUID;
+interface ScientificPolicyApproval {
+  id: UUID;
 
-  input_artifacts: ArtifactManifestEntry[];
+  policy_release_id: UUID;
 
-  output_artifacts: ArtifactManifestEntry[];
+  indication_module_release_id?: UUID;
 
-  pipeline_version_id: UUID;
+  approval_role:
+    | "scientific"
+    | "clinical"
+    | "technical"
+    | "quality_regulatory"
+    | "specialty_reviewer";
 
-  configuration_sha256: SHA256;
+  approver_id: UUID;
+
+  decision:
+    | "approved"
+    | "approved_with_conditions"
+    | "rejected";
+
+  rationale?: string;
+
+  approved_at: ISO8601UTC;
+}
+```
+
+---
+
+# 124. SIGNATURE IS DIFFERENT FROM APPROVAL
+
+Approval means:
+
+> A responsible person accepted the scientific release.
+
+Signature means:
+
+> The approved digital artefact can be integrity-verified.
+
+Both are required for high-assurance clinical release.
+
+---
+
+# 125. SIGNED RELEASE MANIFEST
+
+The signed manifest SHOULD cover:
+
+```text
+ScientificPolicyRelease payload hash
+compatibility configuration hashes
+IndicationModuleRelease IDs/hashes
+EvidenceLibraryRelease
+TargetEngineRelease
+plugin digests
+generator versions
+measurement provider releases
+reliability methods
+atlas/normative/E-field components
+parameter manifest
+```
+
+---
+
+# 126. POLICY INTEGRITY FAILURE
+
+If runtime verification finds:
+
+```text
+stored payload hash
+≠
+recomputed payload hash
+```
+
+Clinical execution SHALL fail.
+
+No attempt should be made to “repair” the policy automatically.
+
+---
+
+# 127. POLICY SIGNATURE FAILURE
+
+Invalid or absent required signature:
+
+```text
+SCIENTIFIC_POLICY_SIGNATURE_INVALID
+```
+
+Clinical generation SHALL be blocked.
+
+---
+
+# 128. RELEASE MANIFEST v2
+
+```ts
+interface ScientificPolicyReleaseManifestV2 {
+  scientific_policy_release_id: UUID;
+
+  indication_module_release_ids: UUID[];
+
+  compatibility_configuration_ids: UUID[];
+
+  evidence_library_release_ids: UUID[];
+
+  target_engine_release_ids: UUID[];
+
+  plugin_release_refs: ComponentReleaseRef[];
+
+  generator_release_refs: ComponentReleaseRef[];
+
+  measurement_provider_release_refs: ComponentReleaseRef[];
+
+  reliability_method_refs: ComponentReleaseRef[];
+
+  phenotype_ontology_release_ids: UUID[];
+
+  atlas_release_refs: ComponentReleaseRef[];
+
+  normative_model_release_refs: ComponentReleaseRef[];
+
+  efield_release_refs: ComponentReleaseRef[];
+
+  device_capability_profile_ids: UUID[];
+
+  parameter_ids: UUID[];
 
   manifest_sha256: SHA256;
 }
@@ -3093,1472 +3048,1750 @@ interface MeasurementArtifactManifest {
 
 ---
 
-# 140. TARGET ENGINE PAYLOAD
+# 129. RUNTIME POLICY RESOLUTION
 
-The Target Engine SHALL receive structured references, not every binary artefact.
+Canonical runtime:
 
-Example:
-
-```ts
-interface MeasurementTargetEnginePayload {
-  measurement_bundle_id: UUID;
-
-  capability_statuses: CapabilityStatus[];
-
-  relevant_measurement_ids: UUID[];
-
-  reliability_bundle_id?: UUID;
-
-  lesion_context_ids?: UUID[];
-
-  modality_feature_refs: ModalityFeatureRef[];
-
-  transform_manifest_ids: UUID[];
-
-  artifact_manifest_ids: UUID[];
-}
+```text
+Case
+ ↓
+CaseIndication
+ ↓
+IndicationModuleRelease
+ ↓
+requested mode
+ ↓
+ScientificPolicyRelease
+ ↓
+IndicationPolicyBinding
+ ↓
+compatible ScientificConfiguration
+ ↓
+verify exact component manifests
+ ↓
+verify evidence permissions
+ ↓
+verify measurement/reliability capabilities
+ ↓
+Target Engine execution
 ```
 
 ---
 
-# 141. TARGET ENGINE DOES NOT RECEIVE “BEST TARGET”
+# 130. RUNTIME VALIDATION SEQUENCE
 
-A provider may return:
+Before target generation:
+
+1. Verify policy exists.
+2. Verify lifecycle status.
+3. Verify policy hash.
+4. Verify policy signature.
+5. Verify CaseIndication.
+6. Verify `IndicationModuleRelease`.
+7. Verify module status.
+8. Verify mode.
+9. Verify exact compatibility configuration.
+10. Verify EvidenceLibraryRelease.
+11. Verify EvidencePath permissions.
+12. Verify TargetEngineRelease.
+13. Verify plugin digest.
+14. Verify generator set.
+15. Verify measurement providers.
+16. Verify reliability methods.
+17. Verify normative/E-field/device components.
+18. Verify parameter completeness.
+19. Verify parameter bounds.
+20. Verify prohibited configurations.
+21. Execute Target Engine.
+22. Verify output manifest references the same configuration.
+
+---
+
+# 131. POST-EXECUTION VERIFICATION
+
+The published Target Slate SHALL identify:
 
 ```text
-motor hotspot location
+indication_module_release_id
+
+scientific_policy_release_id
+
+scientific_compatibility_configuration_id
+
+evidence_library_release_id
+
+target_engine_release_id
+
+plugin release
+
+generator versions
+
+measurement bundle
+
+reliability bundle
+
+relevant normative/E-field components
+```
+
+No reconstruction should depend on querying “current” components.
+
+---
+
+# 132. HISTORICAL RECONSTRUCTION
+
+Given a historical Target Slate, MAGNIOM must answer:
+
+> Exactly which scientific indication model and configuration produced this slate?
+
+including:
+
+```text
+MDD Module 2.0.0
+not merely
+MDD.
+```
+
+---
+
+# 133. NO `LATEST`
+
+Clinical scientific manifests SHALL NOT contain selectors such as:
+
+```text
+latest
+
+current_default
+
+most_recent_validated
+
+active_module
+```
+
+as runtime scientific references.
+
+Resolve exact immutable IDs before execution.
+
+---
+
+# 134. CASES DO NOT AUTO-MIGRATE MODULES
+
+If:
+
+```text
+StrokeMotorModule 1.1
+```
+
+becomes active, a historical Case using:
+
+```text
+StrokeMotorModule 1.0
+```
+
+remains historically associated with 1.0.
+
+A new analysis may deliberately use 1.1.
+
+---
+
+# 135. POLICY UPDATE DOES NOT ALTER HISTORICAL SLATES
+
+Similarly:
+
+```text
+ScientificPolicy 2.0
+→ 2.1
+```
+
+does not recalculate old Target Slates.
+
+Existing clinician decisions remain bound to their original scientific configuration.
+
+---
+
+# 136. CHANGE CLASSIFICATION v2
+
+```ts
+type ScientificChangeClassification =
+  | "non_scientific"
+  | "scientific_implementation"
+  | "scientific_parameter"
+  | "scientific_model"
+  | "indication_module"
+  | "measurement_capability"
+  | "evidence_path"
+  | "target_geometry"
+  | "device_dependency"
+  | "intended_use_scope";
+```
+
+---
+
+# 137. `INDICATION_MODULE` CHANGE
+
+Changing any of:
+
+* intended population;
+* clinical objective model;
+* permitted target families;
+* disease-stage definitions;
+* required measurements;
+* target geometry types;
+* treatment-context requirements;
+
+is a high-impact scientific change.
+
+---
+
+# 138. EVIDENCE-PATH CHANGE
+
+Changing:
+
+```text
+validation_permitted
+→ clinical_permitted
+```
+
+is clinically material even if:
+
+* no code changes;
+* no parameters change;
+* target coordinates remain identical.
+
+It requires governance and validation impact review.
+
+---
+
+# 139. MEASUREMENT-CAPABILITY CHANGE
+
+Changing:
+
+```text
+DWI = research_only
+```
+
+to:
+
+```text
+DWI = ranking_feature
+```
+
+is a scientific-model change.
+
+It requires validation specific to the indication/module.
+
+---
+
+# 140. TARGET-GEOMETRY CHANGE
+
+Changing:
+
+```text
+surface ROI
+→ point target
 ```
 
 or:
 
 ```text
-highest-concordance region within authorised search space
+field target
+→ focal coordinate
 ```
 
-or:
+may materially change clinical interpretation.
+
+Treat as scientific change, not UI formatting.
+
+---
+
+# 141. PARAMETER CHANGE IMPACT
+
+Every ranking-relevant parameter change SHALL trigger an impact report.
+
+Questions include:
 
 ```text
-task activation centre.
+Which Golden Cases changed?
+
+Which candidate geometries changed?
+
+Which Primary 1 positions changed?
+
+Which refinements changed from retained baseline to adopted?
+
+Which cases moved from target to abstention?
+
+Which module(s) were affected?
+
+How did fallback rates change?
 ```
 
-It SHALL NOT return:
+The v1 roadmap already required scientific releases to answer this kind of change-impact question. 
+
+---
+
+# 142. MODULE-SPECIFIC IMPACT ANALYSIS
+
+For Pain:
+
+* changed somatotopic targets?
+* motor-map adoption rate?
+
+For Stroke:
+
+* changed ipsi/contralesional candidate availability?
+* lesion exclusions?
+* stage-specific eligibility?
+
+For OCD:
+
+* field coverage?
+* device compatibility?
+
+For Tinnitus:
+
+* Research candidate composition?
+
+---
+
+# 143. SEMVER DOES NOT DETERMINE VALIDATION BURDEN
+
+A patch that unexpectedly changes 20% of clinical Target Slates is not low risk because it is:
 
 ```text
-best clinical target.
+2.0.1.
 ```
+
+Observed scientific impact governs validation requirements.
 
 ---
 
-# 142. FEATURE SEMANTICS
+# 144. GOLDEN POLICY TEST — MDD
 
-A feature must declare what it means.
-
-For example:
-
-```ts
-interface ModalityFeatureRef {
-  feature_code: string;
-
-  measurement_id: UUID;
-
-  value?: number;
-  unit?: string;
-
-  categorical_value?: string;
-
-  method_code: string;
-  method_version: string;
-
-  interpretation: string;
-}
-```
-
-Avoid unlabeled arrays such as:
+Request:
 
 ```text
-features = [0.72, 4.1, 0.16].
+MDD
+Clinical
+qualified rs-fMRI
 ```
 
+Expected:
+
+* MDD module resolves;
+* Clinical MDD binding resolves;
+* MDD Connectome configuration selected;
+* MDD FC refinement generator permitted;
+* v1-compatible clinical rules preserved where designated.
+
 ---
 
-# 143. CLINICIAN-FACING MULTIMODAL VIEW
+# 145. GOLDEN POLICY TEST — MDD FC FAILURE
 
-The clinician should see:
+Input:
 
 ```text
-Structural anatomy             Qualified
-Lesion mapping                 Qualified
-Motor mapping                  Qualified
-Resting-state connectivity     Not acquired
-DWI                            Research only
+MDD
+FC reliability fails.
 ```
 
-not an overwhelming technical pipeline tree by default.
-
-Technical detail remains progressively available.
-
----
-
-# 144. MEASUREMENT DETAIL DRAWER
-
-Each modality view SHOULD allow inspection of:
-
-* acquisition;
-* pipeline;
-* QC;
-* reliability;
-* limitations;
-* capability effect;
-* technical provenance.
-
-This integrates with the MAGNIOM shell specification.
-
----
-
-# 145. MEASUREMENT VERSUS CLINICAL INTERPRETATION
-
-Example:
+Expected:
 
 ```text
-MEASUREMENT:
-Left M1 hotspot reproducibly localised.
-
-TARGET ENGINE:
-This may refine the evidence-defined M1 target for right-hand pain.
-
-CLINICIAN:
-Chooses whether to use that target.
+Connectome capability disabled
+→ approved evidence-baseline fallback
 ```
 
-These layers SHALL remain visually and canonically distinct.
+if active policy permits.
 
 ---
 
-# 146. RESEARCH MODE
+# 146. GOLDEN POLICY TEST — PAIN
 
-Research Mode may expose:
-
-* alternative rs-fMRI pipelines;
-* novel tractography;
-* lesion-network mapping;
-* new task paradigms;
-* experimental motor-map metrics;
-* auditory-network hypotheses;
-* multimodal fusion.
-
-Every output remains tagged:
+Input:
 
 ```text
-mode = research.
+Neuropathic hand pain
+qualified motor mapping.
 ```
 
-No Research measurement influences Clinical target generation without explicit promotion.
+Expected:
+
+* Pain Module resolves;
+* somatotopic target generation permitted;
+* motor-map refinement only if reliability rule passes;
+* rs-fMRI not required unless policy says so.
 
 ---
 
-# 147. RESEARCH-TO-CLINICAL PROMOTION
+# 147. GOLDEN POLICY TEST — STROKE
 
-A modality capability progresses:
+Input:
 
 ```text
-Research implementation
-   ↓
-technical verification
-   ↓
-measurement reliability study
-   ↓
-indication-specific retrospective validation
-   ↓
-prospective/silent validation where required
-   ↓
-Scientific Policy approval
-   ↓
-Clinical capability
+Stroke Motor
+required LesionContext absent.
 ```
 
-No feature flag bypass.
-
----
-
-# 148. VALIDATION PROGRAM — STRUCTURAL MRI
-
-Must establish:
-
-* segmentation performance;
-* surface reconstruction;
-* coordinate transforms;
-* laterality;
-* neuronavigation round trip;
-* scanner/site compatibility.
-
----
-
-# 149. VALIDATION PROGRAM — LESION MAPPING
-
-Must assess:
+Expected:
 
 ```text
-segmentation validity
-inter/intra-rater reliability where applicable
-registration robustness
-lesion-volume reproducibility
-target-family intersection accuracy
-lesion-distance stability
+module blocked or abstained
 ```
 
-Separate lesion types may require separate validation.
+according to policy.
+
+No normal-template fallback unless explicitly validated.
 
 ---
 
-# 150. VALIDATION PROGRAM — RS-FMRI
+# 148. GOLDEN POLICY TEST — APHASIA
 
-Retain v1 requirements:
-
-* acquisition qualification;
-* motion;
-* retained duration;
-* cross-run stability;
-* split-half stability;
-* pipeline sensitivity;
-* circuit-map versioning;
-* target localisation reproducibility.
-
-The v1 specification already required candidate-surface reproducibility and quantified preprocessing sensitivity before clinical release. 
-
----
-
-# 151. VALIDATION PROGRAM — TASK fMRI
-
-Must assess:
-
-* paradigm compliance;
-* behavioural validity;
-* activation reproducibility;
-* laterality reproducibility;
-* registration;
-* threshold sensitivity;
-* clinically relevant localisation stability.
-
----
-
-# 152. VALIDATION PROGRAM — DWI
-
-Must assess:
-
-* acquisition reproducibility;
-* distortion correction;
-* tract reconstruction stability;
-* tract-specific validity;
-* lesion sensitivity;
-* model sensitivity;
-* target-related feature reproducibility.
-
-A tractography pipeline should not enter Clinical ranking merely because it produces anatomically plausible bundles.
-
----
-
-# 153. VALIDATION PROGRAM — MOTOR MAPPING
-
-Must assess:
-
-* hotspot repeatability;
-* motor-map centre repeatability;
-* spatial coverage;
-* orientation effects;
-* threshold stability;
-* inter-session reproducibility;
-* mapping protocol completeness.
-
-Where used clinically, validation should consider the actual TMS system and navigation workflow.
-
----
-
-# 154. VALIDATION PROGRAM — MEP
-
-Must assess:
-
-* EMG signal quality;
-* response detection;
-* latency/amplitude measurement;
-* background activity;
-* trial-repeatability;
-* threshold measurement reproducibility.
-
----
-
-# 155. VALIDATION PROGRAM — AUDIOLOGY
-
-Must assess:
-
-* equipment calibration;
-* threshold measurement consistency;
-* laterality;
-* tinnitus-match repeatability where used;
-* structured import correctness;
-* clinical-record reconciliation.
-
----
-
-# 156. CROSS-MODALITY VALIDATION
-
-Where an algorithm uses more than one modality, validation must test the:
-
-# combined scientific workflow.
-
-It is insufficient that each component works independently.
-
-Example:
+Input:
 
 ```text
-Structural MRI valid
+EvidencePath requires chronic non-fluent aphasia
+patient has incompatible stage/phenotype.
+```
+
+Expected:
+
+# EvidencePath not eligible.
+
+---
+
+# 149. GOLDEN POLICY TEST — OCD
+
+Input:
+
+```text
+coil-field EvidencePath
 +
-motor mapping valid
+point-target generator.
 ```
 
-does not automatically establish:
+Expected:
 
 ```text
-motor-map-to-cortical-surface transform valid.
+TARGET_GEOMETRY_POLICY_VIOLATION.
 ```
 
 ---
 
-# 157. TRANSFORM VALIDATION
+# 150. GOLDEN POLICY TEST — TBI
 
-Every cross-modal transform SHALL undergo dedicated validation.
+Attempt:
+
+```text
+TBI depression
++
+MDD EvidencePath
++
+MDD DLPFC generator.
+```
+
+Expected:
+
+# hard cross-indication rejection.
+
+---
+
+# 151. GOLDEN POLICY TEST — PTSD
+
+Input:
+
+```text
+combat-related PTSD
++
+general PTSD EvidencePath with partial applicability.
+```
+
+Expected:
+
+* population applicability retained;
+* no hidden upgrade to full applicability;
+* policy determines Research/Validation permission.
+
+---
+
+# 152. GOLDEN POLICY TEST — TINNITUS
+
+Request:
+
+```text
+Tinnitus
+mode = clinical.
+```
+
+with current Research-only module.
+
+Expected:
+
+```text
+INDICATION_MODULE_NOT_CLINICALLY_PERMITTED.
+```
+
+No candidate generation.
+
+---
+
+# 153. GOLDEN POLICY TEST — RESEARCH MEASUREMENT LEAKAGE
+
+Input:
+
+```text
+Clinical Stroke configuration
++
+research-only DWI structural-connectivity feature.
+```
+
+Expected:
+
+```text
+RESEARCH_COMPONENT_IN_CLINICAL_CONFIGURATION.
+```
+
+---
+
+# 154. GOLDEN POLICY TEST — UNASSIGNED EVIDENCE
+
+Input:
+
+```text
+EvidenceClaim classification = unassigned
++
+Clinical candidate request.
+```
+
+Expected:
+
+# cannot establish Clinical EvidencePath authority.
+
+---
+
+# 155. GOLDEN POLICY TEST — MODULE VERSION
+
+Policy authorises:
+
+```text
+PainModule 1.0.0
+```
+
+runtime provides:
+
+```text
+PainModule 1.1.0.
+```
+
+Expected:
+
+```text
+INDICATION_MODULE_VERSION_INCOMPATIBLE.
+```
+
+No inference of compatibility.
+
+---
+
+# 156. GOLDEN POLICY TEST — PLUGIN DIGEST
+
+Same version string, altered plugin digest.
+
+Expected:
+
+# integrity failure.
+
+---
+
+# 157. GOLDEN POLICY TEST — OUT-OF-BOUNDS PARAMETER
+
+Configured value lies outside validated policy bounds.
+
+Expected:
+
+```text
+POLICY_PARAMETER_OUT_OF_BOUNDS.
+```
+
+Do not clamp.
+
+---
+
+# 158. GOLDEN POLICY TEST — MULTIMODAL FUSION
+
+Attempt:
+
+```text
+rs-fMRI
++
+DWI
++
+task fMRI
+→ combined target score
+```
+
+without an approved multimodal model.
+
+Expected:
+
+# prohibited scientific configuration.
+
+---
+
+# 159. FAILURE CODES v2
+
+Retain and extend the v1 policy-failure vocabulary.
+
+```text
+SCIENTIFIC_POLICY_NOT_FOUND
+SCIENTIFIC_POLICY_NOT_ACTIVE
+SCIENTIFIC_POLICY_MODE_MISMATCH
+SCIENTIFIC_POLICY_INTEGRITY_FAILURE
+SCIENTIFIC_POLICY_SIGNATURE_INVALID
+
+INDICATION_MODULE_NOT_FOUND
+INDICATION_MODULE_VERSION_INCOMPATIBLE
+INDICATION_MODULE_MODE_MISMATCH
+INDICATION_MODULE_NOT_CLINICALLY_PERMITTED
+
+INDICATION_POLICY_BINDING_NOT_FOUND
+
+SCIENTIFIC_CONFIGURATION_INCOMPATIBLE
+
+EVIDENCE_RELEASE_INCOMPATIBLE
+EVIDENCE_PATH_NOT_PERMITTED
+EVIDENCE_CLASSIFICATION_INSUFFICIENT
+EVIDENCE_CLASSIFICATION_UNASSIGNED
+
+TARGET_ENGINE_VERSION_INCOMPATIBLE
+TARGET_PLUGIN_INCOMPATIBLE
+TARGET_PLUGIN_INTEGRITY_FAILURE
+CANDIDATE_GENERATOR_NOT_PERMITTED
+
+MEASUREMENT_PROVIDER_INCOMPATIBLE
+MEASUREMENT_CAPABILITY_NOT_PERMITTED
+MEASUREMENT_REQUIREMENT_UNSATISFIED
+
+RELIABILITY_METHOD_INCOMPATIBLE
+RELIABILITY_REQUIREMENT_NOT_MET
+
+TARGET_GEOMETRY_NOT_PERMITTED
+
+DISEASE_STAGE_INCOMPATIBLE
+LESION_CONTEXT_REQUIRED
+TREATMENT_CONTEXT_INCOMPATIBLE
+
+NORMATIVE_MODEL_INCOMPATIBLE
+EFIELD_ENGINE_INCOMPATIBLE
+DEVICE_CAPABILITY_INCOMPATIBLE
+
+RESEARCH_COMPONENT_IN_CLINICAL_CONFIGURATION
+
+MULTIMODAL_FUSION_NOT_PERMITTED
+
+POLICY_PARAMETER_MISSING
+POLICY_PARAMETER_OUT_OF_BOUNDS
+
+POLICY_PROHIBITED_CONFIGURATION
+
+POLICY_VALIDATION_INSUFFICIENT
+POLICY_APPROVAL_INCOMPLETE
+```
+
+---
+
+# 160. ERROR MESSAGES MUST BE SCIENTIFICALLY MEANINGFUL
+
+Clinician-facing:
+
+> Patient-specific motor-map refinement is unavailable because the motor localisation did not meet the validated reliability requirement. The evidence-supported baseline remains available.
+
+Not:
+
+```text
+ERR_POLICY_402.
+```
+
+Technical error code remains in audit/logs.
+
+---
+
+# 161. DATABASE MODEL
+
+Recommended high-level tables:
+
+```text
+scientific_policy.policy_releases
+scientific_policy.indication_bindings
+scientific_policy.compatibility_configurations
+scientific_policy.parameters
+scientific_policy.evidence_path_permissions
+scientific_policy.measurement_policies
+scientific_policy.reliability_policies
+scientific_policy.generator_permissions
+scientific_policy.ranking_profiles
+scientific_policy.refinement_profiles
+scientific_policy.geometry_policies
+scientific_policy.treatment_context_policies
+scientific_policy.normative_policies
+scientific_policy.efield_policies
+scientific_policy.redundancy_policies
+scientific_policy.slate_policies
+scientific_policy.abstention_policies
+scientific_policy.approvals
+scientific_policy.signatures
+```
+
+Exact SQL belongs in the v2 Supabase specification.
+
+---
+
+# 162. RELATIONAL SEMANTICS SHOULD NOT BE HIDDEN ENTIRELY IN JSON
+
+Critical searchable relationships should remain explicit:
+
+```text
+policy ↔ indication module
+
+policy ↔ evidence path
+
+policy ↔ generator
+
+policy ↔ measurement capability
+
+policy ↔ compatibility configuration
+
+policy ↔ Clinical/Research permission
+```
+
+JSON may store controlled parameter payloads where appropriate.
+
+---
+
+# 163. DATABASE IMMUTABILITY
+
+An active ScientificPolicyRelease SHALL NOT be updated in place.
+
+Change requires:
+
+```text
+new ScientificPolicyRelease.
+```
+
+The same applies to active compatibility configurations.
+
+---
+
+# 164. ACTIVATION TRANSACTION
+
+Activation should be atomic.
+
+Either:
+
+```text
+policy release
++
+bindings
++
+compatibility configurations
++
+approvals
++
+signatures
+```
+
+become active together,
+
+or none do.
+
+No partially active scientific release.
+
+---
+
+# 165. PRIVILEGE BOUNDARY
+
+Ordinary application administrators SHALL NOT have direct unrestricted mutation privileges over active scientific-policy tables.
+
+Activation requires dedicated controlled authority.
+
+---
+
+# 166. SCIENTIFIC RELEASE WORKFLOW
+
+Recommended:
+
+```text
+scientist proposes
+        ↓
+domain specialist reviews
+        ↓
+engineering verifies implementability
+        ↓
+validation evidence attached
+        ↓
+change impact assessed
+        ↓
+quality/regulatory review
+        ↓
+release manifest frozen
+        ↓
+approvals recorded
+        ↓
+manifest signed
+        ↓
+activation transaction
+```
+
+---
+
+# 167. CLINICAL RELEASE PACKAGE v2
+
+A Clinical Release Package must identify exact:
+
+```text
+Application build
+
+Database migration
+
+System Requirements baseline
+
+ScientificPolicyRelease
+
+IndicationModuleRelease(s)
+
+EvidenceLibraryRelease
+
+EvidencePath permissions
+
+TargetEngineRelease
+
+Indication plugin releases
+
+Candidate generator releases
+
+Measurement provider releases
+
+Reliability method releases
+
+Phenotype ontology release
+
+Atlas releases
+
+Normative model releases
+
+E-field engine/model where used
+
+Device capability profiles
+
+Human Factors evidence
+
+Scientific verification
+
+Clinical validation evidence
+
+Risk-management approval
+
+Regulatory status
+```
+
+The v1 roadmap already required a similarly explicit release package and prohibited a single developer from activating Clinical Mode. 
+
+---
+
+# 168. CLINICAL RELEASE PACKAGE MAY HAVE DIFFERENT MODULE STATES
+
+Example:
+
+```text
+MAGNIOM Clinical Release 2.3
+
+MDD               Clinical
+Pain              Validation
+Stroke Motor      Validation
+OCD               Research/Validation
+TBI               Research
+Tinnitus          Research
+```
+
+The package manifest records those boundaries explicitly.
+
+---
+
+# 169. MODULE PROMOTION IS A RELEASE EVENT
+
+Promotion:
+
+```text
+Stroke Motor
+validation_only
+→ clinical_permitted
+```
+
+requires:
+
+* relevant validation;
+* risk impact;
+* clinical review;
+* Scientific Policy change;
+* release approval.
+
+It is not:
+
+```text
+UPDATE modules
+SET clinical = true.
+```
+
+---
+
+# 170. MODULE SUSPENSION
+
+Scientific governance SHALL support rapid:
+
+```text
+suspended
+```
+
+state when:
+
+* material new safety concern;
+* invalidated evidence;
+* algorithm defect;
+* measurement reliability problem;
+* device incompatibility;
+* regulatory issue
+
+requires preventing new use.
+
+Historical records remain reconstructable.
+
+---
+
+# 171. SUSPENSION DOES NOT DELETE HISTORY
+
+A withdrawn/suspended module or configuration remains available for:
+
+* audit;
+* historical reconstruction;
+* incident investigation.
+
+It is unavailable for new affected target generation.
+
+---
+
+# 172. EVIDENCE UPDATE CONTROL v2
+
+New publication:
+
+```text
+Source
+ ↓
+SourceFinding
+ ↓
+EvidenceClaim
+ ↓
+Evidence synthesis
+ ↓
+Governance classification
+ ↓
+EvidenceLibraryRelease
+ ↓
+EvidencePath update
+ ↓
+Scientific Policy impact assessment
+ ↓
+possible policy release
+```
+
+No literature ingestion automatically changes Clinical ranking.
+
+---
+
+# 173. MODULE EVIDENCE DOWNGRADE
+
+If evidence becomes less favourable:
+
+Policy SHALL support:
+
+```text
+clinical_permitted
+→ validation_only
+```
+
+or:
+
+```text
+suspended.
+```
+
+MAGNIOM evidence can strengthen or weaken.
+
+---
+
+# 174. NEGATIVE EVIDENCE CAN ALTER PERMISSION
+
+A clinically permitted TargetFamily may remain technically implemented while Scientific Policy disables:
+
+* standalone Primary use;
+* a particular population;
+* a particular targeting method;
+
+after new evidence.
+
+Code deletion is unnecessary.
+
+Policy authority is the correct control.
+
+---
+
+# 175. REPRODUCIBILITY REQUIREMENT
+
+Given:
+
+```text
+same Case snapshot
+same IndicationModuleRelease
+same MeasurementBundle
+same ReliabilityBundle
+same Evidence Library
+same Scientific Policy
+same Target Engine
+same plugin/generator set
+same component versions
+```
+
+MAGNIOM SHALL reconstruct the same scientific decision environment.
+
+---
+
+# 176. POLICY UNIT TESTS
+
+Test:
+
+* parameter schema;
+* missing parameter;
+* bound violation;
+* duplicate binding;
+* conflicting module permission;
+* invalid EvidencePath;
+* generator not in plugin;
+* unsupported geometry;
+* incompatible measurement requirement.
+
+---
+
+# 177. POLICY INTEGRATION TESTS
+
+Test the complete chain:
+
+```text
+CaseIndication
+→ Module
+→ Policy Binding
+→ Compatibility Configuration
+→ Target Engine
+```
+
+for every active module.
+
+---
+
+# 178. POLICY SECURITY TESTS
+
+Verify:
+
+* ordinary clinician cannot edit policy;
+* ordinary admin cannot activate policy;
+* cross-organisation roles cannot alter global scientific authority;
+* browser credentials cannot mutate protected scientific releases;
+* signed active release is immutable.
+
+---
+
+# 179. POLICY SCIENTIFIC VERIFICATION
+
+For each compatibility configuration:
+
+independent reviewers should be able to answer:
+
+### Why is this indication enabled?
+
+### Which EvidencePaths can generate targets?
+
+### Which candidate generators are active?
+
+### Which measurements can influence ranking?
+
+### Which reliability rules apply?
+
+### Which fallback exists?
+
+### Which target geometries are legal?
+
+### Which parameters can change ordering?
+
+### What prevents Research leakage?
+
+If any cannot be reconstructed:
+
+# configuration fails scientific verification.
+
+---
+
+# 180. HUMAN-FACTORS CONSEQUENCE
+
+Scientific Policy status should be reflected in the application shell.
 
 Examples:
 
 ```text
-DWI → T1
-BOLD → T1
-task fMRI → T1
-motor navigation → T1
-lesion mask → surface
+CLINICAL MODE
+MDD Module
 ```
 
----
-
-# 158. CROSS-MODALITY ERROR BUDGET
-
-MAGNIOM SHOULD eventually quantify the localisation uncertainty contributed by:
+versus:
 
 ```text
-acquisition
-processing
-registration
-mapping
-measurement variability
-coordinate export
+RESEARCH MODE
+Tinnitus Module
+Not permitted for treatment decisions
 ```
 
-where feasible.
+The frontend displays canonical policy state.
 
-But v2 SHALL NOT simply sum heterogeneous uncertainties into a fake universal confidence interval without validated methodology.
+It does not determine it.
 
 ---
 
-# 159. UNCERTAINTY MODEL
+# 181. NO UI MODE OVERRIDE
 
-Each measurement may contribute:
-
-```ts
-interface MeasurementUncertainty {
-  measurement_id: UUID;
-
-  uncertainty_sources: UncertaintySource[];
-
-  spatial_uncertainty_region?: SpatialRegion;
-
-  qualitative_interpretation: string;
-}
-```
-
----
-
-# 160. CLINICAL CAPABILITY, NOT MODALITY, IS THE RELEASE UNIT
-
-A clinically qualified rs-fMRI pipeline for:
+A developer SHALL NOT implement:
 
 ```text
-MDD FC refinement
-```
-
-does not imply qualification for:
-
-```text
-PTSD network targeting.
-```
-
-Likewise:
-
-```text
-motor mapping technically valid
-```
-
-does not imply:
-
-```text
-stroke motor targeting clinically validated.
-```
-
-The release unit is:
-
-```text
-Measurement Provider
-+
-Capability
-+
-Indication Module
-+
-Scientific Policy.
-```
-
----
-
-# 161. INITIAL v2 CAPABILITY POSTURE
-
-Recommended starting position:
-
-| Capability                       | Suggested initial state                |
-| -------------------------------- | -------------------------------------- |
-| Structural MRI / neuronavigation | Core                                   |
-| MDD rs-fMRI refinement           | Preserve existing validation pathway   |
-| Lesion mapping                   | Validation                             |
-| Motor mapping                    | Validation                             |
-| MEP context                      | Validation / Research depending module |
-| DWI structural connectivity      | Research / validation                  |
-| Task fMRI                        | Research / validation                  |
-| Audiology structured measurement | Core for tinnitus research workflow    |
-| Tinnitus network imaging         | Research                               |
-| Lesion-network targeting         | Research                               |
-| Multimodal fusion                | Research only                          |
-
-This is an engineering maturity recommendation, not a clinical claim.
-
----
-
-# 162. NEW SYSTEM REQUIREMENTS
-
-The future v2 SRS should add requirements such as:
-
-### MAG-MEA-001
-
-Every patient-specific measurement SHALL reference a versioned Measurement Provider and ProcessingRun.
-
-### MAG-MEA-002
-
-A measurement SHALL NOT influence Clinical target generation unless its required capability is qualified.
-
-### MAG-MEA-003
-
-Measurement QC and measurement reliability SHALL remain distinct.
-
-### MAG-MEA-004
-
-Missing measurement data SHALL NOT be interpreted as normal measurement.
-
-### MAG-MEA-005
-
-Multimodal measurements SHALL NOT be fused into a clinical target unless a validated Scientific Policy explicitly defines the fusion.
-
-### MAG-MEA-006
-
-Cross-modal coordinate transforms SHALL be versioned and verified.
-
-### MAG-MEA-007
-
-Research-only measurement capabilities SHALL NOT influence Clinical Target Slates.
-
----
-
-# 163. LESION REQUIREMENTS
-
-### MAG-LES-001
-
-Lesion-dependent indication modules SHALL reference an approved `LesionContext`.
-
-### MAG-LES-002
-
-Lesion masks SHALL retain native-space provenance.
-
-### MAG-LES-003
-
-A substantially destroyed target region SHALL NOT be treated as normal intact cortex.
-
-### MAG-LES-004
-
-Target/lesion relationships SHALL use validated coordinate transformations.
-
-### MAG-LES-005
-
-Lesion segmentation uncertainty SHALL remain visible.
-
----
-
-# 164. DWI REQUIREMENTS
-
-### MAG-DWI-001
-
-Diffusion processing SHALL reference an immutable acquisition and pipeline version.
-
-### MAG-DWI-002
-
-Tractography outputs SHALL NOT be represented as direct axonal counts.
-
-### MAG-DWI-003
-
-Structural-connectivity features SHALL require module-specific Scientific Policy permission before influencing Clinical ranking.
-
-### MAG-DWI-004
-
-DWI failure SHALL NOT invalidate unrelated qualified modalities unless the active module requires DWI.
-
----
-
-# 165. MOTOR REQUIREMENTS
-
-### MAG-MOT-001
-
-Motor mapping SHALL preserve stimulation location, orientation, intensity, muscle and response provenance.
-
-### MAG-MOT-002
-
-Somatotopic target refinement SHALL require body-region consistency.
-
-### MAG-MOT-003
-
-Motor hotspot localisation used clinically SHALL have applicable reliability qualification.
-
-### MAG-MOT-004
-
-Motor-map failure SHALL NOT result in a guessed patient-specific hotspot.
-
----
-
-# 166. MEP REQUIREMENTS
-
-### MAG-MEP-001
-
-MEP trials SHALL retain artefact/validity status.
-
-### MAG-MEP-002
-
-Absence of MEP SHALL NOT automatically be interpreted as absence of corticospinal anatomy.
-
-### MAG-MEP-003
-
-MEP-derived scientific features SHALL require indication-specific policy permission.
-
----
-
-# 167. TASK fMRI REQUIREMENTS
-
-### MAG-TFM-001
-
-Task-fMRI interpretation SHALL retain paradigm and behavioural-performance provenance.
-
-### MAG-TFM-002
-
-Failure to perform a task SHALL NOT be represented as absence of cortical function.
-
-### MAG-TFM-003
-
-Task-fMRI target influence SHALL require reproducibility/qualification appropriate to the intended capability.
-
----
-
-# 168. AUDIOLOGY REQUIREMENTS
-
-### MAG-AUD-001
-
-Tinnitus measurement workflows SHALL preserve hearing and tinnitus laterality separately.
-
-### MAG-AUD-002
-
-Audiologic measurements SHALL identify equipment/calibration provenance where clinically relevant.
-
-### MAG-AUD-003
-
-Tinnitus pitch/loudness matching SHALL NOT independently generate a Clinical target.
-
-### MAG-AUD-004
-
-Research auditory-network targeting SHALL remain structurally distinct from routine audiologic assessment.
-
----
-
-# 169. GOLDEN MULTIMODAL CASES
-
-### MM-01 — MDD, qualified rs-fMRI
-
-Expected:
-
-```text
-individual_fc_refinement = qualified
-```
-
-### MM-02 — MDD, failed rs-fMRI
-
-Expected:
-
-```text
-FC refinement disabled
-evidence baseline preserved
-```
-
-### MM-03 — Stroke, large lesion
-
-Expected:
-
-```text
-LesionContext generated
-target-family intersections identified
-```
-
-### MM-04 — Stroke, destroyed M1 target region
-
-Expected:
-
-measurement reports structural invalidity; Target Engine determines candidate suppression.
-
-### MM-05 — Pain, reproducible hand hotspot
-
-Expected:
-
-```text
-motor_hotspot_targeting = qualified
-```
-
-### MM-06 — Pain, unstable hotspot
-
-Expected:
-
-refinement not qualified.
-
-### MM-07 — Aphasia, successful task performance
-
-Expected:
-
-qualified task measurement if all other criteria pass.
-
-### MM-08 — Aphasia, failed task performance
-
-Expected:
-
-no false “language cortex absent” conclusion.
-
-### MM-09 — TBI, skull defect
-
-Expected:
-
-structural/skull context available for E-field workflow.
-
-### MM-10 — DWI tractography instability
-
-Expected:
-
-structural-connectivity refinement not qualified.
-
-### MM-11 — Tinnitus, complete audiology
-
-Expected:
-
-tinnitus research measurement bundle qualified.
-
-### MM-12 — Tinnitus pitch match + no clinical EvidencePath
-
-Expected:
-
-no Clinical target generation.
-
----
-
-# 170. SECURITY GOLDEN CASE
-
-Attempt:
-
-```text
-Case A DWI
-+
-Case B lesion mask
-```
-
-Expected:
-
-# hard cross-case rejection.
-
-No scientific bundle can contain patient data from different Cases.
-
----
-
-# 171. LATERALITY GOLDEN CASE
-
-Attempt:
-
-```text
-right-hand pain
-+
-right M1 contralateral strategy
-```
-
-where policy requires the opposite hemisphere.
-
-Expected:
-
-structured inconsistency detection.
-
-No silent hemisphere correction.
-
----
-
-# 172. TRANSFORM GOLDEN CASE
-
-Deliberately invert RAS/LPS convention.
-
-Expected:
-
-```text
-spatial validation failure
-```
-
-before Target Engine use.
-
----
-
-# 173. REPRODUCIBILITY GOLDEN CASE
-
-Run identical source data under identical:
-
-```text
-pipeline
-configuration
-software
-atlas
-```
-
-Expected:
-
-scientifically equivalent canonical measurement and matching manifest.
-
----
-
-# 174. PIPELINE-UPGRADE GOLDEN CASE
-
-Process same acquisition with:
-
-```text
-Pipeline 2.0
-vs
-Pipeline 2.1
-```
-
-Measure:
-
-* localisation change;
-* tract change;
-* lesion-boundary change;
-* reliability change;
-* capability qualification change.
-
-If clinically material:
-
-a formal scientific impact report is required.
-
----
-
-# 175. REPOSITORY v2
-
-Recommended:
-
-```text
-packages/
-├── measurement-core/
-│   ├── acquisition/
-│   ├── processing/
-│   ├── qc/
-│   ├── reliability/
-│   ├── transforms/
-│   ├── manifests/
-│   └── bundles/
-│
-├── modalities/
-│   ├── structural-mri/
-│   ├── lesion-mapping/
-│   ├── resting-state/
-│   ├── task-fmri/
-│   ├── diffusion/
-│   ├── motor-mapping/
-│   ├── mep/
-│   ├── audiology/
-│   └── efield/
-│
-└── measurement-testkit/
-    ├── synthetic/
-    ├── known-answer/
-    ├── transform-tests/
-    ├── reliability/
-    └── golden-cases/
-```
-
----
-
-# 176. CONTAINER ARCHITECTURE
-
-Where appropriate, scientific pipelines SHOULD run inside frozen containers.
-
-Separate containers are preferable where modality stacks materially differ:
-
-```text
-magniom-structural
-magniom-rsfmri
-magniom-taskfmri
-magniom-diffusion
-magniom-lesion
-magniom-efield
-```
-
-Motor mapping/audiology may involve device adapters rather than container-only pipelines.
-
----
-
-# 177. CONTAINER DIGEST
-
-Clinical runs SHALL reference immutable image digest.
-
-Do not rely solely on:
-
-```text
-magniom-diffusion:latest
+?mode=clinical
 ```
 
 or:
 
 ```text
-fmriprep:stable.
+clinicalMode=true
+```
+
+as sufficient authority to enable a module.
+
+The UI can request a mode.
+
+Server-side policy determines whether that mode is valid.
+
+---
+
+# 182. CLINICIAN OVERRIDE DOES NOT OVERRIDE SCIENTIFIC POLICY
+
+Clinicians may:
+
+* reject candidates;
+* choose another clinically permitted candidate;
+* modify/replace according to controlled workflow;
+* choose no target.
+
+A clinician SHALL NOT use an ordinary override control to convert:
+
+```text
+Research-only TargetCandidate
+```
+
+into:
+
+```text
+Clinical TargetCandidate.
+```
+
+Clinical judgement and system scientific authority remain distinct.
+
+---
+
+# 183. SCIENTIFIC POLICY DOES NOT OVERRIDE CLINICIAN
+
+Conversely, Scientific Policy defines:
+
+# what MAGNIOM may propose.
+
+It does not force:
+
+# what the specialist must choose.
+
+This preserves final human authority.
+
+---
+
+# 184. INITIAL v2 MODULE POSTURE
+
+A sensible initial v2 scientific policy posture is:
+
+| Module                 | Policy posture                                |
+| ---------------------- | --------------------------------------------- |
+| MDD ± anxious distress | preserve existing validation/clinical pathway |
+| Neuropathic pain       | Research/Validation                           |
+| Stroke Motor           | Research/Validation                           |
+| Stroke Aphasia         | Research/Validation                           |
+| OCD                    | Research/Validation                           |
+| PTSD                   | Research/Validation                           |
+| TBI submodules         | Research                                      |
+| Tinnitus               | Research                                      |
+
+These states are development governance recommendations, not evidence-tier assignments.
+
+---
+
+# 185. INITIAL MDD POLICY
+
+Preserve v1 conservatism:
+
+* established evidence baseline;
+* patient-specific FC only when reliability qualified;
+* personalisation requires incremental value;
+* normative abnormalities not independent Clinical candidate generators;
+* E-field primarily accessibility/pose unless stronger role separately validated;
+* do not force third Primary candidate.
+
+This is consistent with the existing v1 Target Engine policy. 
+
+---
+
+# 186. INITIAL PAIN POLICY
+
+Suggested validation posture:
+
+```text
+Evidence-supported somatotopic M1 baseline:
+enabled for validation
+
+Motor-map refinement:
+validation only
+
+rs-fMRI network refinement:
+research
+
+normative pain-network abnormalities:
+research
+
+multimodal fusion:
+disabled
+```
+
+No numerical thresholds are specified here.
+
+---
+
+# 187. INITIAL STROKE-MOTOR POLICY
+
+Suggested:
+
+```text
+LesionContext:
+required
+
+disease stage:
+required
+
+evidence-defined motor strategies:
+validation
+
+motor-map refinement:
+validation if qualified
+
+MEP:
+context/validation feature only
+
+DWI/CST:
+research or validation study
+
+rs-fMRI:
+research/validation
+
+lesion-network targeting:
+research
 ```
 
 ---
 
-# 178. EXTERNAL TOOLCHAIN UPDATES
+# 188. INITIAL APHASIA POLICY
 
-Updates to:
-
-* MRI preprocessing;
-* tractography;
-* segmentation;
-* surface reconstruction;
-* task analysis;
-* lesion models;
-
-may materially alter targets.
-
-They SHALL not automatically enter Clinical environments.
-
----
-
-# 179. VALIDATED RELEASE MANIFEST
-
-A Multimodal Measurement Release should identify:
+Suggested:
 
 ```text
-structural provider
-lesion provider
-rs-fMRI provider
-task-fMRI provider
-diffusion provider
-motor-map adapter
-MEP adapter
-audiology adapter
-E-field provider
-atlas versions
-normative models
-transform libraries
-acquisition profiles
-reliability methods
+aphasia phenotype:
+required
+
+disease stage:
+required where path-specific
+
+lesion mapping:
+required
+
+right-IFG evidence path:
+validation where appropriate
+
+speech-language therapy context:
+explicitly evaluated
+
+task fMRI:
+Research/Validation
+
+patient-specific language-network optimisation:
+Research
 ```
 
 ---
 
-# 180. MEASUREMENT RELEASE COMPATIBILITY
+# 189. INITIAL OCD POLICY
 
-Clinical compatibility is explicit.
-
-Example:
+Suggested:
 
 ```text
-StrokeMotorModule 1.0
-+
-StructuralProvider 2.0
-+
-LesionProvider 1.0
-+
-MotorMapProvider 1.1
-+
-ScientificPolicy 2.0
+field-target evidence path:
+validation
+
+coil/device dependence:
+enforced
+
+pre-SMA/SMA focal alternatives:
+separate EvidencePaths
+
+symptom-provocation context:
+explicit where evidence depends on it
+
+rs-fMRI personalisation:
+Research unless separately validated
+
+cross-family universal score:
+prohibited
 ```
-
-may be validated.
-
-It does not follow that:
-
-```text
-LesionProvider 1.2
-```
-
-is automatically compatible.
 
 ---
 
-# 181. HUMAN FACTORS
+# 190. INITIAL TBI POLICY
 
-Clinicians must be able to distinguish:
-
-```text
-measurement quality
-```
-
-from:
+Suggested:
 
 ```text
-target evidence
-```
+all modules:
+Research
 
-from:
+lesion/skull context:
+required where relevant
 
-```text
-Target Engine preference.
-```
+MDD target inheritance:
+prohibited
 
-For example:
+target-specific candidate generation:
+requires explicit TBI EvidencePath
 
-> Motor mapping is highly reproducible
+DWI / rs-fMRI / task fMRI:
+Research
 
-does not mean:
-
-> This target is proven clinically superior.
-
----
-
-# 182. UI STATUS LANGUAGE
-
-Recommended:
-
-```text
-Available
-Processing
-Qualified
-Qualified with limitations
-Not qualified
+multimodal fusion:
 Research only
-Not required
 ```
 
-Avoid:
+---
+
+# 191. INITIAL PTSD POLICY
+
+Suggested:
 
 ```text
-Good brain
-Bad scan
-Weak patient
-High-confidence treatment
+target families:
+Research/Validation
+
+population applicability:
+explicit
+
+MDD evidence inheritance:
+prohibited
+
+connectome personalisation:
+Research unless separately validated
+
+conflicting population evidence:
+must remain visible
 ```
 
 ---
 
-# 183. VISUALISATION
+# 192. INITIAL TINNITUS POLICY
 
-Modality visualisations may include:
-
-### Structural
-
-surface/anatomy.
-
-### Lesion
-
-mask + target relationship.
-
-### rs-fMRI
-
-circuit/concordance overlays.
-
-### Task fMRI
-
-activation maps.
-
-### DWI
-
-tracts/tract-density maps.
-
-### Motor mapping
-
-stimulation-response maps.
-
-### Audiology
-
-audiogram/tinnitus profile.
-
-Visualisation is not the scientific data source.
-
-Canonical measurements remain authoritative.
-
----
-
-# 184. NO HEATMAP AUTHORITY
-
-A colourful heatmap SHALL NOT carry more clinical authority than the underlying measurement warrants.
-
-Particularly:
-
-* task activation;
-* FC map;
-* tract density;
-* motor response maps.
-
-Visual intensity is not automatically treatment relevance.
-
----
-
-# 185. CLINICAL EXPORT
-
-Only after clinician target selection should MAGNIOM produce the appropriate navigation/export artefact.
-
-Export may incorporate:
+Suggested:
 
 ```text
-subject anatomy
-selected target geometry
-coil field/pose where applicable
-coordinate transforms
+clinical permission:
+disabled
+
+research module:
+enabled
+
+audiology:
+required
+
+auditory/temporoparietal candidates:
+Research only
+
+imaging abnormalities:
+cannot create Clinical targets
+
+negative/conflicting evidence:
+mandatory explanation content
 ```
-
-Measurement providers prepare the spatial basis.
-
-They do not select the target.
 
 ---
 
-# 186. PROTOCOL BOUNDARY
+# 193. v2 POLICY REQUIREMENT IDS
 
-Even motor physiology does not authorise automatic protocol generation.
+The future SRS v2 should include at least:
 
-The measurement layer may record:
+### MAG-POL-041
+
+Every Target Slate SHALL reference exactly one `IndicationModuleRelease`.
+
+### MAG-POL-042
+
+Every scientific compatibility configuration SHALL explicitly identify its `IndicationModuleRelease`.
+
+### MAG-POL-043
+
+Compatibility between Scientific Policy and `IndicationModuleRelease` SHALL be positive-whitelist based.
+
+### MAG-POL-044
+
+Clinical permission for one Indication Module SHALL NOT confer Clinical permission on another.
+
+### MAG-POL-045
+
+Scientific parameters SHALL NOT inherit across Indication Modules unless explicitly approved.
+
+### MAG-POL-046
+
+An EvidencePath SHALL NOT influence Clinical Mode unless explicitly authorised for the active Indication Module.
+
+### MAG-POL-047
+
+Candidate generators SHALL be authorised by exact module, plugin version and Scientific Policy.
+
+### MAG-POL-048
+
+Measurement capabilities SHALL be authorised per Indication Module.
+
+### MAG-POL-049
+
+Research-only measurements SHALL NOT satisfy Clinical capability requirements.
+
+### MAG-POL-050
+
+Clinical Mode authority SHALL NOT be determined by a single application-level mode flag.
+
+---
+
+# 194. ADDITIONAL REQUIREMENTS
+
+### MAG-POL-051
+
+Target geometry permissions SHALL be module- and TargetFamily-specific.
+
+### MAG-POL-052
+
+Patient-specific refinement SHALL use a module-specific validated refinement policy.
+
+### MAG-POL-053
+
+A module may define an evidence-baseline fallback only through an explicit scientific fallback rule.
+
+### MAG-POL-054
+
+Multimodal fusion SHALL be prohibited unless explicitly represented as a validated scientific model.
+
+### MAG-POL-055
+
+Unassigned Evidence Governance classifications SHALL NOT be automatically converted to MAGNIOM Evidence Tiers.
+
+### MAG-POL-056
+
+Clinical module activation SHALL require module-specific validation evidence.
+
+### MAG-POL-057
+
+Superseding an `IndicationModuleRelease` SHALL NOT alter historical Target Slates.
+
+### MAG-POL-058
+
+A Clinical Release Package SHALL identify the exact module-level scientific permission state.
+
+---
+
+# 195. POLICY GOLDEN-SUITE REQUIREMENT
+
+Every active or validation module SHALL have:
+
+* at least one normal-path case;
+* evidence failure case;
+* measurement failure case;
+* reliability failure case;
+* mode-leakage case;
+* wrong-module case;
+* incompatible-version case;
+* abstention/fallback case.
+
+Additional cases depend on the module.
+
+---
+
+# 196. CHANGE-IMPACT REPORT v2
+
+Every scientific release SHOULD produce a matrix:
+
+| Module | Cases tested | Slate changed | Primary 1 changed | Abstention changed | Mean/median spatial change | New/removed candidates |
+| ------ | -----------: | ------------: | ----------------: | -----------------: | -------------------------: | ---------------------: |
+| MDD    |            … |             … |                 … |                  … |                          … |                      … |
+| Pain   |            … |             … |                 … |                  … |                          … |                      … |
+| Stroke |            … |             … |                 … |                  … |                          … |                      … |
+| OCD    |            … |             … |                 … |                  … |                          … |                      … |
+
+Research modules can report analogous Research outputs.
+
+---
+
+# 197. SCIENTIFIC POLICY PACKAGE
+
+Recommended repository:
 
 ```text
-RMT
-AMT
-MEP
+packages/scientific-policy/
+├── core/
+│   ├── policy-release.ts
+│   ├── compatibility.ts
+│   ├── parameters.ts
+│   ├── validation.ts
+│   └── manifests.ts
+│
+├── evidence/
+├── measurements/
+├── reliability/
+├── generators/
+├── ranking/
+├── refinement/
+├── geometry/
+├── efield/
+├── normative/
+├── slate/
+├── abstention/
+│
+├── indications/
+│   ├── mdd/
+│   ├── ocd/
+│   ├── neuropathic-pain/
+│   ├── stroke-motor/
+│   ├── stroke-aphasia/
+│   ├── tbi/
+│   ├── ptsd/
+│   └── tinnitus/
+│
+└── tests/
 ```
 
-but does not autonomously determine:
+---
+
+# 198. POLICY CONFIGURATION FILES
+
+Conceptually:
 
 ```text
-frequency
-train duration
-pulse count
-session schedule.
+scientific-config/
+├── releases/
+│   └── 2.0.0/
+│
+├── indications/
+│   ├── mdd/
+│   ├── pain/
+│   ├── stroke-motor/
+│   └── ...
+│
+├── compatibility/
+├── parameters/
+├── manifests/
+├── signatures/
+└── validation/
 ```
 
-Target selection and protocol selection remain separate domains.
+Clinical artefacts are generated from controlled source files and hashed.
 
 ---
 
-# 187. RETROSPECTIVE VALIDATION DATASETS
+# 199. POLICY-AS-CODE PRINCIPLE
 
-Each modality should have:
+Scientific policy SHOULD be reviewable as code/configuration.
+
+Benefits:
+
+* diffable;
+* testable;
+* versioned;
+* reproducible;
+* code-reviewed;
+* signed.
+
+But policy-as-code does not mean:
+
+# developers own scientific policy.
+
+Scientific governance owns the meaning.
+
+---
+
+# 200. FINAL SCIENTIFIC POLICY MODEL
 
 ```text
-development dataset
-locked validation dataset
+                           ScientificPolicyRelease
+                                      │
+                ┌─────────────────────┼─────────────────────┐
+                │                     │                     │
+         MDD Binding            Pain Binding          Stroke Binding
+                │                     │                     │
+      IndicationModule       IndicationModule       IndicationModule
+                │                     │                     │
+       Evidence Paths          Evidence Paths          Evidence Paths
+                │                     │                     │
+        Generators              Generators              Generators
+                │                     │                     │
+       Measurements            Measurements            Measurements
+                │                     │                     │
+       Reliability             Reliability             Reliability
+                │                     │                     │
+       Ranking/Refine          Ranking/Refine          Ranking/Refine
+                │                     │                     │
+                └──────────────┬──────┴──────────────┬─────┘
+                               │                     │
+                      Exact Compatibility      Clinical/Research
+                           Configuration             Authority
 ```
-
-appropriate to its intended capability.
-
-One dataset should not be repeatedly tuned against until it becomes de facto training data.
 
 ---
 
-# 188. PROSPECTIVE VALIDATION
+# 201. CANONICAL v2 SCIENTIFIC COMPATIBILITY RULE
 
-Where patient-specific measurement affects target choice, silent prospective validation should measure:
+The scientific compatibility tuple is now:
 
 ```text
-measurement success rate
-qualification rate
-repeatability
-target displacement
-fallback rate
-processing failure
-site effects
-clinician interpretation
+ScientificPolicyRelease
+×
+IndicationModuleRelease
+×
+EvidenceLibraryRelease
+×
+EvidencePath permissions
+×
+TargetEngineRelease
+×
+IndicationTargetingPluginRelease
+×
+CandidateGeneratorReleaseSet
+×
+MeasurementProviderReleaseSet
+×
+ReliabilityMethodReleaseSet
+×
+PhenotypeOntologyRelease
+×
+AtlasReleaseSet
+×
+NormativeModelReleaseSet
+×
+EFieldEngineRelease where applicable
+×
+DeviceCapabilityProfile where applicable
+×
+AcquisitionProfileSet where applicable
+×
+Mode
 ```
 
-before unrestricted clinical influence.
+The tuple must be explicitly approved.
 
 ---
 
-# 189. SITE DRIFT MONITORING
+# 202. WHY `IndicationModuleRelease` CHANGES EVERYTHING
 
-Post-release surveillance SHOULD monitor:
-
-* acquisition drift;
-* processing failure rate;
-* reliability distribution;
-* scanner upgrades;
-* calibration issues;
-* motor-map variability;
-* audiology import errors.
-
-Operational drift is not automatically scientific evidence.
-
----
-
-# 190. NO AUTOMATIC RETUNING
-
-If reliability degrades at one site:
-
-MAGNIOM SHALL NOT automatically lower:
+Without the module in the tuple, MAGNIOM could know:
 
 ```text
-minimum reliability threshold
+which engine
+which evidence
+which pipeline
 ```
 
-to preserve throughput.
+but still fail to know:
 
-Investigate the acquisition/pipeline first.
+> **which scientific interpretation of those components is actually authorised for this disease, therapeutic objective, disease stage, target geometry and measurement architecture.**
 
----
-
-# 191. MEASUREMENT CHANGE CLASSES
-
-### Non-scientific implementation
-
-Intended no output change.
-
-### Measurement implementation
-
-May alter derived measurement.
-
-### Measurement parameter
-
-Changes threshold/model/configuration.
-
-### Measurement model
-
-Changes scientific method.
-
-### Acquisition profile
-
-Changes input domain.
-
-Each carries progressively greater validation implications.
+`IndicationModuleRelease` supplies that missing scientific scope.
 
 ---
 
-# 192. SCIENTIFIC CHANGE IMPACT
+# 203. v2 SCIENTIFIC POLICY MANIFESTO
 
-For any clinically material modality update ask:
+# One platform does not mean one scientific policy.
 
-```text
-Which cases changed?
+# Every indication earns its own authority.
 
-Which measurements moved?
+# Code capability is not clinical permission.
 
-Which capabilities changed qualification?
+# Evidence availability is not clinical permission.
 
-Which TargetCandidates changed?
+# Module availability is not clinical permission.
 
-Which Primary 1 candidates changed?
-
-How large were spatial shifts?
-
-Did fallback rates change?
-
-Did laterality ever change?
-
-Did abstention change?
-```
-
----
-
-# 193. DATA CONTRACT WITH v2 TARGET ENGINE
-
-The Target Engine shall receive:
-
-```text
-qualified scientific facts
-```
-
-rather than rerun measurement algorithms itself.
-
-This preserves package boundaries.
-
-Example:
-
-```text
-MotorMapProvider
-→ MotorHotspotResult
-
-Target Engine
-→ decides whether generator may use it.
-```
-
----
-
-# 194. NO DUPLICATE SCIENTIFIC IMPLEMENTATION
-
-The Target Engine SHALL NOT independently reimplement:
-
-* lesion segmentation;
-* FC computation;
-* tractography;
-* task GLM;
-* motor-hotspot derivation;
-* audiometric interpretation.
-
-It consumes versioned canonical results.
-
----
-
-# 195. DATABASE DOMAIN RECOMMENDATION
-
-Suggested schemas/tables:
-
-```text
-measurement.acquisitions
-measurement.processing_runs
-measurement.measurements
-measurement.quality_assessments
-measurement.reliability_assessments
-measurement.measurement_bundles
-measurement.bundle_members
-measurement.capability_qualifications
-
-imaging.structural_measurements
-imaging.lesion_measurements
-imaging.rsfmri_measurements
-imaging.taskfmri_measurements
-imaging.diffusion_measurements
-imaging.structural_connectivity_measurements
-
-neurophysiology.motor_mapping_runs
-neurophysiology.motor_mapping_points
-neurophysiology.motor_hotspots
-neurophysiology.mep_measurements
-neurophysiology.mep_trials
-neurophysiology.motor_thresholds
-
-audiology.assessments
-audiology.audiograms
-audiology.tinnitus_matching
-```
-
-Exact relational implementation belongs in the Supabase v2 specification.
-
----
-
-# 196. DO NOT OVER-JSON
-
-Strongly typed/searchable fields should include:
-
-```text
-modality
-laterality
-body region
-muscle
-lesion type
-processing status
-QC status
-reliability class
-capability status
-coordinate space
-pipeline version
-```
-
-Extended model-specific metrics may use structured JSON where necessary.
-
----
-
-# 197. V2 MEASUREMENT PIPELINE
-
-The overall canonical algorithm becomes:
-
-```text
-CLINICAL INDICATION MODULE
-          ↓
-MEASUREMENT REQUIREMENTS
-          ↓
-ACQUISITION INGESTION
-          ↓
-SOURCE INTEGRITY
-          ↓
-MODALITY-SPECIFIC PROCESSING
-          ↓
-QUALITY CONTROL
-          ↓
-RELIABILITY ANALYSIS
-          ↓
-CAPABILITY QUALIFICATION
-          ↓
-CROSS-MODAL TRANSFORM VALIDATION
-          ↓
-MEASUREMENT BUNDLE
-          ↓
-RELIABILITY BUNDLE
-          ↓
-TARGET ENGINE
-```
-
----
-
-# 198. THE MULTIMODAL PIPELINE MUST NEVER
-
-### infer clinical indication from imaging alone;
-
-### search the whole brain for the most abnormal location and call it a target;
-
-### interpret a lesion as a target merely because it is abnormal;
-
-### treat tractography as direct axonal ground truth;
-
-### treat task activation as causal treatment evidence;
-
-### infer absent function from failed task performance;
-
-### treat MEP absence as automatic tract destruction;
-
-### turn motor-map precision into efficacy evidence;
-
-### turn tinnitus pitch matching into auditory-cortex target selection;
-
-### silently combine modalities into a universal target score;
-
-### use incompatible normative models;
-
-### ignore laterality inconsistency;
-
-### hide processing sensitivity;
-
-### call an unstable patient-specific coordinate “precision targeting”;
-
-### change scientific software silently;
-
-### use Research measurements as Clinical authority without promotion;
-
-### rank targets itself.
-
----
-
-# 199. v2 SCIENTIFIC DIFFERENTIATOR
-
-A conventional imaging workflow may produce:
-
-# a coordinate.
-
-A conventional motor-mapping system may produce:
-
-# a hotspot.
-
-A conventional DWI workflow may produce:
-
-# a tract.
-
-A conventional audiology system may produce:
-
-# an audiogram.
-
-MAGNIOM v2 produces something more useful:
-
-```text
-Measurement
-+
-method
-+
-provenance
-+
-QC
-+
-reliability
-+
-capability qualification
-+
-scientific scope.
-```
-
-That package allows the Target Engine to know not merely:
-
-> what was measured?
-
-but:
-
-> **whether this measurement is trustworthy enough, and scientifically authorised enough, to influence this particular targeting decision.**
-
----
-
-# 200. FINAL MULTIMODAL PRINCIPLES
-
-# Structural anatomy establishes where the patient's anatomy actually is.
-
-# Lesion mapping establishes where anatomy has been altered.
-
-# rs-fMRI measures functional relationships.
-
-# Task fMRI measures task-dependent functional responses.
-
-# DWI estimates structural pathways.
-
-# Motor mapping measures stimulation-responsive somatotopy.
-
-# MEPs measure evoked corticospinal physiology.
-
-# Audiology characterises hearing and tinnitus context.
-
-# E-field modelling estimates stimulation physics.
-
-# None of these measurements independently establishes clinical efficacy.
-
-# None independently establishes the final target.
-
-# Each modality has its own QC.
-
-# Each modality has its own reliability model.
+# Measurement availability is not clinical permission.
 
 # Reliability is capability-specific.
 
-# Missing data are not normal data.
+# Target geometry is scientific meaning, not presentation detail.
 
-# Failed measurement is not a negative biological finding.
+# A device may be part of the evidence path.
 
-# Technical precision is not biological certainty.
+# Treatment context may be part of the evidence path.
 
-# More modalities do not automatically improve targeting.
+# Disease stage may be part of the evidence path.
 
-# Multimodal disagreement remains visible.
+# Research evidence remains Research unless explicitly promoted.
 
-# Multimodal convergence is described, not overinterpreted.
+# A new paper cannot change Clinical output automatically.
 
-# Modality fusion requires explicit scientific validation.
+# A new plugin cannot change Clinical output automatically.
 
-# Clinical use is indication-specific.
+# A new measurement modality cannot change Clinical output automatically.
 
-# Research use never silently becomes Clinical use.
+# A new module cannot change Clinical output automatically.
 
-# The Target Engine receives qualified measurements.
+# A numerical parameter cannot change silently.
 
-# The specialist receives competing hypotheses.
+# A site cannot weaken scientific thresholds to improve throughput.
 
-# The specialist decides.
+# A clinician can override a candidate, but cannot turn Research science into Clinical authority.
 
----
+# Historical science remains reconstructable.
 
-# 201. CANONICAL DEFINITION
+# Every clinically meaningful scientific combination is positively authorised.
 
-The **MAGNIOM Neuroimaging, Neurophysiology & Multimodal Measurement System v2.0** is:
-
-> **A versioned, modality-aware scientific measurement architecture that converts imaging, neurophysiology and audiologic acquisitions into reproducible, provenance-complete and capability-qualified patient measurements, while explicitly separating acquisition quality, measurement reliability, scientific interpretation and clinical target authority.**
+# If authority cannot be proved, MAGNIOM fails closed.
 
 ---
 
-# 202. FINAL GOVERNING RULE
+# 204. CANONICAL DEFINITION
 
-> **MAGNIOM shall never permit a measurement to influence a target merely because that measurement can be computed. Structural MRI, lesion maps, functional connectivity, task activation, tractography, motor hotspots, MEPs, audiology and E-field models must each demonstrate appropriate acquisition validity, processing integrity, reliability and indication-specific scientific permission before they can contribute to Target Engine reasoning. The measurement system measures; Scientific Policy qualifies; the Target Engine constructs hypotheses; the specialist decides.**
+The **MAGNIOM Scientific Policy & Algorithm Configuration System v2.0** is:
 
+> **An immutable, versioned, indication-aware and governance-approved scientific authority layer that binds each `IndicationModuleRelease` to the exact evidence paths, Target Engine components, indication plugins, candidate generators, measurement capabilities, reliability methods, target geometries, ranking/refinement rules, normative models, E-field components, devices and parameters permitted to influence MAGNIOM output in a defined mode.**
+
+---
+
+# 205. FINAL GOVERNING RULE
+
+> **No Evidence Library release, Indication Module, Target Engine, plugin, candidate generator, imaging or neurophysiology pipeline, normative model, E-field model, device capability or ranking parameter becomes clinically authoritative merely because it exists, executes successfully, produces plausible output, or is technically compatible. It may influence Clinical Mode only when the exact `IndicationModuleRelease` and complete scientific configuration are explicitly authorised by an immutable, validated and approved `ScientificPolicyRelease`, and that authority can be reconstructed and cryptographically verified for the resulting Target Slate.**
+
+This is the central v2 transition: **Clinical authority becomes indication-specific rather than application-wide.** MAGNIOM can therefore expand rapidly into pain, stroke, OCD, TBI, PTSD, tinnitus and later applications while preserving the narrow, deterministic and auditable scientific boundaries that made the original MDD architecture defensible.

@@ -61,6 +61,13 @@ function verifyRequirements() {
     'AUD',
     'REL',
     'VAL',
+    'IND',
+    'MEA',
+    'STR',
+    'PAI',
+    'TBI',
+    'TIN',
+    'OCD',
   ]);
 
   const reqIdRegex = /^MAG-([A-Z]{2,4})-\d{3}$/;

@@ -1,27 +1,48 @@
-# Magniom Code Ownership & Safety Domain Mapping
-# Aligned with MAGNIOM-Enterprise Verification, Testing & CI/CD Specification v1.0 (Section 13)
+# MAGNIOM Enterprise Code Ownership & Safety Domain Mapping
+# Conforms to MAGNIOM-Enterprise Verification, Testing & CI/CD Specification v2.0 (§12–14)
+# RULE (§14): NO SINGLE-PERSON CLINICAL SCIENTIFIC RELEASE.
+# Any PR touching protected scientific paths REQUIRES dual approval (@clinical-science + @quality).
 
-# Core Target Engine & Deterministic Ranking
-/packages/target-engine/             @target-engine @clinical-science
-
-# Scientific Configurations & Thresholds
+# ==============================================================================
+# 1. PROTECTED SCIENTIFIC PATHS (§12)
+# ==============================================================================
+/packages/target-engine/             @target-engine @clinical-science @quality
+/packages/evidence/                  @evidence-governance @clinical-science @quality
+/packages/scientific-policy/         @clinical-science @quality
+/packages/modalities/                @neuroimaging @clinical-science
+/packages/measurement-core/          @neuroimaging @quality
+/packages/measurement-testkit/       @neuroimaging @quality
+/packages/test-fixtures/             @clinical-science @quality
 /scientific-config/                  @clinical-science @quality
+/evidence/                           @evidence-governance @clinical-science
+/services/neurocompute/              @neuroimaging @clinical-science
 
-# Evidence Knowledge Graph & Circuit Library
-/evidence/                           @evidence-governance
+# ==============================================================================
+# 2. CORE DOMAIN & SCHEMA CONTRACTS
+# ==============================================================================
+/packages/domain/                    @platform-architecture @clinical-science
+/packages/schemas/                   @platform-architecture @quality
 
-# Neuroimaging & Functional Connectomics Pipeline
-/services/neurocompute/              @neuroimaging
-
-# Database Schemas, Migrations & RLS Policies
-/supabase/migrations/                @backend @database-security
+# ==============================================================================
+# 3. DATABASE SCHEMAS, MIGRATIONS & RLS POLICIES
+# ==============================================================================
+/supabase/migrations/                @backend @database-security @quality
 /supabase/tests/                     @backend @quality
 
-# Clinical Decision Workspace & Human Factors
-/apps/web/src/app/cases/*/decision/  @frontend @clinical-human-factors
-/apps/web/src/components/            @frontend @clinical-human-factors
+# ==============================================================================
+# 4. CLINICAL DECISION WORKSPACE, SHELL & HUMAN FACTORS (§86-91)
+# ==============================================================================
+/apps/web/                           @frontend @clinical-human-factors
+/packages/presentation/              @frontend @clinical-human-factors
 /packages/ui/                        @frontend
 
-# Infrastructure & CI/CD Workflows
-/infra/                              @platform-security
+# ==============================================================================
+# 5. VERIFICATION, RELEASE & CI/CD GOVERNANCE (§131-134, §192-195)
+# ==============================================================================
 /.github/workflows/                  @platform-security @quality
+/.github/CODEOWNERS                  @platform-security @quality
+/scripts/verification/               @quality @clinical-science
+/scripts/release/                    @platform-security @quality @clinical-science
+/scripts/ci/                         @platform-security @quality
+/scripts/security/                   @platform-security @quality
+/docs/verification/                  @quality @clinical-science

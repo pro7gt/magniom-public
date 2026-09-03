@@ -1,31 +1,37 @@
 {
   "$schema": "./requirement-schema.json",
-  "version": "1.2.0",
-  "lastUpdated": "2026-09-02T15:30:00.000Z",
+  "version": "2.0.0",
+  "lastUpdated": "2026-09-02T21:51:34.344Z",
   "requirements": [
     {
-      "id": "MAG-SYS-001",
-      "domain": "SYS",
-      "statement": "The system shall provide a deterministic target candidate slate comprising up to 3 Primary Candidates and up to 2 Additional Candidates.",
+      "id": "MAG-AUD-001",
+      "domain": "AUD",
+      "statement": "All clinician actions, target evaluations, and sign-offs shall produce append-only immutable audit logs with cryptographic hash integrity.",
       "sourceSpecification": [
-        "MAGNIOM-Technical Architecture v1.0",
-        "MAGNIOM-Canonical Target Data Specification v1.0"
+        "MAGNIOM-Supabase Database & Security Specification v1.0"
       ],
       "safetyClass": "critical",
       "appliesToMode": "all",
-      "verificationMethod": "unit_test",
-      "riskControlIds": ["HAZ-001"],
+      "verificationMethod": "integration_test",
+      "riskControlIds": [
+        "HAZ-001",
+        "HAZ-005"
+      ],
       "status": "approved"
     },
     {
       "id": "MAG-CLI-001",
       "domain": "CLI",
       "statement": "A confirmed and immutable PhenotypeSnapshot shall be required before any target slate generation is permitted.",
-      "sourceSpecification": ["MAGNIOM-Clinical Phenotype & Symptom-to-Circuit Ontology v1.0"],
+      "sourceSpecification": [
+        "MAGNIOM-Clinical Phenotype & Symptom-to-Circuit Ontology v1.0"
+      ],
       "safetyClass": "critical",
       "appliesToMode": "all",
       "verificationMethod": "integration_test",
-      "riskControlIds": ["HAZ-004"],
+      "riskControlIds": [
+        "HAZ-004"
+      ],
       "status": "approved"
     },
     {
@@ -39,18 +45,114 @@
       "safetyClass": "critical",
       "appliesToMode": "all",
       "verificationMethod": "human_factors",
-      "riskControlIds": ["HAZ-001"],
+      "riskControlIds": [
+        "HAZ-001"
+      ],
       "status": "approved"
     },
     {
-      "id": "MAG-PHE-001",
-      "domain": "PHE",
-      "statement": "The phenotype subsystem shall structure DSM-5 depression criteria and dimensional symptom scores into an immutable PhenotypeSnapshot.",
-      "sourceSpecification": ["MAGNIOM-Clinical Phenotype & Symptom-to-Circuit Ontology v1.0"],
-      "safetyClass": "major",
+      "id": "MAG-CLI-041",
+      "domain": "CLI",
+      "statement": "Every targeting analysis SHALL identify the principal `CaseIndication` being addressed.",
+      "sourceSpecification": [
+        "10. CLINICAL REQUIREMENTS — v2 ADDITIONS"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "IT",
+      "riskControlIds": [
+        "HAZ-014"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-CLI-043",
+      "domain": "CLI",
+      "statement": "The specialist SHALL explicitly approve the clinical objective(s) relevant to target generation.",
+      "sourceSpecification": [
+        "10. CLINICAL REQUIREMENTS — v2 ADDITIONS"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "IT",
+      "riskControlIds": [
+        "HAZ-014"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-CLI-044",
+      "domain": "CLI",
+      "statement": "MAGNIOM SHALL NOT infer the treatment objective solely from diagnosis.",
+      "sourceSpecification": [
+        "10. CLINICAL REQUIREMENTS — v2 ADDITIONS"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "IT",
+      "riskControlIds": [
+        "HAZ-014"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-CLI-045",
+      "domain": "CLI",
+      "statement": "The specialist SHALL be able to reject all candidates and record no selected target.",
+      "sourceSpecification": [
+        "10. CLINICAL REQUIREMENTS — v2 ADDITIONS"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "IT",
+      "riskControlIds": [
+        "HAZ-001"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-CLI-051",
+      "domain": "CLI",
+      "statement": "Clinician override SHALL NOT convert a Research-only scientific object into a Clinical candidate.",
+      "sourceSpecification": [
+        "MAGNIOM-System Requirements Specification v2.0"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "integration_test",
+      "riskControlIds": [
+        "HAZ-008"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-CLI-052",
+      "domain": "CLI",
+      "statement": "A material change in clinician-approved indication/objective context SHALL require new target analysis rather than mutation of a historical Slate.",
+      "sourceSpecification": [
+        "10. CLINICAL REQUIREMENTS — v2 ADDITIONS"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "IT",
+      "riskControlIds": [
+        "HAZ-004"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-DAT-004",
+      "domain": "DAT",
+      "statement": "All coordinate representations shall explicitly specify coordinate space metadata (MNI152NLin2009cAsym or fsLR_32k) and validation checksums.",
+      "sourceSpecification": [
+        "MAGNIOM-Canonical Target Data Specification v1.0"
+      ],
+      "safetyClass": "critical",
       "appliesToMode": "all",
       "verificationMethod": "unit_test",
-      "riskControlIds": ["HAZ-004"],
+      "riskControlIds": [
+        "HAZ-002"
+      ],
       "status": "approved"
     },
     {
@@ -63,20 +165,55 @@
       "safetyClass": "critical",
       "appliesToMode": "all",
       "verificationMethod": "unit_test",
-      "riskControlIds": ["HAZ-003"],
+      "riskControlIds": [
+        "HAZ-003"
+      ],
       "status": "approved"
     },
     {
-      "id": "MAG-POL-001",
-      "domain": "POL",
-      "statement": "No clinical target candidate generation shall execute without a pinned, approved ScientificPolicyRelease manifest.",
+      "id": "MAG-EVD-041",
+      "domain": "EVD",
+      "statement": "The Evidence Knowledge Graph SHALL represent indication-specific EvidencePaths rather than global target evidence.",
       "sourceSpecification": [
-        "MAGNIOM-Scientific Policy & Algorithm Configuration Specification v1.0"
+        "MAGNIOM-System Requirements Specification v2.0",
+        "MAGNIOM-Evidence Knowledge Graph & Therapeutic Circuit Library v2.0"
       ],
       "safetyClass": "critical",
       "appliesToMode": "all",
       "verificationMethod": "unit_test",
-      "riskControlIds": ["HAZ-003"],
+      "riskControlIds": [
+        "HAZ-007"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-EVD-045",
+      "domain": "EVD",
+      "statement": "A source MAY support one claim while conflicting with another.",
+      "sourceSpecification": [
+        "13. EVIDENCE REQUIREMENTS v2"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "UT",
+      "riskControlIds": [
+        "HAZ-007"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-EVD-048",
+      "domain": "EVD",
+      "statement": "External guideline grades SHALL NOT be automatically translated into MAGNIOM Evidence Tiers.",
+      "sourceSpecification": [
+        "13. EVIDENCE REQUIREMENTS v2"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "UT",
+      "riskControlIds": [
+        "HAZ-007"
+      ],
       "status": "approved"
     },
     {
@@ -89,264 +226,546 @@
       "safetyClass": "critical",
       "appliesToMode": "clinical",
       "verificationMethod": "golden_case",
-      "riskControlIds": ["HAZ-003"],
+      "riskControlIds": [
+        "HAZ-003"
+      ],
       "status": "approved"
     },
     {
-      "id": "MAG-TGT-001",
-      "domain": "TGT",
-      "statement": "The Target Engine shall execute deterministically offline without database, UI, or internet dependencies.",
-      "sourceSpecification": ["MAGNIOM-Target Engine & Ranking Algorithm Specification v1.0"],
-      "safetyClass": "critical",
-      "appliesToMode": "all",
-      "verificationMethod": "unit_test",
-      "riskControlIds": ["HAZ-002"],
-      "status": "approved"
-    },
-    {
-      "id": "MAG-UX-031",
-      "domain": "UX",
-      "statement": "The clinician workspace user interface shall not preselect any target candidate by default, preventing automation bias.",
+      "id": "MAG-IMG-041",
+      "domain": "IMG",
+      "statement": "Structural MRI used for clinical targeting SHALL retain native-space coordinate provenance.",
       "sourceSpecification": [
-        "MAGNIOM-Clinician Workspace & UX Specification v1.0",
-        "MAGNIOM-Implementation & Validation Roadmap v1.0"
+        "16. IMAGING REQUIREMENTS — v2 ADDITIONS"
       ],
       "safetyClass": "critical",
       "appliesToMode": "all",
-      "verificationMethod": "human_factors",
-      "riskControlIds": ["HAZ-001"],
+      "verificationMethod": "UT",
+      "riskControlIds": [
+        "HAZ-002"
+      ],
       "status": "approved"
     },
     {
-      "id": "MAG-DAT-004",
-      "domain": "DAT",
-      "statement": "All coordinate representations shall explicitly specify coordinate space metadata (MNI152NLin2009cAsym or fsLR_32k) and validation checksums.",
-      "sourceSpecification": ["MAGNIOM-Canonical Target Data Specification v1.0"],
-      "safetyClass": "critical",
-      "appliesToMode": "all",
-      "verificationMethod": "unit_test",
-      "riskControlIds": ["HAZ-002"],
-      "status": "approved"
-    },
-    {
-      "id": "MAG-SEC-001",
-      "domain": "SEC",
-      "statement": "MAGNIOM shall authenticate clinical users before granting access to patient-specific resources.",
+      "id": "MAG-IMG-042",
+      "domain": "IMG",
+      "statement": "Lesion masks SHALL retain native-space provenance.",
       "sourceSpecification": [
-        "MAGNIOM-System Requirements Specification v1.0",
-        "MAGNIOM-Supabase Database & Security Specification v1.0"
+        "16. IMAGING REQUIREMENTS — v2 ADDITIONS"
       ],
       "safetyClass": "critical",
       "appliesToMode": "all",
-      "verificationMethod": "security_test",
-      "riskControlIds": ["HAZ-005"],
+      "verificationMethod": "UT",
+      "riskControlIds": [
+        "HAZ-002"
+      ],
       "status": "approved"
     },
     {
-      "id": "MAG-SEC-009",
-      "domain": "SEC",
-      "statement": "Browser clients shall not receive privileged service credentials capable of bypassing RLS.",
+      "id": "MAG-IMG-044",
+      "domain": "IMG",
+      "statement": "A failed registration SHALL block use of spatial outputs that depend upon that registration.",
       "sourceSpecification": [
-        "MAGNIOM-Technical Architecture v1.0",
-        "MAGNIOM-Supabase Database & Security Specification v1.0"
+        "16. IMAGING REQUIREMENTS — v2 ADDITIONS"
       ],
       "safetyClass": "critical",
       "appliesToMode": "all",
-      "verificationMethod": "security_test",
-      "riskControlIds": ["HAZ-005"],
-      "status": "approved"
-    },
-    {
-      "id": "MAG-SEC-010",
-      "domain": "SEC",
-      "statement": "Privileged compute workers shall authenticate machine-to-machine with scoped tokens and bounded TTLs.",
-      "sourceSpecification": [
-        "MAGNIOM-System Requirements Specification v1.0",
-        "MAGNIOM-Technical Architecture v1.0"
+      "verificationMethod": "UT",
+      "riskControlIds": [
+        "HAZ-003"
       ],
-      "safetyClass": "critical",
-      "appliesToMode": "all",
-      "verificationMethod": "security_test",
-      "riskControlIds": ["HAZ-005"],
       "status": "approved"
     },
     {
-      "id": "MAG-SEC-012",
-      "domain": "SEC",
-      "statement": "Cross-organization clinical data access shall be strictly prohibited by PostgreSQL Row Level Security (RLS) policies.",
-      "sourceSpecification": ["MAGNIOM-Supabase Database & Security Specification v1.0"],
-      "safetyClass": "critical",
-      "appliesToMode": "all",
-      "verificationMethod": "security_test",
-      "riskControlIds": ["HAZ-005"],
-      "status": "approved"
-    },
-    {
-      "id": "MAG-SEC-014",
-      "domain": "SEC",
-      "statement": "Storage buckets containing clinical MRI or derived patient artefacts shall be private and access-controlled.",
-      "sourceSpecification": ["MAGNIOM-Supabase Database & Security Specification v1.0"],
-      "safetyClass": "critical",
-      "appliesToMode": "all",
-      "verificationMethod": "security_test",
-      "riskControlIds": ["HAZ-005"],
-      "status": "approved"
-    },
-    {
-      "id": "MAG-SEC-022",
-      "domain": "SEC",
-      "statement": "Clinical signing authority shall be explicitly granted and revocable per authorized clinician.",
-      "sourceSpecification": ["MAGNIOM-Supabase Database & Security Specification v1.0"],
-      "safetyClass": "critical",
-      "appliesToMode": "clinical",
-      "verificationMethod": "security_test",
-      "riskControlIds": ["HAZ-001", "HAZ-005"],
-      "status": "approved"
-    },
-    {
-      "id": "MAG-SEC-024",
-      "domain": "SEC",
-      "statement": "Signed clinical decisions shall resist UPDATE and DELETE operations through database immutability triggers.",
-      "sourceSpecification": ["MAGNIOM-Supabase Database & Security Specification v1.0"],
-      "safetyClass": "critical",
-      "appliesToMode": "all",
-      "verificationMethod": "security_test",
-      "riskControlIds": ["HAZ-001", "HAZ-005"],
-      "status": "approved"
-    },
-    {
-      "id": "MAG-SEC-029",
-      "domain": "SEC",
-      "statement": "Queue payloads and worker messages shall avoid unnecessary patient-identifying information.",
+      "id": "MAG-IND-001",
+      "domain": "IND",
+      "statement": "Every v2 Target Slate SHALL reference exactly one immutable IndicationModuleRelease.",
       "sourceSpecification": [
-        "MAGNIOM-Supabase Database & Security Specification v1.0",
-        "MAGNIOM-Technical Architecture v1.0"
+        "MAGNIOM-System Requirements Specification v2.0",
+        "MAGNIOM-Canonical Multi-Indication Data Specification v2.0"
       ],
-      "safetyClass": "major",
-      "appliesToMode": "all",
-      "verificationMethod": "security_test",
-      "riskControlIds": ["HAZ-005"],
-      "status": "approved"
-    },
-    {
-      "id": "MAG-SEC-030",
-      "domain": "SEC",
-      "statement": "Application and audit logs shall automatically redact Protected Health Information (PHI).",
-      "sourceSpecification": ["MAGNIOM-System Requirements Specification v1.0"],
-      "safetyClass": "major",
-      "appliesToMode": "all",
-      "verificationMethod": "unit_test",
-      "riskControlIds": ["HAZ-005"],
-      "status": "approved"
-    },
-    {
-      "id": "MAG-SEC-035",
-      "domain": "SEC",
-      "statement": "Backup and restore controls shall preserve clinically important records and scientific provenance with cryptographic hash parity.",
-      "sourceSpecification": ["MAGNIOM-Supabase Database & Security Specification v1.0"],
-      "safetyClass": "critical",
-      "appliesToMode": "all",
-      "verificationMethod": "security_test",
-      "riskControlIds": ["HAZ-005"],
-      "status": "approved"
-    },
-    {
-      "id": "MAG-WFL-001",
-      "domain": "WFL",
-      "statement": "State transitions across clinical cases shall follow strict state machines enforced by database triggers.",
-      "sourceSpecification": ["MAGNIOM-Supabase Database & Security Specification v1.0"],
-      "safetyClass": "major",
-      "appliesToMode": "all",
-      "verificationMethod": "integration_test",
-      "riskControlIds": ["HAZ-004"],
-      "status": "approved"
-    },
-    {
-      "id": "MAG-AUD-001",
-      "domain": "AUD",
-      "statement": "All clinician actions, target evaluations, and sign-offs shall produce append-only immutable audit logs with cryptographic hash integrity.",
-      "sourceSpecification": ["MAGNIOM-Supabase Database & Security Specification v1.0"],
       "safetyClass": "critical",
       "appliesToMode": "all",
       "verificationMethod": "integration_test",
-      "riskControlIds": ["HAZ-001", "HAZ-005"],
+      "riskControlIds": [
+        "HAZ-006"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-IND-012",
+      "domain": "IND",
+      "statement": "A module with research_only status SHALL NOT generate a Clinical Target Slate.",
+      "sourceSpecification": [
+        "MAGNIOM-System Requirements Specification v2.0",
+        "MAGNIOM-Scientific Policy & Algorithm Configuration Specification v2.0"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "integration_test",
+      "riskControlIds": [
+        "HAZ-008"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-IND-017",
+      "domain": "IND",
+      "statement": "EvidencePaths SHALL NOT automatically transfer between indication modules because anatomical targets overlap.",
+      "sourceSpecification": [
+        "MAGNIOM-System Requirements Specification v2.0",
+        "MAGNIOM-Evidence Knowledge Graph & Therapeutic Circuit Library v2.0"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "unit_test",
+      "riskControlIds": [
+        "HAZ-007"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-IND-027",
+      "domain": "IND",
+      "statement": "Treatment-context restrictions SHALL be enforceable where the module declares treatment context as evidence-relevant.",
+      "sourceSpecification": [
+        "MAGNIOM-System Requirements Specification v2.0"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "system_test",
+      "riskControlIds": [
+        "HAZ-013"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-IND-030",
+      "domain": "IND",
+      "statement": "If the active module cannot be positively resolved to an approved compatibility configuration, MAGNIOM SHALL fail closed.",
+      "sourceSpecification": [
+        "11. `MAG-IND-*` — INDICATION-MODULE REQUIREMENTS"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "UT",
+      "riskControlIds": [
+        "HAZ-006"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-MEA-001",
+      "domain": "MEA",
+      "statement": "The Multimodal Measurement Platform SHALL encapsulate patient measurements inside versioned MeasurementBundles.",
+      "sourceSpecification": [
+        "MAGNIOM-System Requirements Specification v2.0",
+        "MAGNIOM-Neuroimaging, Neurophysiology & Multimodal Measurement Specification v2.0"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "unit_test",
+      "riskControlIds": [
+        "HAZ-003",
+        "HAZ-017"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-MEA-002",
+      "domain": "MEA",
+      "statement": "A patient-specific measurement SHALL NOT influence Clinical target generation unless the applicable capability is qualified.",
+      "sourceSpecification": [
+        "15. `MAG-MEA-*` — MULTIMODAL MEASUREMENT REQUIREMENTS"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "UT",
+      "riskControlIds": [
+        "HAZ-015"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-MEA-005",
+      "domain": "MEA",
+      "statement": "Multimodal measurements SHALL NOT be fused into a Clinical target unless an approved Scientific Policy explicitly defines the fusion.",
+      "sourceSpecification": [
+        "15. `MAG-MEA-*` — MULTIMODAL MEASUREMENT REQUIREMENTS"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "UT",
+      "riskControlIds": [
+        "HAZ-015"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-MEA-010",
+      "domain": "MEA",
+      "statement": "A measurement provider SHALL expose the scientific capabilities its output may support.",
+      "sourceSpecification": [
+        "15. `MAG-MEA-*` — MULTIMODAL MEASUREMENT REQUIREMENTS"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "UT",
+      "riskControlIds": [
+        "HAZ-016"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-MEA-011",
+      "domain": "MEA",
+      "statement": "Measurement provider compatibility SHALL include Indication Module compatibility.",
+      "sourceSpecification": [
+        "15. `MAG-MEA-*` — MULTIMODAL MEASUREMENT REQUIREMENTS"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "UT",
+      "riskControlIds": [
+        "HAZ-018"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-OCD-003",
+      "domain": "OCD",
+      "statement": "mPFC/ACC deep-TMS targets SHALL preserve coil_field geometry where the evidence base requires field stimulation.",
+      "sourceSpecification": [
+        "MAGNIOM-System Requirements Specification v2.0",
+        "MAGNIOM-Canonical Multi-Indication Data Specification v2.0"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "unit_test",
+      "riskControlIds": [
+        "HAZ-012"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-OCD-004",
+      "domain": "OCD",
+      "statement": "A field-defined OCD target SHALL NOT be downcast to a single point coordinate during candidate generation.",
+      "sourceSpecification": [
+        "MAGNIOM-System Requirements Specification v2.0",
+        "MAGNIOM-Target Engine & Ranking Algorithm Specification v2.0"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "unit_test",
+      "riskControlIds": [
+        "HAZ-012"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-OCD-006",
+      "domain": "OCD",
+      "statement": "An incompatible device/coil SHALL fail the applicable target-geometry/evidence gate.",
+      "sourceSpecification": [
+        "28. `MAG-OCD-*` — OCD REQUIREMENTS"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "UT",
+      "riskControlIds": [
+        "HAZ-012",
+        "HAZ-019"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-OCD-010",
+      "domain": "OCD",
+      "statement": "Where efficacy evidence depends materially on symptom provocation, treatment context SHALL be explicitly required.",
+      "sourceSpecification": [
+        "MAGNIOM-System Requirements Specification v2.0",
+        "MAGNIOM-Scientific Policy & Algorithm Configuration Specification v2.0"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "system_test",
+      "riskControlIds": [
+        "HAZ-013"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-OCD-011",
+      "domain": "OCD",
+      "statement": "Absence or uncertainty of required treatment context SHALL produce the policy-defined limitation/gate outcome.",
+      "sourceSpecification": [
+        "28. `MAG-OCD-*` — OCD REQUIREMENTS"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "UT",
+      "riskControlIds": [
+        "HAZ-013"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-PAI-004",
+      "domain": "PAI",
+      "statement": "Somatotopic M1 candidates SHALL use SomatotopicTargetGeometry representing specific motor/sensory body parts.",
+      "sourceSpecification": [
+        "MAGNIOM-System Requirements Specification v2.0",
+        "MAGNIOM-Canonical Multi-Indication Data Specification v2.0"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "golden_case",
+      "riskControlIds": [
+        "HAZ-010"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-PAI-005",
+      "domain": "PAI",
+      "statement": "A somatotopic pain target SHALL preserve the affected body-region relationship.",
+      "sourceSpecification": [
+        "25. `MAG-PAI-*` — NEUROPATHIC PAIN REQUIREMENTS"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "UT",
+      "riskControlIds": [
+        "HAZ-010"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-PAI-006",
+      "domain": "PAI",
+      "statement": "A generic universal M1 point SHALL NOT replace required somatotopic semantics.",
+      "sourceSpecification": [
+        "25. `MAG-PAI-*` — NEUROPATHIC PAIN REQUIREMENTS"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "UT",
+      "riskControlIds": [
+        "HAZ-010"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-PAI-008",
+      "domain": "PAI",
+      "statement": "Bilateral or ambiguous pain SHALL NOT result in arbitrary hemisphere selection.",
+      "sourceSpecification": [
+        "25. `MAG-PAI-*` — NEUROPATHIC PAIN REQUIREMENTS"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "UT",
+      "riskControlIds": [
+        "HAZ-010"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-PAI-009",
+      "domain": "PAI",
+      "statement": "Motor-map refinement SHALL require qualified motor-hotspot/motor-map capability.",
+      "sourceSpecification": [
+        "25. `MAG-PAI-*` — NEUROPATHIC PAIN REQUIREMENTS"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "UT",
+      "riskControlIds": [
+        "HAZ-015"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-PHE-001",
+      "domain": "PHE",
+      "statement": "The phenotype subsystem shall structure DSM-5 depression criteria and dimensional symptom scores into an immutable PhenotypeSnapshot.",
+      "sourceSpecification": [
+        "MAGNIOM-Clinical Phenotype & Symptom-to-Circuit Ontology v1.0"
+      ],
+      "safetyClass": "major",
+      "appliesToMode": "all",
+      "verificationMethod": "unit_test",
+      "riskControlIds": [
+        "HAZ-004"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-POL-001",
+      "domain": "POL",
+      "statement": "No clinical target candidate generation shall execute without a pinned, approved ScientificPolicyRelease manifest.",
+      "sourceSpecification": [
+        "MAGNIOM-Scientific Policy & Algorithm Configuration Specification v1.0"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "unit_test",
+      "riskControlIds": [
+        "HAZ-003"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-POL-041",
+      "domain": "POL",
+      "statement": "Every Target Slate SHALL reference exactly one `IndicationModuleRelease`.",
+      "sourceSpecification": [
+        "14. SCIENTIFIC POLICY REQUIREMENTS v2"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "UT",
+      "riskControlIds": [
+        "HAZ-006",
+        "HAZ-018"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-POL-044",
+      "domain": "POL",
+      "statement": "Clinical permission for one Indication Module SHALL NOT confer Clinical permission on another.",
+      "sourceSpecification": [
+        "14. SCIENTIFIC POLICY REQUIREMENTS v2"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "UT",
+      "riskControlIds": [
+        "HAZ-003",
+        "HAZ-017"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-POL-046",
+      "domain": "POL",
+      "statement": "An EvidencePath SHALL NOT influence Clinical Mode unless explicitly authorised for the active Indication Module.",
+      "sourceSpecification": [
+        "14. SCIENTIFIC POLICY REQUIREMENTS v2"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "UT",
+      "riskControlIds": [
+        "HAZ-020"
+      ],
       "status": "approved"
     },
     {
       "id": "MAG-REL-001",
       "domain": "REL",
       "statement": "Production Clinical releases SHALL identify the exact application and core package versions.",
-      "sourceSpecification": ["MAGNIOM-System Requirements Specification v1.0"],
+      "sourceSpecification": [
+        "MAGNIOM-System Requirements Specification v1.0"
+      ],
       "safetyClass": "major",
       "appliesToMode": "all",
       "verificationMethod": "unit_test",
-      "riskControlIds": ["HAZ-003"],
+      "riskControlIds": [
+        "HAZ-003"
+      ],
       "status": "approved"
     },
     {
       "id": "MAG-REL-002",
       "domain": "REL",
       "statement": "Production Clinical releases SHALL identify database migration baseline versions (001 to 042).",
-      "sourceSpecification": ["MAGNIOM-System Requirements Specification v1.0"],
+      "sourceSpecification": [
+        "MAGNIOM-System Requirements Specification v1.0"
+      ],
       "safetyClass": "major",
       "appliesToMode": "all",
       "verificationMethod": "integration_test",
-      "riskControlIds": ["HAZ-005"],
+      "riskControlIds": [
+        "HAZ-005"
+      ],
       "status": "approved"
     },
     {
       "id": "MAG-REL-003",
       "domain": "REL",
       "statement": "Production Clinical releases SHALL identify and pin ScientificPolicyRelease MAGNIOM-POLICY-1.0.0.",
-      "sourceSpecification": ["MAGNIOM-System Requirements Specification v1.0"],
+      "sourceSpecification": [
+        "MAGNIOM-System Requirements Specification v1.0"
+      ],
       "safetyClass": "critical",
       "appliesToMode": "all",
       "verificationMethod": "unit_test",
-      "riskControlIds": ["HAZ-003"],
+      "riskControlIds": [
+        "HAZ-003"
+      ],
       "status": "approved"
     },
     {
       "id": "MAG-REL-004",
       "domain": "REL",
       "statement": "Production Clinical releases SHALL identify and pin EvidenceLibraryRelease MAGNIOM-EVIDENCE-1.0.0.",
-      "sourceSpecification": ["MAGNIOM-System Requirements Specification v1.0"],
+      "sourceSpecification": [
+        "MAGNIOM-System Requirements Specification v1.0"
+      ],
       "safetyClass": "critical",
       "appliesToMode": "all",
       "verificationMethod": "unit_test",
-      "riskControlIds": ["HAZ-003"],
+      "riskControlIds": [
+        "HAZ-003"
+      ],
       "status": "approved"
     },
     {
       "id": "MAG-REL-005",
       "domain": "REL",
       "statement": "Production Clinical releases SHALL identify and pin TargetEngineVersion 1.0.0.",
-      "sourceSpecification": ["MAGNIOM-System Requirements Specification v1.0"],
+      "sourceSpecification": [
+        "MAGNIOM-System Requirements Specification v1.0"
+      ],
       "safetyClass": "critical",
       "appliesToMode": "all",
       "verificationMethod": "unit_test",
-      "riskControlIds": ["HAZ-002"],
+      "riskControlIds": [
+        "HAZ-002"
+      ],
       "status": "approved"
     },
     {
       "id": "MAG-REL-006",
       "domain": "REL",
       "statement": "Production Clinical releases SHALL identify and pin PipelineVersion MAGNIOM-NEURO-1.0.0.",
-      "sourceSpecification": ["MAGNIOM-System Requirements Specification v1.0"],
+      "sourceSpecification": [
+        "MAGNIOM-System Requirements Specification v1.0"
+      ],
       "safetyClass": "critical",
       "appliesToMode": "clinical",
       "verificationMethod": "golden_case",
-      "riskControlIds": ["HAZ-003"],
+      "riskControlIds": [
+        "HAZ-003"
+      ],
       "status": "approved"
     },
     {
       "id": "MAG-REL-010",
       "domain": "REL",
       "statement": "Production Clinical releases SHALL identify and pin Phenotype Ontology release MAGNIOM-PHENOTYPE-1.0.0.",
-      "sourceSpecification": ["MAGNIOM-System Requirements Specification v1.0"],
+      "sourceSpecification": [
+        "MAGNIOM-System Requirements Specification v1.0"
+      ],
       "safetyClass": "major",
       "appliesToMode": "all",
       "verificationMethod": "unit_test",
-      "riskControlIds": ["HAZ-004"],
+      "riskControlIds": [
+        "HAZ-004"
+      ],
       "status": "approved"
     },
     {
@@ -360,7 +779,10 @@
       "safetyClass": "critical",
       "appliesToMode": "all",
       "verificationMethod": "unit_test",
-      "riskControlIds": ["HAZ-003"],
+      "riskControlIds": [
+        "HAZ-003",
+        "HAZ-020"
+      ],
       "status": "approved"
     },
     {
@@ -374,51 +796,626 @@
       "safetyClass": "critical",
       "appliesToMode": "all",
       "verificationMethod": "inspection",
-      "riskControlIds": ["HAZ-003"],
+      "riskControlIds": [
+        "HAZ-003"
+      ],
       "status": "approved"
     },
     {
       "id": "MAG-REL-026",
       "domain": "REL",
       "statement": "A Clinical Release Package SHALL identify the exact combination of SRS, Clinical & Scientific Spec, Canonical Target Data Spec, Phenotype Ontology, Evidence Library, Policy, Target Engine, Neuro Pipeline, Normative Model, Atlas, DB Migration, and UX workspace.",
-      "sourceSpecification": ["MAGNIOM-System Requirements Specification v1.0"],
+      "sourceSpecification": [
+        "MAGNIOM-System Requirements Specification v1.0"
+      ],
       "safetyClass": "critical",
       "appliesToMode": "all",
       "verificationMethod": "unit_test",
-      "riskControlIds": ["HAZ-003"],
+      "riskControlIds": [
+        "HAZ-003"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-SEC-001",
+      "domain": "SEC",
+      "statement": "MAGNIOM shall authenticate clinical users before granting access to patient-specific resources.",
+      "sourceSpecification": [
+        "MAGNIOM-System Requirements Specification v1.0",
+        "MAGNIOM-Supabase Database & Security Specification v1.0"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "security_test",
+      "riskControlIds": [
+        "HAZ-005"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-SEC-009",
+      "domain": "SEC",
+      "statement": "Browser clients shall not receive privileged service credentials capable of bypassing RLS.",
+      "sourceSpecification": [
+        "MAGNIOM-Technical Architecture v1.0",
+        "MAGNIOM-Supabase Database & Security Specification v1.0"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "security_test",
+      "riskControlIds": [
+        "HAZ-005"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-SEC-010",
+      "domain": "SEC",
+      "statement": "Privileged compute workers shall authenticate machine-to-machine with scoped tokens and bounded TTLs.",
+      "sourceSpecification": [
+        "MAGNIOM-System Requirements Specification v1.0",
+        "MAGNIOM-Technical Architecture v1.0"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "security_test",
+      "riskControlIds": [
+        "HAZ-005"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-SEC-012",
+      "domain": "SEC",
+      "statement": "Cross-organization clinical data access shall be strictly prohibited by PostgreSQL Row Level Security (RLS) policies.",
+      "sourceSpecification": [
+        "MAGNIOM-Supabase Database & Security Specification v1.0"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "security_test",
+      "riskControlIds": [
+        "HAZ-005"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-SEC-014",
+      "domain": "SEC",
+      "statement": "Storage buckets containing clinical MRI or derived patient artefacts shall be private and access-controlled.",
+      "sourceSpecification": [
+        "MAGNIOM-Supabase Database & Security Specification v1.0"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "security_test",
+      "riskControlIds": [
+        "HAZ-005"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-SEC-022",
+      "domain": "SEC",
+      "statement": "Clinical signing authority shall be explicitly granted and revocable per authorized clinician.",
+      "sourceSpecification": [
+        "MAGNIOM-Supabase Database & Security Specification v1.0"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "clinical",
+      "verificationMethod": "security_test",
+      "riskControlIds": [
+        "HAZ-001",
+        "HAZ-005"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-SEC-024",
+      "domain": "SEC",
+      "statement": "Signed clinical decisions shall resist UPDATE and DELETE operations through database immutability triggers.",
+      "sourceSpecification": [
+        "MAGNIOM-Supabase Database & Security Specification v1.0"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "security_test",
+      "riskControlIds": [
+        "HAZ-001",
+        "HAZ-005"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-SEC-029",
+      "domain": "SEC",
+      "statement": "Queue payloads and worker messages shall avoid unnecessary patient-identifying information.",
+      "sourceSpecification": [
+        "MAGNIOM-Supabase Database & Security Specification v1.0",
+        "MAGNIOM-Technical Architecture v1.0"
+      ],
+      "safetyClass": "major",
+      "appliesToMode": "all",
+      "verificationMethod": "security_test",
+      "riskControlIds": [
+        "HAZ-005"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-SEC-030",
+      "domain": "SEC",
+      "statement": "Application and audit logs shall automatically redact Protected Health Information (PHI).",
+      "sourceSpecification": [
+        "MAGNIOM-System Requirements Specification v1.0"
+      ],
+      "safetyClass": "major",
+      "appliesToMode": "all",
+      "verificationMethod": "unit_test",
+      "riskControlIds": [
+        "HAZ-005"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-SEC-035",
+      "domain": "SEC",
+      "statement": "Backup and restore controls shall preserve clinically important records and scientific provenance with cryptographic hash parity.",
+      "sourceSpecification": [
+        "MAGNIOM-Supabase Database & Security Specification v1.0"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "security_test",
+      "riskControlIds": [
+        "HAZ-005"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-STR-002",
+      "domain": "STR",
+      "statement": "Lesion laterality SHALL be explicitly represented as left hemisphere, right hemisphere, bilateral or non-lesional.",
+      "sourceSpecification": [
+        "MAGNIOM-System Requirements Specification v2.0",
+        "MAGNIOM-Canonical Multi-Indication Data Specification v2.0"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "golden_case",
+      "riskControlIds": [
+        "HAZ-009"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-STR-003",
+      "domain": "STR",
+      "statement": "Disease stage SHALL be represented when relevant to the active EvidencePath.",
+      "sourceSpecification": [
+        "24. `MAG-STR-*` — STROKE REQUIREMENTS"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "UT",
+      "riskControlIds": [
+        "HAZ-009"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-STR-004",
+      "domain": "STR",
+      "statement": "A stage-dependent EvidencePath SHALL not apply when the Case does not satisfy its validated stage scope.",
+      "sourceSpecification": [
+        "24. `MAG-STR-*` — STROKE REQUIREMENTS"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "UT",
+      "riskControlIds": [
+        "HAZ-009"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-STR-010",
+      "domain": "STR",
+      "statement": "Motor-map candidates SHALL require explicit SomatotopicTargetGeometry matching the affected clinical target territory.",
+      "sourceSpecification": [
+        "MAGNIOM-System Requirements Specification v2.0",
+        "MAGNIOM-Neuroimaging, Neurophysiology & Multimodal Measurement Specification v2.0"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "golden_case",
+      "riskControlIds": [
+        "HAZ-010"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-STR-011",
+      "domain": "STR",
+      "statement": "Ipsilesional and contralesional strategies SHALL require separate applicable EvidencePaths.",
+      "sourceSpecification": [
+        "24. `MAG-STR-*` — STROKE REQUIREMENTS"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "UT",
+      "riskControlIds": [
+        "HAZ-015"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-STR-019",
+      "domain": "STR",
+      "statement": "Where evidence depends on concurrent speech-language therapy, treatment context SHALL be explicitly evaluated.",
+      "sourceSpecification": [
+        "24. `MAG-STR-*` — STROKE REQUIREMENTS"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "UT",
+      "riskControlIds": [
+        "HAZ-013",
+        "HAZ-016"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-STR-023",
+      "domain": "STR",
+      "statement": "Affected limb/body-region, recorded muscle and somatotopic TargetGeometry SHALL remain semantically consistent.",
+      "sourceSpecification": [
+        "24. `MAG-STR-*` — STROKE REQUIREMENTS"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "UT",
+      "riskControlIds": [
+        "HAZ-010"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-STR-025",
+      "domain": "STR",
+      "statement": "Failure of a mandatory lesion/stage requirement SHALL cause module abstention rather than guessed targeting.",
+      "sourceSpecification": [
+        "24. `MAG-STR-*` — STROKE REQUIREMENTS"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "UT",
+      "riskControlIds": [
+        "HAZ-016"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-SYS-001",
+      "domain": "SYS",
+      "statement": "The system shall provide a deterministic target candidate slate comprising up to 3 Primary Candidates and up to 2 Additional Candidates.",
+      "sourceSpecification": [
+        "MAGNIOM-Technical Architecture v1.0",
+        "MAGNIOM-Canonical Target Data Specification v1.0"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "unit_test",
+      "riskControlIds": [
+        "HAZ-001"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-SYS-043",
+      "domain": "SYS",
+      "statement": "Clinical authority SHALL be resolved per CaseIndication and IndicationModuleRelease, not through one global application-level Clinical flag.",
+      "sourceSpecification": [
+        "MAGNIOM-System Requirements Specification v2.0"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "integration_test",
+      "riskControlIds": [
+        "HAZ-006"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-SYS-044",
+      "domain": "SYS",
+      "statement": "The same deployment SHALL support modules at different maturity states without authority leakage between modules.",
+      "sourceSpecification": [
+        "9. SYSTEM REQUIREMENTS — v2 ADDITIONS"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "IT",
+      "riskControlIds": [
+        "HAZ-008"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-SYS-045",
+      "domain": "SYS",
+      "statement": "A technically executable scientific capability SHALL NOT be represented as clinically validated solely because it exists in the product.",
+      "sourceSpecification": [
+        "9. SYSTEM REQUIREMENTS — v2 ADDITIONS"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "ST",
+      "riskControlIds": [
+        "HAZ-008"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-SYS-046",
+      "domain": "SYS",
+      "statement": "MAGNIOM SHALL separate patient measurement, scientific evidence, algorithmic inference and clinician decision.",
+      "sourceSpecification": [
+        "9. SYSTEM REQUIREMENTS — v2 ADDITIONS"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "A",
+      "riskControlIds": [
+        "HAZ-018"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-SYS-048",
+      "domain": "SYS",
+      "statement": "MAGNIOM SHALL NOT autonomously prescribe stimulation frequency, intensity, pulse count, treatment schedule or session number.",
+      "sourceSpecification": [
+        "9. SYSTEM REQUIREMENTS — v2 ADDITIONS"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "ST",
+      "riskControlIds": [
+        "HAZ-001",
+        "HAZ-019"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-SYS-050",
+      "domain": "SYS",
+      "statement": "Historical v1 and v2 Target Slates SHALL remain reconstructable from their original scientific release configuration.",
+      "sourceSpecification": [
+        "9. SYSTEM REQUIREMENTS — v2 ADDITIONS"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "IT",
+      "riskControlIds": [
+        "HAZ-020"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-SYS-051",
+      "domain": "SYS",
+      "statement": "Patient-specific sophistication SHALL NOT automatically outrank an evidence-supported non-personalised baseline.",
+      "sourceSpecification": [
+        "9. SYSTEM REQUIREMENTS — v2 ADDITIONS"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "GC",
+      "riskControlIds": [
+        "HAZ-016",
+        "HAZ-017"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-TBI-007",
+      "domain": "TBI",
+      "statement": "Relevant TBI targeting SHALL preserve lesion and skull structural distortion context before target computation.",
+      "sourceSpecification": [
+        "MAGNIOM-System Requirements Specification v2.0",
+        "MAGNIOM-Neuroimaging, Neurophysiology & Multimodal Measurement Specification v2.0"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "golden_case",
+      "riskControlIds": [
+        "HAZ-009"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-TGT-001",
+      "domain": "TGT",
+      "statement": "The Target Engine shall execute deterministically offline without database, UI, or internet dependencies.",
+      "sourceSpecification": [
+        "MAGNIOM-Target Engine & Ranking Algorithm Specification v1.0"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "unit_test",
+      "riskControlIds": [
+        "HAZ-002"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-TGT-050",
+      "domain": "TGT",
+      "statement": "Target geometry SHALL remain typed throughout generation, comparison and final review.",
+      "sourceSpecification": [
+        "17. TARGET ENGINE REQUIREMENTS v2"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "UT",
+      "riskControlIds": [
+        "HAZ-019"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-TIN-007",
+      "domain": "TIN",
+      "statement": "Tinnitus pitch or loudness matching SHALL NOT independently generate an auditory cortex target candidate.",
+      "sourceSpecification": [
+        "MAGNIOM-System Requirements Specification v2.0",
+        "MAGNIOM-Neuroimaging, Neurophysiology & Multimodal Measurement Specification v2.0"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "unit_test",
+      "riskControlIds": [
+        "HAZ-011"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-TIN-008",
+      "domain": "TIN",
+      "statement": "A hearing-loss pattern SHALL NOT autonomously generate an auditory-cortex target.",
+      "sourceSpecification": [
+        "27. `MAG-TIN-*` — TINNITUS REQUIREMENTS"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "UT",
+      "riskControlIds": [
+        "HAZ-011"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-TIN-010",
+      "domain": "TIN",
+      "statement": "The initial Tinnitus targeting module SHALL remain Research-only until explicit Clinical promotion.",
+      "sourceSpecification": [
+        "27. `MAG-TIN-*` — TINNITUS REQUIREMENTS"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "UT",
+      "riskControlIds": [
+        "HAZ-011"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-TIN-018",
+      "domain": "TIN",
+      "statement": "Clinical target generation for tinnitus SHALL fail closed unless an approved Clinical module release is active.",
+      "sourceSpecification": [
+        "MAGNIOM-System Requirements Specification v2.0"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "integration_test",
+      "riskControlIds": [
+        "HAZ-011"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-UX-031",
+      "domain": "UX",
+      "statement": "The clinician workspace user interface shall not preselect any target candidate by default, preventing automation bias.",
+      "sourceSpecification": [
+        "MAGNIOM-Clinician Workspace & UX Specification v1.0",
+        "MAGNIOM-Implementation & Validation Roadmap v1.0"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "human_factors",
+      "riskControlIds": [
+        "HAZ-001"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-UX-043",
+      "domain": "UX",
+      "statement": "The case header SHALL display the active `CaseIndication`.",
+      "sourceSpecification": [
+        "18. UX REQUIREMENTS — v2 ADDITIONS"
+      ],
+      "safetyClass": "standard",
+      "appliesToMode": "all",
+      "verificationMethod": "ST",
+      "riskControlIds": [
+        "HAZ-014"
+      ],
       "status": "approved"
     },
     {
       "id": "MAG-VAL-001",
       "domain": "VAL",
       "statement": "The system shall execute synthetic Golden Cases G01 through G05 as automated regression gates during CI builds.",
-      "sourceSpecification": ["MAGNIOM-Synthetic Vertical Slice Implementation Specification v1.0"],
+      "sourceSpecification": [
+        "MAGNIOM-Synthetic Vertical Slice Implementation Specification v1.0"
+      ],
       "safetyClass": "major",
       "appliesToMode": "all",
       "verificationMethod": "golden_case",
-      "riskControlIds": ["HAZ-002", "HAZ-003"],
+      "riskControlIds": [
+        "HAZ-002",
+        "HAZ-003"
+      ],
       "status": "approved"
     },
     {
       "id": "MAG-VAL-002",
       "domain": "VAL",
       "statement": "Target Engine execution shall produce identical candidate coordinates, confidence scores, and slates across 1000 repeated runs given identical inputs.",
-      "sourceSpecification": ["MAGNIOM-Target Engine & Ranking Algorithm Specification v1.0"],
+      "sourceSpecification": [
+        "MAGNIOM-Target Engine & Ranking Algorithm Specification v1.0"
+      ],
       "safetyClass": "critical",
       "appliesToMode": "all",
       "verificationMethod": "unit_test",
-      "riskControlIds": ["HAZ-002"],
+      "riskControlIds": [
+        "HAZ-002",
+        "HAZ-020"
+      ],
       "status": "approved"
     },
     {
       "id": "MAG-VAL-003",
       "domain": "VAL",
       "statement": "Coordinate transformations and candidate generation shall preserve anatomical laterality without left-right hemisphere crossing.",
-      "sourceSpecification": ["MAGNIOM-Canonical Target Data Specification v1.0"],
+      "sourceSpecification": [
+        "MAGNIOM-Canonical Target Data Specification v1.0"
+      ],
       "safetyClass": "critical",
       "appliesToMode": "all",
       "verificationMethod": "unit_test",
-      "riskControlIds": ["HAZ-002"],
+      "riskControlIds": [
+        "HAZ-002"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-WFL-001",
+      "domain": "WFL",
+      "statement": "State transitions across clinical cases shall follow strict state machines enforced by database triggers.",
+      "sourceSpecification": [
+        "MAGNIOM-Supabase Database & Security Specification v1.0"
+      ],
+      "safetyClass": "major",
+      "appliesToMode": "all",
+      "verificationMethod": "integration_test",
+      "riskControlIds": [
+        "HAZ-004"
+      ],
       "status": "approved"
     }
   ]

@@ -1,7 +1,8 @@
 /**
  * @magniom/web - In-Memory Case Store & State Engine
- * Manages clinical cases, phenotype snapshots, target slates, decisions, and audit events.
- * 100% Synthetic / Mockable for Sprint 6 Clinician UX & Formative Human Factors Testing.
+ * Manages clinical cases, phenotype snapshots, multi-indication contexts, target slates, decisions, and audit events.
+ * Conforms to MAGNIOM-Application Shell, Navigation & Clinical Context Specification v2.0 (§9–25, 58–87, 250–262).
+ * 100% Synthetic / Mockable for Clinician UX & Formative Human Factors Testing.
  */
 
 import type {
@@ -13,8 +14,14 @@ import type {
   MagniomInfluence,
   DecisionType,
   FinalTarget,
+  ModuleQualificationLevel,
 } from '@magniom/domain';
-import { ALL_UX_GOLDEN_CASES } from '@magniom/test-fixtures';
+import {
+  ALL_UX_GOLDEN_CASES,
+  ALL_UX_GOLDEN_CASES_V2,
+  G01_PHENOTYPE,
+  GOLDEN_CASE_01_SLATE,
+} from '@magniom/test-fixtures';
 
 /**
  * Deterministic browser/universal 64-hex-character hash function
@@ -50,6 +57,54 @@ export interface CaseStateRecord {
   decision?: ClinicianDecision | undefined;
   isStale: boolean;
   staleReason?: string | undefined;
+  staleSeverity?: 'blocking' | 'important' | 'informational' | undefined;
+  isContradictory?: boolean | undefined;
+  isBlindedValidation?: boolean | undefined;
+  qualificationLevel?: ModuleQualificationLevel | undefined;
+  activeCaseIndicationId: string;
+  availableIndications: Array<{
+    caseIndicationId: string;
+    indicationCode: string;
+    label: string;
+    isPrimary: boolean;
+    status: string;
+  }>;
+  clinicalObjective?:
+    | {
+        id: string;
+        title: string;
+        priorityRank: number;
+        burdenScoreText?: string | undefined;
+        isEvidenceMappable: boolean;
+      }
+    | undefined;
+  diseaseStage?:
+    | {
+        stageCode: string;
+        stageLabel: string;
+        determinationMethod: string;
+        isSubacuteOrAcute: boolean;
+      }
+    | undefined;
+  lesionContext?:
+    | {
+        hasLesion: boolean;
+        lesionType?: string | undefined;
+        laterality?: string | undefined;
+        interpretation?: string | undefined;
+        affectedRegionsCount: number;
+        hasTargetOverlapWarning: boolean;
+        skullAbnormalityPresent: boolean;
+      }
+    | undefined;
+  treatmentContext?:
+    | {
+        contextType: string;
+        statusLabel: string;
+        isConfirmed: boolean;
+        summaryText: string;
+      }
+    | undefined;
   auditEvents: Array<{
     id: string;
     eventType: string;
@@ -67,6 +122,8 @@ class CaseStore {
 
   public resetToGoldenCases() {
     this.cases.clear();
+
+    // 1. Initialise v1 UX Golden Cases (G01–G09)
     ALL_UX_GOLDEN_CASES.forEach(bundle => {
       this.cases.set(bundle.id, {
         clinicalCase: { ...bundle.clinicalCase },
@@ -75,12 +132,86 @@ class CaseStore {
         decision: bundle.initialDecision ? { ...bundle.initialDecision } : undefined,
         isStale: Boolean(bundle.isStale),
         staleReason: bundle.staleReason,
+        staleSeverity: bundle.isStale ? 'blocking' : undefined,
+        activeCaseIndicationId: `ci-${bundle.id}-pri`,
+        availableIndications: [
+          {
+            caseIndicationId: `ci-${bundle.id}-pri`,
+            indicationCode: bundle.clinicalCase.indicationCode,
+            label: bundle.clinicalCase.indicationCode,
+            isPrimary: true,
+            status: 'confirmed',
+          },
+        ],
         auditEvents: [
           {
             id: `evt-${bundle.id}-init`,
             eventType: 'CASE_INITIALISED',
             occurredAt: bundle.clinicalCase.createdAt,
             details: { caseCode: bundle.code, indication: bundle.clinicalCase.indicationCode },
+          },
+        ],
+      });
+    });
+
+    // 2. Initialise v2 Canonical UX Golden Cases (UX_V2_CASE_01 to 13) (§250–262)
+    ALL_UX_GOLDEN_CASES_V2.forEach(bundle => {
+      const activeCiId =
+        bundle.availableIndications?.[0]?.caseIndicationId || `ci-${bundle.id}-pri`;
+
+      const availableInds = bundle.availableIndications
+        ? bundle.availableIndications.map(i => ({ ...i }))
+        : [
+            {
+              caseIndicationId: activeCiId,
+              indicationCode: bundle.indicationCode,
+              label: bundle.indicationFormatted,
+              isPrimary: true,
+              status: 'confirmed',
+            },
+          ];
+
+      this.cases.set(bundle.id, {
+        clinicalCase: { ...bundle.clinicalCase },
+        phenotype: bundle.phenotype
+          ? { ...bundle.phenotype }
+          : {
+              ...G01_PHENOTYPE,
+              id: `pheno-${bundle.id}`,
+              patientId: bundle.clinicalCase.patientId,
+              primaryDiagnosis: bundle.indicationFormatted,
+            },
+        slate: bundle.slate
+          ? { ...bundle.slate }
+          : {
+              ...GOLDEN_CASE_01_SLATE,
+              id: `slate-${bundle.id}`,
+              caseId: bundle.id,
+              primaryCandidates: [],
+            },
+        decision: bundle.initialDecision ? { ...bundle.initialDecision } : undefined,
+        isStale: Boolean(bundle.isStale),
+        staleReason: bundle.staleReason,
+        staleSeverity: bundle.isStale ? 'blocking' : undefined,
+        isContradictory: Boolean(bundle.isContradictory),
+        isBlindedValidation: Boolean(bundle.isBlindedValidation),
+        qualificationLevel: bundle.qualificationLevel,
+        activeCaseIndicationId: activeCiId,
+        availableIndications: availableInds,
+        clinicalObjective: bundle.clinicalObjective ? { ...bundle.clinicalObjective } : undefined,
+        diseaseStage: bundle.diseaseStage ? { ...bundle.diseaseStage } : undefined,
+        lesionContext: bundle.lesionContext ? { ...bundle.lesionContext } : undefined,
+        treatmentContext: bundle.treatmentContext ? { ...bundle.treatmentContext } : undefined,
+        auditEvents: [
+          {
+            id: `evt-${bundle.id}-init`,
+            eventType: 'CASE_INITIALISED_V2',
+            occurredAt: bundle.clinicalCase.createdAt,
+            details: {
+              caseCode: bundle.code,
+              indication: bundle.indicationCode,
+              qualificationLevel: bundle.qualificationLevel,
+            },
           },
         ],
       });
@@ -94,18 +225,46 @@ class CaseStore {
     state: string;
     indication: string;
     isStale: boolean;
+    mode: string;
   }> {
-    return ALL_UX_GOLDEN_CASES.map(bundle => {
-      const record = this.cases.get(bundle.id);
-      return {
-        id: bundle.id,
-        code: bundle.code,
-        title: bundle.title,
-        state: record?.clinicalCase.state || bundle.clinicalCase.state,
-        indication: bundle.clinicalCase.indicationCode,
+    const list: Array<{
+      id: string;
+      code: string;
+      title: string;
+      state: string;
+      indication: string;
+      isStale: boolean;
+      mode: string;
+    }> = [];
+
+    // Include v2 cases first, then legacy v1 cases
+    ALL_UX_GOLDEN_CASES_V2.forEach(b => {
+      const record = this.cases.get(b.id);
+      list.push({
+        id: b.id,
+        code: b.code,
+        title: b.title,
+        state: record?.clinicalCase.state || b.clinicalCase.state,
+        indication: b.indicationCode,
         isStale: Boolean(record?.isStale),
-      };
+        mode: record?.clinicalCase.mode || b.mode,
+      });
     });
+
+    ALL_UX_GOLDEN_CASES.forEach(b => {
+      const record = this.cases.get(b.id);
+      list.push({
+        id: b.id,
+        code: b.code,
+        title: b.title,
+        state: record?.clinicalCase.state || b.clinicalCase.state,
+        indication: b.clinicalCase.indicationCode,
+        isStale: Boolean(record?.isStale),
+        mode: record?.clinicalCase.mode || b.clinicalCase.mode,
+      });
+    });
+
+    return list;
   }
 
   public getCaseRecord(caseId: string): CaseStateRecord | undefined {
@@ -119,6 +278,83 @@ class CaseStore {
       }
     }
     return undefined;
+  }
+
+  /**
+   * Switches the active CaseIndication for a multi-indication patient case (§64–67).
+   * Strictly enforces slate isolation: never reuses previous Target Slate under the new indication!
+   */
+  public switchCaseIndication(caseId: string, targetCaseIndicationId: string): CaseStateRecord {
+    const record = this.cases.get(caseId);
+    if (!record) throw new Error(`Case ${caseId} not found`);
+
+    const targetInd = record.availableIndications.find(
+      i => i.caseIndicationId === targetCaseIndicationId,
+    );
+    if (!targetInd) {
+      throw new Error(`CaseIndication ${targetCaseIndicationId} not found on case ${caseId}`);
+    }
+
+    const previousIndication = record.clinicalCase.indicationCode;
+
+    // Update active indication
+    record.activeCaseIndicationId = targetCaseIndicationId;
+    record.clinicalCase = {
+      ...record.clinicalCase,
+      indicationCode: targetInd.indicationCode,
+      updatedAt: new Date().toISOString(),
+    };
+
+    // ZERO CROSS-INDICATION SLATE REUSE (§67):
+    // Unload the previous slate and initialize an independent empty/pending slate for the target indication.
+    record.slate = {
+      ...GOLDEN_CASE_01_SLATE,
+      id: `slate-${caseId}-${targetInd.indicationCode.toLowerCase()}`,
+      caseId,
+      primaryCandidates: [],
+    };
+    record.decision = undefined; // Unset previous indication decision!
+    record.isStale = false;
+    record.staleReason = undefined;
+    record.staleSeverity = undefined;
+
+    record.auditEvents.push({
+      id: `evt-ind-switch-${Date.now()}`,
+      eventType: 'CASE_INDICATION_SWITCHED',
+      occurredAt: new Date().toISOString(),
+      details: {
+        caseId,
+        previousIndication,
+        activeIndication: targetInd.indicationCode,
+        targetCaseIndicationId,
+      },
+    });
+
+    return record;
+  }
+
+  /**
+   * Updates staleness status for a Case (§76–80)
+   */
+  public setStaleness(
+    caseId: string,
+    isStale: boolean,
+    reason?: string | undefined,
+    severity: 'blocking' | 'important' | 'informational' = 'blocking',
+  ): void {
+    const record = this.cases.get(caseId);
+    if (!record) throw new Error(`Case ${caseId} not found`);
+
+    record.isStale = isStale;
+    record.staleReason = reason;
+    record.staleSeverity = isStale ? severity : undefined;
+
+    record.auditEvents.push({
+      id: `evt-stale-${Date.now()}`,
+      eventType: isStale ? 'CASE_STALENESS_DETECTED' : 'CASE_STALENESS_RESOLVED',
+      occurredAt: new Date().toISOString(),
+      details: { isStale, reason, severity },
+    });
   }
 
   /**
@@ -174,6 +410,35 @@ class CaseStore {
   }
 
   /**
+   * Creates a revised draft decision superseding an immutable signed decision
+   */
+  public createRevisedDecision(caseId: string): void {
+    const record = this.cases.get(caseId);
+    if (!record || !record.decision) return;
+
+    const previousId = record.decision.id;
+    record.decision = {
+      ...record.decision,
+      id: `dec-${caseId}-rev-${Date.now()}`,
+      isImmutable: false,
+      supersedesId: previousId,
+      status: 'in_review',
+    };
+    record.clinicalCase = {
+      ...record.clinicalCase,
+      state: 'clinician_review',
+      updatedAt: new Date().toISOString(),
+    };
+
+    record.auditEvents.push({
+      id: `evt-dec-supersede-${Date.now()}`,
+      eventType: 'DECISION_SUPERSEDED',
+      occurredAt: new Date().toISOString(),
+      details: { previousDecisionId: previousId, newDecisionId: record.decision.id },
+    });
+  }
+
+  /**
    * Saves candidate decisions
    */
   public saveCandidateDecision(caseId: string, candidateDecision: CandidateDecision): void {
@@ -212,7 +477,12 @@ class CaseStore {
   }
 
   /**
-   * Signs a clinician decision immutably with digital signature hash
+   * Signs a clinician decision immutably with digital signature hash.
+   * Safety invariant (§22, §78, §139, §140):
+   * Prohibited if:
+   * 1. Case is Stale with blocking severity
+   * 2. Active Mode is RESEARCH
+   * 3. Contradictory authority state
    */
   public signDecision(params: {
     caseId: string;
@@ -226,8 +496,23 @@ class CaseStore {
     const record = this.cases.get(params.caseId);
     if (!record) throw new Error(`Case ${params.caseId} not found`);
 
-    if (record.isStale) {
-      throw new Error('Safety Violation: Cannot sign a stale Target Slate.');
+    // Safety Invariant 1: Blocking Staleness prevents signing (§78, §140)
+    if (record.isStale && record.staleSeverity === 'blocking') {
+      throw new Error('Safety Violation: Cannot sign a stale Target Slate (§78, §140).');
+    }
+
+    // Safety Invariant 2: Research Mode prevents clinical signing (§22, §139)
+    if (record.clinicalCase.mode === 'RESEARCH') {
+      throw new Error(
+        'Safety Violation: Clinical digital signature is prohibited in Research Mode (§22, §139).',
+      );
+    }
+
+    // Safety Invariant 3: Contradictory authority state (§25)
+    if (record.isContradictory) {
+      throw new Error(
+        'Safety Violation: Module authority contradiction. Target signing locked (§25).',
+      );
     }
 
     const decidedAt = new Date().toISOString();
@@ -241,7 +526,7 @@ class CaseStore {
         source: cd.action === 'modify' ? 'clinician_defined' : 'magniom_candidate',
         sourceCandidateId: cd.targetCandidateId,
         targetRegion: (cd.modifiedTarget || {}) as Record<string, unknown>,
-        therapeuticObjectives: ['Depression symptom alleviation'],
+        therapeuticObjectives: [`${record.clinicalCase.indicationCode} symptom alleviation`],
       }));
 
     let decisionType: DecisionType = 'ACCEPTED_PRIMARY';
@@ -249,47 +534,45 @@ class CaseStore {
       decisionType = 'DEFERRED';
     } else if (candidateDecisions.some(cd => cd.action === 'modify')) {
       decisionType = 'MANUAL_OVERRIDE';
-    } else if (candidateDecisions.some(cd => cd.action === 'replace')) {
-      decisionType = 'SUBSTITUTED_ALTERNATIVE';
     }
 
-    const signaturePayload = JSON.stringify({
+    const payloadToHash = JSON.stringify({
       caseId: params.caseId,
       slateId: record.slate.id,
-      clinicianName: params.clinicianName,
-      decidedAt,
-      candidateDecisions,
-      overallReasoning: params.overallReasoning,
-      magniomInfluence: params.magniomInfluence,
       finalTargets,
+      reasoning: params.overallReasoning,
+      clinician: params.clinicianName,
+      license: params.licenseNumber,
+      decidedAt,
     });
-    const digitalSignatureHash = deterministicHexHash(signaturePayload);
+    const digitalSignatureHash = deterministicHexHash(payloadToHash);
 
     const signedDecision: ClinicianDecision = {
-      id: record.decision?.id || `dec-${params.caseId}`,
+      id: record.decision?.id || `dec-${params.caseId}-${Date.now()}`,
       caseId: params.caseId,
       slateId: record.slate.id,
       clinicianId: 'clin-specialist-001',
-      status: 'completed',
       decisionType,
-      selectedCandidateIds: finalTargets.map(ft => ft.sourceCandidateId || ''),
+      selectedCandidateIds: candidateDecisions
+        .filter(d => d.action === 'accept' || d.action === 'modify')
+        .map(d => d.targetCandidateId),
+      finalTargets,
+      candidateDecisions,
       overallReasoning: params.overallReasoning,
       magniomInfluence: params.magniomInfluence,
       ...(params.disagreementWithMagniom
         ? { disagreementWithMagniom: params.disagreementWithMagniom }
         : {}),
-      candidateDecisions,
-      finalTargets,
       reviewedCounterfactuals: true,
       reviewedConflictingEvidence: true,
       decidedAt,
       attestation: {
         clinicianId: 'clin-specialist-001',
         clinicianName: params.clinicianName,
+        licenseNumber: params.licenseNumber || 'MED-SYNTH-992',
         statement: params.attestationStatement,
-        signedAt: decidedAt,
         digitalSignatureHash,
-        ...(params.licenseNumber ? { licenseNumber: params.licenseNumber } : {}),
+        signedAt: decidedAt,
       },
       digitalSignatureHash,
       isImmutable: true,
@@ -303,60 +586,19 @@ class CaseStore {
     };
 
     record.auditEvents.push({
-      id: `evt-dec-sign-${Date.now()}`,
-      eventType: 'DECISION_SIGNED',
+      id: `evt-sign-${Date.now()}`,
+      eventType: 'CLINICAL_DECISION_SIGNED',
       occurredAt: decidedAt,
       details: {
         decisionId: signedDecision.id,
-        decisionType: signedDecision.decisionType,
-        digitalSignatureHash,
-        magniomInfluence: params.magniomInfluence,
+        signatureHash: digitalSignatureHash,
+        clinicianName: params.clinicianName,
+        decisionType,
       },
     });
 
     return signedDecision;
   }
-
-  /**
-   * Triggers a supersession event, unsealing the case for a revised decision
-   */
-  public createRevisedDecision(caseId: string): void {
-    const record = this.cases.get(caseId);
-    if (!record || !record.decision) return;
-
-    const previousId = record.decision.id;
-    record.decision = {
-      ...record.decision,
-      id: `dec-${caseId}-rev-${Date.now()}`,
-      isImmutable: false,
-      supersedesId: previousId,
-      status: 'in_review',
-    };
-    record.clinicalCase = {
-      ...record.clinicalCase,
-      state: 'clinician_review',
-      updatedAt: new Date().toISOString(),
-    };
-
-    record.auditEvents.push({
-      id: `evt-dec-supersede-${Date.now()}`,
-      eventType: 'DECISION_SUPERSEDED',
-      occurredAt: new Date().toISOString(),
-      details: { supersededDecisionId: previousId, newDecisionId: record.decision.id },
-    });
-  }
-
-  /**
-   * Sets staleness state on a case for testing Safeguard 18 & Task 11
-   */
-  public setStaleness(caseId: string, isStale: boolean, reason?: string) {
-    const record = this.cases.get(caseId);
-    if (record) {
-      record.isStale = isStale;
-      record.staleReason = reason;
-    }
-  }
 }
 
-// Global Singleton Store
 export const caseStore = new CaseStore();

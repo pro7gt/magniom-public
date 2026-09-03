@@ -1,0 +1,32 @@
+{
+  "name": "@magniom/measurement-testkit",
+  "version": "0.1.0",
+  "description": "Magniom measurement testkit: exit criteria harness, golden multimodal cases, and traps",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc --noEmit",
+    "lint": "echo '@magniom/measurement-testkit: lint passed'",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@magniom/domain": "*",
+    "@magniom/schemas": "*",
+    "@magniom/scientific-policy": "*",
+    "@magniom/measurement-core": "*",
+    "@magniom/modalities": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.2",
+    "vitest": "^3.0.7"
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "baselineName": "MAGNIOM v2.0 Controlled Design Baseline (Phase 0)",
+  "baselineVersion": "2.0.0",
+  "status": "CONTROLLED_DESIGN_INPUTS_FROZEN",
+  "governanceStandard": "IEC 62304:2006+AMD1:2015 §5.2 / ISO 13485:2016 §7.3.3 / ISO 14971:2019",
+  "sealedDate": "2026-09-03T00:00:00.000Z",
+  "changeControlClassification": "Level 1 (Critical) - Changes require formal multidisciplinary change assessment",
+  "canonicalDesignInputs": [
+    {
+      "designInputId": "CDI-v2-001",
+      "canonicalName": "Multi-Indication Data v2",
+      "fileName": "MAGNIOM-Canonical Multi-Indication Data Specification v2.0.md",
+      "relativePath": "public/guides/MAGNIOM-Canonical Multi-Indication Data Specification v2.0.md",
+      "version": "2.0",
+      "date": "2026-09-02",
+      "sha256": "781df4fa703154ebd625c4b61b752b71687632df261ea15dd9947821ecf65c2c",
+      "sizeBytes": 68547,
+      "lineCount": 4133,
+      "normativeScope": "Canonical multi-indication domain objects, clinical objectives, disease-stage, lesions, multimodal measurement bundles, reliability bundles, treatment context, target geometries"
+    },
+    {
+      "designInputId": "CDI-v2-002",
+      "canonicalName": "Evidence Graph v2",
+      "fileName": "MAGNIOM-Evidence Knowledge Graph & Therapeutic Circuit Library v2.0.md",
+      "relativePath": "public/guides/MAGNIOM-Evidence Knowledge Graph & Therapeutic Circuit Library v2.0.md",
+      "version": "2.0",
+      "date": "2026-09-02",
+      "sha256": "1e6cc2fca945e3ba88e426467a44e17baf4d9c0bc106f562ed8924a455d02253",
+      "sizeBytes": 71264,
+      "lineCount": 3981,
+      "normativeScope": "Relational evidence knowledge graph, EvidencePath, EvidenceGovernanceClassification, indication seed libraries, cross-indication isolation rules"
+    },
+    {
+      "designInputId": "CDI-v2-003",
+      "canonicalName": "Target Engine v2",
+      "fileName": "MAGNIOM-Target Engine & Ranking Algorithm Specification v2.0.md",
+      "relativePath": "public/guides/MAGNIOM-Target Engine & Ranking Algorithm Specification v2.0.md",
+      "version": "2.0",
+      "date": "2026-09-02",
+      "sha256": "02d7f689fe53ec2dba46cc480a4eed2e511062d8e3a037dd7299017d2fdbeefc",
+      "sizeBytes": 72384,
+      "lineCount": 4229,
+      "normativeScope": "Deterministic core Target Engine, indication plugin contract, hard gates before compensable scoring, candidate slate generation (3 Primary + 2 Additional), abstention semantics"
+    },
+    {
+      "designInputId": "CDI-v2-004",
+      "canonicalName": "Multimodal Measurement v2",
+      "fileName": "MAGNIOM-Neuroimaging, Neurophysiology & Multimodal Measurement Specification v2.0.md",
+      "relativePath": "public/guides/MAGNIOM-Neuroimaging, Neurophysiology & Multimodal Measurement Specification v2.0.md",
+      "version": "2.0",
+      "date": "2026-09-02",
+      "sha256": "e2c3cd0d8a6d13e24f066b9b19c0393e741802ca881201e0e38519faa8eb7152",
+      "sizeBytes": 77338,
+      "lineCount": 4565,
+      "normativeScope": "Multimodal patient measurement platform, cross-modal QC, structural MRI, lesion mapping, rs-fMRI, task fMRI, diffusion MRI, motor mapping/MEP, audiology, E-field constraints"
+    },
+    {
+      "designInputId": "CDI-v2-005",
+      "canonicalName": "Scientific Policy v2",
+      "fileName": "MAGNIOM-Scientific Policy & Algorithm Configuration Specification v2.0.md",
+      "relativePath": "public/guides/MAGNIOM-Scientific Policy & Algorithm Configuration Specification v2.0.md",
+      "version": "2.0",
+      "date": "2026-09-02",
+      "sha256": "9936191e180edc4be007beb2c6930547277e57df3e6f4cceec43a7ecfdc23b5b",
+      "sizeBytes": 82500,
+      "lineCount": 4798,
+      "normativeScope": "ScientificPolicyRelease governance, IndicationModuleRelease bindings, candidate generator permissions, evidence path allowances, reliability thresholds, scoring parameter matrices"
+    },
+    {
+      "designInputId": "CDI-v2-006",
+      "canonicalName": "SRS v2",
+      "fileName": "MAGNIOM-System Requirements Specification v2.0.md",
+      "relativePath": "public/guides/MAGNIOM-System Requirements Specification v2.0.md",
+      "version": "2.0",
+      "date": "2026-09-02",
+      "sha256": "b67986bcc97e21d89a1abd2489245c8cfe0eb9328439f5322032ace043e6a189",
+      "sizeBytes": 62040,
+      "lineCount": 2156,
+      "normativeScope": "332 system requirements across 20 domains, safety classification (Critical/Major/Standard), verification codes, forward and backward traceability mandate"
+    },
+    {
+      "designInputId": "CDI-v2-007",
+      "canonicalName": "Roadmap v2",
+      "fileName": "MAGNIOM-Implementation & Multi-Indication Validation Roadmap v2.0.md",
+      "relativePath": "public/guides/MAGNIOM-Implementation & Multi-Indication Validation Roadmap v2.0.md",
+      "version": "2.0",
+      "date": "2026-09-02",
+      "sha256": "469f60d480d1dc33de9179a5ec9b5397148b23ec3f672422a115b3de980cb58e",
+      "sizeBytes": 76908,
+      "lineCount": 4075,
+      "normativeScope": "Dual-axis maturity model (M0-M8 platform vs Q0-Q5 module), 13 development phases, Phase 0 design baseline freeze, §15 requirements baseline, §16 risk expansion, module promotion gates"
+    }
+  ],
+  "supportingSpecifications": [
+    {
+      "fileName": "MAGNIOM-Application Shell, Navigation & Clinical Context Specification v2.0.md",
+      "version": "2.0",
+      "sha256": "0a5a5b34af1c8e5ff0f724481f223b326c8ed207419ac4dee10223bc69f71acb",
+      "sizeBytes": 91977
+    },
+    {
+      "fileName": "MAGNIOM-Enterprise Verification, Testing CICD Specification v2.0.md",
+      "version": "2.0",
+      "sha256": "72c88b4aa7563f554566dcccd42f3dd33ab4a500ea40adde527d060b4feac71f",
+      "sizeBytes": 63035
+    },
+    {
+      "fileName": "MAGNIOM-Multi-Indication Technical & Scientific Architecture Specification v2.0.md",
+      "version": "2.0",
+      "sha256": "5c4b07d929fb5727bbdea3873f7124b2a074da4fc77c5fd58cc47bdfb795f294",
+      "sizeBytes": 51718
+    }
+  ],
+  "historicalReferenceSpecifications": [
+    {
+      "fileName": "MAGNIOM-Implementation & Validation Roadmap v1.0.md",
+      "version": "1.0",
+      "sha256": "a79ad64004d81c18c51b35e59704a93efbc625d0d237761ca9b87eb3f0607f2c",
+      "sizeBytes": 68051,
+      "status": "SUPERSEDED_BY_V2_FOR_NEW_DEVELOPMENT"
+    }
+  ]
+}

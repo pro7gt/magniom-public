@@ -9,6 +9,7 @@ interface DecisionWorkspaceProps {
   caseId: string;
   slateVM: TargetSlateViewModel;
   existingDecisionVM?: DecisionReviewViewModel | null | undefined;
+  mode?: import('@magniom/domain').MagniomMode | undefined;
   onSignDecision: (params: {
     overallReasoning: string;
     magniomInfluence: MagniomInfluence;
@@ -58,11 +59,18 @@ export function DecisionWorkspace({
   caseId,
   slateVM,
   existingDecisionVM,
+  mode,
   onSignDecision,
   onSaveCandidateDecision,
   onCreateRevisedDecision,
 }: DecisionWorkspaceProps) {
   const isImmutable = existingDecisionVM?.isImmutable;
+  const isResearchMode =
+    mode === 'research' ||
+    (slateVM as unknown as { mode?: string; isResearchMode?: boolean }).isResearchMode === true ||
+    (slateVM as unknown as { mode?: string }).mode === 'research';
+
+  const [withholdStimulation, setWithholdStimulation] = useState(false);
 
   // Candidate Decisions State
   const [candidateActions, setCandidateActions] = useState<Record<string, CandidateActionState>>(
@@ -256,6 +264,102 @@ export function DecisionWorkspace({
               Create Revised Target Decision ↺
             </button>
           )}
+        </div>
+      )}
+
+      {/* Research Mode Warning Banner (§32 Criterion 7) */}
+      {isResearchMode && (
+        <div
+          id="research-mode-warning-banner"
+          style={{
+            background: 'rgba(217, 119, 6, 0.15)',
+            border: '1px solid #d97706',
+            borderRadius: '0.5rem',
+            padding: '1rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.75rem',
+          }}
+        >
+          <span style={{ fontSize: '1.5rem' }}>⚠️</span>
+          <div>
+            <strong style={{ color: '#fde047', fontSize: '1rem' }}>
+              RESEARCH MODE ACTIVE — CLINICAL DIGITAL SIGNING PROHIBITED
+            </strong>
+            <p style={{ color: '#fed7aa', fontSize: '0.8125rem', marginTop: '0.25rem' }}>
+              This Target Slate was generated in Research Mode. Per Magniom Governance §32 Criterion
+              7, research candidates cannot be signed as a clinical decision. Output is strictly for
+              investigational review.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* No Target / Withhold Stimulation Action Panel (§32 Criterion 6) */}
+      {!isImmutable && (
+        <div
+          id="withhold-stimulation-panel"
+          style={{
+            background: withholdStimulation ? 'rgba(239, 68, 68, 0.15)' : 'var(--card-bg)',
+            border: `1px solid ${withholdStimulation ? '#ef4444' : 'var(--card-border)'}`,
+            borderRadius: '0.5rem',
+            padding: '1rem',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '0.75rem',
+          }}
+        >
+          <div>
+            <strong
+              style={{
+                color: withholdStimulation ? '#fca5a5' : 'var(--text-primary)',
+                fontSize: '0.9375rem',
+              }}
+            >
+              Specialist Discretion: Withhold Stimulation / No Target Selected
+            </strong>
+            <p
+              style={{
+                color: 'var(--text-secondary)',
+                fontSize: '0.8125rem',
+                marginTop: '0.25rem',
+              }}
+            >
+              Per §32 Criterion 6, the treating specialist clinician may determine that no target
+              candidate meets clinical risk-benefit threshold.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              const next = !withholdStimulation;
+              setWithholdStimulation(next);
+              if (next) {
+                const allRejected: Record<string, CandidateActionState> = {};
+                [...slateVM.primaryCandidates, ...slateVM.additionalCandidates].forEach(c => {
+                  allRejected[c.id] = {
+                    action: 'reject',
+                    reasons: ['Independent specialist clinical judgement'],
+                    freeText: 'Withhold stimulation based on specialist clinical judgement.',
+                  };
+                });
+                setCandidateActions(allRejected);
+                if (!overallReasoning) {
+                  setOverallReasoning(
+                    'Treating clinician determined to withhold stimulation following independent target review.',
+                  );
+                }
+              }
+            }}
+            className={`btn ${withholdStimulation ? 'btn-danger' : 'btn-secondary'}`}
+            id="withhold-stimulation-toggle-btn"
+          >
+            {withholdStimulation
+              ? '✓ Stimulation Withheld (No Target)'
+              : 'Withhold Stimulation (No Target)'}
+          </button>
         </div>
       )}
 
@@ -627,18 +731,30 @@ export function DecisionWorkspace({
               <button
                 onClick={handleExecuteSign}
                 disabled={
-                  !attestationConfirmed || !overallReasoning.trim() || isSigning || slateVM.isStale
+                  isResearchMode ||
+                  !attestationConfirmed ||
+                  !overallReasoning.trim() ||
+                  isSigning ||
+                  slateVM.isStale
                 }
-                className="btn btn-primary"
+                className={`btn ${withholdStimulation ? 'btn-danger' : 'btn-primary'}`}
                 style={{
                   width: '100%',
                   padding: '0.75rem',
                   fontSize: '0.9375rem',
                   fontWeight: 700,
+                  opacity: isResearchMode ? 0.5 : 1,
+                  cursor: isResearchMode ? 'not-allowed' : 'pointer',
                 }}
                 id="sign-target-decision-btn"
               >
-                {isSigning ? 'Cryptographically Signing...' : 'Sign Target Decision →'}
+                {isResearchMode
+                  ? 'Clinical Signing Prohibited (Research Slate)'
+                  : isSigning
+                    ? 'Cryptographically Signing...'
+                    : withholdStimulation
+                      ? 'Sign Decision: Withhold Stimulation →'
+                      : 'Sign Target Decision →'}
               </button>
             </div>
           )}

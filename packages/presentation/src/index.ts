@@ -12,6 +12,9 @@
 import type {
   TargetCandidate,
   TargetSlate,
+  TargetSlateV2,
+  TargetCandidateV2,
+  MagniomMode,
   PhenotypeSnapshot,
   MniCoordinate,
   SubjectCoordinate,
@@ -1787,3 +1790,254 @@ export function toReleaseContextSummaryViewModel(): ReleaseContextSummaryViewMod
       'Magniom provides connectome-informed candidate target slates for specialist clinician review and does not autonomously prescribe treatment.',
   };
 }
+
+// ==========================================
+// 12. Canonical V2 Target Slate & Vertical Slice Presentation Adapters (§31-32)
+// ==========================================
+
+export interface CandidateCardViewModelV2 {
+  readonly id: string;
+  readonly role: string;
+  readonly targetFamilyId: string;
+  readonly geometryType: string;
+  readonly displayCoordinate: string;
+  readonly evidenceConfidence: string;
+  readonly evidenceSummary: string;
+  readonly isSuppressed: boolean;
+  readonly suppressionReason?: string | undefined;
+  readonly isResearchOnly: boolean;
+  readonly supportingClaimCount: number;
+  readonly conflictingClaimCount: number;
+  readonly counterargumentCount: number;
+  readonly reliabilityQualified: boolean;
+}
+
+export interface TargetSlateViewModelV2 {
+  readonly id: string;
+  readonly caseId: string;
+  readonly caseIndicationId: string;
+  readonly mode: MagniomMode;
+  readonly isResearchMode: boolean;
+  readonly status: string;
+  readonly primaryCandidates: readonly CandidateCardViewModelV2[];
+  readonly additionalCandidates: readonly CandidateCardViewModelV2[];
+  readonly suppressedCandidates: readonly CandidateCardViewModelV2[];
+  readonly hasAbstention: boolean;
+  readonly abstentionType?: string | undefined;
+  readonly abstentionExplanation?: string | undefined;
+  readonly generationSummary: string;
+  readonly manifestHash: string;
+  readonly scientificLimitations: readonly string[];
+  readonly isClinicalSigningAllowed: boolean;
+}
+
+export interface EvidenceDrawerViewModelV2 {
+  readonly candidateId: string;
+  readonly role: string;
+  readonly targetFamilyId: string;
+  readonly geometryType: string;
+  readonly evidenceSummary: string;
+  readonly evidenceConfidence: string;
+  readonly supportingClaims: readonly string[];
+  readonly conflictingClaims: readonly string[];
+  readonly counterarguments: readonly string[];
+  readonly reliabilityStatus: string;
+  readonly reliabilityQualified: boolean;
+  readonly reliedOnMeasurements: readonly string[];
+  readonly applicabilityLimitations: readonly string[];
+  readonly hasNegativeOrConflictingEvidence: boolean;
+  readonly researchOnlyWarning?: string | undefined;
+}
+
+export interface DecisionReviewViewModelV2 {
+  readonly caseId: string;
+  readonly slateId: string;
+  readonly mode: MagniomMode;
+  readonly isResearchMode: boolean;
+  readonly isClinicalSigningAllowed: boolean;
+  readonly researchNotice?: string | undefined;
+  readonly canWithholdStimulation: boolean;
+  readonly canSignClinically: boolean;
+  readonly disclaimerNotice: string;
+}
+
+export function toCandidateCardViewModelV2(
+  candidate: TargetCandidateV2,
+  options?: { isSuppressed?: boolean; suppressionReason?: string },
+): CandidateCardViewModelV2 {
+  const geom = candidate.targetGeometry;
+  let displayCoord = '(—, —, —)';
+  if (geom && 'mniCoordinate' in geom && geom.mniCoordinate) {
+    displayCoord = formatMniCoordinate(geom.mniCoordinate as MniCoordinate);
+  } else if (geom && geom.geometryType === 'coil_field') {
+    displayCoord = 'Coil Field Placement';
+  } else if (geom && geom.geometryType === 'somatotopic') {
+    displayCoord = 'Somatotopic Region';
+  }
+
+  const isResearch =
+    candidate.candidateRole === 'research_hypothesis' ||
+    candidate.generationStatus === 'research_only';
+
+  return {
+    id: candidate.id,
+    role: candidate.candidateRole,
+    targetFamilyId: candidate.targetFamilyId,
+    geometryType: geom?.geometryType ?? 'point',
+    displayCoordinate: displayCoord,
+    evidenceConfidence: candidate.clinicalEvidence?.evidenceConfidence ?? 'MODERATE',
+    evidenceSummary: candidate.clinicalEvidence?.evidenceSummary ?? 'Evidence summary unavailable',
+    isSuppressed: Boolean(options?.isSuppressed),
+    suppressionReason: options?.suppressionReason,
+    isResearchOnly: isResearch,
+    supportingClaimCount: candidate.supportingEvidenceClaimIds?.length ?? 0,
+    conflictingClaimCount: candidate.conflictingEvidenceClaimIds?.length ?? 0,
+    counterargumentCount: candidate.counterarguments?.length ?? 0,
+    reliabilityQualified: Boolean(candidate.reliabilityBundleId),
+  };
+}
+
+export function toTargetSlateViewModelV2(
+  slate: TargetSlateV2,
+  allCandidates: readonly TargetCandidateV2[],
+  suppressedCandidates: readonly TargetCandidateV2[] = [],
+): TargetSlateViewModelV2 {
+  const candidateMap = new Map(allCandidates.map(c => [c.id, c]));
+
+  const primaryCards = slate.primaryCandidates.map(ref => {
+    const candidate = candidateMap.get(ref.targetCandidateId);
+    if (candidate) {
+      return toCandidateCardViewModelV2(candidate);
+    }
+    return {
+      id: ref.targetCandidateId,
+      role: 'evidence_anchor',
+      targetFamilyId: 'Unknown',
+      geometryType: 'point',
+      displayCoordinate: '(—, —, —)',
+      evidenceConfidence: 'MODERATE',
+      evidenceSummary: 'Candidate details not populated',
+      isSuppressed: false,
+      isResearchOnly: false,
+      supportingClaimCount: 0,
+      conflictingClaimCount: 0,
+      counterargumentCount: 0,
+      reliabilityQualified: false,
+    };
+  });
+
+  const additionalCards = slate.additionalCandidates.map(ref => {
+    const candidate = candidateMap.get(ref.targetCandidateId);
+    if (candidate) {
+      return toCandidateCardViewModelV2(candidate);
+    }
+    return {
+      id: ref.targetCandidateId,
+      role: 'clinical_alternative',
+      targetFamilyId: 'Unknown',
+      geometryType: 'point',
+      displayCoordinate: '(—, —, —)',
+      evidenceConfidence: 'MODERATE',
+      evidenceSummary: 'Candidate details not populated',
+      isSuppressed: false,
+      isResearchOnly: false,
+      supportingClaimCount: 0,
+      conflictingClaimCount: 0,
+      counterargumentCount: 0,
+      reliabilityQualified: false,
+    };
+  });
+
+  const suppressedCards = suppressedCandidates.map(c =>
+    toCandidateCardViewModelV2(c, {
+      isSuppressed: true,
+      suppressionReason: 'SUPPRESSED_BY_POLICY',
+    }),
+  );
+
+  const isResearchMode = slate.mode === 'research';
+  const hasAbstention = Boolean(slate.status === 'abstained' || slate.abstention);
+
+  return {
+    id: slate.id,
+    caseId: slate.caseId,
+    caseIndicationId: slate.caseIndicationId,
+    mode: slate.mode,
+    isResearchMode,
+    status: slate.status,
+    primaryCandidates: primaryCards,
+    additionalCandidates: additionalCards,
+    suppressedCandidates: suppressedCards,
+    hasAbstention,
+    abstentionType: slate.abstention?.abstentionType,
+    abstentionExplanation: slate.abstention?.explanation,
+    generationSummary: slate.generationSummary,
+    manifestHash: slate.payloadSha256,
+    scientificLimitations: slate.scientificLimitations,
+    isClinicalSigningAllowed: !isResearchMode,
+  };
+}
+
+export function toEvidenceDrawerViewModelV2(
+  candidate: TargetCandidateV2,
+): EvidenceDrawerViewModelV2 {
+  const isResearchOnly =
+    candidate.candidateRole === 'research_hypothesis' ||
+    candidate.generationStatus === 'research_only';
+
+  const conflictingClaims = candidate.conflictingEvidenceClaimIds ?? [];
+  const counterarguments = candidate.counterarguments ?? [];
+  const hasNegativeOrConflicting = conflictingClaims.length > 0 || counterarguments.length > 0;
+
+  return {
+    candidateId: candidate.id,
+    role: candidate.candidateRole,
+    targetFamilyId: candidate.targetFamilyId,
+    geometryType: candidate.targetGeometry?.geometryType ?? 'point',
+    evidenceSummary:
+      candidate.clinicalEvidence?.evidenceSummary ?? 'No evidence summary available.',
+    evidenceConfidence: candidate.clinicalEvidence?.evidenceConfidence ?? 'MODERATE',
+    supportingClaims: candidate.supportingEvidenceClaimIds ?? [],
+    conflictingClaims,
+    counterarguments,
+    reliabilityStatus: candidate.reliabilityBundleId ? 'assessed' : 'not_available',
+    reliabilityQualified: Boolean(candidate.reliabilityBundleId),
+    reliedOnMeasurements: candidate.reliedOnMeasurementIds ?? [],
+    applicabilityLimitations: candidate.clinicalEvidence?.applicabilityLimitations ?? [],
+    hasNegativeOrConflictingEvidence: hasNegativeOrConflicting,
+    researchOnlyWarning: isResearchOnly
+      ? 'RESEARCH ONLY: This candidate target is exploratory and is strictly prohibited from clinical treatment signing.'
+      : undefined,
+  };
+}
+
+export function toDecisionReviewViewModelV2(
+  caseId: string,
+  slate: TargetSlateV2,
+): DecisionReviewViewModelV2 {
+  const isResearchMode = slate.mode === 'research';
+
+  return {
+    caseId,
+    slateId: slate.id,
+    mode: slate.mode,
+    isResearchMode,
+    isClinicalSigningAllowed: !isResearchMode,
+    researchNotice: isResearchMode
+      ? 'RESEARCH MODE ACTIVE: Clinical digital signature is prohibited for Research slates. Findings are strictly investigational.'
+      : undefined,
+    canWithholdStimulation: true,
+    canSignClinically: !isResearchMode && slate.status !== 'abstained',
+    disclaimerNotice:
+      'Magniom target slates represent algorithmic clinical decision support. The specialist clinician retains absolute statutory responsibility for target selection and treatment delivery.',
+  };
+}
+
+// ==========================================
+// 10. v2 Application Shell & Clinical Context Exports
+// (Conforming to MAGNIOM-Application Shell, Navigation & Clinical Context Specification v2.0)
+// ==========================================
+
+export * from './v2-shell-view-models.js';
+export * from './module-ui-descriptors.js';
+export * from './v2-shell-adapters.js';

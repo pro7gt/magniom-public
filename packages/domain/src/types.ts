@@ -466,7 +466,7 @@ export interface EvidencePathNode {
   readonly tier?: EvidenceTier;
 }
 
-export interface EvidencePath {
+export interface LegacyEvidencePath {
   readonly pathId: string;
   readonly targetFamilyCode: string;
   readonly circuitCode: string;
@@ -623,7 +623,7 @@ export interface TargetCandidate {
   readonly suppressionReason?: SuppressionReason | undefined;
   readonly convergenceProfile?: CandidateConvergenceProfile | undefined;
   readonly rankingFeatures?: RankingFeatureVector | undefined;
-  readonly evidencePaths?: readonly EvidencePath[] | undefined;
+  readonly evidencePaths?: readonly LegacyEvidencePath[] | undefined;
   readonly conflictingEvidence?: readonly EvidenceConflictRef[] | undefined;
   readonly counterarguments?: readonly string[] | undefined;
 }

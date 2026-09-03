@@ -3,7 +3,8 @@
  * Derived directly from MAGNIOM Canonical Specifications
  */
 
-export type MagniomMode = 'RESEARCH' | 'CLINICAL' | 'VALIDATION';
+export type MagniomMode =
+  'RESEARCH' | 'CLINICAL' | 'VALIDATION' | 'clinical' | 'research' | 'validation';
 
 export type CandidateRole =
   'PRIMARY_1' | 'PRIMARY_2' | 'PRIMARY_3' | 'ADDITIONAL_A' | 'ADDITIONAL_B' | 'RESERVE';
@@ -215,3 +216,308 @@ export type MaturityStage = 'M0' | 'M1' | 'M2' | 'M3' | 'M4' | 'M5' | 'M6' | 'M7
 export type DefectSeverity = 'CRITICAL' | 'MAJOR' | 'MINOR';
 
 export type VerificationGateStatus = 'PASSED' | 'FAILED' | 'CONDITIONAL';
+
+// ==========================================
+// v2 Canonical Multi-Indication Enums
+// ==========================================
+
+export type ModuleQualificationLevel = 'Q0' | 'Q1' | 'Q2' | 'Q3' | 'Q4' | 'Q5' | 'Q6' | 'Q7' | 'Q8';
+
+export type ModuleLifecycleStatus =
+  'draft' | 'validation' | 'active' | 'superseded' | 'withdrawn' | 'archived';
+
+export type ModuleGovernanceStatus =
+  | 'research_only'
+  | 'evidence_staging'
+  | 'validation_candidate'
+  | 'retrospective_validation'
+  | 'silent_prospective'
+  | 'clinical_release_candidate'
+  | 'clinical_active';
+
+export type MeasurementModality =
+  | 'structural_mri'
+  | 'lesion_mapping'
+  | 'resting_state_fmri'
+  | 'task_fmri'
+  | 'diffusion_mri'
+  | 'motor_mapping'
+  | 'motor_evoked_potential'
+  | 'eeg'
+  | 'tms_eeg'
+  | 'audiology'
+  | 'clinical_neurophysiology'
+  | 'efield'
+  | 'other';
+
+export type TargetGeometryType =
+  'point' | 'surface_roi' | 'volumetric_roi' | 'somatotopic' | 'coil_field' | 'network';
+
+export type LesionType =
+  | 'ischemic'
+  | 'hemorrhagic'
+  | 'traumatic'
+  | 'post_surgical'
+  | 'encephalomalacic'
+  | 'multifocal'
+  | 'other';
+
+export type LesionLaterality =
+  'left' | 'right' | 'bilateral' | 'midline' | 'multifocal' | 'not_assessable';
+
+export type DiseaseStageDeterminationMethod = 'date_based' | 'clinician_assessed' | 'combined';
+
+export type GovernanceClassificationStatus =
+  'unassigned' | 'under_review' | 'assigned' | 'deferred' | 'withdrawn';
+
+export type EvidencePathStatus =
+  'staging' | 'research_permitted' | 'validation_permitted' | 'clinical_permitted' | 'suspended';
+
+export type CompatibilityStatus = 'draft' | 'validated' | 'approved' | 'suspended' | 'withdrawn';
+
+export type MeasurementRequirementStatus =
+  'required' | 'required_for_personalisation' | 'optional' | 'research_only' | 'not_applicable';
+
+export type MeasurementRequirementPurpose =
+  | 'anatomical_localisation'
+  | 'candidate_generation'
+  | 'candidate_refinement'
+  | 'qualification'
+  | 'reliability'
+  | 'context'
+  | 'efield';
+
+export type MissingDataBehaviour =
+  'block_target_generation' | 'disable_personalisation' | 'fallback' | 'allow_with_limitation';
+
+export type ReliabilityClass = 'high' | 'moderate' | 'low' | 'unreliable' | 'not_assessable';
+
+export type CapabilityQualificationStatus = 'qualified' | 'qualified_with_limits' | 'not_qualified';
+
+export type OverallQualificationStatus = 'qualified' | 'qualified_with_limits' | 'not_qualified';
+
+export type MeasurementQualification =
+  'qualified' | 'qualified_with_limits' | 'not_qualified' | 'research_only' | 'not_assessable';
+
+export type ProcessingRunStatus = 'queued' | 'running' | 'succeeded' | 'failed' | 'superseded';
+
+export type TransformSpace =
+  | 'dicom_patient'
+  | 't1_native'
+  | 'surface_native'
+  | 'fsLR_32k'
+  | 'mni152'
+  | 'neuronavigation'
+  | 'scalp_navigation';
+
+export type TinnitusPerceivedLaterality = 'left' | 'right' | 'bilateral' | 'central' | 'variable';
+
+export type ConductionMethod = 'air' | 'bone';
+
+export type ThresholdType = 'resting' | 'active';
+
+export type TreatmentContextType =
+  | 'concurrent_rehabilitation'
+  | 'behavioural_activation'
+  | 'symptom_provocation'
+  | 'task_state'
+  | 'device_class'
+  | 'coil_class'
+  | 'protocol_precedent'
+  | 'other';
+
+export type TreatmentContextRole =
+  'required_by_evidence' | 'recommended_by_evidence' | 'context_only';
+
+export type TreatmentContextEvaluationStatus =
+  'present' | 'planned' | 'absent' | 'unknown' | 'not_applicable';
+
+export type AbstentionType =
+  | 'unsupported_indication'
+  | 'module_not_clinically_qualified'
+  | 'insufficient_evidence'
+  | 'measurement_failure'
+  | 'reliability_failure'
+  | 'lesion_registration_failure'
+  | 'target_anatomy_invalid'
+  | 'disease_stage_mismatch'
+  | 'treatment_context_mismatch'
+  | 'device_incompatibility'
+  | 'scientific_configuration_invalid'
+  | 'no_nonredundant_candidate'
+  | 'other';
+
+export type CandidateRoleV2 =
+  | 'evidence_anchor'
+  | 'phenotype_specific'
+  | 'connectome_refinement'
+  | 'somatotopic_target'
+  | 'ipsilesional_strategy'
+  | 'contralesional_strategy'
+  | 'lesion_network_target'
+  | 'field_target'
+  | 'network_alternative'
+  | 'clinical_alternative'
+  | 'research_hypothesis';
+
+export type ComparisonDomainBasis =
+  | 'same_target_family_variants'
+  | 'same_candidate_role'
+  | 'same_target_strategy'
+  | 'scientifically_validated_cross_family';
+
+export type RankingModelType = 'lexicographic' | 'weighted_geometric_mean' | 'ordered_rules';
+
+export type RefinementDecisionStatus =
+  | 'adopted'
+  | 'baseline_retained'
+  | 'equivalent'
+  | 'not_qualified'
+  | 'not_available'
+  | 'not_applicable';
+
+export type GateCode =
+  | 'G0_INPUT_INTEGRITY'
+  | 'G1_MODE_MODULE'
+  | 'G2_EVIDENCE_PATH'
+  | 'G3_CLINICAL_CONTEXT'
+  | 'G4_MEASUREMENT_CAPABILITY'
+  | 'G5_RELIABILITY'
+  | 'G6_ANATOMY_LESION'
+  | 'G7_GEOMETRY_DEVICE'
+  | 'G8_TREATMENT_CONTEXT'
+  | 'G9_GENERATOR_CONSTRAINTS';
+
+export type GateResultStatus = 'pass' | 'fail' | 'conditional';
+
+export type GateApplicability = 'applicable' | 'not_applicable';
+
+export type GeometryDistanceMetricType =
+  | 'euclidean'
+  | 'surface_geodesic'
+  | 'roi_overlap'
+  | 'surface_overlap'
+  | 'hausdorff'
+  | 'body_region_concordance'
+  | 'coil_field_overlap'
+  | 'roi_field_coverage'
+  | 'network_region_overlap';
+
+export type GeneratorStatus = 'generated' | 'no_candidate' | 'abstained' | 'failed';
+
+export type GeneratorFailurePolicy =
+  'required_fail_run' | 'omit_generator_with_warning' | 'research_optional';
+
+export type BaselineRelationship =
+  'none' | 'creates_baseline' | 'refines_baseline' | 'alternative_to_baseline';
+
+export type LineageType =
+  | 'evidence_baseline'
+  | 'measurement_refinement'
+  | 'anatomy_constrained_variant'
+  | 'efield_pose_variant'
+  | 'clinical_alternative'
+  | 'research_hypothesis';
+
+export type RefinementKind =
+  | 'functional_connectivity'
+  | 'motor_mapping'
+  | 'structural_connectivity'
+  | 'lesion_aware'
+  | 'efield_pose'
+  | 'other';
+
+export type SuppressionReasonV2 =
+  | 'EVIDENCE_PATH_NOT_PERMITTED'
+  | 'MODE_INCOMPATIBLE'
+  | 'MODULE_INCOMPATIBLE'
+  | 'POPULATION_MISMATCH'
+  | 'DISEASE_STAGE_MISMATCH'
+  | 'TREATMENT_CONTEXT_MISMATCH'
+  | 'MEASUREMENT_UNAVAILABLE'
+  | 'LOW_RELIABILITY'
+  | 'TARGET_ANATOMY_INVALID'
+  | 'LESION_CONFLICT'
+  | 'DEVICE_INCOMPATIBLE'
+  | 'GEOMETRY_INCOMPATIBLE'
+  | 'FAILED_REFINEMENT_TEST'
+  | 'LOW_INCREMENTAL_VALUE'
+  | 'REDUNDANT'
+  | 'ROLE_ALREADY_COVERED'
+  | 'NO_ADDITIONAL_CLINICAL_COVERAGE'
+  | 'RESEARCH_ONLY'
+  | 'GENERATOR_CONSTRAINT_FAILED'
+  | 'MISSING_DECLARED_BASELINE';
+
+// ==========================================
+// Evidence Knowledge Graph v2 Enumerations
+// ==========================================
+
+export type ClaimLifecycleStatus =
+  'draft' | 'under_review' | 'approved_scientific_claim' | 'rejected' | 'deprecated' | 'superseded';
+
+export type ClaimTypeV2 =
+  | 'clinical_efficacy'
+  | 'comparative_efficacy'
+  | 'target_outcome_association'
+  | 'targeting_method_efficacy'
+  | 'target_specificity'
+  | 'symptom_specificity'
+  | 'circuit_validity'
+  | 'mechanistic'
+  | 'safety'
+  | 'durability'
+  | 'treatment_context'
+  | 'external_validity'
+  | 'negative_evidence'
+  | 'methodological_limitation';
+
+export type ClaimDirection =
+  'supports' | 'does_not_support' | 'mixed' | 'context_dependent' | 'uncertain';
+
+export type FindingType =
+  | 'primary_outcome'
+  | 'secondary_outcome'
+  | 'subgroup'
+  | 'target_comparison'
+  | 'safety'
+  | 'durability'
+  | 'guideline_recommendation'
+  | 'meta_analytic_estimate'
+  | 'null_result'
+  | 'limitation';
+
+export type ExtractionStatus = 'single_curator' | 'double_checked' | 'adjudicated';
+
+export type SourceRelationshipV2 =
+  'supports' | 'partially_supports' | 'conflicts' | 'does_not_support' | 'limits_generalisation';
+
+export type SourceIndependence =
+  'independent' | 'partially_overlapping' | 'overlapping_dataset' | 'unknown';
+
+export type SourceRelevance = 'direct' | 'indirect' | 'contextual';
+
+export type SynthesisDirectness = 'strong' | 'moderate' | 'limited' | 'uncertain';
+export type SynthesisReplication =
+  'multiple_independent' | 'replicated' | 'single_source' | 'mixed' | 'not_assessable';
+export type SynthesisDesignStrength = 'strong' | 'moderate' | 'limited' | 'uncertain';
+export type SynthesisSampleSupport = 'strong' | 'moderate' | 'limited' | 'uncertain';
+export type SynthesisConsistency =
+  'consistent' | 'mostly_consistent' | 'mixed' | 'mostly_negative' | 'uncertain';
+export type SynthesisClinicalApplicability = 'direct' | 'partial' | 'limited' | 'uncertain';
+export type SynthesisTargetSpecificity = 'specific' | 'moderate' | 'broad' | 'uncertain';
+export type SynthesisContextDependence = 'material' | 'possible' | 'minimal' | 'unknown';
+
+export type ConflictType =
+  | 'effect_direction'
+  | 'effect_magnitude'
+  | 'population'
+  | 'target'
+  | 'protocol'
+  | 'durability'
+  | 'outcome_definition'
+  | 'methodology';
+
+export type ConflictReconciliationStatus = 'unresolved' | 'partially_explained' | 'resolved';
+
+export type EvidenceQuestionStatus = 'open' | 'under_review' | 'answered_provisionally' | 'closed';

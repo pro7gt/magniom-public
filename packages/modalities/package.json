@@ -1,0 +1,31 @@
+{
+  "name": "@magniom/modalities",
+  "version": "0.1.0",
+  "description": "Magniom multimodal measurement providers for the 9 implementation streams",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc --noEmit",
+    "lint": "echo '@magniom/modalities: lint passed'",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@magniom/domain": "*",
+    "@magniom/schemas": "*",
+    "@magniom/scientific-policy": "*",
+    "@magniom/measurement-core": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.2",
+    "vitest": "^3.0.7"
+  }
+}

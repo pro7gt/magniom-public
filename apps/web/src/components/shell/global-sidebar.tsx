@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { caseStore } from '../../lib/case-store';
+import { getModuleUiDescriptor } from '@magniom/presentation';
 
 interface GlobalSidebarProps {
   initialCollapsed?: boolean;
@@ -20,6 +21,13 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
 
   const activeRecord = activeCaseId ? caseStore.getCaseRecord(activeCaseId) : undefined;
   const activeCaseCode = activeRecord?.clinicalCase.caseCode || activeCaseId;
+  const activeIndication = activeRecord?.clinicalCase.indicationCode || 'MDD';
+
+  const descriptor = getModuleUiDescriptor(activeIndication);
+  const isResearchMode =
+    activeRecord?.clinicalCase.mode === 'RESEARCH' ||
+    descriptor.indication_code === 'TINNITUS' ||
+    descriptor.indication_code === 'TBI';
 
   // Persist sidebar collapsed state in localStorage
   useEffect(() => {
@@ -57,10 +65,10 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
 
       {isCaseWorkspace ? (
         /* ========================================================================= */
-        /* CASE WORKSPACE NAVIGATION (Pattern A - Section 51, 52, 53)               */
+        /* MODULE-AWARE CASE WORKSPACE NAVIGATION (§50–57, §231–233)                */
         /* ========================================================================= */
         <div className="case-navigation-group">
-          {/* Back to All Cases link (§53) */}
+          {/* Back to All Cases link (§50) */}
           <Link
             href="/cases"
             className="sidebar-back-link"
@@ -77,17 +85,18 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
             <span className="case-badge-pill" style={{ fontFamily: 'var(--font-mono)' }}>
               {isCollapsed ? activeCaseCode?.slice(-4) : activeCaseCode}
             </span>
-            {!isCollapsed && activeRecord && (
-              <span className="case-indication-sub">
-                {activeRecord.clinicalCase.indicationCode}
+            {!isCollapsed && (
+              <span className="case-indication-sub" title={descriptor.indication_name}>
+                {descriptor.indication_code}
               </span>
             )}
           </div>
 
           <div className="sidebar-divider" />
 
-          {/* Case Workflow Navigation Items */}
+          {/* Dynamic Module-Aware Case Navigation Items */}
           <ul className="sidebar-nav-list" role="menubar">
+            {/* 1. Overview */}
             <li role="none">
               <Link
                 href={`/cases/${activeCaseId}`}
@@ -102,6 +111,7 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
               </Link>
             </li>
 
+            {/* 2. Assessment */}
             <li role="none">
               <Link
                 href={`/cases/${activeCaseId}/assessment`}
@@ -116,68 +126,104 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
               </Link>
             </li>
 
+            {/* 3. Module Context Sections (e.g. Phenotype, Somatotopy, Lesion, Stage) */}
+            {descriptor.context_sections.map(cs => {
+              const href = `/cases/${activeCaseId}/${cs.pathSuffix}`;
+              const isActive = pathname.includes(cs.pathSuffix);
+              return (
+                <li role="none" key={cs.id}>
+                  <Link
+                    href={href}
+                    className={`sidebar-nav-item ${isActive ? 'active' : ''}`}
+                    role="menuitem"
+                    title={cs.label}
+                  >
+                    <span className="nav-icon" aria-hidden="true">
+                      {cs.id.includes('lesion')
+                        ? '🩹'
+                        : cs.id.includes('stage')
+                          ? '⏱️'
+                          : cs.id.includes('pain')
+                            ? '⚡'
+                            : '🧬'}
+                    </span>
+                    {!isCollapsed && <span className="nav-label">{cs.label.split(' ')[0]}</span>}
+                  </Link>
+                </li>
+              );
+            })}
+
+            {/* 4. Module Measurement Sections (Zero False Requirements (§87)) */}
+            {descriptor.measurement_sections.map(ms => {
+              const href = `/cases/${activeCaseId}/${ms.pathSuffix}`;
+              const isActive = pathname.includes(ms.pathSuffix);
+              return (
+                <li role="none" key={ms.modality}>
+                  <Link
+                    href={href}
+                    className={`sidebar-nav-item ${isActive ? 'active' : ''}`}
+                    role="menuitem"
+                    title={ms.label}
+                  >
+                    <span className="nav-icon" aria-hidden="true">
+                      {ms.modality === 'audiology'
+                        ? '👂'
+                        : ms.modality === 'motor_mapping' ||
+                            ms.modality === 'motor_evoked_potential'
+                          ? '✋'
+                          : ms.modality === 'efield'
+                            ? '🧲'
+                            : ms.modality === 'lesion_mapping'
+                              ? '🔬'
+                              : '🧠'}
+                    </span>
+                    {!isCollapsed && <span className="nav-label">{ms.label.split(' ')[0]}</span>}
+                    {!isCollapsed && !ms.required && (
+                      <span className="badge badge-tierexp badge-tiny">Research</span>
+                    )}
+                  </Link>
+                </li>
+              );
+            })}
+
+            {/* 5. Evidence */}
             <li role="none">
               <Link
-                href={`/cases/${activeCaseId}/phenotype`}
-                className={`sidebar-nav-item ${pathname.includes('/phenotype') ? 'active' : ''}`}
+                href={`/cases/${activeCaseId}/evidence`}
+                className={`sidebar-nav-item ${pathname.includes('/evidence') ? 'active' : ''}`}
                 role="menuitem"
-                title="Phenotype Workspace"
+                title="Therapeutic Evidence & Circuit Library"
               >
                 <span className="nav-icon" aria-hidden="true">
-                  🧬
+                  📚
                 </span>
-                {!isCollapsed && <span className="nav-label">Phenotype</span>}
-                {!isCollapsed && activeRecord?.phenotype.snapshotHash && (
-                  <span className="badge badge-tier1 badge-tiny">Approved</span>
-                )}
+                {!isCollapsed && <span className="nav-label">Evidence</span>}
               </Link>
             </li>
 
-            <li role="none">
-              <Link
-                href={`/cases/${activeCaseId}/imaging`}
-                className={`sidebar-nav-item ${pathname.includes('/imaging') ? 'active' : ''}`}
-                role="menuitem"
-                title="Neuroimaging QC & Qualification"
-              >
-                <span className="nav-icon" aria-hidden="true">
-                  🧠
-                </span>
-                {!isCollapsed && <span className="nav-label">Imaging</span>}
-              </Link>
-            </li>
-
-            <li role="none">
-              <Link
-                href={`/cases/${activeCaseId}/connectome`}
-                className={`sidebar-nav-item ${pathname.includes('/connectome') ? 'active' : ''}`}
-                role="menuitem"
-                title="Functional Connectome Qualification"
-              >
-                <span className="nav-icon" aria-hidden="true">
-                  🌐
-                </span>
-                {!isCollapsed && <span className="nav-label">Connectome</span>}
-              </Link>
-            </li>
-
+            {/* 6. Target Slate Workspace */}
             <li role="none">
               <Link
                 href={`/cases/${activeCaseId}/targets`}
                 className={`sidebar-nav-item ${pathname.includes('/targets') ? 'active' : ''}`}
                 role="menuitem"
-                title="Target Slate Workspace"
+                title={isResearchMode ? 'Research Target Hypotheses' : 'Target Slate Workspace'}
               >
                 <span className="nav-icon" aria-hidden="true">
                   🎯
                 </span>
-                {!isCollapsed && <span className="nav-label">Target Slate</span>}
+                {!isCollapsed && (
+                  <span className="nav-label">
+                    {isResearchMode ? 'Hypotheses' : 'Target Slate'}
+                  </span>
+                )}
                 {!isCollapsed && activeRecord?.isStale && (
                   <span className="badge badge-tier3 badge-tiny">Stale</span>
                 )}
               </Link>
             </li>
 
+            {/* 7. Compare */}
             <li role="none">
               <Link
                 href={`/cases/${activeCaseId}/compare`}
@@ -192,37 +238,44 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
               </Link>
             </li>
 
-            <li role="none">
-              <Link
-                href={`/cases/${activeCaseId}/decision`}
-                className={`sidebar-nav-item ${pathname.includes('/decision') ? 'active' : ''}`}
-                role="menuitem"
-                title="Clinical Decision & Sign-Off"
-              >
-                <span className="nav-icon" aria-hidden="true">
-                  ✍️
-                </span>
-                {!isCollapsed && <span className="nav-label">Decision</span>}
-                {!isCollapsed && activeRecord?.decision?.isImmutable && (
-                  <span className="badge badge-tier1 badge-tiny">Signed</span>
-                )}
-              </Link>
-            </li>
+            {/* 8. Clinical Decision & Sign-Off (STRICTLY SUPPRESSED IN RESEARCH MODE (§57, §139)) */}
+            {!isResearchMode && (
+              <li role="none">
+                <Link
+                  href={`/cases/${activeCaseId}/decision`}
+                  className={`sidebar-nav-item ${pathname.includes('/decision') ? 'active' : ''}`}
+                  role="menuitem"
+                  title="Clinical Decision & Sign-Off"
+                >
+                  <span className="nav-icon" aria-hidden="true">
+                    ✍️
+                  </span>
+                  {!isCollapsed && <span className="nav-label">Decision</span>}
+                  {!isCollapsed && activeRecord?.decision?.isImmutable && (
+                    <span className="badge badge-tier1 badge-tiny">Signed</span>
+                  )}
+                </Link>
+              </li>
+            )}
 
-            <li role="none">
-              <Link
-                href={`/cases/${activeCaseId}/treatment`}
-                className={`sidebar-nav-item ${pathname.includes('/treatment') ? 'active' : ''}`}
-                role="menuitem"
-                title="TMS Treatment Prescription"
-              >
-                <span className="nav-icon" aria-hidden="true">
-                  ⚡
-                </span>
-                {!isCollapsed && <span className="nav-label">Treatment</span>}
-              </Link>
-            </li>
+            {/* 9. Treatment (Suppressed in Research Mode) */}
+            {!isResearchMode && (
+              <li role="none">
+                <Link
+                  href={`/cases/${activeCaseId}/treatment`}
+                  className={`sidebar-nav-item ${pathname.includes('/treatment') ? 'active' : ''}`}
+                  role="menuitem"
+                  title="TMS Treatment Prescription"
+                >
+                  <span className="nav-icon" aria-hidden="true">
+                    ⚡
+                  </span>
+                  {!isCollapsed && <span className="nav-label">Treatment</span>}
+                </Link>
+              </li>
+            )}
 
+            {/* 10. Outcomes */}
             <li role="none">
               <Link
                 href={`/cases/${activeCaseId}/outcomes`}
@@ -237,6 +290,7 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
               </Link>
             </li>
 
+            {/* 11. Cryptographic Audit */}
             <li role="none">
               <Link
                 href={`/cases/${activeCaseId}/audit`}
@@ -300,7 +354,7 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                     ⏳
                   </span>
                   {!isCollapsed && <span className="nav-label">Awaiting Review</span>}
-                  <span className="badge badge-queue-count" title="3 cases require review">
+                  <span className="badge badge-queue-count" title="Cases require review">
                     3
                   </span>
                 </Link>
@@ -369,7 +423,7 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                   href="/validation"
                   className={`sidebar-nav-item ${pathname === '/validation' ? 'active' : ''}`}
                   role="menuitem"
-                  title="Validation Suite (Golden Cases G01–G09 & Human Factors)"
+                  title="Validation Suite (Golden Cases & Human Factors)"
                 >
                   <span className="nav-icon" aria-hidden="true">
                     🧪
@@ -386,7 +440,7 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                   title="Clinical & Scientific Guidance"
                 >
                   <span className="nav-icon" aria-hidden="true">
-                    ❓
+                    📖
                   </span>
                   {!isCollapsed && <span className="nav-label">Help</span>}
                 </Link>

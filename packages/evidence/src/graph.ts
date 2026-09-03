@@ -9,7 +9,7 @@ import type {
   TherapeuticCircuit,
   EvidenceClaim,
   EvidenceTier,
-  EvidencePath,
+  LegacyEvidencePath as EvidencePath,
   EvidenceConflictRef,
   SearchSpace,
   TargetDefinition,
