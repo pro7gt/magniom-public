@@ -233,7 +233,11 @@ export type ModuleGovernanceStatus =
   | 'retrospective_validation'
   | 'silent_prospective'
   | 'clinical_release_candidate'
-  | 'clinical_active';
+  | 'clinical_active'
+  | 'suspended'
+  | 'withdrawn';
+
+export type IndicationModuleStatus = ModuleGovernanceStatus;
 
 export type MeasurementModality =
   | 'structural_mri'
@@ -334,14 +338,22 @@ export type TreatmentContextEvaluationStatus =
 
 export type AbstentionType =
   | 'unsupported_indication'
+  | 'unsupported_disease_stage'
   | 'module_not_clinically_qualified'
   | 'insufficient_evidence'
   | 'measurement_failure'
   | 'reliability_failure'
   | 'lesion_registration_failure'
   | 'target_anatomy_invalid'
+  | 'target_region_destroyed_by_lesion'
   | 'disease_stage_mismatch'
   | 'treatment_context_mismatch'
+  | 'protocol_context_missing'
+  | 'motor_map_unreliable'
+  | 'body_region_mapping_uncertain'
+  | 'audiology_incomplete'
+  | 'coil_not_compatible'
+  | 'field_model_unreliable'
   | 'device_incompatibility'
   | 'scientific_configuration_invalid'
   | 'no_nonredundant_candidate'

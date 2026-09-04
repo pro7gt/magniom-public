@@ -13,6 +13,26 @@ const nextConfig: NextConfig = {
     '@magniom/ui',
     '@magniom/test-fixtures',
   ],
+  webpack: (config, { isServer, webpack }) => {
+    config.plugins.push(
+      new webpack.NormalModuleReplacementPlugin(/^node:/, (resource: { request: string }) => {
+        resource.request = resource.request.replace(/^node:/, '');
+      }),
+    );
+
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        crypto: false,
+        fs: false,
+        path: false,
+        os: false,
+        stream: false,
+        buffer: false,
+      };
+    }
+    return config;
+  },
 };
 
 export default nextConfig;

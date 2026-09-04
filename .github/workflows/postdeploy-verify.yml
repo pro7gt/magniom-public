@@ -1,0 +1,49 @@
+name: Magniom Post-Deployment Verification Pipeline (postdeploy-verify)
+
+# Conforms to MAGNIOM-Enterprise Verification, Testing & CI/CD Specification v2.0 (§32, §148–149, §192)
+# Goal: Comprehensive verification of runtime endpoints, health checks, manifest digests, and multi-indication smoke tests post-deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      targetEnvironment:
+        description: 'Target Environment (validation, clinical-staging, production)'
+        required: true
+        default: 'clinical-staging'
+        type: choice
+        options:
+          - 'validation'
+          - 'clinical-staging'
+          - 'production'
+
+permissions:
+  contents: read
+
+jobs:
+  post-deployment-verification:
+    name: Post-Deployment Smoke Tests & Release Integrity (§32, §148–149)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Verify Release Manifest v2 (§131)
+        run: npx tsx scripts/release/generate-release-manifest-v2.ts --verify-only
+
+      - name: Execute Multi-Indication Synthetic Golden Smoke Tests (§148–149)
+        run: npx tsx scripts/release/post-deploy-golden-smoke.ts
+
+      - name: Confirm Operational Module Kill Switch Status (§183–184)
+        run: npx tsx scripts/release/module-kill-switch.ts status
+
+      - name: Audit Case Recall Index Registry (§185–187)
+        run: npx tsx scripts/release/affected-case-index.ts ALL

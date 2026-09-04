@@ -13,7 +13,7 @@ import type {
   AbstentionType,
 } from './enums.js';
 import type { CommonProvenance, AtlasRef, UncertaintyObject } from './types.js';
-import type { TargetGeometry } from './target-geometry.js';
+import type { TargetGeometry, BodyRegionRef, Coordinate3D } from './target-geometry.js';
 
 export interface TargetEvidenceProfileV2 {
   readonly highestEvidenceTier: LegacyEvidenceTier;
@@ -63,6 +63,72 @@ export interface TargetCandidateV2 {
   readonly targetEngineVersionId: string;
   readonly evidenceLibraryReleaseId: string;
   readonly provenance: CommonProvenance;
+  readonly lesionTargetRelationship?: LesionTargetRelationship | undefined;
+  readonly motorMappingFit?: MotorMappingFitProfile | undefined;
+  readonly structuralConnectivityFit?: StructuralConnectivityFitProfile | undefined;
+  readonly treatmentContextEvaluation?: TargetTreatmentContextEvaluation | undefined;
+  readonly researchExtension?: ResearchTargetExtension | undefined;
+}
+
+// ---------------------------------------------------------------------------
+// Candidate Domain Fit Profiles & Relationships (§74-77, §106)
+// ---------------------------------------------------------------------------
+
+export type LesionTargetRelationshipType =
+  | 'outside_lesion'
+  | 'adjacent'
+  | 'partially_involved'
+  | 'substantially_involved'
+  | 'destroyed_or_absent'
+  | 'not_assessable';
+
+export type TissueIntegrityType =
+  'apparently_intact' | 'altered' | 'severely_altered' | 'not_assessable';
+
+export interface LesionTargetRelationship {
+  readonly lesionContextId: string;
+  readonly targetRelationship: LesionTargetRelationshipType;
+  readonly minimumDistanceToLesionMm?: number | undefined;
+  readonly tissueIntegrity: TissueIntegrityType;
+  readonly interpretation: string;
+}
+
+export interface MotorMappingFitProfile {
+  readonly motorMappingRunId: string;
+  readonly relevantBodyRegion: BodyRegionRef;
+  readonly hotspotCoordinate?: Coordinate3D | undefined;
+  readonly candidateToHotspotDistanceMm?: number | undefined;
+  readonly mapOverlap?: number | undefined;
+  readonly mapReliabilityId?: string | undefined;
+  readonly interpretation: string;
+}
+
+export interface StructuralConnectivityFitProfile {
+  readonly sourceMeasurementId: string;
+  readonly tractIds: readonly string[];
+  readonly connectivityMetrics: Readonly<Record<string, number>>;
+  readonly method: string;
+  readonly modelVersion: string;
+  readonly reliabilityId?: string | undefined;
+  readonly interpretation: string;
+}
+
+export type TreatmentContextApplicability = 'full' | 'partial' | 'limited' | 'not_applicable';
+
+export interface TargetTreatmentContextEvaluation {
+  readonly treatmentContextSnapshotId: string;
+  readonly requiredContextIds: readonly string[];
+  readonly matchedContextIds: readonly string[];
+  readonly applicability: TreatmentContextApplicability;
+  readonly limitations: readonly string[];
+  readonly interpretation: string;
+}
+
+export interface ResearchTargetExtension {
+  readonly experimentalHypothesisCode: string;
+  readonly explorativeConfidence?: number | undefined;
+  readonly nonStandardParameters?: Readonly<Record<string, unknown>> | undefined;
+  readonly notes?: string | undefined;
 }
 
 export type SlatePositionV2 =
@@ -139,6 +205,78 @@ export interface TargetSlateV2 {
   readonly scientificLimitations: readonly string[];
   readonly payloadSha256: string;
   readonly provenance: CommonProvenance;
+}
+
+// ---------------------------------------------------------------------------
+// Cross-Indication Target Review (§89) & Clinician Modifications (§96)
+// ---------------------------------------------------------------------------
+
+export interface CrossSlateSpatialRelationship {
+  readonly candidateIdA: string;
+  readonly candidateIdB: string;
+  readonly distanceMm?: number | undefined;
+  readonly relationship: 'identical' | 'overlapping' | 'adjacent' | 'remote';
+  readonly interpretation?: string | undefined;
+}
+
+export interface ClinicalObjectiveConflict {
+  readonly objectiveIdA: string;
+  readonly objectiveIdB: string;
+  readonly conflictType: 'antagonistic' | 'competing_priority' | 'physiological_tradeoff';
+  readonly explanation: string;
+}
+
+export interface CrossIndicationTargetReview {
+  readonly id: string;
+  readonly caseId: string;
+  readonly targetSlateIds: readonly string[];
+  readonly spatialRelationships: readonly CrossSlateSpatialRelationship[];
+  readonly overlappingTargetFamilyIds: readonly string[];
+  readonly conflictingObjectives: readonly ClinicalObjectiveConflict[];
+  readonly summary: string;
+  readonly mode: MagniomMode;
+  readonly provenance: CommonProvenance;
+}
+
+export interface ClinicianModifiedTarget {
+  readonly sourceTargetCandidateId: string;
+  readonly modifiedGeometry: TargetGeometry;
+  readonly modificationDistanceMm?: number | undefined;
+  readonly modificationReason: string;
+  readonly createdBy: string;
+  readonly createdAt: string;
+}
+
+// ---------------------------------------------------------------------------
+// Canonical Target Engine Input & Output Manifest (§111-112)
+// ---------------------------------------------------------------------------
+
+export interface TargetEngineInputV2 {
+  readonly caseId: string;
+  readonly caseIndicationId: string;
+  readonly mode: MagniomMode;
+  readonly indicationModuleReleaseId: string;
+  readonly phenotypeSnapshotId: string;
+  readonly clinicalObjectiveIds: readonly string[];
+  readonly diseaseStageContextId?: string | undefined;
+  readonly lesionContextIds?: readonly string[] | undefined;
+  readonly treatmentContextSnapshotId?: string | undefined;
+  readonly measurementBundleId: string;
+  readonly reliabilityBundleId?: string | undefined;
+  readonly evidenceLibraryReleaseId: string;
+  readonly scientificPolicyReleaseId: string;
+  readonly targetEngineVersionId: string;
+  readonly deviceContextIds?: readonly string[] | undefined;
+}
+
+export interface CanonicalTargetEngineOutputManifestV2 {
+  readonly generated_candidate_ids: readonly string[];
+  readonly eligible_candidate_ids: readonly string[];
+  readonly suppressed_candidate_ids: readonly string[];
+  readonly target_slate_id?: string | undefined;
+  readonly abstention?: AbstentionProfileV2 | undefined;
+  readonly warnings: readonly string[];
+  readonly reproducibility_manifest_sha256: string;
 }
 
 // ---------------------------------------------------------------------------

@@ -14,6 +14,7 @@ import {
   CANONICAL_GOVERNANCE_CLASSIFICATIONS,
   CANONICAL_CONFLICT_SETS,
   CANONICAL_EVIDENCE_PATHS,
+  CANONICAL_TARGET_FAMILIES_V2,
 } from './seeds/index.js';
 
 export function computeEvidenceManifestV2Hash(manifest: Omit<EvidenceLibraryReleaseV2, 'manifestSha256'>): string {
@@ -35,6 +36,9 @@ export function computeEvidenceManifestV2Hash(manifest: Omit<EvidenceLibraryRele
 }
 
 const targetFamilySet = new Set<string>();
+for (const tf of CANONICAL_TARGET_FAMILIES_V2) {
+  targetFamilySet.add(tf.id);
+}
 for (const c of CANONICAL_CLAIMS_V2) {
   c.targetFamilyIds?.forEach((tf) => targetFamilySet.add(tf));
 }

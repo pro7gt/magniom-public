@@ -17,6 +17,7 @@ export interface CanonicalSourceEntry {
   readonly citationText: string;
   readonly domain: string;
   readonly role: string;
+  readonly notes?: string;
 }
 
 export const CANONICAL_SOURCES: readonly CanonicalSourceEntry[] = [

@@ -1,0 +1,62 @@
+name: Magniom Validation Freeze Pipeline (release-validation)
+
+# Conforms to MAGNIOM-Enterprise Verification, Testing & CI/CD Specification v2.0 (§30, §164–167, §192)
+# Goal: Creates an immutable ValidationBuild freezing exact commit, DB migrations, scientific policy, evidence library, target engine, and measurement providers
+
+on:
+  push:
+    tags:
+      - 'v*-validation*'
+      - 'val-*'
+  workflow_dispatch:
+    inputs:
+      studyId:
+        description: 'Validation Study Identifier (e.g., STUDY-VAL-MDD-2026-01)'
+        required: true
+        default: 'STUDY-VAL-MDD-2026-01'
+
+permissions:
+  contents: write
+
+jobs:
+  validation-freeze-build:
+    name: Build Immutable ValidationBuild & Verify Study Freeze (§30, §167)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Validate Verification Baseline & Qualification Matrix (§171)
+        run: npm run verify:v2-baseline
+
+      - name: Execute Multi-Indication Golden Suites & Spatial Differential Engine
+        run: npx tsx scripts/scientific/evaluate-scientific-impact.ts
+
+      - name: Generate Sealed Master Release Manifest v2 (§131)
+        run: npx tsx scripts/release/generate-release-manifest-v2.ts
+
+      - name: Build Monorepo Workspaces (§135)
+        run: npm run build
+
+      - name: Generate CycloneDX 1.5 SBOM (§103)
+        run: npm run sbom:generate && npm run sbom:verify
+
+      - name: Archive Validation Build Evidence Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: validation-freeze-package-${{ github.event.inputs.studyId || 'freeze' }}
+          path: |
+            docs/verification/v2/release-manifest-v2.json
+            docs/verification/v2/v2-verification-baseline-manifest.json
+            docs/verification/v2/module-qualification-records.json
+            docs/verification/v2/scientific-impact-report.json
+            docs/security/sbom/cyclonedx-sbom-1.5.json

@@ -126,6 +126,46 @@ export interface ReliabilityBundle {
   readonly provenance: CommonProvenance;
 }
 
+export interface AcquisitionParameterDefinition {
+  readonly name: string;
+  readonly value: string | number | boolean;
+  readonly unit?: string;
+  readonly required: boolean;
+}
+
+export interface AcquisitionRecord {
+  readonly id: string;
+  readonly caseId: string;
+  readonly organisationId: string;
+  readonly modality: MeasurementModality;
+  readonly acquisitionProfileId?: string;
+  readonly acquisitionTime: string;
+  readonly deviceId?: string;
+  readonly rawArtifactPaths: readonly string[];
+  readonly rawDataSha256: string;
+  readonly provenance: CommonProvenance;
+}
+
+export interface AcquisitionValidation {
+  readonly valid: boolean;
+  readonly passedChecks: readonly string[];
+  readonly warnings: readonly string[];
+  readonly criticalFailures: readonly string[];
+}
+
+export interface AcquisitionProfile {
+  readonly id: string;
+  readonly code: string;
+  readonly version: string;
+  readonly modality: MeasurementModality;
+  readonly parameters: readonly AcquisitionParameterDefinition[];
+  readonly intended_capabilities: readonly string[];
+  readonly validated_site_ids?: readonly string[];
+  readonly validation_status: 'design_only' | 'research_validated' | 'clinical_qualified';
+  readonly limitations: readonly string[];
+  readonly provenance: CommonProvenance;
+}
+
 // =========================================================================
 // 8 EXIT CRITERIA & MULTIMODAL PROVIDER DOMAIN TYPES (§5-23, §47-69, §90-100)
 // =========================================================================
@@ -144,6 +184,33 @@ export interface MeasurementArtifactManifest {
   readonly pipelineVersionId: string;
   readonly configurationSha256: string;
   readonly manifestSha256: string;
+}
+
+export interface CalibrationRecord {
+  readonly id: string;
+  readonly deviceId: string;
+  readonly calibratedAt: string;
+  readonly validUntil: string;
+  readonly calibratedBy: string;
+  readonly standardRef: string;
+  readonly isValid: boolean;
+}
+
+export interface EquipmentObject {
+  readonly id: string;
+  readonly manufacturer: string;
+  readonly model: string;
+  readonly equipmentType:
+    | 'mri_scanner'
+    | 'tms_stimulator'
+    | 'tms_coil'
+    | 'navigation_system'
+    | 'emg_amplifier'
+    | 'audiometer';
+  readonly serialNumber?: string;
+  readonly softwareVersion?: string;
+  readonly siteId: string;
+  readonly calibration: CalibrationRecord;
 }
 
 export interface MeasurementDevice {
@@ -197,12 +264,39 @@ export interface CanonicalMeasurement {
   readonly qcStatus: 'pass' | 'conditional' | 'fail';
   readonly qualification: MeasurementQualification;
   readonly provenance: CommonProvenance;
+
+  // Canonical v2 specification fields (§8)
+  readonly acquisition_profile_id?: string;
+  readonly acquisition_id?: string;
+  readonly processing_run_id?: string;
+  readonly capability_codes?: readonly string[];
+  readonly source_artifact_ids?: readonly string[];
+  readonly derivative_artifact_ids?: readonly string[];
+  readonly coordinate_space_refs?: readonly CoordinateSpaceRef[];
+  readonly qc_assessment_id?: string;
+  readonly measurement_manifest_sha256?: string;
+  readonly mode?: 'clinical' | 'research';
 }
 
 // 1. Structural MRI
+export interface StructuralQualityMetrics {
+  readonly coverageScore: number;
+  readonly motionArtefactScore: number;
+  readonly tissueContrastSnr: number;
+  readonly segmentationQualityPassed: boolean;
+  readonly surfaceReconstructionQualityPassed: boolean;
+  readonly registrationQualityPassed: boolean;
+  readonly scalpReconstructionPassed: boolean;
+  readonly grossDistortionDetected: boolean;
+}
+
 export interface StructuralMeasurement extends CanonicalMeasurement {
   readonly modality: 'structural_mri';
   readonly nativeT1ArtifactId: string;
+  readonly t2w_artifact_id?: string;
+  readonly brain_mask_artifact_id?: string;
+  readonly segmentation_artifact_ids?: readonly string[];
+  readonly cortical_surface_artifact_ids?: readonly string[];
   readonly surfaceNativeMeshArtifactId?: string;
   readonly skullMeshArtifactId?: string;
   readonly hasAnatomicalAbnormality: boolean;
@@ -210,9 +304,53 @@ export interface StructuralMeasurement extends CanonicalMeasurement {
   readonly nativeVoxelDimensions: readonly [number, number, number];
   readonly orientation: 'RAS' | 'LPS' | 'other';
   readonly coordinateSpace: CoordinateSpaceRef;
+  readonly structural_qc?: StructuralQualityMetrics;
 }
 
 // 2. Lesion Mapping
+export type TargetFamilyLesionRelationshipStatus =
+  | 'outside'
+  | 'adjacent'
+  | 'partially_involved'
+  | 'substantially_involved'
+  | 'tissue_absent'
+  | 'not_assessable';
+
+export interface TargetFamilyLesionRelationship {
+  readonly targetFamilyId: string;
+  readonly status: TargetFamilyLesionRelationshipStatus;
+  readonly minDistanceMm: number;
+  readonly volumeOverlapPercent: number;
+  readonly interpretation: string;
+}
+
+export interface AtlasRegionIntersection {
+  readonly atlasCode: string;
+  readonly regionCode: string;
+  readonly regionName: string;
+  readonly overlapVolumeMm3: number;
+  readonly overlapFraction: number;
+}
+
+export interface TractIntersection {
+  readonly tractName: string;
+  readonly overlapVolumeMm3: number;
+  readonly transectionStatus: 'intact' | 'partial' | 'complete_transection';
+}
+
+export interface StructuralDistortionMetric {
+  readonly metricName: string;
+  readonly valueMm: number;
+  readonly description: string;
+}
+
+export interface LesionMappingQC {
+  readonly segmentationConfidence: 'high' | 'moderate' | 'low';
+  readonly nativeSpacePreserved: boolean;
+  readonly registrationExclusionMaskUsed: boolean;
+  readonly boundaryUncertaintyMm: number;
+}
+
 export interface LesionMeasurement extends CanonicalMeasurement {
   readonly modality: 'lesion_mapping';
   readonly lesionType: string;
@@ -224,6 +362,11 @@ export interface LesionMeasurement extends CanonicalMeasurement {
   readonly nearestIntactCortexDistanceMm?: number;
   readonly registrationConfidence: 'high' | 'moderate' | 'low';
   readonly segmentationMethod: 'manual' | 'validated_automated' | 'semi_automated';
+  readonly target_family_relationships?: readonly TargetFamilyLesionRelationship[];
+  readonly cortical_intersections?: readonly AtlasRegionIntersection[];
+  readonly tract_intersections?: readonly TractIntersection[];
+  readonly structural_distortion_metrics?: readonly StructuralDistortionMetric[];
+  readonly lesion_qc?: LesionMappingQC;
 }
 
 // 3. Resting-State fMRI
@@ -239,6 +382,31 @@ export interface RestingStateMeasurement extends CanonicalMeasurement {
 }
 
 // 4. Task fMRI
+export interface TaskPerformanceSummary {
+  readonly accuracyRate: number;
+  readonly meanReactionTimeMs?: number;
+  readonly validTrialCount: number;
+  readonly totalTrialCount: number;
+  readonly isBehavioralValid: boolean;
+  readonly notes?: string;
+}
+
+export interface TaskContrastDefinition {
+  readonly contrastId: string;
+  readonly contrastName: string;
+  readonly activeCondition: string;
+  readonly baselineCondition: string;
+  readonly statisticalThresholdZ: number;
+}
+
+export interface TaskFMRIQualityMetrics {
+  readonly meanFramewiseDisplacementMm: number;
+  readonly scrubbedVolumesFraction: number;
+  readonly temporalSnr: number;
+  readonly behavioralCompliancePassed: boolean;
+  readonly clusterThresholdVoxels: number;
+}
+
 export interface TaskFMRIMeasurement extends CanonicalMeasurement {
   readonly modality: 'task_fmri';
   readonly paradigmId: string;
@@ -249,14 +417,39 @@ export interface TaskFMRIMeasurement extends CanonicalMeasurement {
   readonly lateralityIndex: number; // -1.0 (right) to 1.0 (left)
   readonly activationHemisphere: 'left' | 'right' | 'bilateral';
   readonly thresholdSensitivityClass: 'robust' | 'moderate' | 'sensitive';
+  readonly task_performance?: TaskPerformanceSummary;
+  readonly contrast_definitions?: readonly TaskContrastDefinition[];
+  readonly task_qc?: TaskFMRIQualityMetrics;
 }
 
 // 5. Diffusion MRI / Tractography
+export interface TractMetric {
+  readonly metricName: string;
+  readonly value: number;
+  readonly unit?: string;
+}
+
+export interface StructuralTargetConnectivityMetric {
+  readonly targetFamilyId: string;
+  readonly connectivityStrength: number;
+  readonly streamlineCount: number;
+  readonly endpointDensityFraction: number;
+}
+
+export interface StructuralConnectivityQC {
+  readonly bValueCoveragePassed: boolean;
+  readonly gradientDirectionsCount: number;
+  readonly eddyCurrentCorrectionPassed: boolean;
+  readonly susceptibilityDistortionCorrectionPassed: boolean;
+  readonly reconstructionStability: 'high' | 'moderate' | 'unstable';
+}
+
 export interface ReconstructedTract {
   readonly tractName: string;
   readonly meanFractionalAnisotropy: number;
   readonly meanDiffusivity: number;
   readonly reconstructionStability: 'high' | 'moderate' | 'unstable';
+  readonly tract_metrics?: readonly TractMetric[];
 }
 
 export interface DiffusionMeasurement extends CanonicalMeasurement {
@@ -266,9 +459,39 @@ export interface DiffusionMeasurement extends CanonicalMeasurement {
   readonly reconstructedTracts: readonly ReconstructedTract[];
   readonly corticospinalTractIntact: boolean;
   readonly isAxonCountEquivalent: false; // explicitly false per §43
+  readonly structural_connectivity_qc?: StructuralConnectivityQC;
+  readonly target_connectivity_metrics?: readonly StructuralTargetConnectivityMetric[];
 }
 
 // 6. Motor Mapping
+export interface MotorHotspotResult {
+  readonly muscle: MuscleTarget;
+  readonly coordinate: Coordinate3D;
+  readonly coordinate_space: CoordinateSpaceRef;
+  readonly method_code: string;
+  readonly method_version: string;
+  readonly reproducibilityMm: number;
+  readonly stimulationThresholdPercentMso: number;
+  readonly interpretation: string;
+}
+
+export interface MotorMapRegion {
+  readonly muscle: MuscleTarget;
+  readonly spatial_region: SpatialRegion;
+  readonly centre_of_gravity?: Coordinate3D;
+  readonly hotspot?: Coordinate3D;
+  readonly map_area_mm2?: number;
+  readonly response_weighting_method: string;
+  readonly threshold_definition: string;
+}
+
+export interface MotorMappingQC {
+  readonly coilNavigationTrackingValid: boolean;
+  readonly emgBaselineNoiseUv: number;
+  readonly withinSessionHotspotStabilityMm: number;
+  readonly coilOrientationConsistencyDeg: number;
+}
+
 export interface MotorMappingPoint {
   readonly pointId: string;
   readonly stimulusIndex: number;
@@ -296,9 +519,28 @@ export interface MotorMappingMeasurement extends CanonicalMeasurement {
   readonly hotspots: readonly MotorHotspot[];
   readonly targetMuscle: MuscleTarget;
   readonly spatialSpreadMm: number;
+  readonly hotspot_results?: readonly MotorHotspotResult[];
+  readonly motor_map_regions?: readonly MotorMapRegion[];
+  readonly mapping_qc?: MotorMappingQC;
 }
 
 // 7. Motor-Evoked Potentials (MEP)
+export interface DistributionSummary {
+  readonly mean: number;
+  readonly median: number;
+  readonly stdDev: number;
+  readonly min: number;
+  readonly max: number;
+  readonly unit: string;
+}
+
+export interface MEPQualityMetrics {
+  readonly backgroundEmgValid: boolean;
+  readonly cleanTrialFraction: number;
+  readonly artefactTrialCount: number;
+  readonly stimulationIntensityReliable: boolean;
+}
+
 export interface MEPTrial {
   readonly trialIndex: number;
   readonly intensityPercentMso: number;
@@ -327,6 +569,9 @@ export interface MEPMeasurement extends CanonicalMeasurement {
   readonly responsePresent: boolean;
   readonly absenceReason?: 'corticospinal_lesion' | 'high_threshold' | 'technical_failure';
   readonly motorThreshold?: MotorThresholdMeasurement;
+  readonly amplitude_summary?: DistributionSummary;
+  readonly latency_summary?: DistributionSummary;
+  readonly mep_qc?: MEPQualityMetrics;
 }
 
 // 8. Audiology
@@ -334,6 +579,41 @@ export interface HearingThresholdPoint {
   readonly frequencyHz: number;
   readonly thresholdDbHl: number;
   readonly masked: boolean;
+}
+
+export interface HearingThresholdSeries {
+  readonly ear: 'left' | 'right';
+  readonly points: readonly HearingThresholdPoint[];
+}
+
+export interface SpeechAudiometry {
+  readonly speechReceptionThresholdDb: number;
+  readonly wordRecognitionScorePercent: number;
+  readonly presentationLevelDb: number;
+}
+
+export interface TympanometryResult {
+  readonly ear: 'left' | 'right';
+  readonly curveType: 'A' | 'As' | 'Ad' | 'B' | 'C';
+  readonly middleEarPressureDapa: number;
+  readonly complianceMl: number;
+}
+
+export interface OAEAssessment {
+  readonly type: 'TEOAE' | 'DPOAE';
+  readonly present: boolean;
+  readonly signalToNoiseRatioDb: number;
+}
+
+export interface HyperacusisAssessment {
+  readonly loudnessDiscomfortLevelDb: number;
+  readonly toleranceScore?: number;
+}
+
+export interface AudiologyQualityAssessment {
+  readonly transducerCalibrationValid: boolean;
+  readonly ambientNoiseLevelAcceptable: boolean;
+  readonly testCompletionReliable: boolean;
 }
 
 export interface PureToneAudiogram {
@@ -361,6 +641,11 @@ export interface AudiologyMeasurement extends CanonicalMeasurement {
   readonly speechDiscriminationPercent?: number;
   readonly transducerCalibrated: boolean;
   readonly calibrationDate?: string;
+  readonly speech_audiometry?: SpeechAudiometry;
+  readonly tympanometry?: readonly TympanometryResult[];
+  readonly otoacoustic_emissions?: readonly OAEAssessment[];
+  readonly hyperacusis_assessment?: HyperacusisAssessment;
+  readonly audiology_qc?: AudiologyQualityAssessment;
 }
 
 // 9. E-field Modeling
@@ -374,6 +659,7 @@ export interface EFieldMeasurement extends CanonicalMeasurement {
   readonly stimulatedVolumeMm3: number;
   readonly scalpToCortexDistanceMm: number;
   readonly accessibilityAttenuationFactor: number;
+  readonly skullDefectPresent?: boolean | undefined;
 }
 
 export type AnyModalityMeasurement =
@@ -411,6 +697,24 @@ export interface TransformGraph {
 }
 
 // =========================================================================
+// RELIABILITY PROVIDER CONTRACT (§78)
+// =========================================================================
+
+export interface ReliabilityContext {
+  readonly indicationModuleReleaseId?: string;
+  readonly targetCapabilityCodes?: readonly string[];
+  readonly referenceDatasets?: readonly string[];
+}
+
+export interface ReliabilityProvider {
+  readonly code: string;
+  readonly version: string;
+  readonly modality: MeasurementModality;
+  readonly capability_codes: readonly string[];
+  evaluate(measurement: CanonicalMeasurement, context: ReliabilityContext): MeasurementReliability;
+}
+
+// =========================================================================
 // MEASUREMENT PROVIDER MANIFEST & TARGET ENGINE PAYLOAD (§5-6, §140-142)
 // =========================================================================
 
@@ -423,14 +727,26 @@ export interface MeasurementCapabilityDeclaration {
 }
 
 export interface MeasurementProviderManifest {
+  readonly id?: string;
   readonly code: string;
   readonly semanticVersion: string;
+  readonly semantic_version?: string;
+  readonly modality?: MeasurementModality;
   readonly supportedModalities: readonly MeasurementModality[];
   readonly capabilities: readonly MeasurementCapabilityDeclaration[];
+  readonly pipeline_version_id?: string;
+  readonly supported_acquisition_profile_ids?: readonly string[];
+  readonly supported_indication_module_release_ids?: readonly string[];
+  readonly supported_capability_codes?: readonly string[];
   readonly containerDigestSha256?: string;
+  readonly container_digest_sha256?: string;
   readonly requiredToolchains: readonly string[];
   readonly offlineResources: readonly string[];
   readonly configurationSha256: string;
+  readonly configuration_sha256?: string;
+  readonly normative_model_compatibility_ids?: readonly string[];
+  readonly atlas_version_ids?: readonly string[];
+  readonly lifecycle_status?: 'draft' | 'validation' | 'active' | 'superseded' | 'withdrawn';
 }
 
 export interface ModalityFeatureRef {

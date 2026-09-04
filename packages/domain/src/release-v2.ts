@@ -34,6 +34,27 @@ export interface ScientificRelease {
   readonly releasedAt: string;
 }
 
+/**
+ * Conforms to MAGNIOM-Target Engine & Ranking Algorithm Specification v2.0 (§125)
+ */
+export interface TargetEngineRelease {
+  readonly id: string;
+  readonly semanticVersion: string;
+  readonly coreVersion: string;
+  readonly coreCodeCommit: string;
+  readonly containerDigestSha256: string;
+  readonly domainSchemaVersion: string;
+  readonly pluginManifests: readonly {
+    readonly pluginId: string;
+    readonly pluginVersion: string;
+    readonly pluginDigestSha256: string;
+  }[];
+  readonly validatedGoldenSuiteIds: readonly string[];
+  readonly configurationSha256: string;
+  readonly lifecycleStatus: 'draft' | 'validation' | 'active' | 'superseded' | 'withdrawn';
+  readonly approvedAt?: string;
+}
+
 export interface IndicationModuleManifestEntry {
   readonly indication_module_release_id: string;
   readonly indicationCode: string;

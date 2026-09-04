@@ -12,6 +12,7 @@ export * from './stroke-aphasia-fixtures.js';
 export * from './tbi-fixtures.js';
 export * from './ptsd-fixtures.js';
 export * from './tinnitus-fixtures.js';
+export * from './fixture-builders.js';
 
 import { MDD_GOLDEN_SUITE, type SyntheticGoldenCaseDefinition } from './mdd-fixtures.js';
 import { OCD_GOLDEN_SUITE } from './ocd-fixtures.js';

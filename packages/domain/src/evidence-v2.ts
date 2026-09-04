@@ -25,8 +25,10 @@ import type {
   ConflictType,
   ConflictReconciliationStatus,
   EvidenceQuestionStatus,
+  TargetGeometryType,
 } from './enums.js';
-import type { CommonProvenance } from './types.js';
+import type { CommonProvenance, TargetFamilyV2 } from './types.js';
+import type { EvidencePath } from './evidence-governance.js';
 
 export interface EffectEstimate {
   readonly metric: string;
@@ -151,4 +153,201 @@ export interface EvidenceLibraryReleaseV2 {
   readonly manifestSha256: string;
   readonly releasedAt?: string;
   readonly provenance: CommonProvenance;
+}
+
+// ---------------------------------------------------------------------------
+// Therapeutic Circuit & Target System Types (§16, §17, §81)
+// ---------------------------------------------------------------------------
+
+export type CircuitKind =
+  | 'therapeutic_network'
+  | 'target_system'
+  | 'interhemispheric_model'
+  | 'functional_network'
+  | 'lesion_network'
+  | 'mechanistic_hypothesis';
+
+export type CircuitScientificStatus =
+  | 'treatment_effect_linked'
+  | 'prospectively_tested'
+  | 'replicated_association'
+  | 'mechanistic'
+  | 'hypothesis';
+
+export interface TherapeuticCircuitV2 {
+  readonly id: string;
+  readonly code: string;
+  readonly version: string;
+  readonly name: string;
+  readonly indicationScopeIds: readonly string[];
+  readonly clinicalObjectiveDefinitionIds: readonly string[];
+  readonly circuitKind: CircuitKind;
+  readonly scientificStatus: CircuitScientificStatus;
+  readonly circuitDefinition: Record<string, unknown>;
+  readonly circuitArtifactIds?: readonly string[];
+  readonly supportingEvidenceClaimIds: readonly string[];
+  readonly conflictingEvidenceClaimIds: readonly string[];
+  readonly limitations: readonly string[];
+  readonly provenance: CommonProvenance;
+}
+
+export interface CircuitArtifact {
+  readonly id: string;
+  readonly circuitId: string;
+  readonly artifactType:
+    'mask' | 'parcellation' | 'connectivity_matrix' | 'lesion_network_map' | 'e_field_model';
+  readonly name: string;
+  readonly format: string;
+  readonly uri: string;
+  readonly sha256: string;
+  readonly provenance: CommonProvenance;
+}
+
+// ---------------------------------------------------------------------------
+// Claim ↔ Target Binding (§19)
+// ---------------------------------------------------------------------------
+
+export type ClaimTargetRelationship =
+  'directly_tested' | 'consistent_with' | 'indirectly_supports' | 'not_tested';
+
+export interface ClaimTargetBinding {
+  readonly id?: string;
+  readonly evidenceClaimId: string;
+  readonly targetFamilyId: string;
+  readonly targetingStrategyId?: string;
+  readonly geometryClass?: TargetGeometryType;
+  readonly relationship: ClaimTargetRelationship;
+  readonly limitations: readonly string[];
+}
+
+// ---------------------------------------------------------------------------
+// Explicit Edge Ontology (§14, §15)
+// ---------------------------------------------------------------------------
+
+export type EvidenceEdgeType =
+  // Retained v1 edges
+  | 'SUPPORTS'
+  | 'CONFLICTS_WITH'
+  | 'DERIVED_FROM'
+  | 'VALIDATES'
+  | 'REPLICATES'
+  | 'PARTIALLY_REPLICATES'
+  | 'APPLIES_TO'
+  | 'ADDRESSES'
+  | 'MEASURES'
+  | 'ENGAGES'
+  | 'TARGETS'
+  | 'REFINES'
+  | 'BELONGS_TO'
+  | 'ALTERNATIVE_TO'
+  | 'SUPERSEDES'
+  | 'USES_MAP'
+  | 'USES_SEED'
+  | 'USES_SEARCH_SPACE'
+  | 'USES_PROTOCOL'
+  | 'HAS_PRECEDENT'
+  | 'HAS_LIMITATION'
+  // Added v2 edges
+  | 'APPLIES_AT_STAGE'
+  | 'SUPPORTS_OBJECTIVE'
+  | 'REQUIRES_CONTEXT'
+  | 'WAS_TESTED_WITH'
+  | 'USES_TARGET_GEOMETRY'
+  | 'USES_DEVICE_CLASS'
+  | 'USES_COIL_CLASS'
+  | 'MAPS_TO_BODY_REGION'
+  | 'REQUIRES_LESION_CONTEXT'
+  | 'LIMITS_GENERALISATION'
+  | 'DOES_NOT_SUPPORT'
+  | 'HAS_NULL_EVIDENCE';
+
+export interface EvidenceEdge {
+  readonly id: string;
+  readonly sourceNodeId: string;
+  readonly sourceNodeType: string;
+  readonly edgeType: EvidenceEdgeType;
+  readonly targetNodeId: string;
+  readonly targetNodeType: string;
+  readonly weight?: number;
+  readonly metadata?: Record<string, unknown>;
+}
+
+// ---------------------------------------------------------------------------
+// First-Class Graph Query Results (§97 - §102)
+// ---------------------------------------------------------------------------
+
+export interface WhyThisTargetQueryResult {
+  readonly targetFamilyId: string;
+  readonly indicationId: string;
+  readonly evidencePaths: readonly EvidencePath[];
+  readonly strongestDirectSupport: readonly EvidenceClaimV2[];
+  readonly materialConflicts: readonly ClaimConflictSet[];
+  readonly populationApplicability: readonly string[];
+  readonly stageApplicability: readonly string[];
+  readonly targetingStrategies: readonly string[];
+  readonly targetGeometries: readonly TargetGeometryType[];
+  readonly treatmentContexts: readonly string[];
+  readonly limitationsAndUncertainties: readonly string[];
+  readonly assignedTier?: LegacyEvidenceTier | undefined;
+  readonly permittedRoles?: Record<string, boolean> | undefined;
+}
+
+export interface ClinicallyPermittedQueryResult {
+  readonly indicationModuleReleaseId: string;
+  readonly scientificPolicyReleaseId?: string | undefined;
+  readonly permittedPaths: readonly EvidencePath[];
+  readonly permittedTargetFamilies: readonly TargetFamilyV2[];
+  readonly permittedTargetingStrategies: readonly string[];
+  readonly permittedTargetGeometries: readonly TargetGeometryType[];
+}
+
+export interface EvidenceWithoutTierQueryResult {
+  readonly claimId: string;
+  readonly claimCode: string;
+  readonly statement: string;
+  readonly synthesis?: ClaimEvidenceSynthesis | undefined;
+  readonly governanceStatus: 'unassigned' | 'under_review' | 'assigned' | 'deferred' | 'withdrawn';
+  readonly directness?: string | undefined;
+  readonly replication?: string | undefined;
+  readonly consistency?: string | undefined;
+  readonly targetSpecificity?: string | undefined;
+  readonly clinicalApplicability?: string | undefined;
+  readonly treatmentContextDependence?: string | undefined;
+}
+
+export interface StagingTargetsQueryResult {
+  readonly indicationId: string;
+  readonly stagingTargetFamilies: readonly TargetFamilyV2[];
+  readonly researchTargetFamilies: readonly TargetFamilyV2[];
+  readonly clinicalPermission: false;
+  readonly stagingPaths: readonly EvidencePath[];
+  readonly researchPaths: readonly EvidencePath[];
+}
+
+export interface NullEvidenceQueryResult {
+  readonly claimId: string;
+  readonly claimCode: string;
+  readonly nullFindings: readonly SourceFinding[];
+  readonly conflictingClaims: readonly EvidenceClaimV2[];
+  readonly explanation?: string | undefined;
+}
+
+export interface EvidenceReleaseDiffResult {
+  readonly oldReleaseCode: string;
+  readonly newReleaseCode: string;
+  readonly addedSources: readonly string[];
+  readonly removedSources: readonly string[];
+  readonly addedFindings: readonly string[];
+  readonly addedClaims: readonly string[];
+  readonly changedClaimWording: readonly {
+    readonly claimId: string;
+    readonly oldStatement: string;
+    readonly newStatement: string;
+  }[];
+  readonly newConflicts: readonly string[];
+  readonly resolvedConflicts: readonly string[];
+  readonly changedSyntheses: readonly string[];
+  readonly newGovernanceClassifications: readonly string[];
+  readonly withdrawnClassifications: readonly string[];
+  readonly changedEvidencePaths: readonly string[];
 }

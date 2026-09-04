@@ -44,6 +44,21 @@ export class EFieldProvider implements MeasurementProvider<EFieldMeasurement> {
         defaultStatus: 'qualified',
         requiresIndicationQualification: true,
       },
+      {
+        capabilityCode: 'efield_boundary_conditions',
+        description:
+          'Boundary conditions modeling for skull defects, craniotomies, and burr holes (§76, §80, §169).',
+        supportedModalities: ['efield'],
+        defaultStatus: 'qualified',
+        requiresIndicationQualification: true,
+      },
+      {
+        capabilityCode: 'skull_defect_conformance',
+        description: 'Dielectric and geometric handling of calvarial defects (§76, §80).',
+        supportedModalities: ['efield'],
+        defaultStatus: 'qualified',
+        requiresIndicationQualification: true,
+      },
     ],
     containerDigestSha256: '293a4b5c6d7e8f90123456789abcdef0123456789abcdef0123456789',
     requiredToolchains: ['simnibs-4.0.1', 'gmsh-4.11'],
@@ -85,6 +100,9 @@ export class EFieldProvider implements MeasurementProvider<EFieldMeasurement> {
       context.configurationParameters['scalpToCortexDistanceMm'] ?? 14.2,
     );
     const peakVm = Number(context.configurationParameters['peakCorticalEFieldVm'] ?? 118.5);
+    const skullDefectPresent = Boolean(
+      context.configurationParameters['skullDefectPresent'] ?? false,
+    );
 
     const measurement: EFieldMeasurement = {
       id: `MEAS-EFL-${context.caseId.slice(0, 8)}`,
@@ -106,6 +124,7 @@ export class EFieldProvider implements MeasurementProvider<EFieldMeasurement> {
       stimulatedVolumeMm3: 3200,
       scalpToCortexDistanceMm: scalpToCortexDistance,
       accessibilityAttenuationFactor: 0.82,
+      skullDefectPresent,
       provenance: {
         createdBy: 'magniom-efield-worker',
         createdAt: '2026-09-02T12:00:00.000Z',

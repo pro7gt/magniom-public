@@ -1,11 +1,11 @@
 {
   "srsVersion": "2.0",
-  "extractionDate": "2026-09-02T21:45:08.477Z",
+  "extractionDate": "2026-09-04T10:41:33.194Z",
   "sourceFile": "public/guides/MAGNIOM-System Requirements Specification v2.0.md",
-  "totalRequirements": 332,
+  "totalRequirements": 340,
   "criticalCount": 96,
   "majorCount": 5,
-  "standardCount": 231,
+  "standardCount": 239,
   "domainSummary": {
     "MAG-AUD": {
       "total": 8,
@@ -60,6 +60,12 @@
       "critical": 6,
       "major": 0,
       "standard": 12
+    },
+    "MAG-PHE": {
+      "total": 8,
+      "critical": 0,
+      "major": 0,
+      "standard": 8
     },
     "MAG-POL": {
       "total": 24,
@@ -2146,6 +2152,102 @@
         "SV"
       ],
       "srsSection": "25. `MAG-PAI-*` — NEUROPATHIC PAIN REQUIREMENTS"
+    },
+    {
+      "id": "MAG-PHE-041",
+      "domain": "MAG-PHE",
+      "domainLabel": "Phenotype & Clinical Context",
+      "statement": "Clinical objectives SHALL be represented independently from diagnosis.",
+      "safetyClass": "Standard",
+      "verificationMethods": [
+        "UT",
+        "IT"
+      ],
+      "srsSection": "12. PHENOTYPE & CLINICAL-CONTEXT REQUIREMENTS"
+    },
+    {
+      "id": "MAG-PHE-042",
+      "domain": "MAG-PHE",
+      "domainLabel": "Phenotype & Clinical Context",
+      "statement": "A clinically important symptom or impairment SHALL NOT generate a target unless an approved evidence mapping exists.",
+      "safetyClass": "Standard",
+      "verificationMethods": [
+        "UT",
+        "IT"
+      ],
+      "srsSection": "12. PHENOTYPE & CLINICAL-CONTEXT REQUIREMENTS"
+    },
+    {
+      "id": "MAG-PHE-043",
+      "domain": "MAG-PHE",
+      "domainLabel": "Phenotype & Clinical Context",
+      "statement": "Missing clinical-context data SHALL remain explicit rather than being converted to normality.",
+      "safetyClass": "Standard",
+      "verificationMethods": [
+        "UT",
+        "IT"
+      ],
+      "srsSection": "12. PHENOTYPE & CLINICAL-CONTEXT REQUIREMENTS"
+    },
+    {
+      "id": "MAG-PHE-044",
+      "domain": "MAG-PHE",
+      "domainLabel": "Phenotype & Clinical Context",
+      "statement": "Disease-specific phenotype constructs SHALL be versioned within the relevant Indication Module.",
+      "safetyClass": "Standard",
+      "verificationMethods": [
+        "UT",
+        "IT"
+      ],
+      "srsSection": "12. PHENOTYPE & CLINICAL-CONTEXT REQUIREMENTS"
+    },
+    {
+      "id": "MAG-PHE-045",
+      "domain": "MAG-PHE",
+      "domainLabel": "Phenotype & Clinical Context",
+      "statement": "Patient goals MAY influence clinical prioritisation but SHALL NOT directly map to a brain target without evidence.",
+      "safetyClass": "Standard",
+      "verificationMethods": [
+        "UT",
+        "IT"
+      ],
+      "srsSection": "12. PHENOTYPE & CLINICAL-CONTEXT REQUIREMENTS"
+    },
+    {
+      "id": "MAG-PHE-046",
+      "domain": "MAG-PHE",
+      "domainLabel": "Phenotype & Clinical Context",
+      "statement": "Clinical objectives that are not evidence-mappable SHALL remain visible as such.",
+      "safetyClass": "Standard",
+      "verificationMethods": [
+        "UT",
+        "IT"
+      ],
+      "srsSection": "12. PHENOTYPE & CLINICAL-CONTEXT REQUIREMENTS"
+    },
+    {
+      "id": "MAG-PHE-047",
+      "domain": "MAG-PHE",
+      "domainLabel": "Phenotype & Clinical Context",
+      "statement": "Disease-stage and lesion context SHALL remain separate from symptom/phenotype semantics.",
+      "safetyClass": "Standard",
+      "verificationMethods": [
+        "UT",
+        "IT"
+      ],
+      "srsSection": "12. PHENOTYPE & CLINICAL-CONTEXT REQUIREMENTS"
+    },
+    {
+      "id": "MAG-PHE-048",
+      "domain": "MAG-PHE",
+      "domainLabel": "Phenotype & Clinical Context",
+      "statement": "Questionnaire or rating-scale values SHALL NOT be interpreted as direct circuit measurements unless a validated mapping specifically establishes that relationship.",
+      "safetyClass": "Standard",
+      "verificationMethods": [
+        "UT",
+        "IT"
+      ],
+      "srsSection": "12. PHENOTYPE & CLINICAL-CONTEXT REQUIREMENTS"
     },
     {
       "id": "MAG-POL-041",

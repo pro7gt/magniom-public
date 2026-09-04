@@ -224,7 +224,7 @@ export function extractV2Requirements(srsPath: string): SrsRequirement[] {
 
     // 1. Table rows: | **MAG-XXX-NNN** | statement | class | verify |
     const tableMatch = line.match(
-      /^\|\s*\*{0,2}`?(MAG-[A-Z]+-\d+)`?\*{0,2}\s*\|\s*(.*?)\s*\|\s*(Critical|Major|Standard)?\s*(?:\|\s*(.*?)\s*)?\|/,
+      /^\|\s*\*{0,2}`?(MAG-[A-Z]+-\d+)`?\*{0,2}\s*\|\s*([^|]+?)\s*(?:\|\s*(Critical|Major|Standard)?\s*(?:\|\s*([^|]*?)\s*)?)?\|$/,
     );
     if (tableMatch) {
       const id = tableMatch[1];

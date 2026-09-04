@@ -10,3 +10,4 @@ export * from './transforms/transform-graph.js';
 export * from './transforms/laterality-validator.js';
 export * from './bundles/assembler.js';
 export * from './processing/run-engine.js';
+export * from './processing/pipeline-upgrade-comparator.js';

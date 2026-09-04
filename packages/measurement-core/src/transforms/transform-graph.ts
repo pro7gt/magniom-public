@@ -123,4 +123,43 @@ export class SpatialTransformGraphManager {
       sha256: computeSha256(JSON.stringify(identityMatrix)),
     };
   }
+
+  /**
+   * §172. TRANSFORM GOLDEN CASE — Convention & Inversion Validator
+   * Inspects affine orientation matrix to detect accidental or deliberate RAS/LPS flip.
+   */
+  public static validateOrientationConvention(
+    matrix: readonly number[],
+    expectedConvention: 'RAS' | 'LPS' = 'RAS',
+  ): { valid: boolean; detectedConvention: 'RAS' | 'LPS' | 'unknown'; message: string } {
+    if (matrix.length !== 16) {
+      return {
+        valid: false,
+        detectedConvention: 'unknown',
+        message: 'Invalid affine matrix length (must be 16).',
+      };
+    }
+
+    // Inspect principal diagonal signs
+    const xSign = Math.sign(matrix[0]!);
+    const ySign = Math.sign(matrix[5]!);
+
+    // In canonical RAS space, X increases Right-ward (+1), Y increases Anterior-ward (+1)
+    // In LPS space, X increases Left-ward (-1 in RAS frame), Y increases Posterior-ward (-1 in RAS frame)
+    let detectedConvention: 'RAS' | 'LPS' | 'unknown' = 'unknown';
+    if (xSign > 0 && ySign > 0) {
+      detectedConvention = 'RAS';
+    } else if (xSign < 0 && ySign < 0) {
+      detectedConvention = 'LPS';
+    }
+
+    const matches = detectedConvention === expectedConvention;
+    return {
+      valid: matches,
+      detectedConvention,
+      message: matches
+        ? `Transform matrix matches expected ${expectedConvention} orientation convention.`
+        : `CRITICAL SPATIAL VALIDATION FAILURE: Expected ${expectedConvention} convention, but detected ${detectedConvention}. Silent inversion prohibited (§172).`,
+    };
+  }
 }

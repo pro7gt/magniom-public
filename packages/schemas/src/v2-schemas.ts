@@ -15,6 +15,8 @@ import {
   AtlasRefSchema,
   SpatialRegionSchema,
   CommonProvenanceSchema,
+  TargetFamilySchema,
+  ClinicalConceptRefSchema,
 } from './schemas.js';
 
 // ==========================================
@@ -50,7 +52,11 @@ export const ModuleGovernanceStatusSchema = z.enum([
   'silent_prospective',
   'clinical_release_candidate',
   'clinical_active',
+  'suspended',
+  'withdrawn',
 ]);
+
+export const IndicationModuleStatusSchema = ModuleGovernanceStatusSchema;
 
 export const MeasurementModalitySchema = z.enum([
   'structural_mri',
@@ -140,16 +146,44 @@ export const CandidateRoleV2Schema = z.enum([
   'research_hypothesis',
 ]);
 
+export const AnyCandidateRoleSchema = z.enum([
+  'PRIMARY_1',
+  'PRIMARY_2',
+  'PRIMARY_3',
+  'ADDITIONAL_A',
+  'ADDITIONAL_B',
+  'RESERVE',
+  'evidence_anchor',
+  'phenotype_specific',
+  'connectome_refinement',
+  'somatotopic_target',
+  'ipsilesional_strategy',
+  'contralesional_strategy',
+  'lesion_network_target',
+  'field_target',
+  'network_alternative',
+  'clinical_alternative',
+  'research_hypothesis',
+]);
+
 export const AbstentionTypeSchema = z.enum([
   'unsupported_indication',
+  'unsupported_disease_stage',
   'module_not_clinically_qualified',
   'insufficient_evidence',
   'measurement_failure',
   'reliability_failure',
   'lesion_registration_failure',
   'target_anatomy_invalid',
+  'target_region_destroyed_by_lesion',
   'disease_stage_mismatch',
   'treatment_context_mismatch',
+  'protocol_context_missing',
+  'motor_map_unreliable',
+  'body_region_mapping_uncertain',
+  'audiology_incomplete',
+  'coil_not_compatible',
+  'field_model_unreliable',
   'device_incompatibility',
   'scientific_configuration_invalid',
   'no_nonredundant_candidate',
@@ -271,6 +305,38 @@ export const IndicationModuleReleaseSchema = z.object({
   releasedAt: z.string().optional(),
   supersedesReleaseId: z.string().uuid().optional(),
   provenance: CommonProvenanceV2Schema,
+});
+
+export const TargetingStrategyRefSchema = z.object({
+  strategyId: z.string().min(1),
+  code: z.string().min(1),
+  label: z.string().min(1),
+  description: z.string().optional(),
+});
+
+export const DeviceContextSchema = z.object({
+  deviceModelId: z.string().optional(),
+  coilModelId: z.string().optional(),
+  stimulatorClass: z.string().optional(),
+  coolingType: z.string().optional(),
+  notes: z.string().optional(),
+});
+
+export const ClinicalObjectiveDefinitionSchema = z.object({
+  id: z.string().min(1),
+  indicationModuleReleaseId: z.string().min(1),
+  code: z.string().min(1),
+  label: z.string().min(1),
+  description: z.string(),
+  targetMappability: z.enum([
+    'clinically_supported',
+    'supporting_only',
+    'research_only',
+    'not_evidence_mappable',
+  ]),
+  candidateRoleSuggestions: z.array(z.string()).optional(),
+  standardAssessmentTools: z.array(z.string()).optional(),
+  provenance: CommonProvenanceV2Schema.optional(),
 });
 
 // ==========================================
@@ -545,6 +611,61 @@ export const TreatmentContextSnapshotSchema = z.object({
   provenance: CommonProvenanceV2Schema,
 });
 
+/**
+ * §12. CANONICAL OBJECT — IndicationModuleSchema
+ */
+export const IndicationModuleSchema = z.object({
+  id: z.string().uuid(),
+  code: z.string().min(1),
+  version: z.string().min(1),
+  indication: ClinicalConceptRefSchema,
+  title: z.string().min(1),
+  status: ModuleGovernanceStatusSchema,
+  intended_population: PopulationDefinitionSchema,
+  allowed_modes: z.array(MagniomModeSchema).min(1),
+  phenotype_schema_version_id: z.string().min(1),
+  evidence_scope_id: z.string().min(1),
+  clinical_objectives: z.array(ClinicalObjectiveDefinitionSchema),
+  candidate_generation_methods: z.array(TargetingStrategyRefSchema),
+  measurement_requirements: z.array(MeasurementRequirementSchema),
+  target_geometry_types: z.array(TargetGeometryTypeSchema).min(1),
+  reliability_policy_refs: z.array(z.string()),
+  scientific_policy_compatibility: z.array(z.string()),
+  adjunctive_context_requirements: z.array(TreatmentContextRequirementSchema),
+  limitations: z.array(z.string()),
+  validation_evidence_ids: z.array(z.string()),
+  manifest_sha256: z.string().regex(/^[0-9a-fA-F]{64}$/),
+});
+
+/**
+ * §34. INDICATION ENGINE CONTRACT — IndicationTargetingContextSchema
+ */
+export const IndicationTargetingContextSchema = z.object({
+  case_id: z.string().uuid(),
+  indication_module_release_id: z.string().uuid(),
+  clinical_objective_snapshot_id: z.string().uuid(),
+  phenotype_snapshot_id: z.string().uuid(),
+  evidence_library_release_id: z.string().uuid(),
+  scientific_policy_release_id: z.string().uuid(),
+  measurement_bundle_id: z.string().uuid(),
+  reliability_bundle_id: z.string().uuid().optional(),
+  target_engine_version_id: z.string().min(1),
+  device_context: z.array(DeviceContextSchema).optional(),
+});
+
+/**
+ * §62. PHENOTYPE EXTENSION CONTRACT — IndicationPhenotypeExtensionSchema
+ */
+export const IndicationPhenotypeExtensionSchema = z.object({
+  indication_module_release_id: z.string().uuid(),
+  schema_version: z.string().min(1),
+  payload: z.unknown(),
+  validation_status: z.enum(['valid', 'suspect', 'provisional', 'invalid']),
+  approved_by: z.string().min(1),
+  approved_at: z.string().min(1),
+  payload_sha256: z.string().regex(/^[0-9a-fA-F]{64}$/),
+});
+
 // ==========================================
 // 9. Canonical Object 8: TargetGeometry (§52-66)
 // ==========================================
@@ -700,7 +821,7 @@ export const EvidencePathV2Schema = z.object({
 export const EvidencePathPermissionSchema = z.object({
   evidencePathId: z.string().min(1),
   permittedModes: z.array(MagniomModeSchema),
-  candidateRoles: z.array(CandidateRoleV2Schema),
+  candidateRoles: z.array(AnyCandidateRoleSchema),
   candidateGenerationMethodIds: z.array(z.string()),
   standalonePrimary: z.boolean(),
   standaloneAdditional: z.boolean(),
@@ -780,6 +901,61 @@ export const TargetEvidenceProfileV2Schema = z.object({
   evidenceSummary: z.string(),
 });
 
+// ---------------------------------------------------------------------------
+// Candidate Domain Fit Profiles & Relationships (§74-77, §106)
+// ---------------------------------------------------------------------------
+
+export const LesionTargetRelationshipSchema = z.object({
+  lesionContextId: z.string().uuid(),
+  targetRelationship: z.enum([
+    'outside_lesion',
+    'adjacent',
+    'partially_involved',
+    'substantially_involved',
+    'destroyed_or_absent',
+    'not_assessable',
+  ]),
+  minimumDistanceToLesionMm: z.number().nonnegative().optional(),
+  tissueIntegrity: z.enum(['apparently_intact', 'altered', 'severely_altered', 'not_assessable']),
+  interpretation: z.string(),
+});
+
+export const MotorMappingFitProfileSchema = z.object({
+  motorMappingRunId: z.string().uuid(),
+  relevantBodyRegion: BodyRegionRefSchema,
+  hotspotCoordinate: Coordinate3DSchema.optional(),
+  candidateToHotspotDistanceMm: z.number().nonnegative().optional(),
+  mapOverlap: z.number().min(0).max(1).optional(),
+  mapReliabilityId: z.string().uuid().optional(),
+  interpretation: z.string(),
+});
+
+export const StructuralConnectivityFitProfileSchema = z.object({
+  sourceMeasurementId: z.string().uuid(),
+  tractIds: z.array(z.string()),
+  connectivityMetrics: z.record(z.number()),
+  method: z.string().min(1),
+  modelVersion: z.string().min(1),
+  reliabilityId: z.string().uuid().optional(),
+  interpretation: z.string(),
+});
+
+export const TargetTreatmentContextEvaluationSchema = z.object({
+  treatmentContextSnapshotId: z.string().uuid(),
+  requiredContextIds: z.array(z.string()),
+  matchedContextIds: z.array(z.string()),
+  applicability: z.enum(['full', 'partial', 'limited', 'not_applicable']),
+  limitations: z.array(z.string()),
+  interpretation: z.string(),
+});
+
+export const ResearchTargetExtensionSchema = z.object({
+  experimentalHypothesisCode: z.string().min(1),
+  explorativeConfidence: z.number().min(0).max(1).optional(),
+  nonStandardParameters: z.record(z.unknown()).optional(),
+  notes: z.string().optional(),
+});
+
 export const TargetCandidateV2Schema = z.object({
   id: z.string().min(1),
   version: z.string().min(1),
@@ -790,7 +966,7 @@ export const TargetCandidateV2Schema = z.object({
   indicationModuleReleaseId: z.string().uuid(),
   scientificPolicyReleaseId: z.string().uuid(),
   generationStatus: CandidateStatusSchema,
-  candidateRole: CandidateRoleV2Schema,
+  candidateRole: AnyCandidateRoleSchema,
   targetFamilyId: z.string().min(1),
   therapeuticCircuitIds: z.array(z.string()),
   clinicalObjectiveIds: z.array(z.string()),
@@ -811,12 +987,17 @@ export const TargetCandidateV2Schema = z.object({
   targetEngineVersionId: z.string().min(1),
   evidenceLibraryReleaseId: z.string().min(1),
   provenance: CommonProvenanceV2Schema,
+  lesionTargetRelationship: LesionTargetRelationshipSchema.optional(),
+  motorMappingFit: MotorMappingFitProfileSchema.optional(),
+  structuralConnectivityFit: StructuralConnectivityFitProfileSchema.optional(),
+  treatmentContextEvaluation: TargetTreatmentContextEvaluationSchema.optional(),
+  researchExtension: ResearchTargetExtensionSchema.optional(),
 });
 
 export const SlateCandidateRefV2Schema = z.object({
   targetCandidateId: z.string().min(1),
   position: z.enum(['primary_1', 'primary_2', 'primary_3', 'additional_a', 'additional_b']),
-  role: CandidateRoleV2Schema,
+  role: AnyCandidateRoleSchema,
   rankWithinRole: z.number().int().positive().optional(),
   inclusionReason: z.string(),
   redundancyWith: z.array(z.string()).optional(),
@@ -884,6 +1065,116 @@ export const TargetSlateV2Schema = z.object({
   payloadSha256: z.string().regex(/^[0-9a-fA-F]{64}$/),
   provenance: CommonProvenanceV2Schema,
 });
+
+// ---------------------------------------------------------------------------
+// Cross-Indication Target Review (§89) & Clinician Modifications (§96)
+// ---------------------------------------------------------------------------
+
+export const CrossSlateSpatialRelationshipSchema = z.object({
+  candidateIdA: z.string().min(1),
+  candidateIdB: z.string().min(1),
+  distanceMm: z.number().nonnegative().optional(),
+  relationship: z.enum(['identical', 'overlapping', 'adjacent', 'remote']),
+  interpretation: z.string().optional(),
+});
+
+export const ClinicalObjectiveConflictSchema = z.object({
+  objectiveIdA: z.string().min(1),
+  objectiveIdB: z.string().min(1),
+  conflictType: z.enum(['antagonistic', 'competing_priority', 'physiological_tradeoff']),
+  explanation: z.string(),
+});
+
+export const CrossIndicationTargetReviewSchema = z.object({
+  id: z.string().min(1),
+  caseId: z.string().uuid(),
+  targetSlateIds: z.array(z.string().min(1)),
+  spatialRelationships: z.array(CrossSlateSpatialRelationshipSchema),
+  overlappingTargetFamilyIds: z.array(z.string()),
+  conflictingObjectives: z.array(ClinicalObjectiveConflictSchema),
+  summary: z.string(),
+  mode: MagniomModeSchema,
+  provenance: CommonProvenanceV2Schema,
+});
+
+export const ClinicianModifiedTargetSchema = z.object({
+  sourceTargetCandidateId: z.string().min(1),
+  modifiedGeometry: TargetGeometrySchema,
+  modificationDistanceMm: z.number().nonnegative().optional(),
+  modificationReason: z.string().min(1),
+  createdBy: z.string().min(1),
+  createdAt: z.string().min(1),
+});
+
+// ---------------------------------------------------------------------------
+// Target Engine Input & Output Manifest Schemas (§111-112)
+// ---------------------------------------------------------------------------
+
+export const TargetEngineInputV2Schema = z.object({
+  caseId: z.string().uuid(),
+  caseIndicationId: z.string().uuid(),
+  mode: MagniomModeSchema,
+  indicationModuleReleaseId: z.string().uuid(),
+  phenotypeSnapshotId: z.string().uuid(),
+  clinicalObjectiveIds: z.array(z.string()),
+  diseaseStageContextId: z.string().uuid().optional(),
+  lesionContextIds: z.array(z.string().uuid()).optional(),
+  treatmentContextSnapshotId: z.string().uuid().optional(),
+  measurementBundleId: z.string().min(1),
+  reliabilityBundleId: z.string().min(1).optional(),
+  evidenceLibraryReleaseId: z.string().min(1),
+  scientificPolicyReleaseId: z.string().min(1),
+  targetEngineVersionId: z.string().min(1),
+  deviceContextIds: z.array(z.string()).optional(),
+});
+
+export const CanonicalTargetEngineOutputManifestV2Schema = z.object({
+  generated_candidate_ids: z.array(z.string()),
+  eligible_candidate_ids: z.array(z.string()),
+  suppressed_candidate_ids: z.array(z.string()),
+  target_slate_id: z.string().optional(),
+  abstention: AbstentionProfileV2Schema.optional(),
+  warnings: z.array(z.string()),
+  reproducibility_manifest_sha256: z.string().regex(/^[0-9a-fA-F]{64}$/),
+});
+
+export const TargetFamilyV2Schema = TargetFamilySchema.extend({
+  permittedGeometryTypes: z.array(TargetGeometryTypeSchema).optional(),
+  permittedTargetGeometryTypes: z.array(TargetGeometryTypeSchema).optional(),
+  indicationModuleReleaseId: z.string().optional(),
+  indicationScopeIds: z.array(z.string()).optional(),
+  clinicalObjectiveDefinitionIds: z.array(z.string()).optional(),
+  therapeuticCircuitIds: z.array(z.string()).optional(),
+  evidenceClaimIds: z.array(z.string()).optional(),
+  candidateGenerationMethodIds: z.array(z.string()).optional(),
+  treatmentContextRequirementIds: z.array(z.string()).optional(),
+  diseaseStageConstraints: z.array(z.string()).optional(),
+  governanceStatus: z
+    .enum(['staging', 'research', 'validation', 'clinical_permitted', 'suspended'])
+    .optional(),
+  anatomy: z.record(z.unknown()).optional(),
+});
+
+// ---------------------------------------------------------------------------
+// Prohibited Canonical Fields (§138)
+// ---------------------------------------------------------------------------
+
+export const PROHIBITED_CANONICAL_FIELDS = [
+  'optimal_target',
+  'optimalTarget',
+  'brain_abnormality_score',
+  'brainAbnormalityScore',
+  'expected_response_probability',
+  'expectedResponseProbability',
+  'recommended_protocol',
+  'recommendedProtocol',
+  'global_tms_suitability_score',
+  'globalTmsSuitabilityScore',
+  'multi_indication_target_score',
+  'multiIndicationTargetScore',
+  'stroke_recovery_probability',
+  'strokeRecoveryProbability',
+] as const;
 
 // ==========================================
 // 19. Canonical Multimodal Measurement Schemas (Specification v2.0)
@@ -981,11 +1272,84 @@ export const CanonicalMeasurementBaseSchema = z.object({
   qcStatus: z.enum(['pass', 'conditional', 'fail']),
   qualification: MeasurementQualificationSchema,
   provenance: CommonProvenanceV2Schema,
+  acquisition_profile_id: z.string().optional(),
+  acquisition_id: z.string().optional(),
+  processing_run_id: z.string().optional(),
+  capability_codes: z.array(z.string()).optional(),
+  source_artifact_ids: z.array(z.string()).optional(),
+  derivative_artifact_ids: z.array(z.string()).optional(),
+  coordinate_space_refs: z.array(CoordinateSpaceRefSchema).optional(),
+  qc_assessment_id: z.string().optional(),
+  measurement_manifest_sha256: z.string().optional(),
+  mode: z.enum(['clinical', 'research']).optional(),
+});
+
+export const AcquisitionParameterDefinitionSchema = z.object({
+  name: z.string().min(1),
+  value: z.union([z.string(), z.number(), z.boolean()]),
+  unit: z.string().optional(),
+  required: z.boolean(),
+});
+
+export const AcquisitionProfileSchema = z.object({
+  id: z.string().min(1),
+  code: z.string().min(1),
+  version: z.string().min(1),
+  modality: MeasurementModalitySchema,
+  parameters: z.array(AcquisitionParameterDefinitionSchema),
+  intended_capabilities: z.array(z.string()),
+  validated_site_ids: z.array(z.string()).optional(),
+  validation_status: z.enum(['design_only', 'research_validated', 'clinical_qualified']),
+  limitations: z.array(z.string()),
+  provenance: CommonProvenanceV2Schema,
+});
+
+export const CalibrationRecordSchema = z.object({
+  id: z.string().min(1),
+  deviceId: z.string().min(1),
+  calibratedAt: z.string(),
+  validUntil: z.string(),
+  calibratedBy: z.string(),
+  standardRef: z.string(),
+  isValid: z.boolean(),
+});
+
+export const EquipmentObjectSchema = z.object({
+  id: z.string().min(1),
+  manufacturer: z.string(),
+  model: z.string(),
+  equipmentType: z.enum([
+    'mri_scanner',
+    'tms_stimulator',
+    'tms_coil',
+    'navigation_system',
+    'emg_amplifier',
+    'audiometer',
+  ]),
+  serialNumber: z.string().optional(),
+  softwareVersion: z.string().optional(),
+  siteId: z.string(),
+  calibration: CalibrationRecordSchema,
+});
+
+export const StructuralQualityMetricsSchema = z.object({
+  coverageScore: z.number().min(0).max(1),
+  motionArtefactScore: z.number().min(0).max(1),
+  tissueContrastSnr: z.number().nonnegative(),
+  segmentationQualityPassed: z.boolean(),
+  surfaceReconstructionQualityPassed: z.boolean(),
+  registrationQualityPassed: z.boolean(),
+  scalpReconstructionPassed: z.boolean(),
+  grossDistortionDetected: z.boolean(),
 });
 
 export const StructuralMeasurementSchema = CanonicalMeasurementBaseSchema.extend({
   modality: z.literal('structural_mri'),
   nativeT1ArtifactId: z.string().min(1),
+  t2w_artifact_id: z.string().optional(),
+  brain_mask_artifact_id: z.string().optional(),
+  segmentation_artifact_ids: z.array(z.string()).optional(),
+  cortical_surface_artifact_ids: z.array(z.string()).optional(),
   surfaceNativeMeshArtifactId: z.string().optional(),
   skullMeshArtifactId: z.string().optional(),
   hasAnatomicalAbnormality: z.boolean(),
@@ -993,6 +1357,22 @@ export const StructuralMeasurementSchema = CanonicalMeasurementBaseSchema.extend
   nativeVoxelDimensions: z.tuple([z.number(), z.number(), z.number()]),
   orientation: z.enum(['RAS', 'LPS', 'other']),
   coordinateSpace: CoordinateSpaceRefSchema,
+  structural_qc: StructuralQualityMetricsSchema.optional(),
+});
+
+export const TargetFamilyLesionRelationshipSchema = z.object({
+  targetFamilyId: z.string().min(1),
+  status: z.enum([
+    'outside',
+    'adjacent',
+    'partially_involved',
+    'substantially_involved',
+    'tissue_absent',
+    'not_assessable',
+  ]),
+  minDistanceMm: z.number().nonnegative(),
+  volumeOverlapPercent: z.number().min(0).max(100),
+  interpretation: z.string(),
 });
 
 export const LesionMeasurementSchema = CanonicalMeasurementBaseSchema.extend({
@@ -1006,6 +1386,7 @@ export const LesionMeasurementSchema = CanonicalMeasurementBaseSchema.extend({
   nearestIntactCortexDistanceMm: z.number().optional(),
   registrationConfidence: z.enum(['high', 'moderate', 'low']),
   segmentationMethod: z.enum(['manual', 'validated_automated', 'semi_automated']),
+  target_family_relationships: z.array(TargetFamilyLesionRelationshipSchema).optional(),
 });
 
 export const RestingStateMeasurementSchema = CanonicalMeasurementBaseSchema.extend({
@@ -1019,6 +1400,15 @@ export const RestingStateMeasurementSchema = CanonicalMeasurementBaseSchema.exte
   splitHalfStabilityR: z.number(),
 });
 
+export const TaskPerformanceSummarySchema = z.object({
+  accuracyRate: z.number().min(0).max(1),
+  meanReactionTimeMs: z.number().nonnegative().optional(),
+  validTrialCount: z.number().nonnegative(),
+  totalTrialCount: z.number().positive(),
+  isBehavioralValid: z.boolean(),
+  notes: z.string().optional(),
+});
+
 export const TaskFMRIMeasurementSchema = CanonicalMeasurementBaseSchema.extend({
   modality: z.literal('task_fmri'),
   paradigmId: z.string().min(1),
@@ -1029,6 +1419,7 @@ export const TaskFMRIMeasurementSchema = CanonicalMeasurementBaseSchema.extend({
   lateralityIndex: z.number().min(-1).max(1),
   activationHemisphere: z.enum(['left', 'right', 'bilateral']),
   thresholdSensitivityClass: z.enum(['robust', 'moderate', 'sensitive']),
+  task_performance: TaskPerformanceSummarySchema.optional(),
 });
 
 export const DiffusionMeasurementSchema = CanonicalMeasurementBaseSchema.extend({
@@ -1423,4 +1814,478 @@ export const EvidenceLibraryReleaseV2Schema = z.object({
   manifestSha256: z.string().regex(/^[0-9a-fA-F]{64}$/),
   releasedAt: z.string().optional(),
   provenance: CommonProvenanceSchema,
+});
+
+// ---------------------------------------------------------------------------
+// 21. Therapeutic Circuit & Target System Schemas (§16, §17, §81)
+// ---------------------------------------------------------------------------
+
+export const CircuitKindSchema = z.enum([
+  'therapeutic_network',
+  'target_system',
+  'interhemispheric_model',
+  'functional_network',
+  'lesion_network',
+  'mechanistic_hypothesis',
+]);
+
+export const CircuitScientificStatusSchema = z.enum([
+  'treatment_effect_linked',
+  'prospectively_tested',
+  'replicated_association',
+  'mechanistic',
+  'hypothesis',
+]);
+
+export const TherapeuticCircuitV2Schema = z.object({
+  id: z.string().min(1),
+  code: z.string().min(1),
+  version: z.string().min(1),
+  name: z.string().min(1),
+  indicationScopeIds: z.array(z.string()),
+  clinicalObjectiveDefinitionIds: z.array(z.string()),
+  circuitKind: CircuitKindSchema,
+  scientificStatus: CircuitScientificStatusSchema,
+  circuitDefinition: z.record(z.unknown()),
+  circuitArtifactIds: z.array(z.string()).optional(),
+  supportingEvidenceClaimIds: z.array(z.string()),
+  conflictingEvidenceClaimIds: z.array(z.string()),
+  limitations: z.array(z.string()),
+  provenance: CommonProvenanceSchema,
+});
+
+export const CircuitArtifactSchema = z.object({
+  id: z.string().min(1),
+  circuitId: z.string().min(1),
+  artifactType: z.enum([
+    'mask',
+    'parcellation',
+    'connectivity_matrix',
+    'lesion_network_map',
+    'e_field_model',
+  ]),
+  name: z.string().min(1),
+  format: z.string().min(1),
+  uri: z.string().min(1),
+  sha256: z.string().regex(/^[0-9a-fA-F]{64}$/),
+  provenance: CommonProvenanceSchema,
+});
+
+// ---------------------------------------------------------------------------
+// 22. Claim ↔ Target Binding Schemas (§19)
+// ---------------------------------------------------------------------------
+
+export const ClaimTargetRelationshipSchema = z.enum([
+  'directly_tested',
+  'consistent_with',
+  'indirectly_supports',
+  'not_tested',
+]);
+
+export const ClaimTargetBindingSchema = z.object({
+  id: z.string().optional(),
+  evidenceClaimId: z.string().min(1),
+  targetFamilyId: z.string().min(1),
+  targetingStrategyId: z.string().optional(),
+  geometryClass: TargetGeometryTypeSchema.optional(),
+  relationship: ClaimTargetRelationshipSchema,
+  limitations: z.array(z.string()),
+});
+
+// ---------------------------------------------------------------------------
+// 23. Evidence Edge Ontology Schemas (§14, §15)
+// ---------------------------------------------------------------------------
+
+export const EvidenceEdgeTypeSchema = z.enum([
+  'SUPPORTS',
+  'CONFLICTS_WITH',
+  'DERIVED_FROM',
+  'VALIDATES',
+  'REPLICATES',
+  'PARTIALLY_REPLICATES',
+  'APPLIES_TO',
+  'ADDRESSES',
+  'MEASURES',
+  'ENGAGES',
+  'TARGETS',
+  'REFINES',
+  'BELONGS_TO',
+  'ALTERNATIVE_TO',
+  'SUPERSEDES',
+  'USES_MAP',
+  'USES_SEED',
+  'USES_SEARCH_SPACE',
+  'USES_PROTOCOL',
+  'HAS_PRECEDENT',
+  'HAS_LIMITATION',
+  'APPLIES_AT_STAGE',
+  'SUPPORTS_OBJECTIVE',
+  'REQUIRES_CONTEXT',
+  'WAS_TESTED_WITH',
+  'USES_TARGET_GEOMETRY',
+  'USES_DEVICE_CLASS',
+  'USES_COIL_CLASS',
+  'MAPS_TO_BODY_REGION',
+  'REQUIRES_LESION_CONTEXT',
+  'LIMITS_GENERALISATION',
+  'DOES_NOT_SUPPORT',
+  'HAS_NULL_EVIDENCE',
+]);
+
+export const EvidenceEdgeSchema = z.object({
+  id: z.string().min(1),
+  sourceNodeId: z.string().min(1),
+  sourceNodeType: z.string().min(1),
+  edgeType: EvidenceEdgeTypeSchema,
+  targetNodeId: z.string().min(1),
+  targetNodeType: z.string().min(1),
+  weight: z.number().optional(),
+  metadata: z.record(z.unknown()).optional(),
+});
+
+// ==========================================
+// 24. Scientific Policy Specification v2.0 Schemas
+// ==========================================
+
+export const PolicyLifecycleStatusSchema = z.enum([
+  'draft',
+  'under_review',
+  'validation',
+  'release_candidate',
+  'active',
+  'superseded',
+  'withdrawn',
+  'archived',
+]);
+
+export const PolicyValidationStatusSchema = z.enum([
+  'design_only',
+  'engineering_verified',
+  'retrospective_validated',
+  'silent_prospective_validated',
+  'clinician_assisted_validated',
+  'clinical_release_qualified',
+]);
+
+export const ModulePermissionLevelSchema = z.enum([
+  'research_only',
+  'validation_only',
+  'clinical_permitted',
+  'disabled',
+]);
+
+export const ScientificChangeClassificationSchema = z.enum([
+  'INDICATION_MODULE',
+  'EVIDENCE_PATH',
+  'MEASUREMENT_CAPABILITY',
+  'TARGET_GEOMETRY',
+  'PARAMETER',
+]);
+
+export const ScientificPolicySignatureSchema = z.object({
+  signerRole: z.enum([
+    'scientific_lead',
+    'indication_clinical_lead',
+    'technical_lead',
+    'quality_regulatory_lead',
+    'specialty_reviewer',
+  ]),
+  signerName: z.string().min(1),
+  signerEmail: z.string().min(1),
+  keyId: z.string().min(1),
+  algorithm: z.string().min(1),
+  signature: z.string().min(1),
+  signedAt: z.string().min(1),
+});
+
+export const ScientificPolicyApprovalSchema = z.object({
+  id: z.string().min(1),
+  policyReleaseId: z.string().min(1),
+  indicationModuleReleaseId: z.string().optional(),
+  approvalRole: z.enum([
+    'scientific',
+    'clinical',
+    'technical',
+    'quality_regulatory',
+    'specialty_reviewer',
+  ]),
+  approverId: z.string().min(1),
+  approverName: z.string().min(1),
+  decision: z.enum(['approved', 'approved_with_conditions', 'rejected']),
+  rationale: z.string().optional(),
+  approvedAt: z.string().min(1),
+});
+
+export const TargetFamilyGeometryPermissionSchema = z.object({
+  targetFamilyId: z.string().min(1),
+  permittedGeometryTypes: z.array(TargetGeometryTypeSchema),
+  permittedGeneratorIds: z.array(z.string()),
+  transformationRules: z.array(z.string()).optional(),
+});
+
+export const TargetGeometryPolicySchema = z.object({
+  indicationModuleReleaseId: z.string().min(1),
+  targetFamilyPermissions: z.array(TargetFamilyGeometryPermissionSchema),
+});
+
+export const MeasurementCapabilityPolicySchema = z.object({
+  capabilityCode: z.string().min(1),
+  modality: MeasurementModalitySchema,
+  requirement: z.enum([
+    'required',
+    'required_for_refinement',
+    'optional',
+    'research_only',
+    'disabled',
+  ]),
+  permittedCandidateRoles: z.array(AnyCandidateRoleSchema),
+  permittedGeneratorIds: z.array(z.string()),
+  minimumQcRuleId: z.string().optional(),
+  minimumReliabilityRuleId: z.string().optional(),
+  missingMeasurementBehaviour: z.enum([
+    'block',
+    'disable_capability',
+    'fallback',
+    'allow_with_limitation',
+  ]),
+  limitations: z.array(z.string()),
+});
+
+export const MeasurementFallbackRuleSchema = z.object({
+  triggeringConditionCode: z.string().min(1),
+  fromCapability: z.string().min(1),
+  fallbackConfigurationId: z.string().optional(),
+  resultingCapabilityState: z.enum(['fallback_only', 'disabled', 'abstain']),
+  explanationTemplateId: z.string().min(1),
+});
+
+export const MeasurementPolicySchema = z.object({
+  indicationModuleReleaseId: z.string().min(1),
+  requirements: z.array(MeasurementCapabilityPolicySchema),
+  multimodalFusionPolicy: z.enum(['prohibited', 'descriptive_only', 'validated_model_only']),
+  fallbackRules: z.array(MeasurementFallbackRuleSchema),
+});
+
+export const ReliabilityCapabilityRuleSchema = z.object({
+  capabilityCode: z.string().min(1),
+  reliabilityMethodIds: z.array(z.string()),
+  minimumParameterRefs: z.array(z.string()),
+  requiredMeasurementCount: z.number().optional(),
+  crossRunRequired: z.boolean().optional(),
+  splitHalfRequired: z.boolean().optional(),
+  sensitivityAnalysisRequired: z.boolean().optional(),
+  failureBehaviour: z.enum(['disable_capability', 'fallback', 'block_module']),
+  limitations: z.array(z.string()),
+});
+
+export const ReliabilityPolicySchema = z.object({
+  indicationModuleReleaseId: z.string().min(1),
+  capabilityRules: z.array(ReliabilityCapabilityRuleSchema),
+  crossMeasurementRules: z.array(z.string()).optional(),
+  overallBundleBehaviour: z.enum(['capability_specific', 'module_defined']),
+});
+
+export const CandidateGeneratorPermissionSchema = z.object({
+  generatorId: z.string().min(1),
+  generatorVersion: z.string().min(1),
+  status: z.enum(['required', 'permitted', 'research_only', 'disabled']),
+  candidateRoles: z.array(AnyCandidateRoleSchema),
+  evidencePathIds: z.array(z.string()),
+  targetFamilyIds: z.array(z.string()),
+  geometryTypes: z.array(TargetGeometryTypeSchema),
+  requiredCapabilityCodes: z.array(z.string()),
+  fallbackGeneratorIds: z.array(z.string()).optional(),
+});
+
+export const CandidateGenerationPolicySchema = z.object({
+  indicationModuleReleaseId: z.string().min(1),
+  pluginReleaseId: z.string().min(1),
+  generators: z.array(CandidateGeneratorPermissionSchema),
+});
+
+export const ComparisonDomainBasisSchema = z.enum([
+  'same_target_family_variants',
+  'same_candidate_role',
+  'same_target_strategy',
+  'scientifically_validated_cross_family',
+]);
+
+export const ComparisonDomainPermissionSchema = z.object({
+  domainCode: z.string().min(1),
+  permittedModes: z.array(MagniomModeSchema),
+  allowedBasis: ComparisonDomainBasisSchema,
+});
+
+export const RankingProfileRefSchema = z.object({
+  profileId: z.string().min(1),
+  modelType: z.enum(['lexicographic', 'weighted_geometric_mean', 'ordered_deterministic_rules']),
+  weights: z.record(z.number()).optional(),
+  tieBreakingRuleId: z.string().min(1),
+});
+
+export const RankingPolicySchema = z.object({
+  indicationModuleReleaseId: z.string().min(1),
+  comparisonDomainPermissions: z.array(ComparisonDomainPermissionSchema),
+  rankingProfiles: z.array(RankingProfileRefSchema),
+  crossDomainScalarRanking: z.enum(['prohibited', 'explicitly_validated_only']),
+});
+
+export const RefinementPolicyProfileSchema = z.object({
+  id: z.string().min(1),
+  refinementKind: z.string().min(1),
+  baselineRole: AnyCandidateRoleSchema,
+  refinedRole: AnyCandidateRoleSchema,
+  requiredCapabilityCodes: z.array(z.string()),
+  permittedTargetFamilyIds: z.array(z.string()),
+  minimumIncrementalValueParameterRefs: z.array(z.string()),
+  maximumTransferDistanceParameterRefs: z.array(z.string()).optional(),
+  accessibilityLossRuleId: z.string().optional(),
+  geometryChangeRuleId: z.string().optional(),
+  adoptionBehaviour: z.enum(['prefer_if_all_pass', 'show_as_alternative', 'research_only']),
+  fallbackBehaviour: z.enum(['retain_baseline', 'abstain', 'module_defined']),
+});
+
+export const RefinementPolicySchema = z.object({
+  indicationModuleReleaseId: z.string().min(1),
+  profiles: z.array(RefinementPolicyProfileSchema),
+});
+
+export const RedundancyPolicySchema = z.object({
+  indicationModuleReleaseId: z.string().min(1),
+  spatialDistanceThresholdMmParameterRef: z.string().min(1),
+  networkCorrelationThresholdParameterRef: z.string().optional(),
+  clinicalDiversityRule: z.enum(['enforce_distinct_anatomical_families', 'allow_family_variants']),
+});
+
+export const SlateAssemblyPolicySchema = z.object({
+  indicationModuleReleaseId: z.string().min(1),
+  minCandidates: z.number().int().nonnegative(),
+  maxCandidates: z.number().int().positive(),
+  primarySlotsCount: z.number().int().positive(),
+  allowPartialPrimarySlots: z.boolean(),
+  allowEmptySlateWithAbstention: z.boolean(),
+});
+
+export const AbstentionPolicySchema = z.object({
+  indicationModuleReleaseId: z.string().min(1),
+  allowedAbstentionClasses: z.array(z.string()),
+  supportPartialAbstention: z.boolean(),
+  mandatoryClinicianAdvisory: z.boolean(),
+});
+
+export const ExplanationPolicySchema = z.object({
+  indicationModuleReleaseId: z.string().min(1),
+  requiredSections: z.array(z.string()),
+  disclaimers: z.array(z.string()),
+});
+
+export const ParameterBoundsDefinitionSchema = z.object({
+  minValue: z.number().optional(),
+  maxValue: z.number().optional(),
+  allowedValues: z.array(z.union([z.string(), z.number()])).optional(),
+  unit: z.string().optional(),
+});
+
+export const ScientificPolicyParameterSchema = z.object({
+  id: z.string().min(1),
+  code: z.string().min(1),
+  namespace: z.string().min(1),
+  valueType: z.enum(['number', 'string', 'boolean', 'string_array']),
+  defaultValue: z.union([z.string(), z.number(), z.boolean(), z.array(z.string())]),
+  bounds: ParameterBoundsDefinitionSchema.optional(),
+  clinicalJustification: z.string().min(1),
+  frozen: z.boolean(),
+});
+
+export const ProhibitedScientificConfigurationSchema = z.object({
+  id: z.string().min(1),
+  code: z.string().min(1),
+  description: z.string().min(1),
+  conditionPredicate: z.string().min(1),
+  severity: z.enum(['FATAL_REJECT', 'MODE_DOWNGRADE']),
+});
+
+export const IndicationPolicyBindingSchema = z.object({
+  id: z.string().min(1),
+  indicationModuleReleaseId: z.string().min(1),
+  modulePermission: ModulePermissionLevelSchema,
+  permittedModes: z.array(MagniomModeSchema),
+  evidencePathPermissions: z.array(EvidencePathPermissionSchema),
+  targetGeometryPolicy: TargetGeometryPolicySchema,
+  measurementPolicy: MeasurementPolicySchema,
+  reliabilityPolicy: ReliabilityPolicySchema,
+  candidateGenerationPolicy: CandidateGenerationPolicySchema,
+  rankingPolicy: RankingPolicySchema,
+  refinementPolicy: RefinementPolicySchema,
+  redundancyPolicy: RedundancyPolicySchema,
+  slateAssemblyPolicy: SlateAssemblyPolicySchema,
+  abstentionPolicy: AbstentionPolicySchema,
+  explanationPolicy: ExplanationPolicySchema,
+  permittedCompatibilityConfigurationIds: z.array(z.string()),
+  limitations: z.array(z.string()),
+});
+
+export const ScientificPolicyReleaseV2Schema = z.object({
+  id: z.string().min(1),
+  code: z.string().min(1),
+  semanticVersion: z.string().min(1),
+  title: z.string().min(1),
+  description: z.string().min(1),
+  lifecycleStatus: PolicyLifecycleStatusSchema,
+  validationStatus: PolicyValidationStatusSchema,
+  scope: z.enum(['single_indication', 'multi_indication']),
+  indicationPolicyBindings: z.array(IndicationPolicyBindingSchema),
+  compatibilityConfigurations: z.array(ScientificCompatibilityConfigurationSchema),
+  globalProhibitions: z.array(ProhibitedScientificConfigurationSchema),
+  parameterDefinitions: z.array(ScientificPolicyParameterSchema),
+  parameterValues: z.record(z.union([z.string(), z.number(), z.boolean(), z.array(z.string())])),
+  validationEvidenceIds: z.array(z.string()),
+  changeClassification: ScientificChangeClassificationSchema,
+  supersedesReleaseId: z.string().optional(),
+  payloadSha256: z.string().regex(/^[0-9a-fA-F]{64}$/),
+  compatibilityManifestSha256: z.string().regex(/^[0-9a-fA-F]{64}$/),
+  releaseManifestSha256: z.string().regex(/^[0-9a-fA-F]{64}$/),
+  approvals: z.array(ScientificPolicyApprovalSchema),
+  signatures: z.array(ScientificPolicySignatureSchema),
+  createdAt: z.string().min(1),
+  releasedAt: z.string().optional(),
+});
+
+export const ScientificPolicyReleaseManifestV2Schema = z.object({
+  scientificPolicyReleaseId: z.string().min(1),
+  indicationModuleReleaseIds: z.array(z.string()),
+  compatibilityConfigurationIds: z.array(z.string()),
+  evidenceLibraryReleaseIds: z.array(z.string()),
+  targetEngineReleaseIds: z.array(z.string()),
+  pluginReleaseRefs: z.array(ComponentReleaseRefSchema),
+  generatorReleaseRefs: z.array(ComponentReleaseRefSchema),
+  measurementProviderReleaseRefs: z.array(ComponentReleaseRefSchema),
+  manifestSha256: z.string().regex(/^[0-9a-fA-F]{64}$/),
+  generatedAt: z.string().min(1),
+});
+
+export const ScientificImpactReportSchema = z.object({
+  fromReleaseId: z.string().min(1),
+  toReleaseId: z.string().min(1),
+  classification: ScientificChangeClassificationSchema,
+  affectedIndicationModuleIds: z.array(z.string()),
+  affectedEvidencePathIds: z.array(z.string()),
+  capabilityQualificationChanges: z.array(
+    z.object({
+      moduleCode: z.string(),
+      capabilityCode: z.string(),
+      previousState: z.string(),
+      newState: z.string(),
+    }),
+  ),
+  parameterDeltas: z.array(
+    z.object({
+      parameterCode: z.string(),
+      oldValue: z.unknown(),
+      newValue: z.unknown(),
+      unit: z.string().optional(),
+    }),
+  ),
+  clinicalReviewRequired: z.boolean(),
+  generatedAt: z.string().min(1),
 });

@@ -177,17 +177,34 @@ export function adaptV1CandidateToV2(
   };
 }
 
+function toValidUuid(val: string, fallbackSeed = '00000000000000000000000000000000'): string {
+  if (/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(val)) {
+    return val;
+  }
+  let clean = val.replace(/[^0-9a-fA-F]/g, '').toLowerCase();
+  clean = (clean + fallbackSeed).slice(0, 32);
+  return `${clean.slice(0, 8)}-${clean.slice(8, 12)}-4${clean.slice(13, 16)}-8${clean.slice(17, 20)}-${clean.slice(20, 32)}`;
+}
+
 /**
  * Non-destructively projects a historical v1 TargetSlate into a canonical TargetSlateV2
  */
 export function adaptV1SlateToV2(
   v1Slate: TargetSlate,
   context?: {
+    id?: string;
+    caseId?: string;
     caseIndicationId?: string;
+    phenotypeSnapshotId?: string;
     measurementBundleId?: string;
     reliabilityBundleId?: string;
   },
 ): TargetSlateV2 {
+  const id = context?.id ?? v1Slate.id;
+  const caseId = context?.caseId ?? toValidUuid(v1Slate.caseId, '22222222222222222222222222222222');
+  const phenotypeSnapshotId =
+    context?.phenotypeSnapshotId ??
+    toValidUuid(v1Slate.phenotypeSnapshotId, '33333333333333333333333333333333');
   const caseIndicationId = context?.caseIndicationId ?? '00000000-0000-0000-0000-000000000010';
   const measurementBundleId =
     context?.measurementBundleId ?? '00000000-0000-0000-0000-000000000020';
@@ -213,16 +230,16 @@ export function adaptV1SlateToV2(
   );
 
   return {
-    id: v1Slate.id,
+    id,
     version: '1.0.0',
-    caseId: v1Slate.caseId,
+    caseId,
     caseIndicationId,
     mode: v1Slate.mode,
     indicationModuleReleaseId: LEGACY_MDD_INDICATION_MODULE_ID,
     scientificPolicyReleaseId: LEGACY_MDD_POLICY_RELEASE_ID,
     status: v1Slate.status ?? 'ready_for_review',
     generatedAt: v1Slate.generatedAt,
-    phenotypeSnapshotId: v1Slate.phenotypeSnapshotId,
+    phenotypeSnapshotId,
     clinicalObjectiveIds: [],
     measurementBundleId,
     reliabilityBundleId: context?.reliabilityBundleId,

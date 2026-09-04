@@ -15,9 +15,9 @@
  *   - Emits a high-severity security audit event
  */
 
-import fs from 'node:fs';
-import path from 'node:path';
-import crypto from 'node:crypto';
+import fs from 'fs';
+import path from 'path';
+import crypto from 'crypto';
 
 export interface SubsystemVersionCheck {
   subsystem: string;

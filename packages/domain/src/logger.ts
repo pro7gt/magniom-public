@@ -4,7 +4,32 @@
  * and Sections 150 & 151 of Database & Security Specification v1.0
  */
 
-import { randomUUID } from 'node:crypto';
+let uuidCounter = 0;
+
+function generateUuid(): string {
+  if (
+    typeof globalThis !== 'undefined' &&
+    globalThis.crypto &&
+    typeof globalThis.crypto.randomUUID === 'function'
+  ) {
+    return globalThis.crypto.randomUUID();
+  }
+  if (
+    typeof globalThis !== 'undefined' &&
+    globalThis.crypto &&
+    typeof globalThis.crypto.getRandomValues === 'function'
+  ) {
+    const bytes = new Uint8Array(16);
+    globalThis.crypto.getRandomValues(bytes);
+    bytes[6] = (bytes[6]! & 0x0f) | 0x40;
+    bytes[8] = (bytes[8]! & 0x3f) | 0x80;
+    const hex = Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20, 32)}`;
+  }
+  uuidCounter = (uuidCounter + 1) & 0xffffffff;
+  const hex = uuidCounter.toString(16).padStart(8, '0');
+  return `00000000-0000-4000-8000-${hex.padStart(12, '0')}`;
+}
 
 export type LogLevel = 'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'SECURITY';
 
@@ -122,8 +147,8 @@ export class SecurityLogger {
     return {
       timestamp: new Date().toISOString(),
       level,
-      correlationId: context?.correlationId || `corr-${randomUUID().slice(0, 8)}`,
-      traceId: context?.traceId || `tr-${randomUUID().slice(0, 12)}`,
+      correlationId: context?.correlationId || `corr-${generateUuid().slice(0, 8)}`,
+      traceId: context?.traceId || `tr-${generateUuid().slice(0, 12)}`,
       actorId: context?.actorId,
       orgId: context?.orgId,
       eventType: context?.eventType,

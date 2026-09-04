@@ -14,6 +14,7 @@ export * from './ux-golden-cases.js';
 export * from './ux-golden-cases-v2.js';
 export * from './structural-fixtures.js';
 export * from './golden-cases-suite.js';
+export * from './golden-cases-v2-suite.js';
 export * from './imaging-validation-suite.js';
 export * from './synthetic-vertical-slice/index.js';
 

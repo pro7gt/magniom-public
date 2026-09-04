@@ -2041,3 +2041,5 @@ export function toDecisionReviewViewModelV2(
 export * from './v2-shell-view-models.js';
 export * from './module-ui-descriptors.js';
 export * from './v2-shell-adapters.js';
+export * from './export-package-v2.js';
+export * from './evidence-v2-adapters.js';

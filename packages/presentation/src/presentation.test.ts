@@ -21,6 +21,8 @@ import {
   toEnvironmentModeBadgeViewModel,
   toCaseShellContextViewModel,
   toReleaseContextSummaryViewModel,
+  validateClinicianFacingLanguage,
+  HEATMAP_NO_AUTHORITY_DISCLAIMER,
 } from './index.js';
 import {
   G01_PHENOTYPE,
@@ -252,6 +254,176 @@ describe('@magniom/presentation Unit Tests', () => {
       expect(releaseVM.subsystems.every(s => s.status === 'FROZEN')).toBe(true);
       expect(releaseVM.decisionSupportDisclaimer).toContain(
         'does not autonomously prescribe treatment',
+      );
+    });
+  });
+
+  describe('Canonical Export Package v2 (§133)', () => {
+    it('builds and validates a complete export package with deterministic manifest hashes', async () => {
+      const { buildCanonicalExportPackageV2, validateCanonicalExportPackageV2 } =
+        await import('./export-package-v2.js');
+
+      const mockCaseMetadata = {
+        caseId: '00000000-0000-0000-0000-000000000001',
+        patientPseudonymId: 'PT-TEST-001',
+        createdAt: '2026-09-03T00:00:00.000Z',
+      };
+
+      const mockCaseIndication = {
+        id: '00000000-0000-0000-0000-000000000002',
+        version: '1.0.0',
+        caseId: mockCaseMetadata.caseId,
+        indication: { conceptId: 'MDD-F33', label: 'MDD' },
+        indicationModuleReleaseId: '00000000-0000-0000-0000-000000000003',
+        status: 'confirmed' as const,
+        clinicalRole: 'primary_targeting_indication' as const,
+        confirmationSourceIds: [],
+        dataQuality: 'verified' as const,
+        provenance: {
+          createdBy: 'system',
+          createdAt: '2026-09-03T00:00:00.000Z',
+          softwareVersion: '2.0.0',
+        },
+      };
+
+      const mockIndicationModule = {
+        id: '00000000-0000-0000-0000-000000000003',
+        code: 'MAGNIOM-MODULE-MDD',
+        semanticVersion: '2.0.0',
+        title: 'MDD Module',
+        description: 'Major depression',
+        indication: { conceptId: 'MDD-F33', label: 'MDD' },
+        lifecycleStatus: 'active' as const,
+        moduleStatus: 'clinical_active' as const,
+        qualificationLevel: 'Q5' as const,
+        permittedModes: ['clinical' as const],
+        intendedPopulation: { code: 'POP-01', label: 'Adults', description: 'Adult population' },
+        phenotypeSchemaVersionId: 'PHE-1',
+        clinicalObjectiveDefinitionIds: ['OBJ-01'],
+        evidenceScopeId: 'EV-01',
+        permittedTargetFamilyIds: ['TF-01'],
+        permittedCandidateGenerationMethodIds: ['GEN-01'],
+        measurementRequirements: [],
+        reliabilityPolicyRefs: ['POL-01'],
+        permittedTargetGeometryTypes: ['point' as const],
+        scientificPolicyCompatibilityRefs: ['POL-COMPAT'],
+        knownLimitations: [],
+        validationEvidenceIds: [],
+        payloadSha256: 'a'.repeat(64),
+        manifestSha256: 'b'.repeat(64),
+        createdAt: '2026-09-03T00:00:00.000Z',
+        provenance: {
+          createdBy: 'system',
+          createdAt: '2026-09-03T00:00:00.000Z',
+          softwareVersion: '2.0.0',
+        },
+      };
+
+      const mockMeasurementBundle = {
+        id: '00000000-0000-0000-0000-000000000005',
+        version: '1.0.0',
+        caseId: mockCaseMetadata.caseId,
+        caseIndicationId: mockCaseIndication.id,
+        indicationModuleReleaseId: mockIndicationModule.id,
+        phenotypeSnapshotId: '00000000-0000-0000-0000-000000000007',
+        qualificationStatus: 'qualified' as const,
+        measurements: [],
+        requirementEvaluations: [],
+        limitingFactors: [],
+        createdAt: '2026-09-03T00:00:00.000Z',
+        payloadSha256: 'c'.repeat(64),
+        provenance: {
+          createdBy: 'system',
+          createdAt: '2026-09-03T00:00:00.000Z',
+          softwareVersion: '2.0.0',
+        },
+      };
+
+      const mockSlate = {
+        id: '00000000-0000-0000-0000-000000000010',
+        version: '1.0.0',
+        caseId: mockCaseMetadata.caseId,
+        caseIndicationId: mockCaseIndication.id,
+        mode: 'clinical' as const,
+        indicationModuleReleaseId: mockIndicationModule.id,
+        scientificPolicyReleaseId: '00000000-0000-0000-0000-000000000004',
+        status: 'active' as const,
+        generatedAt: '2026-09-03T00:00:00.000Z',
+        phenotypeSnapshotId: '00000000-0000-0000-0000-000000000007',
+        clinicalObjectiveIds: ['OBJ-01'],
+        measurementBundleId: mockMeasurementBundle.id,
+        evidenceLibraryReleaseId: 'EVD-2.0.0',
+        targetEngineVersionId: '2.0.0',
+        pipelineVersionIds: [],
+        primaryCandidates: [],
+        additionalCandidates: [],
+        slateConvergence: {
+          comparedSources: [],
+          pairwiseRelationships: [],
+          overall: 'high' as const,
+          interpretation: 'High',
+        },
+        clinicalCoverage: { objectives: [], redundancySummary: 'Complete' },
+        generationSummary: 'Summary',
+        scientificLimitations: [],
+        payloadSha256: 'd'.repeat(64),
+        provenance: {
+          createdBy: 'system',
+          createdAt: '2026-09-03T00:00:00.000Z',
+          softwareVersion: '2.0.0',
+        },
+      };
+
+      const pkg = buildCanonicalExportPackageV2({
+        caseMetadata: mockCaseMetadata,
+        caseIndication: mockCaseIndication,
+        indicationModuleRelease: mockIndicationModule,
+        clinicalObjectives: [],
+        phenotypeSnapshot: {},
+        measurementBundle: mockMeasurementBundle,
+        evidenceLibraryReleaseId: 'EVD-2.0.0',
+        scientificPolicyReleaseId: 'POL-2.0.0',
+        targetFamilies: [],
+        generatedCandidates: [],
+        suppressedCandidates: [],
+        targetSlate: mockSlate,
+      });
+
+      expect(pkg.schemaVersion).toBe('2.0.0');
+      expect(pkg.scientificManifestHashes.exportPackageSha256).toHaveLength(64);
+      expect(validateCanonicalExportPackageV2(pkg)).toBe(true);
+    });
+
+    it('enforces clinician-facing language validation (§182)', () => {
+      const clean = validateClinicianFacingLanguage(
+        'Left DLPFC coordinate demonstrates optimal test-retest reliability under protocol v2.0.',
+      );
+      expect(clean.valid).toBe(true);
+      expect(clean.violations).toHaveLength(0);
+
+      const biased1 = validateClinicianFacingLanguage(
+        'Patient has a good brain with strong connectivity',
+      );
+      expect(biased1.valid).toBe(false);
+      expect(biased1.violations).toContain('good brain');
+
+      const biased2 = validateClinicianFacingLanguage('Excluding this run due to a bad scan');
+      expect(biased2.valid).toBe(false);
+      expect(biased2.violations).toContain('bad scan');
+
+      const biased3 = validateClinicianFacingLanguage('A weak patient showed poor task compliance');
+      expect(biased3.valid).toBe(false);
+      expect(biased3.violations).toContain('weak patient');
+
+      const biased4 = validateClinicianFacingLanguage('Delivers a high-confidence treatment plan');
+      expect(biased4.valid).toBe(false);
+      expect(biased4.violations).toContain('high-confidence treatment');
+    });
+
+    it('exposes heatmap no-authority disclaimer (§184)', () => {
+      expect(HEATMAP_NO_AUTHORITY_DISCLAIMER).toContain('visual aids for spatial orientation only');
+      expect(HEATMAP_NO_AUTHORITY_DISCLAIMER).toContain(
+        'do not constitute diagnostic or targeting authority',
       );
     });
   });

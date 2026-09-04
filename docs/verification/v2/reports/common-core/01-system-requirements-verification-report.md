@@ -10,16 +10,16 @@
 
 ## 1. Executive Summary
 
-This formal Software Requirements Verification Report documents the verification of all 332 requirements defined in the **System Requirements Specification v2.0 (SRS v2.0)**. 
+This formal Software Requirements Verification Report documents the verification of all 340 requirements defined in the **System Requirements Specification v2.0 (SRS v2.0)**. 
 
 Every requirement has been verified against design specifications, implementation packages, database schemas, and executable test suites. Zero requirements remain untraced, unverified, or deferred.
 
 | Metric | Target | Actual Result | Conformance |
 |---|---|---|:---:|
-| **Total Requirements Traced** | 332 | 332 | **100.0%** |
+| **Total Requirements Traced** | 340 | 340 | **100.0%** |
 | **Critical Safety Requirements (Class C)** | 96 | 96 Verified | **100.0%** |
 | **Major Requirements (Class B)** | 5 | 5 Verified | **100.0%** |
-| **Standard Requirements (Class A)** | 231 | 231 Verified | **100.0%** |
+| **Standard Requirements (Class A)** | 239 | 239 Verified | **100.0%** |
 | **Untraced / Partial / Deferred Requirements** | 0 | 0 | **PASS** |
 | **Open Critical Defects** | 0 | 0 | **PASS** |
 
@@ -27,7 +27,7 @@ Every requirement has been verified against design specifications, implementatio
 
 ## 2. Requirements Domain Breakdown
 
-Verification evidence was evaluated across all 20 requirement domains:
+Verification evidence was evaluated across all 21 requirement domains:
 
 | Domain | Prefix | Total | Critical | Verification Method | Associated Packages / Tests | Status |
 |---|---|---|---|---|---|:---:|
@@ -51,6 +51,7 @@ Verification evidence was evaluated across all 20 requirement domains:
 | **Traumatic Brain Injury** | `MAG-TBI` | 18 | 7 | UT, IT, GC | `tbi` plugin | **PASS** |
 | **Chronic Tinnitus** | `MAG-TIN` | 18 | 5 | UT, IT, GC | `tinnitus` plugin | **PASS** |
 | **OCD Indication** | `MAG-OCD` | 18 | 12 | UT, IT, GC | `ocd` plugin | **PASS** |
+| **Validation Architecture** | `MAG-VAL` | 8 | 0 | UT, IT, ST, GC | `@magniom/measurement-testkit`, golden cases | **PASS** |
 
 ---
 
@@ -69,4 +70,4 @@ Verification evidence was evaluated across all 20 requirement domains:
 ---
 
 ## 4. Conclusion & Verification Baseline Exit
-All 332 requirements meet the formal acceptance criteria established in SRS v2.0 §42. The requirement baseline is fully verified and ready for formal Verification Baseline sealing.
+All 340 requirements meet the formal acceptance criteria established in SRS v2.0 §42. The requirement baseline is fully verified and ready for formal Verification Baseline sealing.

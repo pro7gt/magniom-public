@@ -1,7 +1,7 @@
 {
-  "verificationDate": "2026-09-03T12:17:20.421Z",
-  "totalRequirements": 332,
-  "traced": 332,
+  "verificationDate": "2026-09-04T10:46:36.008Z",
+  "totalRequirements": 340,
+  "traced": 340,
   "partial": 0,
   "untraced": 0,
   "deferred": 0,
@@ -60,6 +60,12 @@
       "partial": 0,
       "untraced": 0,
       "total": 18
+    },
+    "MAG-PHE": {
+      "traced": 8,
+      "partial": 0,
+      "untraced": 0,
+      "total": 8
     },
     "MAG-POL": {
       "traced": 24,
@@ -3143,6 +3149,158 @@
       "goldenCases": [],
       "migrationFiles": [
         "024_target_candidates.sql"
+      ],
+      "traceabilityStatus": "TRACED",
+      "notes": ""
+    },
+    {
+      "requirementId": "MAG-PHE-041",
+      "domain": "MAG-PHE",
+      "safetyClass": "Standard",
+      "implementationFiles": [
+        "packages/phenotype",
+        "packages/domain"
+      ],
+      "testFiles": [
+        "packages/phenotype/src/phenotype.test.ts"
+      ],
+      "goldenCases": [],
+      "migrationFiles": [
+        "009_phenotype_ontology.sql",
+        "010_phenotype_snapshots.sql"
+      ],
+      "traceabilityStatus": "TRACED",
+      "notes": ""
+    },
+    {
+      "requirementId": "MAG-PHE-042",
+      "domain": "MAG-PHE",
+      "safetyClass": "Standard",
+      "implementationFiles": [
+        "packages/phenotype",
+        "packages/domain"
+      ],
+      "testFiles": [
+        "packages/phenotype/src/phenotype.test.ts"
+      ],
+      "goldenCases": [],
+      "migrationFiles": [
+        "009_phenotype_ontology.sql",
+        "010_phenotype_snapshots.sql"
+      ],
+      "traceabilityStatus": "TRACED",
+      "notes": ""
+    },
+    {
+      "requirementId": "MAG-PHE-043",
+      "domain": "MAG-PHE",
+      "safetyClass": "Standard",
+      "implementationFiles": [
+        "packages/phenotype",
+        "packages/domain"
+      ],
+      "testFiles": [
+        "packages/phenotype/src/phenotype.test.ts"
+      ],
+      "goldenCases": [],
+      "migrationFiles": [
+        "009_phenotype_ontology.sql",
+        "010_phenotype_snapshots.sql"
+      ],
+      "traceabilityStatus": "TRACED",
+      "notes": ""
+    },
+    {
+      "requirementId": "MAG-PHE-044",
+      "domain": "MAG-PHE",
+      "safetyClass": "Standard",
+      "implementationFiles": [
+        "packages/phenotype",
+        "packages/domain"
+      ],
+      "testFiles": [
+        "packages/phenotype/src/phenotype.test.ts"
+      ],
+      "goldenCases": [],
+      "migrationFiles": [
+        "009_phenotype_ontology.sql",
+        "010_phenotype_snapshots.sql"
+      ],
+      "traceabilityStatus": "TRACED",
+      "notes": ""
+    },
+    {
+      "requirementId": "MAG-PHE-045",
+      "domain": "MAG-PHE",
+      "safetyClass": "Standard",
+      "implementationFiles": [
+        "packages/phenotype",
+        "packages/domain"
+      ],
+      "testFiles": [
+        "packages/phenotype/src/phenotype.test.ts"
+      ],
+      "goldenCases": [],
+      "migrationFiles": [
+        "009_phenotype_ontology.sql",
+        "010_phenotype_snapshots.sql"
+      ],
+      "traceabilityStatus": "TRACED",
+      "notes": ""
+    },
+    {
+      "requirementId": "MAG-PHE-046",
+      "domain": "MAG-PHE",
+      "safetyClass": "Standard",
+      "implementationFiles": [
+        "packages/phenotype",
+        "packages/domain"
+      ],
+      "testFiles": [
+        "packages/phenotype/src/phenotype.test.ts"
+      ],
+      "goldenCases": [],
+      "migrationFiles": [
+        "009_phenotype_ontology.sql",
+        "010_phenotype_snapshots.sql"
+      ],
+      "traceabilityStatus": "TRACED",
+      "notes": ""
+    },
+    {
+      "requirementId": "MAG-PHE-047",
+      "domain": "MAG-PHE",
+      "safetyClass": "Standard",
+      "implementationFiles": [
+        "packages/phenotype",
+        "packages/domain"
+      ],
+      "testFiles": [
+        "packages/phenotype/src/phenotype.test.ts"
+      ],
+      "goldenCases": [],
+      "migrationFiles": [
+        "009_phenotype_ontology.sql",
+        "010_phenotype_snapshots.sql"
+      ],
+      "traceabilityStatus": "TRACED",
+      "notes": ""
+    },
+    {
+      "requirementId": "MAG-PHE-048",
+      "domain": "MAG-PHE",
+      "safetyClass": "Standard",
+      "implementationFiles": [
+        "packages/phenotype",
+        "packages/domain"
+      ],
+      "testFiles": [
+        "packages/phenotype/src/phenotype.test.ts"
+      ],
+      "goldenCases": [],
+      "migrationFiles": [
+        "009_phenotype_ontology.sql",
+        "010_phenotype_snapshots.sql"
       ],
       "traceabilityStatus": "TRACED",
       "notes": ""

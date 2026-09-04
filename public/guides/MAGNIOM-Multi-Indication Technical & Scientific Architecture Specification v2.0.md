@@ -2892,7 +2892,34 @@ and:
 
 ---
 
-# 105. FINAL v2 GOVERNING RULE
+# 105. MEDICAL DEVICE ENGINEERING & TECHNOLOGY STACK CONSERVATISM
+
+MAGNIOM operates as a **Class IIb / Class B Medical Device Software as a Medical Device (SaMD)** under IEC 62304:2006+AMD1:2015, ISO 14971:2019, and ISO 13485:2016. In regulated clinical neuromodulation decision support, architectural and technology stack choices are governed by **safety, determinism, auditability, and regulatory verifiability**, not transient web development trends.
+
+### A. SOUP Management & Dependency Discipline (IEC 62304 §5.3.3)
+Software of Unknown Provenance (SOUP) introduces uncontrolled transitive failure modes. Bleeding-edge JavaScript libraries and fast-churning frameworks frequently introduce breaking API mutations, security vulnerabilities, and non-deterministic behavior. MAGNIOM mandates:
+- Minimal, audited third-party dependency sets tracked in a formal Software Bill of Materials (SBOM) and verified via automated vulnerability probes (`npm run sbom:verify`).
+- Long-Term Support (LTS) runtimes (Node.js >= 20.0.0, Python >= 3.10) with pinned cryptographic package digests.
+- Zero reliance on experimental browser runtime features for clinical calculation.
+
+### B. Storage-Level Row-Level Security (RLS) vs. Client-Side ORMs
+Modern web applications frequently adopt client-side ORMs (e.g., Prisma, Drizzle). MAGNIOM deliberately enforces tenant isolation and clinical decision immutability **at the PostgreSQL storage engine level** via native DDL migrations (`supabase/migrations/001_...` through `042_...`) and PL/pgSQL database triggers (`targeting.guard_signed_decision`):
+- **Fail-Closed Security**: Client-side ORMs run in application process memory; if an API worker is compromised or suffers parameter pollution, an ORM cannot prevent cross-tenant data leakage. Database-level RLS guarantees default-deny isolation under HIPAA §164.312 and GDPR Art. 32.
+- **Cryptographic Immutability**: Signed clinician decisions and sealed Target Slates are protected by database triggers that reject any `UPDATE` or `DELETE` at the SQL engine level, guaranteeing tamper-evident audit trails compliant with FDA 21 CFR Part 11.
+
+### C. Scientific Compute Isolation in Validated Neuroimaging Runtimes
+Voxel-wise MRI processing, non-linear coordinate warps, and tractography require validated, compiled scientific libraries (BLAS/LAPACK, NiBabel, Nilearn, SciPy). These cannot be safely or accurately replaced by client-side JavaScript or WebAssembly:
+- Scientific compute is strictly partitioned into containerized POSIX services ([`services/neurocompute`](file:///home/owner/Downloads/Magniom/services/neurocompute)), maintaining clean architectural boundaries between web presentation and numerical matrix processing.
+- Input/output boundaries across compute services are governed by immutable JSON schemas and SHA-256 content addressing.
+
+### D. Pure Mathematical Determinism vs. Probabilistic Generative AI
+Consumer applications frequently employ large language models (LLMs) and probabilistic heuristic agents. In MAGNIOM, **probabilistic generative AI is strictly prohibited from clinical target calculation and ranking** (SRS §37, Target Engine §159):
+- The Target Engine core is a mathematically pure function: identical patient inputs, evidence libraries, and policy releases produce 100% bit-for-bit identical coordinates and SHA-256 digests across repeated executions.
+- Target coordinates are derived solely from stereotactically validated evidence, anatomical constraints, and calibrated multimodal measurements to eliminate seizure induction and adverse stimulation risks.
+
+---
+
+# 106. FINAL v2 GOVERNING RULE
 
 > **MAGNIOM v2 shall not ask “where should this diagnosis be stimulated?” It shall ask which therapeutic objective is being pursued, what evidence supports stimulation for that objective in this population and disease stage, what target geometry that evidence actually used, what patient-specific measurements can validly refine that target, how reliable those measurements are, what contextual treatment assumptions apply, and what competing target hypotheses should remain visible to the specialist.**
 
@@ -2906,7 +2933,7 @@ to:
 
 ---
 
-# 106. MAGNIOM v2 MANIFESTO
+# 107. MAGNIOM v2 MANIFESTO
 
 # One platform, multiple indication models.
 

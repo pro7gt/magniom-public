@@ -104,4 +104,84 @@ export class LateralityValidator {
         : `LATERALITY CONFLICT: Lesion is ${lesionLaterality}, expected ${expectedHemisphere} target for ${hypothesisStrategy}, but found X=${targetCoordinate.x} (${targetHemisphere}).`,
     };
   }
+
+  /**
+   * Validates tinnitus perceived laterality against stimulation target.
+   */
+  public static validateTinnitusLaterality(
+    perceivedLaterality:
+      | 'left'
+      | 'right'
+      | 'bilateral'
+      | 'central'
+      | 'variable'
+      | 'unilateral_left'
+      | 'unilateral_right',
+    targetHemisphere: 'left' | 'right',
+  ): LateralityValidationResult {
+    if (
+      perceivedLaterality === 'bilateral' ||
+      perceivedLaterality === 'central' ||
+      perceivedLaterality === 'variable'
+    ) {
+      return {
+        valid: true,
+        declaredLaterality: targetHemisphere,
+        conflictDetected: false,
+        message: `Bilateral/central tinnitus allows either hemisphere targeting (${targetHemisphere} chosen).`,
+      };
+    }
+
+    const normalizedSide =
+      perceivedLaterality === 'unilateral_left'
+        ? 'left'
+        : perceivedLaterality === 'unilateral_right'
+          ? 'right'
+          : perceivedLaterality;
+
+    const matches = normalizedSide === targetHemisphere;
+    return {
+      valid: matches,
+      declaredLaterality: targetHemisphere,
+      expectedLaterality: normalizedSide,
+      conflictDetected: !matches,
+      message: matches
+        ? `Target hemisphere (${targetHemisphere}) corresponds to perceived ${perceivedLaterality} tinnitus.`
+        : `LATERALITY CONFLICT: Tinnitus perceived on ${perceivedLaterality} side, but target is ${targetHemisphere} hemisphere.`,
+    };
+  }
+
+  /**
+   * Validates aphasia language dominance hemisphere consistency.
+   */
+  public static validateAphasiaHemisphere(
+    dominantHemisphere: 'left' | 'right' | 'left_dominant' | 'right_dominant',
+    targetHemisphere: 'left' | 'right',
+    strategy: 'perilesional_dominant' | 'contralesional_compensatory' = 'perilesional_dominant',
+  ): LateralityValidationResult {
+    const normalizedDominance =
+      dominantHemisphere === 'left_dominant'
+        ? 'left'
+        : dominantHemisphere === 'right_dominant'
+          ? 'right'
+          : dominantHemisphere;
+
+    const expectedHemisphere =
+      strategy === 'perilesional_dominant'
+        ? normalizedDominance
+        : normalizedDominance === 'left'
+          ? 'right'
+          : 'left';
+
+    const matches = targetHemisphere === expectedHemisphere;
+    return {
+      valid: matches,
+      declaredLaterality: targetHemisphere,
+      expectedLaterality: expectedHemisphere,
+      conflictDetected: !matches,
+      message: matches
+        ? `Target hemisphere (${targetHemisphere}) matches ${strategy} strategy.`
+        : `LATERALITY CONFLICT: Dominant hemisphere is ${dominantHemisphere}, expected ${expectedHemisphere} for ${strategy}, but found ${targetHemisphere}.`,
+    };
+  }
 }

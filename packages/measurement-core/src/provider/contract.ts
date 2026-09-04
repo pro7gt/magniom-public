@@ -9,6 +9,9 @@ import type {
   CanonicalMeasurement,
   MeasurementReliability,
   MeasurementProviderManifest,
+  AcquisitionRecord,
+  AcquisitionValidation,
+  ReliabilityContext,
 } from '@magniom/domain';
 import type {
   MeasurementRunContext,
@@ -82,4 +85,27 @@ export interface MeasurementProvider<
       readonly reportedTinnitusSide?: string;
     },
   ): LateralityValidationResult;
+
+  /**
+   * Canonical v2 spec method (§5): Optional acquisition validation.
+   */
+  validateAcquisition?(acquisition: AcquisitionRecord): AcquisitionValidation;
+
+  /**
+   * Canonical v2 spec method (§5): Quality evaluation bridge.
+   */
+  evaluateQuality?(result: MeasurementRunResult<TMeasurement>): ModalityQCResult;
+
+  /**
+   * Canonical v2 spec method (§5): Reliability evaluation bridge.
+   */
+  calculateReliability?(
+    measurement: TMeasurement,
+    context: ReliabilityContext,
+  ): MeasurementReliability;
+
+  /**
+   * Canonical v2 spec method (§5): Canonical measurement extraction.
+   */
+  buildCanonicalMeasurement?(result: MeasurementRunResult<TMeasurement>): TMeasurement;
 }

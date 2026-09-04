@@ -261,7 +261,9 @@ export class MotorMappingProvider implements MeasurementProvider<MotorMappingMea
     if (capDef.requiresIndicationQualification) {
       const isApprovedIndication =
         indicationModuleCode === 'MAGNIOM-MODULE-NEUROPATHIC-PAIN' ||
-        indicationModuleCode === 'MAGNIOM-MODULE-STROKE-MOTOR';
+        indicationModuleCode === 'MAGNIOM-MODULE-PAIN' ||
+        indicationModuleCode === 'MAGNIOM-MODULE-STROKE-MOTOR' ||
+        indicationModuleCode === 'MAGNIOM-MODULE-STROKE';
 
       if (!isApprovedIndication) {
         return {

@@ -4,7 +4,14 @@ import { z } from 'zod';
 // 1. Enumeration Schemas
 // ==========================================
 
-export const MagniomModeSchema = z.enum(['RESEARCH', 'CLINICAL', 'VALIDATION']);
+export const MagniomModeSchema = z.enum([
+  'RESEARCH',
+  'CLINICAL',
+  'VALIDATION',
+  'clinical',
+  'research',
+  'validation',
+]);
 
 export const CandidateRoleSchema = z.enum([
   'PRIMARY_1',

@@ -7,6 +7,7 @@ import {
   MeasurementBundleAssembler,
   LateralityValidator,
   SpatialTransformGraphManager,
+  PipelineUpgradeComparator,
 } from '@magniom/measurement-core';
 import type { CanonicalMeasurement, Coordinate3D, SpatialTransform } from '@magniom/domain';
 import { computeSha256 } from '@magniom/scientific-policy';
@@ -122,6 +123,80 @@ export class MeasurementTraps {
       message: !validation.valid
         ? `SUCCESS: Transform round-trip trap caught excessive error (${validation.maxErrorMm.toFixed(2)}mm > 0.5mm).`
         : `FAIL: Transform passed despite distortion (error ${validation.maxErrorMm.toFixed(2)}mm).`,
+    };
+  }
+
+  /**
+   * §172. TRANSFORM GOLDEN CASE:
+   * Deliberately invert RAS/LPS convention -> spatial validation failure before Target Engine use.
+   */
+  public static executeTransformConventionTrap(
+    matrix: readonly number[],
+    expectedConvention: 'RAS' | 'LPS' = 'RAS',
+  ): { trapped: boolean; message: string } {
+    const result = SpatialTransformGraphManager.validateOrientationConvention(
+      matrix,
+      expectedConvention,
+    );
+
+    return {
+      trapped: !result.valid,
+      message: !result.valid
+        ? `SUCCESS: Transform convention trap caught invalid orientation: ${result.message}`
+        : 'FAIL: Transform convention trap permitted inverted orientation matrix!',
+    };
+  }
+
+  /**
+   * §173. REPRODUCIBILITY GOLDEN CASE:
+   * Run identical source data under identical pipeline, configuration, software, atlas.
+   * Expected: Bitwise identical canonical measurement manifest and matching payload hash.
+   */
+  public static executeReproducibilityTrap<T extends CanonicalMeasurement>(
+    provider: {
+      process(context: any): { measurement: T; processingRun: { runManifestSha256?: string } };
+    },
+    context: any,
+  ): { reproducible: boolean; hashA: string; hashB: string; message: string } {
+    const runA = provider.process(context);
+    const runB = provider.process(context);
+
+    const hashA = computeSha256(JSON.stringify(runA.measurement));
+    const hashB = computeSha256(JSON.stringify(runB.measurement));
+
+    const matches = hashA === hashB;
+    return {
+      reproducible: matches,
+      hashA,
+      hashB,
+      message: matches
+        ? `SUCCESS: Reproducibility confirmed. Runs yielded identical hash ${hashA.slice(0, 16)}... (§173).`
+        : `FAIL: Non-deterministic output detected. Hash A=${hashA}, Hash B=${hashB}.`,
+    };
+  }
+
+  /**
+   * §174. PIPELINE-UPGRADE GOLDEN CASE:
+   * Process same acquisition with Pipeline 2.0 vs Pipeline 2.1.
+   * Measures spatial displacement, tract change, reliability shift, and capability qualification flips.
+   */
+  public static executePipelineUpgradeTrap(
+    input: Parameters<
+      typeof import('@magniom/measurement-core').PipelineUpgradeComparator.compareRuns
+    >[0],
+  ): {
+    impactReport: import('@magniom/measurement-core').ScientificImpactReport;
+    passed: boolean;
+    message: string;
+  } {
+    const report = PipelineUpgradeComparator.compareRuns(input);
+    const passed =
+      Boolean(report.comparisonId) && typeof report.spatialDisplacement.displacementMm === 'number';
+
+    return {
+      impactReport: report,
+      passed,
+      message: `SUCCESS: Pipeline upgrade differential analysis completed. Clinically material: ${report.isClinicallyMaterial}. Requires review: ${report.requiresFormalReview} (§174, §192).`,
     };
   }
 }

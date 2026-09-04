@@ -1,1 +1,1 @@
-{"root":["./src/index.ts","./src/types.ts","./src/bundles/assembler.ts","./src/processing/run-engine.ts","./src/provider/contract.ts","./src/provider/registry.ts","./src/transforms/laterality-validator.ts","./src/transforms/transform-graph.ts"],"version":"5.9.3"}
+{"root":["./src/index.ts","./src/types.ts","./src/bundles/assembler.ts","./src/processing/pipeline-upgrade-comparator.ts","./src/processing/run-engine.ts","./src/provider/contract.ts","./src/provider/registry.ts","./src/transforms/laterality-validator.ts","./src/transforms/transform-graph.ts"],"version":"5.9.3"}

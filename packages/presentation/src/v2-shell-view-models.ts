@@ -191,17 +191,121 @@ export type ModalityQualificationStatus =
   | 'not_required'
   | 'research_only';
 
+/**
+ * Canonical 7 UI measurement statuses (§182).
+ */
+export type CanonicalMeasurementUiStatus =
+  | 'Available'
+  | 'Processing'
+  | 'Qualified'
+  | 'Qualified with limitations'
+  | 'Not qualified'
+  | 'Research only'
+  | 'Not required';
+
 export interface MeasurementSummaryViewModel {
   readonly modality: MeasurementModality;
   readonly modalityLabel: string;
   readonly isRequiredByModule: boolean;
   readonly isAvailable: boolean;
   readonly qualification: ModalityQualificationStatus;
+  readonly uiStatus?: CanonicalMeasurementUiStatus | undefined;
   readonly badgeClass: string;
   readonly reliabilitySummary?: string | undefined;
   readonly isUsedForClinicalRanking: boolean;
   readonly nonUseExplanation?: string | undefined;
 }
+
+/**
+ * Measurement Detail Drawer View Model (§144).
+ * Allows deep inspection of acquisition, pipeline, QC, reliability, limitations, capability effect, and provenance.
+ */
+export interface MeasurementDetailDrawerViewModel {
+  readonly measurementId: string;
+  readonly modality: MeasurementModality;
+  readonly modalityLabel: string;
+  readonly status: CanonicalMeasurementUiStatus;
+  readonly acquisition: {
+    readonly profileId?: string | undefined;
+    readonly scannerMakeModel?: string | undefined;
+    readonly fieldStrengthTesla?: number | undefined;
+    readonly sequenceType?: string | undefined;
+    readonly voxelResolutionMm?: readonly [number, number, number] | undefined;
+    readonly channels?: number | undefined;
+    readonly samplingRateHz?: number | undefined;
+  };
+  readonly pipeline: {
+    readonly pipelineVersion: string;
+    readonly stage: string;
+    readonly executionHash: string;
+    readonly softwareDependencies?: readonly string[] | undefined;
+  };
+  readonly qualityControl: {
+    readonly overallScore: number;
+    readonly passedGates: readonly string[];
+    readonly failedGates: readonly string[];
+    readonly warnings: readonly string[];
+  };
+  readonly reliability: {
+    readonly overallScore?: number | undefined;
+    readonly confidenceInterval?: readonly [number, number] | undefined;
+    readonly sampleSize?: number | undefined;
+    readonly testRetestIcc?: number | undefined;
+    readonly classification: string;
+  };
+  readonly limitations: readonly string[];
+  readonly capabilityEffect: {
+    readonly providedCapabilities: readonly string[];
+    readonly missingCapabilities: readonly string[];
+    readonly fallbackUsed: boolean;
+    readonly evidenceImpact: string;
+  };
+  readonly technicalProvenance: {
+    readonly provenanceHash: string;
+    readonly registrationErrorMm?: number | undefined;
+    readonly orientationConventionValidated: boolean;
+    readonly createdAtFormatted: string;
+  };
+}
+
+/**
+ * Prohibited phrases in clinician-facing language (§182).
+ */
+export const PROHIBITED_CLINICIAN_LANGUAGE = [
+  'good brain',
+  'bad scan',
+  'weak patient',
+  'high-confidence treatment',
+] as const;
+
+export interface ClinicianLanguageValidationResult {
+  readonly valid: boolean;
+  readonly violations: readonly string[];
+}
+
+/**
+ * Validates text against prohibited clinician-facing language (§182).
+ */
+export function validateClinicianFacingLanguage(text: string): ClinicianLanguageValidationResult {
+  const lower = text.toLowerCase();
+  const violations: string[] = [];
+  for (const phrase of PROHIBITED_CLINICIAN_LANGUAGE) {
+    if (lower.includes(phrase)) {
+      violations.push(phrase);
+    }
+  }
+  return {
+    valid: violations.length === 0,
+    violations,
+  };
+}
+
+/**
+ * Heatmap no-authority disclaimer (§184).
+ * Colorful visualisations carry zero clinical authority over underlying canonical measurements.
+ */
+export const HEATMAP_NO_AUTHORITY_DISCLAIMER =
+  'Heatmaps and surface projections are visual aids for spatial orientation only. They do not constitute diagnostic or targeting authority. All targeting decisions must be based on qualified canonical measurements and approved candidate target coordinates.';
 
 // ==========================================
 // 8. Dynamic Workflow Rail View Model (§83–87)

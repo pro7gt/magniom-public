@@ -28,6 +28,15 @@ describe('Phase 3 Golden Multimodal Cases & Capability Validation Separation', (
     expect(mm02.expectedOutcome.targetRefinementPermitted).toBe(false);
   });
 
+  it('MM-03: Stroke with large ischemic lesion generates LesionContext and identifies intact cortex', () => {
+    const mm03 = GOLDEN_MULTIMODAL_CASES['MM-03']!;
+    const bundles = mm03.buildBundles();
+
+    expect(bundles.measurementBundle.qualificationStatus).toBe('qualified');
+    expect(bundles.reliabilityBundle.overallQualification).toBe('qualified');
+    expect(mm03.expectedOutcome.targetRefinementPermitted).toBe(true);
+  });
+
   it('MM-04: Stroke Motor with destroyed M1 hand knob blocks ipsilesional target candidate', () => {
     const mm04 = GOLDEN_MULTIMODAL_CASES['MM-04']!;
     const bundles = mm04.buildBundles();
@@ -47,6 +56,24 @@ describe('Phase 3 Golden Multimodal Cases & Capability Validation Separation', (
     expect(mm05.expectedOutcome.targetRefinementPermitted).toBe(true);
   });
 
+  it('MM-06: Neuropathic Pain with unstable motor hotspot falls back to anatomical baseline', () => {
+    const mm06 = GOLDEN_MULTIMODAL_CASES['MM-06']!;
+    const bundles = mm06.buildBundles();
+
+    expect(bundles.measurementBundle.qualificationStatus).toBe('insufficient');
+    expect(bundles.reliabilityBundle.overallQualification).toBe('not_qualified');
+    expect(mm06.expectedOutcome.targetRefinementPermitted).toBe(false);
+  });
+
+  it('MM-07: Stroke Aphasia with successful task compliance qualifies task fMRI activation', () => {
+    const mm07 = GOLDEN_MULTIMODAL_CASES['MM-07']!;
+    const bundles = mm07.buildBundles();
+
+    expect(bundles.measurementBundle.qualificationStatus).toBe('qualified');
+    expect(bundles.reliabilityBundle.overallQualification).toBe('qualified');
+    expect(mm07.expectedOutcome.targetRefinementPermitted).toBe(true);
+  });
+
   it('MM-08: Stroke Aphasia task fMRI behavioral failure does NOT infer absent cortex', () => {
     const mm08 = GOLDEN_MULTIMODAL_CASES['MM-08']!;
     const bundles = mm08.buildBundles();
@@ -54,6 +81,34 @@ describe('Phase 3 Golden Multimodal Cases & Capability Validation Separation', (
     expect(bundles.measurementBundle.qualificationStatus).toBe('insufficient');
     expect(bundles.reliabilityBundle.overallQualification).toBe('not_qualified');
     expect(mm08.expectedOutcome.targetRefinementPermitted).toBe(false);
+  });
+
+  it('MM-09: TBI with skull defect models boundary conditions for E-field workflow', () => {
+    const mm09 = GOLDEN_MULTIMODAL_CASES['MM-09']!;
+    const bundles = mm09.buildBundles();
+
+    expect(bundles.measurementBundle.qualificationStatus).toBe('qualified');
+    expect(bundles.reliabilityBundle.overallQualification).toBe('qualified');
+    expect(bundles.measurementBundle.measurements.length).toBe(2);
+    expect(mm09.expectedOutcome.targetRefinementPermitted).toBe(true);
+  });
+
+  it('MM-10: DWI tractography instability blocks structural connectivity target refinement', () => {
+    const mm10 = GOLDEN_MULTIMODAL_CASES['MM-10']!;
+    const bundles = mm10.buildBundles();
+
+    expect(bundles.measurementBundle.qualificationStatus).toBe('insufficient');
+    expect(bundles.reliabilityBundle.overallQualification).toBe('not_qualified');
+    expect(mm10.expectedOutcome.targetRefinementPermitted).toBe(false);
+  });
+
+  it('MM-11: Tinnitus with complete audiometry qualifies research measurement bundle', () => {
+    const mm11 = GOLDEN_MULTIMODAL_CASES['MM-11']!;
+    const bundles = mm11.buildBundles();
+
+    expect(bundles.measurementBundle.qualificationStatus).toBe('qualified');
+    expect(bundles.reliabilityBundle.overallQualification).toBe('qualified');
+    expect(mm11.expectedOutcome.targetRefinementPermitted).toBe(true);
   });
 
   it('MM-12: Tinnitus pitch matching does NOT autonomously generate tonotopic cortical target without EvidencePath', () => {

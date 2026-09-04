@@ -207,8 +207,13 @@ export interface SymptomMapping {
 }
 
 // ==========================================
-// 1. Common Supporting Primitives
+// 1. Common Supporting Primitives & Canonical Identifiers (§6)
 // ==========================================
+
+export type UUID = string;
+export type ISO8601UTC = string;
+export type SHA256 = string;
+export type QualitativeConfidence = 'very_high' | 'high' | 'moderate' | 'low' | 'very_low';
 
 export interface CommonProvenance {
   readonly createdBy: string;
@@ -216,6 +221,8 @@ export interface CommonProvenance {
   readonly sourceOrganizationId?: string;
   readonly softwareVersion: string;
 }
+
+export type Provenance = CommonProvenance;
 
 export interface AtlasRef {
   readonly atlasName: 'HCP_MMP1.0' | 'Glasser360' | 'Schaefer400' | 'AAL' | 'DKT' | string;
@@ -436,6 +443,26 @@ export interface TargetFamily {
   readonly provenance?: CommonProvenance;
 }
 
+/**
+ * MAGNIOM TargetFamily v2 Extension (§67)
+ * Extends canonical TargetFamily with multi-indication permitted geometries and module scope
+ */
+export interface TargetFamilyV2 extends TargetFamily {
+  readonly permittedGeometryTypes?: readonly import('./enums.js').TargetGeometryType[];
+  readonly permittedTargetGeometryTypes?: readonly import('./enums.js').TargetGeometryType[];
+  readonly indicationModuleReleaseId?: UUID;
+  readonly indicationScopeIds?: readonly string[];
+  readonly clinicalObjectiveDefinitionIds?: readonly string[];
+  readonly therapeuticCircuitIds?: readonly string[];
+  readonly evidenceClaimIds?: readonly string[];
+  readonly candidateGenerationMethodIds?: readonly string[];
+  readonly treatmentContextRequirementIds?: readonly string[];
+  readonly diseaseStageConstraints?: readonly string[];
+  readonly governanceStatus?:
+    'staging' | 'research' | 'validation' | 'clinical_permitted' | 'suspended';
+  readonly anatomy?: Record<string, unknown>;
+}
+
 export interface SearchSpace {
   readonly id: string;
   readonly code: string; // e.g. "SS-MDD-LDLPFC-CONVERGENT-001"
@@ -583,6 +610,20 @@ export interface PhenotypeSnapshot {
   readonly confirmedByClinicianId: string;
   readonly confirmedAt: string; // ISO 8601 UTC
   readonly snapshotHash?: string; // SHA-256 seal
+}
+
+/**
+ * §62. PHENOTYPE EXTENSION CONTRACT — IndicationPhenotypeExtension
+ * Conforms to MAGNIOM-Multi-Indication Technical & Scientific Architecture Specification v2.0 Section 62
+ */
+export interface IndicationPhenotypeExtension {
+  readonly indication_module_release_id: string;
+  readonly schema_version: string;
+  readonly payload: unknown;
+  readonly validation_status: DataQualityState;
+  readonly approved_by: string;
+  readonly approved_at: string; // ISO8601UTC
+  readonly payload_sha256: string; // SHA-256 seal
 }
 
 // ==========================================

@@ -12,17 +12,54 @@ import type {
 } from '@magniom/domain';
 import { computeSha256, canonicalJsonStringify } from '@magniom/scientific-policy';
 
+/**
+ * §74 Canonical Abstention Explanations
+ * Conforms to MAGNIOM-Multi-Indication Technical & Scientific Architecture Specification v2.0 (§74)
+ */
+export const ABSTENTION_TYPE_EXPLANATIONS: Partial<Record<AbstentionType, string>> = {
+  unsupported_indication:
+    'The requested clinical concept or ICD/SNOMED indication is not supported by any registered and active Indication Module.',
+  unsupported_disease_stage:
+    'Patient clinical disease stage is not compatible with authorized evidence scope or generator eligibility criteria.',
+  module_not_clinically_qualified:
+    'Indication module has not attained clinical qualification level required for Clinical Mode operation.',
+  lesion_registration_failure:
+    'Anatomical lesion segmentation or co-registration failed quality criteria, precluding safe spatial target derivation.',
+  target_region_destroyed_by_lesion:
+    'Stroke, resection, or necrotic cavity materially destroys the proposed cortical stimulation target region.',
+  protocol_context_missing:
+    'Evidence-mandatory adjunctive treatment context (e.g. concurrent rehabilitation or symptom provocation) is missing or unverified.',
+  motor_map_unreliable:
+    'Patient-specific motor mapping reliability metrics fell below quality policy thresholds for somatotopic target refinement.',
+  body_region_mapping_uncertain:
+    'Somatotopic mapping from pain phenotype or clinical deficits to cortical homunculus lacks sufficient certainty.',
+  audiology_incomplete:
+    'Mandatory audiometric assessments required for tinnitus target analysis are absent or incomplete.',
+  coil_not_compatible:
+    'Treatment delivery coil or device class is incompatible with required target depth, field distribution, or evidence precedents.',
+  field_model_unreliable:
+    'Volumetric electric field simulation failed convergence or mesh validity criteria over non-standard cranial anatomy.',
+  no_nonredundant_candidate:
+    'All generated candidate hypotheses were suppressed by mandatory hard gates or deemed redundant with higher-ranking targets.',
+  scientific_configuration_invalid:
+    'Target engine runtime scientific configuration violated integrity or compatibility constraints.',
+};
+
 export interface CreateAbstentionSlateV2Options {
   readonly id: string;
   readonly context: ResolvedTargetEngineContextV2;
   readonly abstentionType: AbstentionType;
   readonly reasonCodes: readonly string[];
-  readonly explanation: string;
+  readonly explanation?: string;
   readonly fallbackOptions?: readonly string[];
 }
 
 export function createAbstentionSlateV2(options: CreateAbstentionSlateV2Options): TargetSlateV2 {
-  const { id, context, abstentionType, reasonCodes, explanation, fallbackOptions } = options;
+  const { id, context, abstentionType, reasonCodes, fallbackOptions } = options;
+  const explanation =
+    options.explanation ??
+    ABSTENTION_TYPE_EXPLANATIONS[abstentionType] ??
+    'Target engine abstained due to clinical governance or safety criteria.';
   const req = context.request;
 
   const abstentionProfile: AbstentionProfileV2 = {

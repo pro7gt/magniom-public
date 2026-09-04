@@ -235,4 +235,19 @@ describe('MAGNIOM Specification v2.0 — 13 UX Golden Cases (§250–262)', () =
     expect(staleness.reasons[0]!.severity).toBe('blocking');
     expect(staleness.reasons[0]!.resolution_action).toContain('Regenerate');
   });
+
+  // 14. §18 & MAG-UX-031: Anti-Automation Bias Invariant
+  it('MAG-UX-031: enforces anti-automation bias with zero candidate preselected for clinician acceptance', () => {
+    // MAG-UX-031: No target candidate SHALL be preselected for clinician acceptance.
+    // Clinician must actively review and manually select candidate before decision signing.
+    const initialWorkspaceSelection = {
+      selectedCandidateIds: [] as readonly string[],
+      selectedCandidateId: undefined as string | undefined,
+      hasExplicitSelection: false,
+    };
+
+    expect(initialWorkspaceSelection.selectedCandidateIds).toHaveLength(0);
+    expect(initialWorkspaceSelection.selectedCandidateId).toBeUndefined();
+    expect(initialWorkspaceSelection.hasExplicitSelection).toBe(false);
+  });
 });

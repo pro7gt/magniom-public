@@ -113,4 +113,68 @@ describe('Anti-Premature Tier Promotion Guardrails & Safety Traps', () => {
     const tbiPainClaim = graph.getClaim('EC-TBI-META2025-PAIN-001');
     expect(tbiPainClaim?.targetFamilyIds).toEqual([]);
   });
+
+  it('Trap 7: No automatic evidence-tier algorithm (§131)', () => {
+    // Neuropathic Pain M1 has >= 3 positive RCTs in Lefaucheur 2020, yet its Tier MUST remain unassigned!
+    const painClaim = graph.getClaim('EC-PAIN-HF-M1-001')!;
+    const painGov = graph.getGovernanceClassificationForClaim(painClaim.id);
+    expect(painGov?.classificationStatus).toBe('unassigned');
+    expect(painGov?.magniomEvidenceTier).toBeUndefined();
+
+    // OCD has multiple RCTs in meta-analyses, yet Tier is unassigned
+    const ocdClaim = graph.getClaim('EC-OCD-MPFC-ACC-DTMS-001')!;
+    const ocdGov = graph.getGovernanceClassificationForClaim(ocdClaim.id);
+    expect(ocdGov?.classificationStatus).toBe('unassigned');
+  });
+
+  it('Trap 8: No vote counting — positive vs negative paper ratio does not set confidence (§132)', () => {
+    // In Tinnitus, multiple small positive studies exist, but negative guideline recommendation prevents high confidence
+    const tinProfile = graph.computeTargetEvidenceProfile('TF-TIN-TEMPORAL-AUDITORY-001', 'ind-tinnitus-001');
+    expect(tinProfile.evidenceConfidence).toBe('LOW');
+    expect(tinProfile.highestEvidenceTier).toBe('D');
+  });
+
+  it('Trap 9: No p-value shortcut to evidence tier (§133)', () => {
+    // A statistically significant trial does not automatically confer Tier A or clinical authority
+    const finding = graph.getFinding('fnd-ocd-001');
+    expect(finding?.effectEstimate?.pValue).toBeLessThan(0.05);
+
+    // Dependent claim governance remains unassigned
+    const claim = graph.getClaim('EC-OCD-MPFC-ACC-DTMS-001')!;
+    const gov = graph.getGovernanceClassificationForClaim(claim.id);
+    expect(gov?.magniomEvidenceTier).toBeUndefined();
+  });
+
+  it('Trap 10: No cross-indication evidence transfer (§138)', () => {
+    // MDD DLPFC evidence does not transfer to TBI cognitive/depression target families
+    const mddClaims = graph.getClaimsByIndication('ind-mdd-001');
+    const tbiClaims = graph.getClaimsByIndication('ind-tbi-001');
+
+    for (const mddClaim of mddClaims) {
+      expect(mddClaim.indicationIds).not.toContain('ind-tbi-001');
+    }
+
+    for (const tbiClaim of tbiClaims) {
+      expect(tbiClaim.indicationIds).not.toContain('ind-mdd-001');
+    }
+  });
+
+  it('Trap 11: No cross-objective transfer (§139)', () => {
+    // Tinnitus distress is separate from tinnitus loudness
+    const distressQuestions = graph.getEvidenceQuestions('ind-tinnitus-001').filter((q) =>
+      q.outcomeDomains.includes('out-tin-thi-score'),
+    );
+    expect(distressQuestions.length).toBeGreaterThan(0);
+
+    // Aphasia naming is separate from functional communication
+    const aphasiaClaims = graph.getClaimsByIndication('ind-aphasia-001');
+    const namingClaims = aphasiaClaims.filter((c) =>
+      c.outcomeDomainIds?.includes('dom-psa-naming-001'),
+    );
+    expect(namingClaims.length).toBeGreaterThanOrEqual(1);
+    for (const c of namingClaims) {
+      expect(c.outcomeDomainIds).not.toContain('dom-psa-comm-001');
+    }
+  });
 });
+

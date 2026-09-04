@@ -1,0 +1,53 @@
+name: Magniom Multi-Indication Golden Matrix Pipeline (ci-golden-matrix)
+
+# Conforms to MAGNIOM-Enterprise Verification, Testing & CI/CD Specification v2.0 (§55–65, §119–121, §192)
+# Goal: Comprehensive verification of all 72 Golden Cases across all 8 clinical indication modules and spatial differential generation
+
+on:
+  pull_request:
+    paths:
+      - 'packages/target-engine/**'
+      - 'packages/evidence/**'
+      - 'packages/scientific-policy/**'
+      - 'scientific-config/**'
+      - 'evidence/**'
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  multi-indication-golden-matrix:
+    name: Multi-Indication 72 Golden Cases & Spatial Differentials (§55–65, §119)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Execute 72 Golden Cases across All 8 Clinical Modules
+        run: npx tsx scripts/scientific/evaluate-scientific-impact.ts
+
+      - name: Verify Golden Suites via Vitest
+        run: npx vitest run packages/target-engine/tests/v2/golden-suites/
+
+      - name: Verify Metamorphic & Boundary Tests (§39)
+        run: npx vitest run packages/target-engine/tests/v2/metamorphic-and-boundary.test.ts
+
+      - name: Archive Golden Matrix & Spatial Differential Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: golden-matrix-differential-report
+          path: |
+            docs/verification/v2/scientific-impact-report.json
+            docs/verification/v2/reports/scientific-impact-report.md

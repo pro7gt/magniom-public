@@ -1,0 +1,58 @@
+name: Magniom Merge Pipeline (ci-main)
+
+# Conforms to MAGNIOM-Enterprise Verification, Testing & CI/CD Specification v2.0 (§27, §192)
+# Goal: Comprehensive verification, DB zero-state rebuild, 100% SRS traceability, monorepo build, and SBOM sealing on merge to main
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  merge-verification:
+    name: Merge Verification, Database Rebuild & 100% SRS Traceability
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Stage 4 — Database Zero-State Rebuild & 11-Domain RLS Suite (§42, §45)
+        run: npm run verify:db:from-zero
+
+      - name: Stage 2 — Full 332 SRS Requirements Traceability (§126–127)
+        run: npm run verify:requirements
+
+      - name: Stage 8A — Generate & Verify CycloneDX 1.5 SBOM (§103)
+        run: npm run sbom:generate && npm run sbom:verify
+
+      - name: Stage 8B — Secret Hygiene & Leak Prevention (§156–157)
+        run: npm run security:secrets
+
+      - name: Stage 8C — Penetration Testing Readiness Probe (§101)
+        run: npm run security:probe
+
+      - name: Build All Monorepo Workspaces (§135)
+        run: npm run build
+
+      - name: Generate & Seal Master Release Manifest v2 (§131)
+        run: npx tsx scripts/release/generate-release-manifest-v2.ts
+
+      - name: Archive Merge Evidence Bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: merge-evidence-bundle
+          path: |
+            docs/verification/v2/release-manifest-v2.json
+            docs/verification/traceability-coverage-v2.json
+            docs/security/sbom/cyclonedx-sbom-1.5.json

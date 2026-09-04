@@ -416,14 +416,29 @@ export function auditSpecificationConformance(repoRoot: string = path.resolve(pr
       name: 'Enterprise Dashboard & CI Workflow Families',
       sections: '§191–195',
       check: () => {
-        const pr = path.join(repoRoot, '.github/workflows/ci-pr.yml');
-        const sci = path.join(repoRoot, '.github/workflows/ci-scientific.yml');
-        const rel = path.join(repoRoot, '.github/workflows/release-clinical.yml');
-        const pass = fs.existsSync(pr) && fs.existsSync(sci) && fs.existsSync(rel);
+        const requiredWorkflows = [
+          'ci-pr.yml',
+          'ci-scientific.yml',
+          'ci-main.yml',
+          'ci-nightly.yml',
+          'ci-security.yml',
+          'ci-measurements.yml',
+          'ci-golden-matrix.yml',
+          'release-validation.yml',
+          'release-clinical.yml',
+          'deploy-staging.yml',
+          'deploy-production.yml',
+          'postdeploy-verify.yml',
+        ];
+        const missing = requiredWorkflows.filter(
+          wf => !fs.existsSync(path.join(repoRoot, '.github/workflows', wf)),
+        );
+        const pass = missing.length === 0;
         return {
           passed: pass,
-          details:
-            'Full workflow family implemented (ci-pr, ci-scientific, ci-merge, release-clinical).',
+          details: pass
+            ? `Complete 12-workflow family (§192) verified: ${requiredWorkflows.join(', ')}.`
+            : `Missing workflows (§192): ${missing.join(', ')}`,
         };
       },
     },

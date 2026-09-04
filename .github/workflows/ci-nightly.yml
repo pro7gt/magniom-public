@@ -1,0 +1,88 @@
+name: Magniom Nightly Scientific Pipeline (ci-nightly)
+
+# Conforms to MAGNIOM-Enterprise Verification, Testing & CI/CD Specification v2.0 (§28, §192)
+# Goal: Comprehensive verification of expensive workloads, cross-run reliability, 72 Golden Cases, security and exit criteria
+
+on:
+  schedule:
+    - cron: '0 2 * * *' # Nightly run at 02:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  nightly-scientific-verification:
+    name: Nightly Scientific Regression & Multi-Indication Matrix (§28, §55–65)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Release-Blocking Laterality & Coordinate Invariants (§76–77)
+        run: npx vitest run packages/target-engine/tests/v2/laterality-release-blocking.test.ts
+
+      - name: Adversarial Tenancy & Wrong-Module Boundaries (§46, §65)
+        run: npx vitest run packages/target-engine/tests/v2/adversarial-boundaries.test.ts
+
+      - name: Module Kill Switch Operational Tests (§183–184)
+        run: npx vitest run packages/target-engine/tests/v2/module-kill-switch.test.ts
+
+      - name: Multi-Indication 72 Golden Cases & Spatial Differential Engine (§119)
+        run: npx tsx scripts/scientific/evaluate-scientific-impact.ts
+
+      - name: Database Zero-State Rebuild & 11-Domain RLS Security Matrix (§42, §45)
+        run: npm run verify:db:from-zero
+
+      - name: Fast-Check Target Engine Mathematical Invariants (§38)
+        run: npm run verify:properties
+
+      - name: Clinical Presentation & UX Visual Safety Assertions (§86–91)
+        run: npx vitest run packages/presentation/src/presentation.test.ts
+
+      - name: Formal Verification Baseline & Exit Criteria Validation (§171, §200)
+        run: npm run verify:v2-baseline && npm run verify:exit-criteria
+
+      - name: Archive Nightly Verification Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-verification-evidence
+          path: |
+            docs/verification/v2/scientific-impact-report.json
+            docs/verification/v2/reports/scientific-impact-report.md
+            docs/verification/v2/v2-verification-baseline-manifest.json
+            docs/verification/v2/reports/v2-verification-exit-criteria-report.md
+
+  nightly-neurocompute-pipeline:
+    name: NeuroCompute Multimodal Processing & Reliability Suite (§66–75, §107)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Python Dependencies
+        working-directory: services/neurocompute
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pytest pytest-cov
+
+      - name: Execute Full NeuroCompute Test Suite
+        working-directory: services/neurocompute
+        run: pytest tests/ -v
