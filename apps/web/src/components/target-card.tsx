@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { CandidateCardViewModel } from '@magniom/presentation';
+import { TargetGeometryRenderer } from './target-geometry-renderers';
 
 interface TargetCardProps {
   candidate: CandidateCardViewModel;
@@ -158,6 +159,16 @@ export function TargetCard({
             <p style={{ color: 'var(--text-primary)' }}>
               {candidate.whatMriChanged.justification || 'Evidence anchor group coordinate.'}
             </p>
+          </div>
+
+          {/* Target Geometry Presentation (§112–117) */}
+          <div style={{ marginTop: '0.25rem' }}>
+            <TargetGeometryRenderer
+              geometryType={candidate.geometryType ?? 'point'}
+              coordinateFormatted={candidate.coordinateFormatted}
+              depthMm={candidate.anatomicalAccessibility.depthMm}
+              accessibilityRating={candidate.anatomicalAccessibility.rating}
+            />
           </div>
         </div>
       )}

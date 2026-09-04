@@ -19,9 +19,9 @@ import {
 
 export interface ResolveCaseShellContextOptions {
   caseId: string;
-  activePath?: string;
-  environmentMode?: EnvironmentMode;
-  targetCaseIndicationId?: string;
+  activePath?: string | undefined;
+  environmentMode?: EnvironmentMode | undefined;
+  targetCaseIndicationId?: string | undefined;
 }
 
 export function resolveCaseShellContext(

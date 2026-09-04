@@ -95,6 +95,7 @@
     "postcss": "^8.5.26"
   },
   "allowScripts": {
-    "esbuild": true
+    "esbuild": true,
+    "workerd": true
   }
 }

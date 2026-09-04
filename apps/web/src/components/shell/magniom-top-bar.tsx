@@ -6,6 +6,32 @@ import { useRouter } from 'next/navigation';
 import { caseStore } from '../../lib/case-store';
 import { CANONICAL_CLINICAL_SESSION } from '../../lib/release-authority';
 import type { EnvironmentMode } from '@magniom/presentation';
+import { NotificationBell } from '../notification-system';
+import { emitAuditEvent } from '../../lib/shell-observability';
+
+const AVAILABLE_ORGANISATIONS = [
+  {
+    id: 'org-melb-tms',
+    name: 'Melbourne TMS Centre',
+    siteId: 'site-parkville-01',
+    siteName: 'Parkville Clinical Neurosciences',
+    displayLabel: 'Melbourne TMS Centre · Site 1',
+  },
+  {
+    id: 'org-syd-research',
+    name: 'Sydney NeuroDiscovery Institute',
+    siteId: 'site-camperdown-01',
+    siteName: 'Camperdown Advanced Imaging',
+    displayLabel: 'Sydney NeuroDiscovery · Site 1',
+  },
+  {
+    id: 'org-bris-val',
+    name: 'Queensland Brain Health Centre',
+    siteId: 'site-herston-01',
+    siteName: 'Herston Clinical Research Unit',
+    displayLabel: 'Queensland Brain Health · Site 1',
+  },
+];
 
 interface MagniomTopBarProps {
   currentMode?: EnvironmentMode;
@@ -24,8 +50,31 @@ export function MagniomTopBar({
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [selectedOrgId, setSelectedOrgId] = useState('org-melb-tms');
+  const [isOrgMenuOpen, setIsOrgMenuOpen] = useState(false);
   const searchContainerRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
+  const orgMenuRef = useRef<HTMLDivElement>(null);
+
+  const activeOrg = AVAILABLE_ORGANISATIONS.find(o => o.id === selectedOrgId) || AVAILABLE_ORGANISATIONS[0]!;
+
+  const handleSwitchOrg = (orgId: string) => {
+    if (orgId === selectedOrgId) {
+      setIsOrgMenuOpen(false);
+      return;
+    }
+    const previousOrgId = selectedOrgId;
+    setSelectedOrgId(orgId);
+    setIsOrgMenuOpen(false);
+
+    // §27: Clear active case state and navigate to /cases
+    emitAuditEvent('ORGANISATION_SWITCHED', {
+      message: `User switched organisation from ${previousOrgId} to ${orgId}. Active case state cleared.`,
+      metadata: { previousOrgId, newOrgId: orgId },
+    });
+
+    router.push('/cases');
+  };
 
   const allCases = caseStore.getAllCases();
   const session = CANONICAL_CLINICAL_SESSION;
@@ -49,6 +98,9 @@ export function MagniomTopBar({
       }
       if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
         setIsUserMenuOpen(false);
+      }
+      if (orgMenuRef.current && !orgMenuRef.current.contains(e.target as Node)) {
+        setIsOrgMenuOpen(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -196,16 +248,87 @@ export function MagniomTopBar({
           )}
         </div>
 
-        {/* Organisation / Site Context (§26) */}
-        <div
-          className="site-context-container"
-          title={`${session.organization.organizationName} — ${session.organization.siteName}`}
-        >
-          <span className="site-icon" aria-hidden="true">
-            🏥
-          </span>
-          <span className="site-label">{session.organization.displayLabel}</span>
+        {/* Organisation / Site Context & Switcher (§26–27) */}
+        <div className="site-context-container" ref={orgMenuRef} style={{ position: 'relative' }}>
+          <button
+            onClick={() => setIsOrgMenuOpen(!isOrgMenuOpen)}
+            title={`Active Site: ${activeOrg.displayLabel}. Click to switch organisation (§27).`}
+            aria-expanded={isOrgMenuOpen}
+            aria-haspopup="true"
+            style={{
+              background: 'none',
+              border: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              cursor: 'pointer',
+              color: 'inherit',
+              padding: '4px 6px',
+              borderRadius: '4px',
+            }}
+          >
+            <span className="site-icon" aria-hidden="true">
+              🏥
+            </span>
+            <span className="site-label">{activeOrg.displayLabel}</span>
+            <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>▾</span>
+          </button>
+
+          {isOrgMenuOpen && (
+            <div
+              role="menu"
+              style={{
+                position: 'absolute',
+                top: 'calc(100% + 6px)',
+                right: 0,
+                backgroundColor: 'var(--bg-card)',
+                border: '1px solid var(--border-subtle)',
+                borderRadius: '6px',
+                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
+                zIndex: 1000,
+                minWidth: '260px',
+                overflow: 'hidden',
+              }}
+            >
+              <div
+                style={{
+                  padding: '8px 12px',
+                  borderBottom: '1px solid var(--border-subtle)',
+                  fontSize: '0.75rem',
+                  color: 'var(--text-muted)',
+                  fontWeight: 600,
+                }}
+              >
+                SWITCH CLINICAL SITE (§27)
+              </div>
+              {AVAILABLE_ORGANISATIONS.map(org => (
+                <button
+                  key={org.id}
+                  onClick={() => handleSwitchOrg(org.id)}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    textAlign: 'left',
+                    padding: '8px 12px',
+                    border: 'none',
+                    background: org.id === selectedOrgId ? 'rgba(56, 189, 248, 0.1)' : 'transparent',
+                    color: org.id === selectedOrgId ? 'var(--accent-cyan)' : 'var(--text-main)',
+                    fontSize: '0.8rem',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <div style={{ fontWeight: 600 }}>{org.name}</div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                    {org.siteName}
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
+
+        {/* Actionable Notification Bell (§204–205) */}
+        <NotificationBell />
 
         {/* Authenticated User Menu (§28) */}
         <div className="user-menu-container" ref={userMenuRef}>

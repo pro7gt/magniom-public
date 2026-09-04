@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { TargetSlateViewModel, DecisionReviewViewModel } from '@magniom/presentation';
 import type { CandidateDecisionAction, MagniomInfluence, MniCoordinate } from '@magniom/domain';
+import { createMultiTabSignOffGuard, type MultiTabSignOffEvent } from '../lib/security/sign-off-guard';
 
 interface DecisionWorkspaceProps {
   caseId: string;
@@ -106,6 +107,16 @@ export function DecisionWorkspace({
   );
   const [attestationConfirmed, setAttestationConfirmed] = useState(false);
   const [isSigning, setIsSigning] = useState(false);
+  const [multiTabAlert, setMultiTabAlert] = useState<string | null>(null);
+
+  useEffect(() => {
+    const { cleanup } = createMultiTabSignOffGuard((event: MultiTabSignOffEvent) => {
+      if (event.caseId === caseId) {
+        setMultiTabAlert(`Notice: Sign-off activity detected in another browser tab (${event.type}). State synchronized.`);
+      }
+    });
+    return cleanup;
+  }, [caseId]);
 
   const attestationStatement =
     'I confirm that I have independently reviewed the clinical context, evidence provenance, target reliability, alternatives and limitations. The final target selection represents my clinical decision and not an autonomous Magniom prescription.';
@@ -682,6 +693,71 @@ export function DecisionWorkspace({
               />
             </div>
           </div>
+
+          {/* Multi-Tab Invalidation Alert (§141) */}
+          {multiTabAlert && (
+            <div
+              role="alert"
+              style={{
+                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                border: '1px solid #ef4444',
+                borderRadius: '6px',
+                padding: '10px 14px',
+                fontSize: '0.8rem',
+                color: '#fca5a5',
+              }}
+            >
+              ⚠ {multiTabAlert}
+            </div>
+          )}
+
+          {/* Sign-Off Context Restatement Panel (§138) */}
+          {!isImmutable && (
+            <div
+              className="card"
+              style={{
+                background: 'rgba(15, 23, 42, 0.8)',
+                border: '1px solid rgba(56, 189, 248, 0.3)',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                <span className="badge badge-neutral" style={{ fontSize: '0.65rem' }}>§138 CONTEXT RESTATEMENT</span>
+                <span style={{ fontSize: '0.825rem', fontWeight: 600, color: 'var(--text-main)' }}>
+                  Pre-Attestation Dimensions
+                </span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.8rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--text-muted)' }}>Case Identifier:</span>
+                  <strong style={{ fontFamily: 'var(--font-mono)', color: 'var(--accent-cyan)' }}>{caseId}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--text-muted)' }}>Deployment Mode:</span>
+                  <span className={`badge ${mode === 'CLINICAL' ? 'badge-clinical' : mode === 'RESEARCH' ? 'badge-research' : 'badge-validation'}`} style={{ fontSize: '0.7rem' }}>
+                    {mode || 'CLINICAL'}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--text-muted)' }}>Target Slate ID:</span>
+                  <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>{slateVM.id}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--text-muted)' }}>Candidates Evaluated:</span>
+                  <span style={{ color: 'var(--text-secondary)' }}>
+                    {slateVM.primaryCandidates.length + slateVM.additionalCandidates.length} candidate(s)
+                  </span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--text-muted)' }}>Treating Clinician (§28):</span>
+                  <strong style={{ color: 'var(--text-main)' }}>{clinicianName}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--text-muted)' }}>Statutory License:</span>
+                  <span style={{ color: 'var(--text-secondary)' }}>{licenseNumber}</span>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Attestation & Sign Button */}
           {!isImmutable && (

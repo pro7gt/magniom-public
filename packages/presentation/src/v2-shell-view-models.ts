@@ -421,3 +421,100 @@ export interface IndicationModuleUiDescriptor {
   readonly help_topic_ids: readonly string[];
   readonly target_geometry_renderers: readonly TargetGeometryType[];
 }
+
+// ==========================================
+// 11. Canonical Top-Level Authority Context Interfaces (§12–15)
+// ==========================================
+
+/**
+ * §14 — UserAuthorityContext
+ * Server-resolved user identity, role, and clinical capabilities.
+ */
+export interface UserAuthorityContext {
+  readonly userId: string;
+  readonly displayName: string;
+  readonly roleCode: string;
+  readonly roleTitle: string;
+  readonly hasSigningAuthority: boolean;
+  readonly signingAuthorityLevel?: string | undefined;
+  readonly organizationId: string;
+  readonly organizationName: string;
+  readonly siteId: string;
+  readonly siteName: string;
+  readonly capabilities: ClinicalActionCapabilities;
+}
+
+/**
+ * §15 — EnvironmentContext
+ * Server-resolved deployment environment state.
+ */
+export interface EnvironmentContext {
+  readonly mode: EnvironmentMode;
+  readonly safetyState: ShellSafetyState;
+  readonly failClosedReason?: string | undefined;
+  readonly deploymentId: string;
+  readonly buildId: string;
+  readonly maturityStage: string;
+  readonly freezeTimestamp?: string | undefined;
+  readonly gitCommitSha?: string | undefined;
+  readonly isProductionRelease: boolean;
+}
+
+/**
+ * §13 — ApplicationContext
+ * Top-level application state resolved on server.
+ */
+export interface ApplicationContext {
+  readonly user: UserAuthorityContext;
+  readonly environment: EnvironmentContext;
+  readonly activeOrganisationId: string;
+  readonly activeSiteId: string;
+  readonly releaseDigestShort: string;
+}
+
+/**
+ * §12 — ApplicationShellContextV2
+ * Root context object combining application-level and optional case-level resolved state.
+ * Shell components consume this as the single source of truth.
+ */
+export interface ApplicationShellContextV2 {
+  readonly application: ApplicationContext;
+  readonly caseShell?: CaseShellViewModel | undefined;
+  readonly isContradictory: boolean;
+  readonly contradictionDiagnostics?: readonly string[] | undefined;
+}
+
+// ==========================================
+// 12. Module Status View Model (§202)
+// ==========================================
+
+/**
+ * §202 — ModuleStatusViewModel
+ * Lifecycle and governance status of an indication module release.
+ */
+export type ModuleLifecycleState =
+  | 'active'
+  | 'suspended'
+  | 'withdrawn'
+  | 'superseded'
+  | 'pending_review';
+
+export interface ModuleStatusViewModel {
+  readonly moduleReleaseId: string;
+  readonly moduleCode: string;
+  readonly moduleVersion: string;
+  readonly humanReadableName: string;
+  readonly qualificationLevel: ModuleQualificationLevel;
+  readonly lifecycleState: ModuleLifecycleState;
+  readonly isClinicalAuthorised: boolean;
+  readonly isValidationOnly: boolean;
+  readonly isResearchOnly: boolean;
+  readonly isSuspended: boolean;
+  readonly suspensionReason?: string | undefined;
+  readonly isWithdrawn: boolean;
+  readonly withdrawalReason?: string | undefined;
+  readonly supersededByReleaseId?: string | undefined;
+  readonly activeCaseCount: number;
+  readonly permittedModes: readonly EnvironmentMode[];
+  readonly lastUpdatedFormatted: string;
+}

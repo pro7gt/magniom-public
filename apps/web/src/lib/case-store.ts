@@ -281,6 +281,85 @@ class CaseStore {
   }
 
   /**
+   * Creates a new clinical case (§152–158)
+   */
+  public createCase(params: {
+    patientId: string;
+    indicationCode: string;
+    mode?: 'CLINICAL' | 'RESEARCH' | 'VALIDATION';
+  }): string {
+    const newCaseId = `case-${Date.now()}`;
+    const caseCode = `MC-${Math.floor(1000 + Math.random() * 9000)}`;
+    const now = new Date().toISOString();
+
+    const clinicalCase: ClinicalCase = {
+      id: newCaseId,
+      organisationId: 'org-synth-001',
+      patientId: params.patientId,
+      caseCode,
+      state: 'draft',
+      indicationCode: params.indicationCode,
+      mode: params.mode || 'CLINICAL',
+      version: 1,
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    const { snapshotHash: _unusedHash, ...basePheno } = G01_PHENOTYPE;
+    const phenotype: PhenotypeSnapshot = {
+      ...basePheno,
+      id: `pheno-${newCaseId}`,
+      patientId: params.patientId,
+      primaryDiagnosis: params.indicationCode,
+      confirmedAt: now,
+    };
+
+    const slate: TargetSlate = {
+      ...GOLDEN_CASE_01_SLATE,
+      id: `slate-${newCaseId}`,
+      caseId: newCaseId,
+      phenotypeSnapshotId: phenotype.id,
+      deterministicManifestHash: deterministicHexHash(newCaseId),
+      primaryCandidates: [],
+      additionalCandidates: [],
+      suppressedCandidates: [],
+    };
+
+    const activeCiId = `ci-${newCaseId}-pri`;
+
+    this.cases.set(newCaseId, {
+      clinicalCase,
+      phenotype,
+      slate,
+      isStale: false,
+      activeCaseIndicationId: activeCiId,
+      availableIndications: [
+        {
+          caseIndicationId: activeCiId,
+          indicationCode: params.indicationCode,
+          label: params.indicationCode,
+          isPrimary: true,
+          status: 'confirmed',
+        },
+      ],
+      auditEvents: [
+        {
+          id: `evt-${newCaseId}-created`,
+          eventType: 'CASE_CREATED',
+          occurredAt: now,
+          details: {
+            caseId: newCaseId,
+            patientId: params.patientId,
+            indication: params.indicationCode,
+          },
+        },
+      ],
+    });
+
+    return newCaseId;
+  }
+
+  /**
    * Switches the active CaseIndication for a multi-indication patient case (§64–67).
    * Strictly enforces slate isolation: never reuses previous Target Slate under the new indication!
    */

@@ -22,7 +22,8 @@
     "@magniom/domain": "*",
     "@magniom/evidence": "*",
     "@magniom/schemas": "*",
-    "@magniom/scientific-policy": "*"
+    "@magniom/scientific-policy": "*",
+    "@magniom/target-engine": "*"
   },
   "devDependencies": {
     "typescript": "^5.8.2",

@@ -26,6 +26,7 @@ import type {
   EvidenceTier,
   PersonalisationQualification,
   TargetReliabilityProfile,
+  TargetGeometryType,
 } from '@magniom/domain';
 
 // ==========================================
@@ -274,6 +275,7 @@ export interface CandidateCardViewModel {
   readonly whyThisMayBeWrong: readonly string[];
   readonly hasConflicts: boolean;
   readonly isResearchOnly: boolean;
+  readonly geometryType?: TargetGeometryType | string | undefined;
 }
 
 export function toCandidateCardViewModel(
@@ -368,6 +370,7 @@ export function toCandidateCardViewModel(
     whyThisMayBeWrong: whyWrongPoints,
     hasConflicts: (candidate.contraindicationsOrConflicts?.length || 0) > 0,
     isResearchOnly: candidate.evidenceTier === 'T_EXP',
+    geometryType: 'point',
   };
 }
 

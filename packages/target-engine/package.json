@@ -27,8 +27,6 @@
     "@magniom/scientific-policy": "*"
   },
   "devDependencies": {
-    "@magniom/test-fixtures": "*",
-    "@magniom/measurement-testkit": "*",
     "typescript": "^5.8.2",
     "vitest": "^3.0.7"
   }

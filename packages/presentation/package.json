@@ -19,7 +19,8 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@magniom/domain": "*"
+    "@magniom/domain": "*",
+    "@magniom/evidence": "*"
   },
   "devDependencies": {
     "@magniom/test-fixtures": "*",

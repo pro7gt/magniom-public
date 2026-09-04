@@ -24,10 +24,10 @@
     "@magniom/phenotype": "*",
     "@magniom/schemas": "*",
     "@magniom/scientific-policy": "*",
-    "@magniom/target-engine": "*"
+    "@magniom/target-engine": "*",
+    "@magniom/test-fixtures": "*"
   },
   "devDependencies": {
-    "@magniom/test-fixtures": "*",
     "typescript": "^5.8.2",
     "vitest": "^3.0.7"
   }

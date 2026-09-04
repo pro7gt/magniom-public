@@ -4,6 +4,7 @@ import { MagniomTopBar } from '../components/shell/magniom-top-bar';
 import { EnvironmentSafetyStrip } from '../components/shell/environment-safety-strip';
 import { GlobalSidebar } from '../components/shell/global-sidebar';
 import { VersionManifestDisclosure } from '../components/shell/version-manifest-disclosure';
+import { NotificationProvider } from '../components/notification-system';
 
 export const metadata: Metadata = {
   title: 'Magniom — Clinician Decision Support Workspace',
@@ -23,25 +24,27 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
-        {/* Layer 1: Top Bar (§7–22) */}
-        <MagniomTopBar currentMode="CLINICAL" />
+        <NotificationProvider>
+          {/* Layer 1: Top Bar (§7–22) */}
+          <MagniomTopBar currentMode="CLINICAL" />
 
-        {/* Layer 2: Safety / CDS Environment Strip (§13, §123) */}
-        <EnvironmentSafetyStrip mode="CLINICAL" />
+          {/* Layer 2: Safety / CDS Environment Strip (§13, §123) */}
+          <EnvironmentSafetyStrip mode="CLINICAL" />
 
-        {/* 4-Layer Shell Body: Sidebar + Main Workspace Canvas */}
-        <div className="shell-workspace-container">
-          {/* Layer 3: Global / Case Sidebar (§23–39, §51–53) */}
-          <GlobalSidebar />
+          {/* 4-Layer Shell Body: Sidebar + Main Workspace Canvas */}
+          <div className="shell-workspace-container">
+            {/* Layer 3: Global / Case Sidebar (§23–39, §51–53) */}
+            <GlobalSidebar />
 
-          {/* Layer 4: Main Canvas (§57, §58) */}
-          <main role="main" className="shell-main-canvas" id="main-content">
-            {children}
-          </main>
-        </div>
+            {/* Layer 4: Main Canvas (§57, §58) */}
+            <main role="main" className="shell-main-canvas" id="main-content">
+              {children}
+            </main>
+          </div>
 
-        {/* Provenance Footer (§78, §124, §153) */}
-        <VersionManifestDisclosure />
+          {/* Provenance Footer (§78, §124, §153) */}
+          <VersionManifestDisclosure />
+        </NotificationProvider>
       </body>
     </html>
   );

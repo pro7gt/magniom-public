@@ -111,6 +111,21 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
               </Link>
             </li>
 
+            {/* 1b. Clinical Context (§93) */}
+            <li role="none">
+              <Link
+                href={`/cases/${activeCaseId}/context`}
+                className={`sidebar-nav-item ${pathname.includes('/context') ? 'active' : ''}`}
+                role="menuitem"
+                title="Clinical Context Formulation"
+              >
+                <span className="nav-icon" aria-hidden="true">
+                  🧬
+                </span>
+                {!isCollapsed && <span className="nav-label">Context</span>}
+              </Link>
+            </li>
+
             {/* 2. Assessment */}
             <li role="none">
               <Link
@@ -153,7 +168,22 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
               );
             })}
 
-            {/* 4. Module Measurement Sections (Zero False Requirements (§87)) */}
+            {/* 4. Module Measurements Overview (§96–100) */}
+            <li role="none">
+              <Link
+                href={`/cases/${activeCaseId}/measurements`}
+                className={`sidebar-nav-item ${pathname.includes('/measurements') ? 'active' : ''}`}
+                role="menuitem"
+                title="Measurement Summary & Modality Qualifications"
+              >
+                <span className="nav-icon" aria-hidden="true">
+                  📊
+                </span>
+                {!isCollapsed && <span className="nav-label">Measurements</span>}
+              </Link>
+            </li>
+
+            {/* 4b. Module Specific Modality Sub-Sections */}
             {descriptor.measurement_sections.map(ms => {
               const href = `/cases/${activeCaseId}/${ms.pathSuffix}`;
               const isActive = pathname.includes(ms.pathSuffix);
@@ -429,6 +459,34 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                     🧪
                   </span>
                   {!isCollapsed && <span className="nav-label">Validation Suite</span>}
+                </Link>
+              </li>
+
+              <li role="none">
+                <Link
+                  href="/internal/verification"
+                  className={`sidebar-nav-item ${pathname.includes('/internal/verification') ? 'active' : ''}`}
+                  role="menuitem"
+                  title="Formal Shell Verification & Q-Level Matrix (§45–46)"
+                >
+                  <span className="nav-icon" aria-hidden="true">
+                    🔬
+                  </span>
+                  {!isCollapsed && <span className="nav-label">Verification</span>}
+                </Link>
+              </li>
+
+              <li role="none">
+                <Link
+                  href="/admin"
+                  className={`sidebar-nav-item ${pathname === '/admin' ? 'active' : ''}`}
+                  role="menuitem"
+                  title="System Administration & Policies (§44)"
+                >
+                  <span className="nav-icon" aria-hidden="true">
+                    ⚙️
+                  </span>
+                  {!isCollapsed && <span className="nav-label">Admin</span>}
                 </Link>
               </li>
 
