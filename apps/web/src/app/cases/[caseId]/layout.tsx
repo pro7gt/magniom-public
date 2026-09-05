@@ -2,7 +2,7 @@
 
 import React, { use, useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { caseStore } from '../../../lib/case-store';
+import { caseStore, onMultiTabInvalidation } from '../../../lib/case-store';
 import { resolveCaseShellContext } from '../../../lib/shell-authority';
 import { CaseHeader } from '../../../components/case-header';
 import { WorkflowRail, WorkflowStage } from '../../../components/workflow-rail';
@@ -23,6 +23,20 @@ export default function CaseLayout({
 
   useEffect(() => {
     setRecord(caseStore.getCaseRecord(caseId));
+    const unsubStore = caseStore.subscribe(updatedCaseId => {
+      if (updatedCaseId === caseId) {
+        setRecord(caseStore.getCaseRecord(caseId));
+      }
+    });
+    const unsubTab = onMultiTabInvalidation(event => {
+      if (event.caseId === caseId) {
+        setRecord(caseStore.getCaseRecord(caseId));
+      }
+    });
+    return () => {
+      unsubStore();
+      unsubTab();
+    };
   }, [caseId, pathname]);
 
   if (!record) {
@@ -44,23 +58,45 @@ export default function CaseLayout({
 
   // Determine current active workflow stage from path
   let activeStage: WorkflowStage = 'overview';
-  if (pathname.includes('/assessment')) activeStage = 'assessment';
-  else if (pathname.includes('/phenotype') || pathname.includes('/context'))
-    activeStage = 'phenotype';
-  else if (pathname.includes('/imaging') || pathname.includes('/measurements'))
-    activeStage = 'imaging';
-  else if (pathname.includes('/connectome')) activeStage = 'connectome';
-  else if (pathname.includes('/targets')) activeStage = 'targets';
+  if (pathname.includes('/targets')) activeStage = 'targets';
   else if (pathname.includes('/compare')) activeStage = 'compare';
   else if (pathname.includes('/decision')) activeStage = 'decision';
   else if (pathname.includes('/audit')) activeStage = 'audit';
+  else if (
+    pathname.includes('/imaging') ||
+    pathname.includes('/measurements') ||
+    pathname.includes('/connectome')
+  )
+    activeStage = 'imaging';
+  else if (
+    pathname.includes('/phenotype') ||
+    pathname.includes('/context') ||
+    pathname.includes('/assessment') ||
+    pathname.includes('/objective') ||
+    pathname.includes('/body-region') ||
+    pathname.includes('/impairment') ||
+    pathname.includes('/stage') ||
+    pathname.includes('/lesion') ||
+    pathname.includes('/slt-context') ||
+    pathname.includes('/provocation-context') ||
+    pathname.includes('/cue-context') ||
+    pathname.includes('/trauma-context') ||
+    pathname.includes('/treatment')
+  )
+    activeStage = 'phenotype';
+  else if (pathname.includes('/evidence') && !pathname.includes('/indications'))
+    activeStage = 'overview'; // Evidence doesn't have its own workflow step; highlight overview
 
   const isPhenotypeApproved = Boolean(
-    record.phenotype.confirmedByClinicianId && record.phenotype.snapshotHash,
+    record.phenotype.state === 'approved' ||
+    (record.phenotype.confirmedByClinicianId && record.phenotype.snapshotHash),
   );
   const isDecisionSigned = Boolean(record.decision?.isImmutable);
   const isConnectomeQualified = record.slate?.personalisationQualification === 'qualified';
-  const isSlateReady = Boolean(record.slate?.primaryCandidates?.length && !record.isStale);
+  const isSlateReady = Boolean(
+    (record.slate?.primaryCandidates && record.slate.primaryCandidates.length > 0) ||
+    record.clinicalCase?.currentTargetSlateId,
+  );
 
   const mode: EnvironmentMode =
     record.clinicalCase.mode === 'RESEARCH'
@@ -86,6 +122,7 @@ export default function CaseLayout({
         }}
         isPhenotypeApproved={isPhenotypeApproved}
         isConnectomeQualified={isConnectomeQualified}
+        connectomeQualification={record.slate?.personalisationQualification}
         isSlateReady={isSlateReady}
         isDecisionSigned={isDecisionSigned}
         isStale={record.isStale}

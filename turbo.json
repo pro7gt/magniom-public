@@ -17,11 +17,7 @@
       "outputs": ["coverage/**"]
     },
     "@magniom/target-engine#test": {
-      "dependsOn": [
-        "@magniom/test-fixtures#build",
-        "@magniom/measurement-testkit#build",
-        "^build"
-      ],
+      "dependsOn": ["@magniom/test-fixtures#build", "@magniom/measurement-testkit#build", "^build"],
       "outputs": ["coverage/**"]
     },
     "dev": {

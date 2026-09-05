@@ -1,6 +1,6 @@
 'use client';
 
-import React, { use, useState } from 'react';
+import React, { use, useState, useEffect } from 'react';
 import { caseStore } from '../../../../lib/case-store';
 import { toTargetSlateViewModel, toDecisionReviewViewModel } from '@magniom/presentation';
 import { DecisionWorkspace } from '../../../../components/decision-workspace';
@@ -10,6 +10,15 @@ export default function DecisionPage({ params }: { params: Promise<{ caseId: str
   const resolvedParams = use(params);
   const caseId = resolvedParams.caseId;
   const [record, setRecord] = useState(() => caseStore.getCaseRecord(caseId));
+
+  useEffect(() => {
+    setRecord(caseStore.getCaseRecord(caseId));
+    return caseStore.subscribe(updatedCaseId => {
+      if (updatedCaseId === caseId) {
+        setRecord(caseStore.getCaseRecord(caseId));
+      }
+    });
+  }, [caseId]);
 
   if (!record) {
     return <div className="container">Case not found.</div>;

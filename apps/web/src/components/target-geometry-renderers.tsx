@@ -26,7 +26,10 @@ function GeometryCard({ label, description, children }: BaseGeometryRendererProp
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-        <span className="badge badge-neutral" style={{ fontSize: '0.75rem', textTransform: 'uppercase' }}>
+        <span
+          className="badge badge-neutral"
+          style={{ fontSize: '0.75rem', textTransform: 'uppercase' }}
+        >
           {label}
         </span>
       </div>
@@ -94,7 +97,10 @@ export function PointTargetRenderer({
         {accessibilityRating && (
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span style={{ color: 'var(--text-muted)' }}>Accessibility</span>
-            <span className={`badge ${accessibilityRating === 'Optimal' ? 'badge-tier1' : accessibilityRating === 'Acceptable' ? 'badge-tier2' : 'badge-tier3'}`} style={{ fontSize: '0.75rem' }}>
+            <span
+              className={`badge ${accessibilityRating === 'Optimal' ? 'badge-tier1' : accessibilityRating === 'Acceptable' ? 'badge-tier2' : 'badge-tier3'}`}
+              style={{ fontSize: '0.75rem' }}
+            >
               {accessibilityRating}
             </span>
           </div>
@@ -145,10 +151,14 @@ export function RoiTargetRenderer({
         )}
         {parcels && parcels.length > 0 && (
           <div style={{ marginTop: '4px' }}>
-            <span style={{ color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Parcels</span>
+            <span style={{ color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>
+              Parcels
+            </span>
             <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
               {parcels.map(p => (
-                <span key={p} className="badge badge-neutral" style={{ fontSize: '0.75rem' }}>{p}</span>
+                <span key={p} className="badge badge-neutral" style={{ fontSize: '0.75rem' }}>
+                  {p}
+                </span>
               ))}
             </div>
           </div>
@@ -308,8 +318,17 @@ export function NetworkTargetRenderer({
           </div>
         )}
         <div style={{ marginTop: '4px' }}>
-          <span style={{ color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>Circuit Description</span>
-          <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.4 }}>
+          <span style={{ color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>
+            Circuit Description
+          </span>
+          <p
+            style={{
+              margin: 0,
+              color: 'var(--text-secondary)',
+              fontSize: '0.85rem',
+              lineHeight: 1.4,
+            }}
+          >
             {circuitDescription}
           </p>
         </div>

@@ -4,7 +4,10 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { TargetSlateViewModel, DecisionReviewViewModel } from '@magniom/presentation';
 import type { CandidateDecisionAction, MagniomInfluence, MniCoordinate } from '@magniom/domain';
-import { createMultiTabSignOffGuard, type MultiTabSignOffEvent } from '../lib/security/sign-off-guard';
+import {
+  createMultiTabSignOffGuard,
+  type MultiTabSignOffEvent,
+} from '../lib/security/sign-off-guard';
 
 interface DecisionWorkspaceProps {
   caseId: string;
@@ -108,11 +111,23 @@ export function DecisionWorkspace({
   const [attestationConfirmed, setAttestationConfirmed] = useState(false);
   const [isSigning, setIsSigning] = useState(false);
   const [multiTabAlert, setMultiTabAlert] = useState<string | null>(null);
+  const [isMobileViewport, setIsMobileViewport] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobileViewport(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     const { cleanup } = createMultiTabSignOffGuard((event: MultiTabSignOffEvent) => {
       if (event.caseId === caseId) {
-        setMultiTabAlert(`Notice: Sign-off activity detected in another browser tab (${event.type}). State synchronized.`);
+        setMultiTabAlert(
+          `Notice: Sign-off activity detected in another browser tab (${event.type}). State synchronized.`,
+        );
       }
     });
     return cleanup;
@@ -720,31 +735,45 @@ export function DecisionWorkspace({
                 border: '1px solid rgba(56, 189, 248, 0.3)',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                <span className="badge badge-neutral" style={{ fontSize: '0.65rem' }}>§138 CONTEXT RESTATEMENT</span>
+              <div
+                style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}
+              >
+                <span className="badge badge-neutral" style={{ fontSize: '0.65rem' }}>
+                  §138 CONTEXT RESTATEMENT
+                </span>
                 <span style={{ fontSize: '0.825rem', fontWeight: 600, color: 'var(--text-main)' }}>
                   Pre-Attestation Dimensions
                 </span>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.8rem' }}>
+              <div
+                style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.8rem' }}
+              >
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: 'var(--text-muted)' }}>Case Identifier:</span>
-                  <strong style={{ fontFamily: 'var(--font-mono)', color: 'var(--accent-cyan)' }}>{caseId}</strong>
+                  <strong style={{ fontFamily: 'var(--font-mono)', color: 'var(--accent-cyan)' }}>
+                    {caseId}
+                  </strong>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: 'var(--text-muted)' }}>Deployment Mode:</span>
-                  <span className={`badge ${mode === 'CLINICAL' ? 'badge-clinical' : mode === 'RESEARCH' ? 'badge-research' : 'badge-validation'}`} style={{ fontSize: '0.7rem' }}>
+                  <span
+                    className={`badge ${mode === 'CLINICAL' ? 'badge-clinical' : mode === 'RESEARCH' ? 'badge-research' : 'badge-validation'}`}
+                    style={{ fontSize: '0.7rem' }}
+                  >
                     {mode || 'CLINICAL'}
                   </span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: 'var(--text-muted)' }}>Target Slate ID:</span>
-                  <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>{slateVM.id}</span>
+                  <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>
+                    {slateVM.id}
+                  </span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: 'var(--text-muted)' }}>Candidates Evaluated:</span>
                   <span style={{ color: 'var(--text-secondary)' }}>
-                    {slateVM.primaryCandidates.length + slateVM.additionalCandidates.length} candidate(s)
+                    {slateVM.primaryCandidates.length + slateVM.additionalCandidates.length}{' '}
+                    candidate(s)
                   </span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -804,10 +833,31 @@ export function DecisionWorkspace({
                 </strong>
               </label>
 
+              {isMobileViewport && (
+                <div
+                  className="badge badge-tierexp"
+                  style={{
+                    display: 'block',
+                    padding: '0.75rem',
+                    marginBottom: '0.75rem',
+                    textAlign: 'center',
+                    lineHeight: 1.4,
+                    fontSize: '0.8125rem',
+                  }}
+                  role="alert"
+                >
+                  📱 <strong>Mobile Signing Disabled (§183):</strong> Clinical decision signing on
+                  small screens (&lt;768px) is disabled until full evidence &amp; spatial geometry
+                  review is formally validated for mobile devices. Please review and sign on a
+                  clinical desktop display.
+                </div>
+              )}
+
               <button
                 onClick={handleExecuteSign}
                 disabled={
                   isResearchMode ||
+                  isMobileViewport ||
                   !attestationConfirmed ||
                   !overallReasoning.trim() ||
                   isSigning ||
@@ -819,18 +869,20 @@ export function DecisionWorkspace({
                   padding: '0.75rem',
                   fontSize: '0.9375rem',
                   fontWeight: 700,
-                  opacity: isResearchMode ? 0.5 : 1,
-                  cursor: isResearchMode ? 'not-allowed' : 'pointer',
+                  opacity: isResearchMode || isMobileViewport ? 0.5 : 1,
+                  cursor: isResearchMode || isMobileViewport ? 'not-allowed' : 'pointer',
                 }}
                 id="sign-target-decision-btn"
               >
                 {isResearchMode
                   ? 'Clinical Signing Prohibited (Research Slate)'
-                  : isSigning
-                    ? 'Cryptographically Signing...'
-                    : withholdStimulation
-                      ? 'Sign Decision: Withhold Stimulation →'
-                      : 'Sign Target Decision →'}
+                  : isMobileViewport
+                    ? 'Signing Disabled on Mobile Viewport (§183)'
+                    : isSigning
+                      ? 'Cryptographically Signing...'
+                      : withholdStimulation
+                        ? 'Sign Decision: Withhold Stimulation →'
+                        : 'Sign Target Decision →'}
               </button>
             </div>
           )}

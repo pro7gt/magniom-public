@@ -1,17 +1,29 @@
 'use client';
 
-import React, { use } from 'react';
+import React, { use, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { caseStore } from '../../../../lib/case-store';
 
 export default function CaseImagingPage({ params }: { params: Promise<{ caseId: string }> }) {
   const resolvedParams = use(params);
   const caseId = resolvedParams.caseId;
-  const record = caseStore.getCaseRecord(caseId);
+  const [record, setRecord] = useState(() => caseStore.getCaseRecord(caseId));
+
+  useEffect(() => {
+    setRecord(caseStore.getCaseRecord(caseId));
+    const unsubscribe = caseStore.subscribe(updatedCaseId => {
+      if (updatedCaseId === caseId) {
+        setRecord(caseStore.getCaseRecord(caseId));
+      }
+    });
+    return () => unsubscribe();
+  }, [caseId]);
 
   if (!record) return <div className="container">Case not found.</div>;
 
-  const isLowReliability = record.slate.personalisationQualification !== 'qualified';
+  const connectomeQual = record.slate?.personalisationQualification;
+  const isLowReliability = connectomeQual === 'limited';
+  const isNotAcquired = !connectomeQual || connectomeQual === 'not_available';
 
   return (
     <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -101,8 +113,14 @@ export default function CaseImagingPage({ params }: { params: Promise<{ caseId: 
             <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--accent-cyan)' }}>
               Resting-State BOLD Series
             </h3>
-            <span className={`badge ${isLowReliability ? 'badge-tier3' : 'badge-tier1'}`}>
-              {isLowReliability ? 'ELEVATED MOTION' : 'QC QUALIFIED'}
+            <span
+              className={`badge ${isLowReliability ? 'badge-tier3' : isNotAcquired ? 'badge-neutral' : 'badge-tier1'}`}
+            >
+              {isLowReliability
+                ? 'ELEVATED MOTION'
+                : isNotAcquired
+                  ? 'NOT ACQUIRED'
+                  : 'QC QUALIFIED'}
             </span>
           </div>
           <div
@@ -115,16 +133,28 @@ export default function CaseImagingPage({ params }: { params: Promise<{ caseId: 
           >
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: 'var(--text-secondary)' }}>Acquired Runs:</span>
-              <strong>3 Runs (30 mins total)</strong>
+              <strong>
+                {isNotAcquired ? '0 Runs (Evidence Baseline Protocol)' : '3 Runs (30 mins total)'}
+              </strong>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: 'var(--text-secondary)' }}>Retained BOLD Time:</span>
-              <strong>{isLowReliability ? '7.2 usable mins' : '27.4 usable mins'}</strong>
+              <strong>
+                {isLowReliability ? '7.2 usable mins' : isNotAcquired ? 'N/A' : '27.4 usable mins'}
+              </strong>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: 'var(--text-secondary)' }}>Mean Framewise Displacement:</span>
-              <strong style={{ color: isLowReliability ? '#fbbf24' : '#34d399' }}>
-                {isLowReliability ? '0.38 mm (High)' : '0.12 mm (Nominal)'}
+              <strong
+                style={{
+                  color: isLowReliability ? '#fbbf24' : isNotAcquired ? '#94a3b8' : '#34d399',
+                }}
+              >
+                {isLowReliability
+                  ? '0.38 mm (High)'
+                  : isNotAcquired
+                    ? 'N/A — Not Ordered in Protocol'
+                    : '0.12 mm (Nominal)'}
               </strong>
             </div>
           </div>

@@ -11,6 +11,7 @@
     "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "start": "next start",
     "lint": "echo '@magniom/web: lint passed'",
+    "test": "vitest run tests",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

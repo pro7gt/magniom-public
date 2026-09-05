@@ -1,6 +1,6 @@
 'use client';
 
-import React, { use, useEffect } from 'react';
+import React, { use, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { caseStore } from '../../../../../lib/case-store';
 import { getModuleUiDescriptor } from '@magniom/presentation';
@@ -13,19 +13,35 @@ export default function CaseIndicationOverviewPage({
   const resolvedParams = use(params);
   const { caseId, caseIndicationId } = resolvedParams;
 
-  const record = caseStore.getCaseRecord(caseId);
+  const [record, setRecord] = useState(() => caseStore.getCaseRecord(caseId));
 
   useEffect(() => {
-    if (record && record.activeCaseIndicationId !== caseIndicationId) {
+    setRecord(caseStore.getCaseRecord(caseId));
+    const unsubscribe = caseStore.subscribe(updatedCaseId => {
+      if (updatedCaseId === caseId) {
+        setRecord(caseStore.getCaseRecord(caseId));
+      }
+    });
+    return () => unsubscribe();
+  }, [caseId]);
+
+  useEffect(() => {
+    const current = caseStore.getCaseRecord(caseId);
+    if (current && current.activeCaseIndicationId !== caseIndicationId) {
       caseStore.switchCaseIndication(caseId, caseIndicationId);
+      setRecord(caseStore.getCaseRecord(caseId));
     }
-  }, [caseId, caseIndicationId, record]);
+  }, [caseId, caseIndicationId]);
 
   if (!record) {
     return <div className="container">Case not found.</div>;
   }
 
-  const descriptor = getModuleUiDescriptor(record.clinicalCase.indicationCode);
+  const matchingInd = record.availableIndications?.find(
+    i => i.caseIndicationId === caseIndicationId,
+  );
+  const activeIndCode = matchingInd?.indicationCode || record.clinicalCase.indicationCode;
+  const descriptor = getModuleUiDescriptor(activeIndCode);
 
   return (
     <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>

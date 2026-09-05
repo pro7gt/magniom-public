@@ -1981,3 +1981,119 @@ a:hover {
 .text-amber {
   color: #fbbf24;
 }
+
+/* ==========================================
+ * Accessibility — §176–181
+ * ========================================== */
+
+/* §178: Focus-visible outlines for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid var(--accent-cyan);
+  outline-offset: 2px;
+}
+
+.drawer-panel:focus-visible,
+.candidate-card:focus-visible,
+.decision-action-button:focus-visible,
+.workflow-step:focus-visible {
+  outline: 2px solid var(--accent-cyan);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15);
+}
+
+/* §179: Skip link for keyboard users */
+.skip-to-content {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 9999;
+  padding: 0.5rem 1rem;
+  background: var(--accent-cyan);
+  color: var(--text-inverse);
+  font-weight: 600;
+}
+
+.skip-to-content:focus {
+  left: 0;
+}
+
+/* §181: Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .target-marker-node:hover {
+    transform: none;
+  }
+
+  .drawer-backdrop {
+    backdrop-filter: none;
+  }
+}
+
+/* ==========================================
+ * Responsive — §182–183
+ * ========================================== */
+
+/* §182: Tablet — sidebar collapsible, case header persistent */
+@media (max-width: 1024px) {
+  .global-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 45;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+  }
+
+  .global-sidebar.expanded {
+    transform: translateX(0);
+  }
+
+  .shell-main-canvas {
+    margin-left: 0;
+  }
+}
+
+/* §183: Mobile — limited review/status; clinical signing DISABLED */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .magniom-top-bar {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .top-bar-center {
+    order: 3;
+    flex-basis: 100%;
+  }
+
+  /* Clinical signing is disabled on mobile until validated (§183) */
+  .decision-sign-off-button,
+  .sign-off-container {
+    display: none !important;
+  }
+
+  /* Add mobile signing notice */
+  .decision-sign-off-button-mobile-notice {
+    display: block;
+    text-align: center;
+    padding: 0.75rem;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 0.5rem;
+    color: #fbbf24;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+}

@@ -36,7 +36,13 @@ export function generateCaseReport(params: {
   clinicianName?: string | undefined;
   clinicianLicense?: string | undefined;
 }): GeneratedCaseReport {
-  const { shellVm, slate, decision, clinicianName = 'Treating Clinician', clinicianLicense = 'MED-UNKNOWN' } = params;
+  const {
+    shellVm,
+    slate,
+    decision,
+    clinicianName = 'Treating Clinician',
+    clinicianLicense = 'MED-UNKNOWN',
+  } = params;
   const isResearch = shellVm.mode.isResearch;
   const reportId = `REP-${shellVm.caseIdentity.caseCode}-${Date.now().toString(36).toUpperCase()}`;
   const now = new Date().toISOString();
@@ -54,19 +60,25 @@ export function generateCaseReport(params: {
   // Header (§149)
   sections.push(`# ${reportTitle}`);
   sections.push(`**Report ID:** \`${reportId}\` | **Generated:** ${now}`);
-  sections.push(`**Deployment Mode:** \`${shellVm.mode.mode}\` | **Module Authority:** ${shellVm.moduleAuthority.humanReadableName} (v${shellVm.moduleAuthority.moduleVersion}, ${shellVm.moduleAuthority.qualificationLevel})`);
+  sections.push(
+    `**Deployment Mode:** \`${shellVm.mode.mode}\` | **Module Authority:** ${shellVm.moduleAuthority.humanReadableName} (v${shellVm.moduleAuthority.moduleVersion}, ${shellVm.moduleAuthority.qualificationLevel})`,
+  );
   sections.push('');
 
   // Regulatory / Research Disclaimer (§150–151)
   if (isResearch) {
     sections.push('> [!WARNING]');
     sections.push('> **RESEARCH USE ONLY — NOT FOR CLINICAL DIAGNOSTIC OR TREATMENT PROCEDURE**');
-    sections.push('> This report was generated in Research Mode. Target coordinates represent computational hypotheses for investigational evaluation only.');
+    sections.push(
+      '> This report was generated in Research Mode. Target coordinates represent computational hypotheses for investigational evaluation only.',
+    );
     sections.push('');
   } else {
     sections.push('> [!NOTE]');
     sections.push('> **CLINICAL DECISION SUPPORT ATTESTATION**');
-    sections.push('> MAGNIOM nominated candidate targets based on canonical scientific evidence releases and patient-specific measurements. The treating specialist clinician independently evaluated candidates and retains full statutory responsibility for target selection and treatment delivery.');
+    sections.push(
+      '> MAGNIOM nominated candidate targets based on canonical scientific evidence releases and patient-specific measurements. The treating specialist clinician independently evaluated candidates and retains full statutory responsibility for target selection and treatment delivery.',
+    );
     sections.push('');
   }
 
@@ -74,16 +86,26 @@ export function generateCaseReport(params: {
   sections.push('## 1. Case & Clinical Context');
   sections.push(`- **Case Identifier:** \`${shellVm.caseIdentity.caseId}\``);
   sections.push(`- **Case Code:** \`${shellVm.caseIdentity.caseCode}\``);
-  sections.push(`- **Patient Token:** \`${shellVm.caseIdentity.patientDisplayLabel}\` (${shellVm.caseIdentity.subjectDeIdentifiedToken})`);
-  sections.push(`- **Principal Indication:** ${shellVm.indication.indicationFormatted} (\`${shellVm.indication.indicationCode}\`)`);
+  sections.push(
+    `- **Patient Token:** \`${shellVm.caseIdentity.patientDisplayLabel}\` (${shellVm.caseIdentity.subjectDeIdentifiedToken})`,
+  );
+  sections.push(
+    `- **Principal Indication:** ${shellVm.indication.indicationFormatted} (\`${shellVm.indication.indicationCode}\`)`,
+  );
   if (shellVm.indication.clinicalObjective) {
-    sections.push(`- **Clinical Objective:** ${shellVm.indication.clinicalObjective.title} (Priority #${shellVm.indication.clinicalObjective.priorityRank})`);
+    sections.push(
+      `- **Clinical Objective:** ${shellVm.indication.clinicalObjective.title} (Priority #${shellVm.indication.clinicalObjective.priorityRank})`,
+    );
   }
   if (shellVm.indication.diseaseStage) {
-    sections.push(`- **Disease Stage:** ${shellVm.indication.diseaseStage.stageLabel} (${shellVm.indication.diseaseStage.determinationMethod})`);
+    sections.push(
+      `- **Disease Stage:** ${shellVm.indication.diseaseStage.stageLabel} (${shellVm.indication.diseaseStage.determinationMethod})`,
+    );
   }
   if (shellVm.indication.lesionContext) {
-    sections.push(`- **Lesion Context:** ${shellVm.indication.lesionContext.hasLesion ? `${shellVm.indication.lesionContext.lesionType || 'Present'} (${shellVm.indication.lesionContext.laterality || 'Unspecified'})` : 'No cortical lesion identified'}`);
+    sections.push(
+      `- **Lesion Context:** ${shellVm.indication.lesionContext.hasLesion ? `${shellVm.indication.lesionContext.lesionType || 'Present'} (${shellVm.indication.lesionContext.laterality || 'Unspecified'})` : 'No cortical lesion identified'}`,
+    );
   }
   sections.push('');
 
@@ -99,7 +121,9 @@ export function generateCaseReport(params: {
     candidates.forEach(c => {
       const decisionForC = candidateDecisions.find(cd => cd.targetCandidateId === c.id);
       const actionText = decisionForC ? decisionForC.action.toUpperCase() : 'PENDING';
-      sections.push(`| ${c.role} | ${c.familyId} | ${c.method} | ${c.evidenceTier} | ${actionText} |`);
+      sections.push(
+        `| ${c.role} | ${c.familyId} | ${c.method} | ${c.evidenceTier} | ${actionText} |`,
+      );
     });
     sections.push('');
   } else {
@@ -112,11 +136,19 @@ export function generateCaseReport(params: {
   if (decision && decision.isImmutable) {
     sections.push(`- **Decision Type:** \`${decision.decisionType}\``);
     sections.push(`- **Decision Timestamp:** ${decision.decidedAt}`);
-    sections.push(`- **Treating Specialist:** ${decision.attestation?.clinicianName || clinicianName}`);
-    sections.push(`- **Registration / License:** ${decision.attestation?.licenseNumber || clinicianLicense}`);
-    sections.push(`- **Magniom Influence Assessment:** ${decision.magniomInfluence ? decision.magniomInfluence.toUpperCase() : 'NOT RECORDED'}`);
+    sections.push(
+      `- **Treating Specialist:** ${decision.attestation?.clinicianName || clinicianName}`,
+    );
+    sections.push(
+      `- **Registration / License:** ${decision.attestation?.licenseNumber || clinicianLicense}`,
+    );
+    sections.push(
+      `- **Magniom Influence Assessment:** ${decision.magniomInfluence ? decision.magniomInfluence.toUpperCase() : 'NOT RECORDED'}`,
+    );
     if (decision.disagreementWithMagniom) {
-      sections.push(`- **Clinical Disagreement / Deviation Note:** ${decision.disagreementWithMagniom}`);
+      sections.push(
+        `- **Clinical Disagreement / Deviation Note:** ${decision.disagreementWithMagniom}`,
+      );
     }
     sections.push('');
     sections.push('### Independent Clinical Rationale');
@@ -132,7 +164,9 @@ export function generateCaseReport(params: {
     }
 
     sections.push('### Statutory Digital Signature');
-    sections.push(`\`\`\`\nDigital Signature Hash (SHA-256 equivalent):\n${decision.digitalSignatureHash}\n\`\`\``);
+    sections.push(
+      `\`\`\`\nDigital Signature Hash (SHA-256 equivalent):\n${decision.digitalSignatureHash}\n\`\`\``,
+    );
   } else {
     sections.push('*Decision is pending clinician review and attestation.*');
   }
@@ -142,7 +176,9 @@ export function generateCaseReport(params: {
   sections.push('## 4. Software & Scientific Provenance Manifest');
   sections.push(`- **Platform Release:** MAGNIOM Application Shell v2.0`);
   sections.push(`- **Module Release ID:** \`${shellVm.moduleAuthority.moduleReleaseId}\``);
-  sections.push(`- **Specification Alignment:** MAGNIOM-Application Shell, Navigation & Clinical Context Specification v2.0`);
+  sections.push(
+    `- **Specification Alignment:** MAGNIOM-Application Shell, Navigation & Clinical Context Specification v2.0`,
+  );
   sections.push(`- **Regulatory Standard:** IEC 62304 / ISO 14971 Class B Decision Support`);
   sections.push('');
 

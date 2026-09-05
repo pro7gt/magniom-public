@@ -141,7 +141,7 @@
   "sbom_digests": [
     "6061b5e36aab1a6c1822fe077c82498f5fb96dc793fda1bdd41bcffd3a8a46c8"
   ],
-  "test_evidence_digest": "e888fc827e870e8800417f42b00ea101d32e6b0c3ce4bbcbb9c6c4285f78b4ea",
+  "test_evidence_digest": "f66e159a67817e929e2255e7e1a926a1c0f7bea252ba8d93e627f481aa4e5d83",
   "signatures": [
     {
       "signerRole": "ENGINEERING_LEAD",
@@ -149,7 +149,7 @@
       "signerEmail": "engineering-lead@magniom.internal",
       "keyId": "KEY-ENG-RELEASE-2026-ED25519",
       "algorithm": "Ed25519",
-      "signature": "dfc69439f069dda775ec0199558ab16dc9d015964061e129891784f8fd4643a5",
+      "signature": "1b980dad49101e198919d63e17d909b5c2bdc5c09f8f519cb870a9d6a4902896",
       "signedAt": "2026-09-03T22:00:00.000Z",
       "signingComment": "100% test pass across 72 golden cases and 332 SRS requirements."
     },
@@ -159,12 +159,12 @@
       "signerEmail": "safety-officer@magniom.internal",
       "keyId": "KEY-SAFETY-OFFICER-2026-ED25519",
       "algorithm": "Ed25519",
-      "signature": "8b929e965ff84efaa75a54574a021f758707388c9ec085c88d53e53a2559ec82",
+      "signature": "8381a1ca908ef98fabceb9fa7cd8bb0aa5d23964a75715d85b2dbf5a469e98ea",
       "signedAt": "2026-09-03T22:05:00.000Z",
       "signingComment": "All 8 indication modules verified against formal criteria. Q3 Qualified."
     }
   ],
   "generated_at": "2026-09-03T22:10:00.000Z",
   "status": "VERIFICATION_QUALIFIED",
-  "manifest_sha256": "3983ffbe0dd56b0fa23eb36235d05c4d5f796bae1b6cc5d0ce52d5fe5debe7f4"
+  "manifest_sha256": "29cd83bc5c9dd509d644247ac3cc4f3748dc1071de42b6d1d0b7b8fe494021a7"
 }

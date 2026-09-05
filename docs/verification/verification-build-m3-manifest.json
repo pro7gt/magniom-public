@@ -1,13 +1,13 @@
 {
-  "buildId": "MAGNIOM-BUILD-M3-20260902",
+  "buildId": "MAGNIOM-BUILD-M3-20260905",
   "buildName": "Magniom Verification Build M3 (Frozen Baseline)",
   "maturityStage": "M3",
   "engineeringCompletionGatePassed": true,
-  "freezeTimestamp": "2026-09-02T05:56:25.757Z",
+  "freezeTimestamp": "2026-09-05T06:18:45.490Z",
   "gitCommitSha": "9b3f4e8a12c75d6e901f4a3b8c2d1e0f5a7b9c1d",
   "changeControlRequired": true,
   "databaseMigrationRange": {
-    "start": "001_extensions.sql",
+    "start": "001_initial_schema.sql",
     "end": "042_audit_hash_verification.sql"
   },
   "frozenSubsystems": [
@@ -15,10 +15,10 @@
       "subsystem": "TARGET_ENGINE",
       "version": "1.0.0",
       "frozenArtifactPath": "packages/target-engine",
-      "sha256": "c20c207898193b31bbda903025eb46d3de02ab6aa1591efbdf10b2a44f088959",
+      "sha256": "acd89de17585d26f20c4eaf80fe02f4bdd74beae82db68fadf29d81306e81f73",
       "status": "FROZEN",
       "changeControlLocked": true,
-      "freezeTimestamp": "2026-09-02T05:56:25.757Z"
+      "freezeTimestamp": "2026-09-02T00:00:00.000Z"
     },
     {
       "subsystem": "EVIDENCE_LIBRARY",
@@ -27,7 +27,7 @@
       "sha256": "b4af7311c27f608a22a206806bbe49fd8e5d339af315d7859baa1e9488f1a502",
       "status": "FROZEN",
       "changeControlLocked": true,
-      "freezeTimestamp": "2026-09-02T05:56:25.757Z"
+      "freezeTimestamp": "2026-09-02T00:00:00.000Z"
     },
     {
       "subsystem": "PHENOTYPE_ONTOLOGY",
@@ -36,7 +36,7 @@
       "sha256": "840a9145e9887ac35ccffcbd4b3542e120c5519b3927e219b3e207fb13b7f74e",
       "status": "FROZEN",
       "changeControlLocked": true,
-      "freezeTimestamp": "2026-09-02T05:56:25.757Z"
+      "freezeTimestamp": "2026-09-02T00:00:00.000Z"
     },
     {
       "subsystem": "NEURO_PIPELINE",
@@ -45,7 +45,7 @@
       "sha256": "e3ba47a63fbf2f64707204ba17f29181a65d5a5240e79983c92d0704d424e8c6",
       "status": "FROZEN",
       "changeControlLocked": true,
-      "freezeTimestamp": "2026-09-02T05:56:25.757Z"
+      "freezeTimestamp": "2026-09-02T00:00:00.000Z"
     },
     {
       "subsystem": "SCIENTIFIC_POLICY",
@@ -54,16 +54,16 @@
       "sha256": "6a4febb0e7ec108c6f28be81b0ef1ee0242bf7e3ef798dcf5ed888e422fe0882",
       "status": "FROZEN",
       "changeControlLocked": true,
-      "freezeTimestamp": "2026-09-02T05:56:25.757Z"
+      "freezeTimestamp": "2026-09-02T00:00:00.000Z"
     },
     {
       "subsystem": "UX_WORKSPACE",
       "version": "MAGNIOM-UX-1.0.0",
       "frozenArtifactPath": "apps/web",
-      "sha256": "91bd1aefd783769bec9684a48fe1c87233485217ef2a7c273c13730c88b4bf42",
+      "sha256": "e366303ac0ce4a11b3f30e338f53c4e84272c015c0747d0b27d7d7ec435ecaaf",
       "status": "FROZEN",
       "changeControlLocked": true,
-      "freezeTimestamp": "2026-09-02T05:56:25.757Z"
+      "freezeTimestamp": "2026-09-02T00:00:00.000Z"
     }
   ],
   "verificationReports": [

@@ -53,14 +53,18 @@ export default function NewCasePage() {
   };
 
   return (
-    <div className="new-case-wizard" style={{ padding: '24px', maxWidth: '720px', margin: '0 auto' }}>
+    <div
+      className="new-case-wizard"
+      style={{ padding: '24px', maxWidth: '720px', margin: '0 auto' }}
+    >
       {/* Wizard Header (§152) */}
       <header style={{ marginBottom: '32px' }}>
         <h1 style={{ margin: 0, color: 'var(--text-main)', fontSize: '1.5rem', fontWeight: 700 }}>
           Create New Clinical Case
         </h1>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '4px' }}>
-          Each case represents a single patient&apos;s TMS targeting workflow for one or more clinical indications.
+          Each case represents a single patient&apos;s TMS targeting workflow for one or more
+          clinical indications.
         </p>
       </header>
 
@@ -87,11 +91,7 @@ export default function NewCasePage() {
                     : isComplete
                       ? 'rgba(16,185,129,0.1)'
                       : 'rgba(255,255,255,0.04)',
-                  color: isCurrent
-                    ? '#60a5fa'
-                    : isComplete
-                      ? '#10b981'
-                      : 'var(--text-muted)',
+                  color: isCurrent ? '#60a5fa' : isComplete ? '#10b981' : 'var(--text-muted)',
                   border: `1px solid ${isCurrent ? '#3b82f6' : isComplete ? '#10b981' : 'rgba(255,255,255,0.08)'}`,
                 }}
               >
@@ -137,17 +137,29 @@ export default function NewCasePage() {
             Patient Identification
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '16px' }}>
-            Enter the de-identified patient token or clinical study ID. Patient identifiers are never
-            stored alongside neuroimaging or targeting data.
+            Enter the de-identified patient token or clinical study ID. Patient identifiers are
+            never stored alongside neuroimaging or targeting data.
           </p>
-          <label htmlFor="patient-id-input" style={{ display: 'block', marginBottom: '6px', color: 'var(--text-main)', fontWeight: 600, fontSize: '0.9rem' }}>
+          <label
+            htmlFor="patient-id-input"
+            style={{
+              display: 'block',
+              marginBottom: '6px',
+              color: 'var(--text-main)',
+              fontWeight: 600,
+              fontSize: '0.9rem',
+            }}
+          >
             Patient Identifier
           </label>
           <input
             id="patient-id-input"
             type="text"
             value={patientId}
-            onChange={e => { setPatientId(e.target.value); setError(null); }}
+            onChange={e => {
+              setPatientId(e.target.value);
+              setError(null);
+            }}
             placeholder="e.g. PT-2026-0042 or SUBJ-MDD-0012"
             style={{
               width: '100%',
@@ -223,9 +235,10 @@ export default function NewCasePage() {
                   padding: '14px 18px',
                   borderRadius: '6px',
                   border: `1px solid ${selectedIndication === ind.code ? '#3b82f6' : 'rgba(255,255,255,0.08)'}`,
-                  backgroundColor: selectedIndication === ind.code
-                    ? 'rgba(59,130,246,0.15)'
-                    : 'rgba(255,255,255,0.02)',
+                  backgroundColor:
+                    selectedIndication === ind.code
+                      ? 'rgba(59,130,246,0.15)'
+                      : 'rgba(255,255,255,0.02)',
                   color: 'var(--text-main)',
                   cursor: ind.supported ? 'pointer' : 'not-allowed',
                   opacity: ind.supported ? 1 : 0.5,
@@ -236,7 +249,15 @@ export default function NewCasePage() {
               >
                 <div>
                   <strong>{ind.label}</strong>
-                  <span style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginTop: '2px' }}>
+                  <span
+                    style={{
+                      display: 'block',
+                      fontSize: '0.8rem',
+                      color: 'var(--text-muted)',
+                      fontFamily: 'var(--font-mono)',
+                      marginTop: '2px',
+                    }}
+                  >
                     {ind.code}
                   </span>
                 </div>
@@ -309,16 +330,40 @@ export default function NewCasePage() {
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ padding: '12px 16px', backgroundColor: 'rgba(255,255,255,0.03)', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <div
+              style={{
+                padding: '12px 16px',
+                backgroundColor: 'rgba(255,255,255,0.03)',
+                borderRadius: '6px',
+                border: '1px solid rgba(255,255,255,0.06)',
+              }}
+            >
               <strong style={{ color: 'var(--text-main)' }}>{descriptor.indication_name}</strong>
-              <span style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginTop: '4px' }}>
+              <span
+                style={{
+                  display: 'block',
+                  fontSize: '0.8rem',
+                  color: 'var(--text-muted)',
+                  fontFamily: 'var(--font-mono)',
+                  marginTop: '4px',
+                }}
+              >
                 {descriptor.indication_module_release_id}
               </span>
             </div>
 
             <div>
-              <h4 style={{ margin: '0 0 8px', fontSize: '0.9rem', color: 'var(--text-main)' }}>Required Context Sections</h4>
-              <ul style={{ margin: 0, paddingLeft: '20px', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
+              <h4 style={{ margin: '0 0 8px', fontSize: '0.9rem', color: 'var(--text-main)' }}>
+                Required Context Sections
+              </h4>
+              <ul
+                style={{
+                  margin: 0,
+                  paddingLeft: '20px',
+                  color: 'var(--text-secondary)',
+                  fontSize: '0.85rem',
+                }}
+              >
                 {descriptor.context_sections.map(cs => (
                   <li key={cs.id}>
                     {cs.label} {cs.required ? '(Required)' : '(Optional)'}
@@ -328,8 +373,17 @@ export default function NewCasePage() {
             </div>
 
             <div>
-              <h4 style={{ margin: '0 0 8px', fontSize: '0.9rem', color: 'var(--text-main)' }}>Required Measurement Modalities</h4>
-              <ul style={{ margin: 0, paddingLeft: '20px', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
+              <h4 style={{ margin: '0 0 8px', fontSize: '0.9rem', color: 'var(--text-main)' }}>
+                Required Measurement Modalities
+              </h4>
+              <ul
+                style={{
+                  margin: 0,
+                  paddingLeft: '20px',
+                  color: 'var(--text-secondary)',
+                  fontSize: '0.85rem',
+                }}
+              >
                 {descriptor.measurement_sections.map(ms => (
                   <li key={ms.modality}>
                     {ms.label} {ms.required ? '(Required)' : '(Optional)'}
@@ -340,7 +394,9 @@ export default function NewCasePage() {
             </div>
 
             <div>
-              <h4 style={{ margin: '0 0 8px', fontSize: '0.9rem', color: 'var(--text-main)' }}>Target Geometry Types</h4>
+              <h4 style={{ margin: '0 0 8px', fontSize: '0.9rem', color: 'var(--text-main)' }}>
+                Target Geometry Types
+              </h4>
               <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                 {descriptor.target_geometry_renderers.map(g => (
                   <span key={g} className="badge badge-neutral" style={{ fontSize: '0.8rem' }}>
@@ -397,16 +453,41 @@ export default function NewCasePage() {
             Confirm Case Creation
           </h2>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+          <div
+            style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                padding: '8px 0',
+                borderBottom: '1px solid rgba(255,255,255,0.06)',
+              }}
+            >
               <span style={{ color: 'var(--text-secondary)' }}>Patient ID</span>
-              <strong style={{ color: 'var(--text-main)', fontFamily: 'var(--font-mono)' }}>{patientId}</strong>
+              <strong style={{ color: 'var(--text-main)', fontFamily: 'var(--font-mono)' }}>
+                {patientId}
+              </strong>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                padding: '8px 0',
+                borderBottom: '1px solid rgba(255,255,255,0.06)',
+              }}
+            >
               <span style={{ color: 'var(--text-secondary)' }}>Primary Indication</span>
               <strong style={{ color: 'var(--text-main)' }}>{selectedIndicationData.label}</strong>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                padding: '8px 0',
+                borderBottom: '1px solid rgba(255,255,255,0.06)',
+              }}
+            >
               <span style={{ color: 'var(--text-secondary)' }}>Module Release</span>
               <strong style={{ color: 'var(--text-main)', fontFamily: 'var(--font-mono)' }}>
                 {descriptor?.indication_module_release_id || 'N/A'}
@@ -430,8 +511,9 @@ export default function NewCasePage() {
               marginBottom: '20px',
             }}
           >
-            <strong>Note:</strong> Creating this case will establish an independent targeting workflow governed by the
-            selected indication module. The case will begin in Draft status.
+            <strong>Note:</strong> Creating this case will establish an independent targeting
+            workflow governed by the selected indication module. The case will begin in Draft
+            status.
           </aside>
 
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>

@@ -1,15 +1,12 @@
 'use client';
 
 import React, { use, useState, useEffect } from 'react';
+import Link from 'next/link';
 import { caseStore } from '../../../../lib/case-store';
 import { resolveCaseShellContext } from '../../../../lib/shell-authority';
 import type { MeasurementSummaryViewModel, CaseShellViewModel } from '@magniom/presentation';
 
-export default function MeasurementsPage({
-  params,
-}: {
-  params: Promise<{ caseId: string }>;
-}) {
+export default function MeasurementsPage({ params }: { params: Promise<{ caseId: string }> }) {
   const resolvedParams = use(params);
   const caseId = resolvedParams.caseId;
 
@@ -17,6 +14,12 @@ export default function MeasurementsPage({
 
   useEffect(() => {
     setRecord(caseStore.getCaseRecord(caseId));
+    const unsubscribe = caseStore.subscribe(updatedCaseId => {
+      if (updatedCaseId === caseId) {
+        setRecord(caseStore.getCaseRecord(caseId));
+      }
+    });
+    return () => unsubscribe();
   }, [caseId]);
 
   if (!record) {
@@ -66,23 +69,40 @@ export default function MeasurementsPage({
     <div className="measurements-workspace" style={{ padding: '24px' }}>
       {/* Section Header (§96) */}
       <header style={{ marginBottom: '24px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '12px',
+          }}
+        >
           <div>
-            <h2 style={{ margin: 0, color: 'var(--text-main)', fontSize: '1.4rem', fontWeight: 700 }}>
+            <h2
+              style={{ margin: 0, color: 'var(--text-main)', fontSize: '1.4rem', fontWeight: 700 }}
+            >
               Measurements
             </h2>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '4px' }}>
               Module-specific measurement modalities for{' '}
-              <strong>{indication?.indicationFormatted || record.clinicalCase.indicationCode}</strong>.
-              Zero false measurement requirements are enforced per §87.
+              <strong>
+                {indication?.indicationFormatted || record.clinicalCase.indicationCode}
+              </strong>
+              . Zero false measurement requirements are enforced per §87.
             </p>
           </div>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             <span className={`badge ${allRequiredQualified ? 'badge-tier1' : 'badge-tier3'}`}>
-              {allRequiredQualified ? '✓ All Required Qualified' : '⚠ Required Measurements Pending'}
+              {allRequiredQualified
+                ? '✓ All Required Qualified'
+                : '⚠ Required Measurements Pending'}
             </span>
             {moduleAuthority && (
-              <span className="badge badge-neutral" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem' }}>
+              <span
+                className="badge badge-neutral"
+                style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem' }}
+              >
                 {moduleAuthority.moduleCode} v{moduleAuthority.moduleVersion}
               </span>
             )}
@@ -93,10 +113,23 @@ export default function MeasurementsPage({
       {/* Required Measurements (§97–99) */}
       {requiredMeasurements.length > 0 && (
         <section style={{ marginBottom: '24px' }}>
-          <h3 style={{ margin: '0 0 16px', fontSize: '1.1rem', color: 'var(--text-main)', fontWeight: 600 }}>
+          <h3
+            style={{
+              margin: '0 0 16px',
+              fontSize: '1.1rem',
+              color: 'var(--text-main)',
+              fontWeight: 600,
+            }}
+          >
             Required Modalities
           </h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '16px' }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
+              gap: '16px',
+            }}
+          >
             {requiredMeasurements.map(m => {
               const q = getQualificationBadge(m);
               return (
@@ -111,15 +144,37 @@ export default function MeasurementsPage({
                     borderLeft: `3px solid ${m.qualification === 'qualified' ? '#10b981' : m.qualification === 'failed' ? '#ef4444' : '#6366f1'}`,
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                    <h4 style={{ margin: 0, color: 'var(--text-main)', fontSize: '1rem', fontWeight: 600 }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      marginBottom: '8px',
+                    }}
+                  >
+                    <h4
+                      style={{
+                        margin: 0,
+                        color: 'var(--text-main)',
+                        fontSize: '1rem',
+                        fontWeight: 600,
+                      }}
+                    >
                       {m.modalityLabel}
                     </h4>
                     <span className={`badge ${q.badge}`} style={{ fontSize: '0.8rem' }}>
                       {q.label}
                     </span>
                   </div>
-                  <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  <div
+                    style={{
+                      fontSize: '0.85rem',
+                      color: 'var(--text-secondary)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '4px',
+                    }}
+                  >
                     <span>
                       Availability: <strong>{m.isAvailable ? 'Available' : 'Not Available'}</strong>
                     </span>
@@ -145,13 +200,29 @@ export default function MeasurementsPage({
                             Not used for Clinical Ranking
                           </span>
                           {m.nonUseExplanation && (
-                            <span style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '2px' }}>
+                            <span
+                              style={{
+                                display: 'block',
+                                fontSize: '0.8rem',
+                                color: 'var(--text-muted)',
+                                marginTop: '2px',
+                              }}
+                            >
                               {m.nonUseExplanation}
                             </span>
                           )}
                         </>
                       )}
                     </span>
+                    <div style={{ marginTop: '12px', display: 'flex', justifyContent: 'flex-end' }}>
+                      <Link
+                        href={`/cases/${caseId}/measurements/${m.modality.toLowerCase().replace(/_/g, '-')}`}
+                        className="btn btn-secondary btn-sm"
+                        style={{ fontSize: '0.8rem', padding: '4px 10px' }}
+                      >
+                        Inspect Modality Details →
+                      </Link>
+                    </div>
                   </div>
                 </article>
               );
@@ -163,10 +234,23 @@ export default function MeasurementsPage({
       {/* Optional / Research Measurements (§100, §225–228) */}
       {optionalMeasurements.length > 0 && (
         <section style={{ marginBottom: '24px' }}>
-          <h3 style={{ margin: '0 0 16px', fontSize: '1.1rem', color: 'var(--text-main)', fontWeight: 600 }}>
+          <h3
+            style={{
+              margin: '0 0 16px',
+              fontSize: '1.1rem',
+              color: 'var(--text-main)',
+              fontWeight: 600,
+            }}
+          >
             Optional / Research Modalities
           </h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '16px' }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
+              gap: '16px',
+            }}
+          >
             {optionalMeasurements.map(m => {
               const q = getQualificationBadge(m);
               return (
@@ -182,8 +266,22 @@ export default function MeasurementsPage({
                     borderLeft: '3px solid rgba(255,255,255,0.1)',
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                    <h4 style={{ margin: 0, color: 'var(--text-main)', fontSize: '1rem', fontWeight: 600 }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      marginBottom: '8px',
+                    }}
+                  >
+                    <h4
+                      style={{
+                        margin: 0,
+                        color: 'var(--text-main)',
+                        fontSize: '1rem',
+                        fontWeight: 600,
+                      }}
+                    >
                       {m.modalityLabel}
                     </h4>
                     <div style={{ display: 'flex', gap: '6px' }}>
@@ -198,6 +296,15 @@ export default function MeasurementsPage({
                   <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0 }}>
                     {m.reliabilitySummary || 'Optional modality for enhanced targeting context.'}
                   </p>
+                  <div style={{ marginTop: '12px', display: 'flex', justifyContent: 'flex-end' }}>
+                    <Link
+                      href={`/cases/${caseId}/measurements/${m.modality.toLowerCase().replace(/_/g, '-')}`}
+                      className="btn btn-secondary btn-sm"
+                      style={{ fontSize: '0.8rem', padding: '4px 10px' }}
+                    >
+                      Inspect Modality Details →
+                    </Link>
+                  </div>
                 </article>
               );
             })}

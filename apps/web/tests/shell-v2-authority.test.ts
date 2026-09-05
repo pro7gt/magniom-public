@@ -6,10 +6,19 @@ import {
   buildSignOffContextRestatement,
   isOptimisticProhibited,
 } from '../src/lib/security/sign-off-guard';
-import { parseDeepLinkPath, resolveDeepLinkContext, buildHistoricalSlateContext } from '../src/lib/deep-link-resolver';
+import {
+  parseDeepLinkPath,
+  resolveDeepLinkContext,
+  buildHistoricalSlateContext,
+} from '../src/lib/deep-link-resolver';
 import { buildTargetExportPackage, isTargetQualifiedForExport } from '../src/lib/target-export';
 import { generateCaseReport } from '../src/lib/case-report-generator';
-import { onOperationalEvent, onAuditEvent, type ShellAuditEvent, type ShellOperationalEvent } from '../src/lib/shell-observability';
+import {
+  onOperationalEvent,
+  onAuditEvent,
+  type ShellAuditEvent,
+  type ShellOperationalEvent,
+} from '../src/lib/shell-observability';
 import type { ClinicalActionCapabilities } from '@magniom/presentation';
 
 describe('MAGNIOM Application Shell v2.0 — Comprehensive Verification Suite (§241–268)', () => {
@@ -49,6 +58,70 @@ describe('MAGNIOM Application Shell v2.0 — Comprehensive Verification Suite (�
       const shellVm = resolveCaseShellContext({ caseId: 'case-ux-v2-12' });
       expect(shellVm).not.toBeNull();
       expect(shellVm?.moduleAuthority.silentProspectiveBlinded).toBe(true);
+    });
+
+    it('MAG-UX-044: correctly unlocks Step 3 (Imaging & Connectome) when phenotype has sealed hash', () => {
+      const shellVm = resolveCaseShellContext({ caseId: 'case-ux-g04' });
+      expect(shellVm).not.toBeNull();
+      const step3 = shellVm?.workflow.steps.find(s => s.id === 'measurements');
+      expect(step3).toBeDefined();
+      expect(step3?.isAccessible).toBe(true);
+      expect(step3?.label).toBe('Imaging & Connectome');
+    });
+
+    it('MAG-UX-053: correctly highlights Step 2 as current on indication sub-routes without falling back to overview', () => {
+      // Stroke Motor /impairment
+      const strokeVm = resolveCaseShellContext({
+        caseId: 'case-ux-g03',
+        activePath: '/cases/case-ux-g03/impairment',
+      });
+      expect(strokeVm).not.toBeNull();
+      expect(strokeVm?.workflow.activeStepId).toBe('context');
+      expect(strokeVm?.workflow.steps[1]?.state).toBe('current');
+      expect(strokeVm?.workflow.steps[0]?.state).toBe('complete');
+
+      // Neuropathic Pain /body-region
+      const painVm = resolveCaseShellContext({
+        caseId: 'case-ux-g02',
+        activePath: '/cases/case-ux-g02/body-region',
+      });
+      expect(painVm).not.toBeNull();
+      expect(painVm?.workflow.activeStepId).toBe('context');
+      expect(painVm?.workflow.steps[1]?.state).toBe('current');
+
+      // Connectome route /connectome
+      const connVm = resolveCaseShellContext({
+        caseId: 'case-ux-g01',
+        activePath: '/cases/case-ux-g01/connectome',
+      });
+      expect(connVm).not.toBeNull();
+      expect(connVm?.workflow.activeStepId).toBe('measurements');
+      expect(connVm?.workflow.steps[2]?.state).toBe('current');
+    });
+
+    it('MAG-UX-054: invalidates target slate when clinical objective or lesion review is updated (§78)', () => {
+      // 1. Clinical objective update triggers staleness
+      caseStore.updateClinicalObjective('case-ux-v2-01', {
+        title: 'Revised Treatment-Resistant Depression Protocol',
+        priorityRank: 1,
+      });
+      const objVm = resolveCaseShellContext({ caseId: 'case-ux-v2-01' });
+      expect(objVm?.currentness.isStale).toBe(true);
+      expect(objVm?.currentness.blockingSignOff).toBe(true);
+
+      // 2. Lesion context update triggers staleness
+      caseStore.updateLesionContext('case-ux-g03', {
+        hasLesion: true,
+        lesionType: 'Expanded Infarct',
+        laterality: 'Left Hemisphere',
+        interpretation: 'Updated boundary review',
+        affectedRegionsCount: 4,
+        hasTargetOverlapWarning: true,
+        skullAbnormalityPresent: false,
+      });
+      const lesionVm = resolveCaseShellContext({ caseId: 'case-ux-g03' });
+      expect(lesionVm?.currentness.isStale).toBe(true);
+      expect(lesionVm?.currentness.highestSeverity).toBe('blocking');
     });
   });
 
@@ -172,7 +245,9 @@ describe('MAGNIOM Application Shell v2.0 — Comprehensive Verification Suite (�
   // =========================================================================
   describe('Deep Link Context Resolution (§143–146)', () => {
     it('parses deep link URL components accurately', () => {
-      const parsed = parseDeepLinkPath('/cases/case-ux-v2-01/indications/ci-mdd-01/targets?slate=slate-123');
+      const parsed = parseDeepLinkPath(
+        '/cases/case-ux-v2-01/indications/ci-mdd-01/targets?slate=slate-123',
+      );
       expect(parsed.caseId).toBe('case-ux-v2-01');
       expect(parsed.caseIndicationId).toBe('ci-mdd-01');
       expect(parsed.slateId).toBe('slate-123');
@@ -267,7 +342,9 @@ describe('MAGNIOM Application Shell v2.0 — Comprehensive Verification Suite (�
 
       expect(report.isResearchOnly).toBe(false);
       expect(report.markdownContent).toContain('MAGNIOM nominated candidate targets');
-      expect(report.markdownContent).toContain('The treating specialist clinician independently evaluated candidates');
+      expect(report.markdownContent).toContain(
+        'The treating specialist clinician independently evaluated candidates',
+      );
       // Must not contain autonomous prescriptive phrasing
       expect(report.markdownContent).not.toContain('MAGNIOM prescribed');
       expect(report.markdownContent).not.toContain('the system decided');
@@ -283,7 +360,9 @@ describe('MAGNIOM Application Shell v2.0 — Comprehensive Verification Suite (�
 
       expect(report.isResearchOnly).toBe(true);
       expect(report.reportTitle).toContain('Research Target Hypothesis Report');
-      expect(report.markdownContent).toContain('RESEARCH USE ONLY — NOT FOR CLINICAL DIAGNOSTIC OR TREATMENT PROCEDURE');
+      expect(report.markdownContent).toContain(
+        'RESEARCH USE ONLY — NOT FOR CLINICAL DIAGNOSTIC OR TREATMENT PROCEDURE',
+      );
     });
   });
 

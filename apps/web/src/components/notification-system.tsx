@@ -57,7 +57,8 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     {
       id: 'notif-init-1',
       title: 'Target Slate Current',
-      message: 'Active Target Slate is synchronized with approved clinical context and qualified measurements.',
+      message:
+        'Active Target Slate is synchronized with approved clinical context and qualified measurements.',
       severity: 'info',
       category: 'system',
       timestamp: new Date().toISOString(),
@@ -127,7 +128,9 @@ export function NotificationBell() {
         aria-expanded={isOpen}
         style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '4px' }}
       >
-        <span aria-hidden="true" style={{ fontSize: '1rem' }}>🔔</span>
+        <span aria-hidden="true" style={{ fontSize: '1rem' }}>
+          🔔
+        </span>
         {unreadCount > 0 && (
           <span
             style={{
@@ -180,7 +183,9 @@ export function NotificationBell() {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <strong style={{ fontSize: '0.9rem', color: 'var(--text-main)' }}>Notifications</strong>
+              <strong style={{ fontSize: '0.9rem', color: 'var(--text-main)' }}>
+                Notifications
+              </strong>
               <span className="badge badge-neutral" style={{ fontSize: '0.7rem' }}>
                 {unreadCount}
               </span>
@@ -205,7 +210,14 @@ export function NotificationBell() {
           {/* List */}
           <div style={{ overflowY: 'auto', flex: 1, padding: '8px' }}>
             {notifications.length === 0 ? (
-              <div style={{ padding: '24px 16px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+              <div
+                style={{
+                  padding: '24px 16px',
+                  textAlign: 'center',
+                  color: 'var(--text-muted)',
+                  fontSize: '0.85rem',
+                }}
+              >
                 No active notifications.
               </div>
             ) : (
@@ -226,8 +238,18 @@ export function NotificationBell() {
                     }`,
                   }}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '4px' }}>
-                    <span className={`badge ${severityBadgeClass(notif.severity)}`} style={{ fontSize: '0.65rem' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'flex-start',
+                      marginBottom: '4px',
+                    }}
+                  >
+                    <span
+                      className={`badge ${severityBadgeClass(notif.severity)}`}
+                      style={{ fontSize: '0.65rem' }}
+                    >
                       {notif.severity.toUpperCase()}
                     </span>
                     <button
@@ -246,10 +268,24 @@ export function NotificationBell() {
                       ×
                     </button>
                   </div>
-                  <strong style={{ fontSize: '0.825rem', color: 'var(--text-main)', display: 'block', marginBottom: '2px' }}>
+                  <strong
+                    style={{
+                      fontSize: '0.825rem',
+                      color: 'var(--text-main)',
+                      display: 'block',
+                      marginBottom: '2px',
+                    }}
+                  >
                     {notif.title}
                   </strong>
-                  <p style={{ margin: '0 0 6px', fontSize: '0.775rem', color: 'var(--text-secondary)', lineHeight: 1.35 }}>
+                  <p
+                    style={{
+                      margin: '0 0 6px',
+                      fontSize: '0.775rem',
+                      color: 'var(--text-secondary)',
+                      lineHeight: 1.35,
+                    }}
+                  >
                     {notif.message}
                   </p>
                   {notif.actionHref && notif.actionLabel && (

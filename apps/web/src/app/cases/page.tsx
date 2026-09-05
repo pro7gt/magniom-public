@@ -5,9 +5,13 @@ import Link from 'next/link';
 import { caseStore } from '../../lib/case-store';
 
 export default function CasesRegistryPage() {
-  const [modeFilter, setModeFilter] = useState<'all' | 'CLINICAL' | 'VALIDATION' | 'RESEARCH'>('all');
+  const [modeFilter, setModeFilter] = useState<'all' | 'CLINICAL' | 'VALIDATION' | 'RESEARCH'>(
+    'all',
+  );
   const [indicationFilter, setIndicationFilter] = useState<string>('all');
-  const [stateFilter, setStateFilter] = useState<'all' | 'awaiting_review' | 'stale' | 'signed'>('all');
+  const [stateFilter, setStateFilter] = useState<'all' | 'awaiting_review' | 'stale' | 'signed'>(
+    'all',
+  );
   const [search, setSearch] = useState('');
   const allCases = caseStore.getAllCases();
 
@@ -22,7 +26,11 @@ export default function CasesRegistryPage() {
     if (indicationFilter !== 'all' && c.indication !== indicationFilter) return false;
 
     // State filter
-    if (stateFilter === 'awaiting_review' && !(c.state === 'target_slate_ready' || c.state === 'phenotype_ready')) return false;
+    if (
+      stateFilter === 'awaiting_review' &&
+      !(c.state === 'target_slate_ready' || c.state === 'phenotype_ready')
+    )
+      return false;
     if (stateFilter === 'stale' && !c.isStale) return false;
     if (stateFilter === 'signed' && c.state !== 'decision_signed') return false;
 
@@ -56,16 +64,13 @@ export default function CasesRegistryPage() {
             Clinical Case Registry
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginTop: '0.25rem' }}>
-            Authoritative clinical registry of active TMS target planning cases, indications, and workflow states.
+            Authoritative clinical registry of active TMS target planning cases, indications, and
+            workflow states.
           </p>
         </div>
 
         <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-          <Link
-            href="/cases/new"
-            className="btn btn-primary"
-            style={{ fontWeight: 600 }}
-          >
+          <Link href="/cases/new" className="btn btn-primary" style={{ fontWeight: 600 }}>
             + Create New Case
           </Link>
           <Link
@@ -98,10 +103,20 @@ export default function CasesRegistryPage() {
           gap: '0.75rem',
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '1rem',
+          }}
+        >
           {/* Mode Filter (§38) */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>MODE:</span>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+              MODE:
+            </span>
             {(['all', 'CLINICAL', 'VALIDATION', 'RESEARCH'] as const).map(m => (
               <button
                 key={m}
@@ -127,10 +142,22 @@ export default function CasesRegistryPage() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', borderTop: '1px solid var(--border-subtle)', paddingTop: '0.75rem' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '1rem',
+            borderTop: '1px solid var(--border-subtle)',
+            paddingTop: '0.75rem',
+          }}
+        >
           {/* Indication Filter (§39) */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>INDICATION:</span>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+              INDICATION:
+            </span>
             <button
               className={`btn ${indicationFilter === 'all' ? 'btn-primary' : 'btn-secondary'}`}
               style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
@@ -152,7 +179,9 @@ export default function CasesRegistryPage() {
 
           {/* Quick status filters */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>STATUS:</span>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>
+              STATUS:
+            </span>
             <select
               value={stateFilter}
               onChange={e => setStateFilter(e.target.value as any)}
@@ -206,7 +235,10 @@ export default function CasesRegistryPage() {
                     </div>
                   </td>
                   <td>
-                    <span className={`badge ${c.mode.toUpperCase() === 'CLINICAL' ? 'badge-clinical' : c.mode.toUpperCase() === 'RESEARCH' ? 'badge-research' : 'badge-validation'}`} style={{ fontSize: '0.75rem' }}>
+                    <span
+                      className={`badge ${c.mode.toUpperCase() === 'CLINICAL' ? 'badge-clinical' : c.mode.toUpperCase() === 'RESEARCH' ? 'badge-research' : 'badge-validation'}`}
+                      style={{ fontSize: '0.75rem' }}
+                    >
                       {c.mode.toUpperCase()}
                     </span>
                   </td>

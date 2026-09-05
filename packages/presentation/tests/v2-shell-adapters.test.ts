@@ -142,19 +142,21 @@ describe('v2 Application Shell & Clinical Context Adapters', () => {
   });
 
   describe('Declarative Module UI Descriptors & Dynamic Workflow (§50–57, §87)', () => {
-    it('registers descriptors for all 8 canonical indications', () => {
-      expect(ALL_MODULE_UI_DESCRIPTORS.length).toBe(8);
+    it('registers descriptors for all canonical and expanded indications (including PTSD)', () => {
+      expect(ALL_MODULE_UI_DESCRIPTORS.length).toBe(9);
       const mdd = getModuleUiDescriptor('MDD');
       const pain = getModuleUiDescriptor('PAIN');
       const strokeM = getModuleUiDescriptor('STROKE_MOTOR');
       const ocd = getModuleUiDescriptor('OCD');
       const tin = getModuleUiDescriptor('TINNITUS');
+      const ptsd = getModuleUiDescriptor('PTSD');
 
       expect(mdd.indication_code).toBe('MDD');
       expect(pain.indication_code).toBe('PAIN');
       expect(strokeM.indication_code).toBe('STROKE_MOTOR');
       expect(ocd.indication_code).toBe('OCD');
       expect(tin.indication_code).toBe('TINNITUS');
+      expect(ptsd.indication_code).toBe('PTSD');
     });
 
     it('adapts workflow for Neuropathic Pain without creating false connectome requirement (§53, §87)', () => {

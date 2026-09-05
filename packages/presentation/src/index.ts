@@ -586,7 +586,10 @@ export function toPhenotypeViewModel(snapshot: PhenotypeSnapshot): PhenotypeView
     confirmedByClinicianId: snapshot.confirmedByClinicianId,
     confirmedAt: snapshot.confirmedAt,
     snapshotHash: snapshot.snapshotHash,
-    isApproved: Boolean(snapshot.confirmedByClinicianId && snapshot.snapshotHash),
+    isApproved: Boolean(
+      (snapshot as any).state === 'approved' ||
+      (snapshot.confirmedByClinicianId && snapshot.snapshotHash),
+    ),
   };
 }
 
@@ -1649,7 +1652,7 @@ export function toCaseShellContextViewModel(record: {
     mode: string;
     state: string;
   };
-  phenotype?: { snapshotHash?: string; state?: string };
+  phenotype?: { snapshotHash?: string; state?: string; confirmedByClinicianId?: string };
   slate?: {
     qualification?: { level?: string };
     primaryCandidates?: readonly unknown[];
@@ -1659,7 +1662,10 @@ export function toCaseShellContextViewModel(record: {
   isStale?: boolean;
   staleReason?: string;
 }): CaseShellContextViewModel {
-  const isPhenotypeApproved = Boolean(record.phenotype?.snapshotHash);
+  const isPhenotypeApproved = Boolean(
+    record.phenotype?.state === 'approved' ||
+    (record.phenotype?.confirmedByClinicianId && record.phenotype?.snapshotHash),
+  );
   const isDecisionSigned = Boolean(record.decision?.isImmutable);
   const isStale = Boolean(record.isStale);
   const candidateCount = record.slate?.primaryCandidates?.length || 0;
@@ -1681,6 +1687,11 @@ export function toCaseShellContextViewModel(record: {
       ? `STALE TARGET SLATE: ${record.staleReason || 'The clinical phenotype was updated after this slate was generated. Signing is blocked until regenerated.'}`
       : 'Target Slate is current and qualified against active phenotype.',
   };
+
+  const connectomeQual = (record.slate as any)?.personalisationQualification;
+  const isConnectomeLowReliability =
+    record.slate?.qualification?.level === 'LOW' || connectomeQual === 'ineligible';
+  const isConnectomeNotAcquired = !connectomeQual || connectomeQual === 'not_available';
 
   return {
     caseId: record.clinicalCase.id,
@@ -1709,12 +1720,17 @@ export function toCaseShellContextViewModel(record: {
       badgeClass: 'badge-tier1',
     },
     connectomeStatus: {
-      label:
-        record.slate?.qualification?.level === 'LOW'
-          ? 'Connectome Low Reliability'
+      label: isConnectomeLowReliability
+        ? 'Connectome Low Reliability'
+        : isConnectomeNotAcquired
+          ? 'Connectome Not Acquired'
           : 'Connectome Qualified',
-      isQualified: record.slate?.qualification?.level !== 'LOW',
-      badgeClass: record.slate?.qualification?.level === 'LOW' ? 'badge-tier3' : 'badge-tier1',
+      isQualified: !isConnectomeLowReliability,
+      badgeClass: isConnectomeLowReliability
+        ? 'badge-tier3'
+        : isConnectomeNotAcquired
+          ? 'badge-neutral'
+          : 'badge-tier1',
     },
     targetSlateStatus: {
       label: isStale ? 'Slate Stale' : candidateCount > 0 ? 'Target Slate Ready' : 'Pending',

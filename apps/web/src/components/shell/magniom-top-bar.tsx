@@ -56,7 +56,8 @@ export function MagniomTopBar({
   const userMenuRef = useRef<HTMLDivElement>(null);
   const orgMenuRef = useRef<HTMLDivElement>(null);
 
-  const activeOrg = AVAILABLE_ORGANISATIONS.find(o => o.id === selectedOrgId) || AVAILABLE_ORGANISATIONS[0]!;
+  const activeOrg =
+    AVAILABLE_ORGANISATIONS.find(o => o.id === selectedOrgId) || AVAILABLE_ORGANISATIONS[0]!;
 
   const handleSwitchOrg = (orgId: string) => {
     if (orgId === selectedOrgId) {
@@ -311,7 +312,8 @@ export function MagniomTopBar({
                     textAlign: 'left',
                     padding: '8px 12px',
                     border: 'none',
-                    background: org.id === selectedOrgId ? 'rgba(56, 189, 248, 0.1)' : 'transparent',
+                    background:
+                      org.id === selectedOrgId ? 'rgba(56, 189, 248, 0.1)' : 'transparent',
                     color: org.id === selectedOrgId ? 'var(--accent-cyan)' : 'var(--text-main)',
                     fontSize: '0.8rem',
                     cursor: 'pointer',

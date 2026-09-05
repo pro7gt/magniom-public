@@ -33,28 +33,57 @@ export function resolveCaseShellContext(
   }
 
   const session = CANONICAL_CLINICAL_SESSION;
+  const rawMode = (options.environmentMode || record.clinicalCase.mode || 'CLINICAL')
+    .toString()
+    .toUpperCase();
   const mode: EnvironmentMode =
-    options.environmentMode || (record.clinicalCase.mode as EnvironmentMode) || 'CLINICAL';
+    rawMode === 'RESEARCH' ? 'RESEARCH' : rawMode === 'VALIDATION' ? 'VALIDATION' : 'CLINICAL';
 
-  // Find active indication
-  const activeCiId = options.targetCaseIndicationId || record.activeCaseIndicationId;
+  // Find active indication (honoring targetCaseIndicationId, path param, or fallback)
+  let activeCiId = options.targetCaseIndicationId;
+  if (!activeCiId && options.activePath) {
+    const match = options.activePath.match(/\/indications\/([^/?#]+)/);
+    if (match && match[1]) {
+      activeCiId = match[1];
+    }
+  }
+  if (!activeCiId) {
+    activeCiId = record.activeCaseIndicationId;
+  }
   const activeInd =
     record.availableIndications.find(i => i.caseIndicationId === activeCiId) ||
+    record.availableIndications.find(
+      i => i.indicationCode.toLowerCase() === activeCiId?.toLowerCase(),
+    ) ||
     record.availableIndications[0]!;
 
+  const reasonLower = record.staleReason?.toLowerCase() || '';
+  const isLesion = reasonLower.includes('lesion');
+  const isObjective = reasonLower.includes('objective');
+  const isMeasurement = reasonLower.includes('measurement');
+  const isEvidence = reasonLower.includes('evidence');
+
   const stalenessInput: StalenessInput = {
-    isCaseContextUpdatedAfterSlate: false,
-    isLesionReviewUpdatedAfterSlate: record.staleReason?.toLowerCase().includes('lesion'),
-    isClinicalObjectiveChangedAfterSlate: record.staleReason?.toLowerCase().includes('objective'),
-    isMeasurementReplaced: record.staleReason?.toLowerCase().includes('measurement'),
+    isCaseContextUpdatedAfterSlate: Boolean(
+      record.isStale && !isLesion && !isObjective && !isMeasurement && !isEvidence,
+    ),
+    isLesionReviewUpdatedAfterSlate: isLesion,
+    isClinicalObjectiveChangedAfterSlate: isObjective,
+    isMeasurementReplaced: isMeasurement,
+    isNewerEvidenceLibraryAvailable: isEvidence,
   };
 
-  const isPhenotypeApproved = record.phenotype.state === 'approved';
+  const isPhenotypeApproved = Boolean(
+    record.phenotype.state === 'approved' ||
+    (record.phenotype.confirmedByClinicianId && record.phenotype.snapshotHash),
+  );
   const isSlateReady = Boolean(
     (record.slate.primaryCandidates && record.slate.primaryCandidates.length > 0) ||
     record.clinicalCase.currentTargetSlateId,
   );
-  const isDecisionSigned = Boolean(record.decision?.isImmutable);
+  const isDecisionSigned = Boolean(
+    record.decision?.isImmutable || record.clinicalCase.state === 'decision_signed',
+  );
 
   return createCaseShellViewModel({
     caseId: record.clinicalCase.id,

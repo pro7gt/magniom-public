@@ -170,7 +170,8 @@ export function resolveDeepLinkContext(pathname: string): DeepLinkResolutionResu
       status: 'unknown_error',
       caseId: parsed.caseId,
       errorTitle: 'Context Resolution Failed',
-      errorMessage: 'The system was unable to reconstruct the clinical context for this deep link. This may indicate a configuration error.',
+      errorMessage:
+        'The system was unable to reconstruct the clinical context for this deep link. This may indicate a configuration error.',
       suggestedAction: 'Contact system support if this persists.',
     };
   }
@@ -184,7 +185,8 @@ export function resolveDeepLinkContext(pathname: string): DeepLinkResolutionResu
       caseIndicationId: parsed.caseIndicationId,
       targetPath: pathname,
       errorTitle: 'Module Authority Conflict',
-      errorMessage: 'The indication module governing this case is not authorised for the current deployment mode. Clinical targeting actions are locked.',
+      errorMessage:
+        'The indication module governing this case is not authorised for the current deployment mode. Clinical targeting actions are locked.',
       suggestedAction: 'Contact system support or switch to Research Mode if applicable.',
     };
   }

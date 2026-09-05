@@ -10,10 +10,7 @@
  * - Optimistic UI is PROHIBITED for safety-critical actions (§189).
  */
 
-import type {
-  CaseShellViewModel,
-  ClinicalActionCapabilities,
-} from '@magniom/presentation';
+import type { CaseShellViewModel, ClinicalActionCapabilities } from '@magniom/presentation';
 
 // ==========================================
 // 1. Sign-Off Context Restatement Data (§137–138)
@@ -124,9 +121,7 @@ export function validateSignOffPreconditions(
     const reasons = shellVm.currentness.reasons
       .filter(r => r.severity === 'blocking')
       .map(r => r.message);
-    blockedReasons.push(
-      `Target Slate is stale and cannot be signed: ${reasons.join('; ')}`,
-    );
+    blockedReasons.push(`Target Slate is stale and cannot be signed: ${reasons.join('; ')}`);
   }
 
   // Mode check: Research mode prohibits clinical signing (§22, §57, §139)
@@ -176,7 +171,8 @@ export function validateSignOffPreconditions(
 const SIGN_OFF_CHANNEL_NAME = 'magniom_signoff_channel';
 
 export interface MultiTabSignOffEvent {
-  readonly type: 'SIGN_OFF_STARTED' | 'SIGN_OFF_COMPLETED' | 'SIGN_OFF_CANCELLED' | 'CASE_STATE_CHANGED';
+  readonly type:
+    'SIGN_OFF_STARTED' | 'SIGN_OFF_COMPLETED' | 'SIGN_OFF_CANCELLED' | 'CASE_STATE_CHANGED';
   readonly caseId: string;
   readonly tabId: string;
   readonly timestamp: string;
@@ -186,9 +182,7 @@ export interface MultiTabSignOffEvent {
  * Creates a BroadcastChannel listener for multi-tab sign-off coordination (§141).
  * Returns a cleanup function to close the channel.
  */
-export function createMultiTabSignOffGuard(
-  onInvalidation: (event: MultiTabSignOffEvent) => void,
-): {
+export function createMultiTabSignOffGuard(onInvalidation: (event: MultiTabSignOffEvent) => void): {
   broadcastEvent: (event: MultiTabSignOffEvent) => void;
   cleanup: () => void;
 } {

@@ -96,6 +96,15 @@ export function PhenotypeWorkspace({ initialViewModel, onApprove }: PhenotypeWor
               >
                 {initialViewModel.snapshotHash?.slice(0, 16)}...
               </span>
+              <button
+                onClick={() => setShowApprovalDialog(true)}
+                className="btn btn-secondary"
+                style={{ fontSize: '0.75rem', padding: '0.25rem 0.6rem' }}
+                title="Re-seal and update clinical phenotype snapshot"
+                id="reapprove-phenotype-btn"
+              >
+                Re-seal Formulation
+              </button>
             </div>
           ) : (
             <button

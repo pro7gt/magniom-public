@@ -13,6 +13,7 @@ test-results/
 dist/
 build/
 .next/
+.next-dev/
 out/
 .open-next/
 .wrangler/

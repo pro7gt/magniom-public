@@ -436,6 +436,52 @@ export const SUD_UI_DESCRIPTOR: IndicationModuleUiDescriptor = {
 };
 
 // ==========================================
+// 9. PTSD (Post-Traumatic Stress Disorder)
+// ==========================================
+export const PTSD_UI_DESCRIPTOR: IndicationModuleUiDescriptor = {
+  indication_module_release_id: 'IMR-PTSD-2.0.0',
+  indication_code: 'PTSD',
+  indication_name: 'Post-Traumatic Stress Disorder (Right-DLPFC / Bilateral)',
+  context_sections: [
+    {
+      id: 'ptsd_profile',
+      label: 'PTSD Symptom Battery (CAPS-5 / PCL-5)',
+      required: true,
+      pathSuffix: 'ptsd-context',
+    },
+    {
+      id: 'trauma_context',
+      label: 'Trauma Screening & Combat Conflict',
+      required: true,
+      pathSuffix: 'trauma-context',
+    },
+  ],
+  measurement_sections: [
+    {
+      modality: 'structural_mri',
+      label: 'Structural MRI (T1w MPRAGE)',
+      required: true,
+      pathSuffix: 'measurements/structural-mri',
+      fallbackAllowed: false,
+    },
+    {
+      modality: 'resting_state_fmri',
+      label: 'Fronto-Limbic Connectivity (Research)',
+      required: false,
+      pathSuffix: 'measurements/rs-fmri',
+      fallbackAllowed: true,
+    },
+  ],
+  workflow_labels: [
+    { stepId: 'context', customLabel: 'PTSD & Trauma Context' },
+    { stepId: 'measurements', customLabel: 'Neuroimaging QC' },
+    { stepId: 'targets', customLabel: 'Right-DLPFC Slate' },
+  ],
+  help_topic_ids: ['ptsd-right-dlpfc', 'ptsd-combat-conflict', 'ptsd-fronto-limbic'],
+  target_geometry_renderers: ['point', 'surface_roi'],
+};
+
+// ==========================================
 // Registry Map & Discovery
 // ==========================================
 const DESCRIPTOR_MAP: Record<string, IndicationModuleUiDescriptor> = {
@@ -447,6 +493,7 @@ const DESCRIPTOR_MAP: Record<string, IndicationModuleUiDescriptor> = {
   TINNITUS: TINNITUS_UI_DESCRIPTOR,
   TBI: TBI_UI_DESCRIPTOR,
   SUD: SUD_UI_DESCRIPTOR,
+  PTSD: PTSD_UI_DESCRIPTOR,
 };
 
 export function getModuleUiDescriptor(indicationCode: string): IndicationModuleUiDescriptor {
@@ -462,6 +509,7 @@ export function getModuleUiDescriptor(indicationCode: string): IndicationModuleU
   if (norm.includes('TIN')) return TINNITUS_UI_DESCRIPTOR;
   if (norm.includes('TBI')) return TBI_UI_DESCRIPTOR;
   if (norm.includes('SUD')) return SUD_UI_DESCRIPTOR;
+  if (norm.includes('PTSD') || norm.includes('TRAUMA')) return PTSD_UI_DESCRIPTOR;
 
   // Default to MDD canonical descriptor
   return MDD_UI_DESCRIPTOR;
@@ -469,3 +517,7 @@ export function getModuleUiDescriptor(indicationCode: string): IndicationModuleU
 
 export const ALL_MODULE_UI_DESCRIPTORS: readonly IndicationModuleUiDescriptor[] =
   Object.values(DESCRIPTOR_MAP);
+
+export function getAllModuleUiDescriptors(): readonly IndicationModuleUiDescriptor[] {
+  return ALL_MODULE_UI_DESCRIPTORS;
+}

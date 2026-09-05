@@ -493,11 +493,7 @@ export interface ApplicationShellContextV2 {
  * Lifecycle and governance status of an indication module release.
  */
 export type ModuleLifecycleState =
-  | 'active'
-  | 'suspended'
-  | 'withdrawn'
-  | 'superseded'
-  | 'pending_review';
+  'active' | 'suspended' | 'withdrawn' | 'superseded' | 'pending_review';
 
 export interface ModuleStatusViewModel {
   readonly moduleReleaseId: string;

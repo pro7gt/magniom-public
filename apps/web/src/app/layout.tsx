@@ -25,6 +25,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <NotificationProvider>
+          {/* §179: Skip-to-content accessibility link for keyboard users */}
+          <a href="#main-content" className="skip-to-content">
+            Skip to main content
+          </a>
+
           {/* Layer 1: Top Bar (§7–22) */}
           <MagniomTopBar currentMode="CLINICAL" />
 

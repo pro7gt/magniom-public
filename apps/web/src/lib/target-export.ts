@@ -8,10 +8,7 @@
  * - Export does not alter any clinical state.
  */
 
-import type {
-  CaseShellViewModel,
-  ClinicalActionCapabilities,
-} from '@magniom/presentation';
+import type { CaseShellViewModel, ClinicalActionCapabilities } from '@magniom/presentation';
 import { emitAuditEvent } from './shell-observability';
 
 // ==========================================
@@ -107,9 +104,7 @@ export function validateNeuronavigationExport(
   }
 
   if (shellVm.safetyState === 'FAIL_CLOSED') {
-    blockedReasons.push(
-      'System is in FAIL CLOSED state. All export operations are locked.',
-    );
+    blockedReasons.push('System is in FAIL CLOSED state. All export operations are locked.');
   }
 
   if (shellVm.currentness.blockingSignOff) {
@@ -192,3 +187,8 @@ export function buildTargetExportPackage(
 
   return pkg;
 }
+
+/**
+ * Specification-conforming alias for buildTargetExportPackage (§284).
+ */
+export const generateNeuronavigationPackage = buildTargetExportPackage;

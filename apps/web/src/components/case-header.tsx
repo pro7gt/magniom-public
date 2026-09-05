@@ -32,6 +32,7 @@ interface CaseHeaderProps {
   measurements?: readonly MeasurementSummaryViewModel[] | undefined;
   isPhenotypeApproved?: boolean | undefined;
   isConnectomeQualified?: boolean | undefined;
+  connectomeQualification?: string | undefined;
   isSlateReady?: boolean | undefined;
   isDecisionSigned?: boolean | undefined;
   isStale?: boolean | undefined;
@@ -57,6 +58,7 @@ export function CaseHeader({
   measurements,
   isPhenotypeApproved = true,
   isConnectomeQualified = true,
+  connectomeQualification,
   isSlateReady = true,
   isDecisionSigned = false,
   isStale = false,
@@ -324,22 +326,46 @@ export function CaseHeader({
                 Phenotype: {isPhenotypeApproved ? 'Approved' : 'Pending Approval'}
               </span>
               <span
-                className={`badge ${isConnectomeQualified ? 'badge-tier1' : 'badge-tier3'}`}
+                className={`badge ${
+                  connectomeQualification === 'qualified' || isConnectomeQualified
+                    ? 'badge-tier1'
+                    : connectomeQualification === 'limited'
+                      ? 'badge-tier2'
+                      : connectomeQualification === 'ineligible'
+                        ? 'badge-tier3'
+                        : 'badge-neutral'
+                }`}
                 title="Structural and resting-state BOLD acquisition quality"
               >
-                Connectome: {isConnectomeQualified ? 'Qualified' : 'Low Reliability'}
+                Connectome:{' '}
+                {connectomeQualification === 'qualified' || isConnectomeQualified
+                  ? 'Qualified'
+                  : connectomeQualification === 'limited'
+                    ? 'Limited'
+                    : connectomeQualification === 'ineligible'
+                      ? 'Low Reliability'
+                      : 'Not Acquired'}
               </span>
             </>
           )}
 
-          {/* Target Slate Status Pill */}
-          <span
-            className={`badge ${effectiveIsStale ? (isBlockingStale ? 'badge-tier3' : 'badge-tierexp') : isSlateReady ? 'badge-tier1' : 'badge-neutral'}`}
-            title="Candidate Target Slate readiness"
-          >
-            Target Slate:{' '}
-            {effectiveIsStale ? 'Stale' : isSlateReady ? 'Ready for Review' : 'Pending'}
-          </span>
+          {/* Target Slate Status Pill (§222: Silent study header shows only processing status without candidate info) */}
+          {effectiveAuthority?.silentProspectiveBlinded ? (
+            <span
+              className="badge badge-neutral"
+              title="Silent prospective study protocol — results blinded to treating clinician (§221–222)"
+            >
+              MAGNIOM study processing · Complete
+            </span>
+          ) : (
+            <span
+              className={`badge ${effectiveIsStale ? (isBlockingStale ? 'badge-tier3' : 'badge-tierexp') : isSlateReady ? 'badge-tier1' : 'badge-neutral'}`}
+              title="Candidate Target Slate readiness"
+            >
+              Target Slate:{' '}
+              {effectiveIsStale ? 'Stale' : isSlateReady ? 'Ready for Review' : 'Pending'}
+            </span>
+          )}
 
           {/* Decision Status Pill */}
           <span

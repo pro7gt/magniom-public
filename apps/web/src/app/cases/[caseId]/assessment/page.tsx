@@ -1,6 +1,6 @@
 'use client';
 
-import React, { use } from 'react';
+import React, { use, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { caseStore } from '../../../../lib/case-store';
 import { toPhenotypeViewModel } from '@magniom/presentation';
@@ -8,7 +8,17 @@ import { toPhenotypeViewModel } from '@magniom/presentation';
 export default function CaseAssessmentPage({ params }: { params: Promise<{ caseId: string }> }) {
   const resolvedParams = use(params);
   const caseId = resolvedParams.caseId;
-  const record = caseStore.getCaseRecord(caseId);
+  const [record, setRecord] = useState(() => caseStore.getCaseRecord(caseId));
+
+  useEffect(() => {
+    setRecord(caseStore.getCaseRecord(caseId));
+    const unsubscribe = caseStore.subscribe(updatedCaseId => {
+      if (updatedCaseId === caseId) {
+        setRecord(caseStore.getCaseRecord(caseId));
+      }
+    });
+    return () => unsubscribe();
+  }, [caseId]);
 
   if (!record) return <div className="container">Case not found.</div>;
 

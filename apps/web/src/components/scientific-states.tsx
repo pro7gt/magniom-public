@@ -27,22 +27,34 @@ export function ScientificState({
   variant = 'empty',
   children,
 }: ScientificStateProps) {
-  const variantStyles: Record<'empty' | 'abstention' | 'partial' | 'processing' | 'error', { bg: string; border: string; iconColor: string }> = {
-    empty: { bg: 'rgba(255,255,255,0.03)', border: 'rgba(255,255,255,0.08)', iconColor: 'var(--text-muted)' },
+  const variantStyles: Record<
+    'empty' | 'abstention' | 'partial' | 'processing' | 'error',
+    { bg: string; border: string; iconColor: string }
+  > = {
+    empty: {
+      bg: 'rgba(255,255,255,0.03)',
+      border: 'rgba(255,255,255,0.08)',
+      iconColor: 'var(--text-muted)',
+    },
     abstention: { bg: 'rgba(217,119,6,0.08)', border: 'rgba(217,119,6,0.3)', iconColor: '#fbbf24' },
     partial: { bg: 'rgba(99,102,241,0.08)', border: 'rgba(99,102,241,0.3)', iconColor: '#818cf8' },
-    processing: { bg: 'rgba(59,130,246,0.08)', border: 'rgba(59,130,246,0.3)', iconColor: '#60a5fa' },
+    processing: {
+      bg: 'rgba(59,130,246,0.08)',
+      border: 'rgba(59,130,246,0.3)',
+      iconColor: '#60a5fa',
+    },
     error: { bg: 'rgba(239,68,68,0.08)', border: 'rgba(239,68,68,0.3)', iconColor: '#f87171' },
   };
 
   const style = variantStyles[variant] ?? variantStyles.empty;
-  const defaultIcons: Record<'empty' | 'abstention' | 'partial' | 'processing' | 'error', string> = {
-    empty: 'ℹ',
-    abstention: '⊘',
-    partial: '◐',
-    processing: '⏳',
-    error: '⚠',
-  };
+  const defaultIcons: Record<'empty' | 'abstention' | 'partial' | 'processing' | 'error', string> =
+    {
+      empty: 'ℹ',
+      abstention: '⊘',
+      partial: '◐',
+      processing: '⏳',
+      error: '⚠',
+    };
 
   return (
     <div
@@ -63,14 +75,35 @@ export function ScientificState({
       >
         {icon || defaultIcons[variant]}
       </span>
-      <h3 style={{ margin: '0 0 8px', color: 'var(--text-main)', fontSize: '1.1rem', fontWeight: 600 }}>
+      <h3
+        style={{
+          margin: '0 0 8px',
+          color: 'var(--text-main)',
+          fontSize: '1.1rem',
+          fontWeight: 600,
+        }}
+      >
         {title}
       </h3>
-      <p style={{ margin: '0 0 12px', color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.5 }}>
+      <p
+        style={{
+          margin: '0 0 12px',
+          color: 'var(--text-secondary)',
+          fontSize: '0.9rem',
+          lineHeight: 1.5,
+        }}
+      >
         {message}
       </p>
       {resolution && (
-        <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.85rem', fontStyle: 'italic' }}>
+        <p
+          style={{
+            margin: 0,
+            color: 'var(--text-muted)',
+            fontSize: '0.85rem',
+            fontStyle: 'italic',
+          }}
+        >
           {resolution}
         </p>
       )}
@@ -131,7 +164,9 @@ export function PartialCapabilityState({
             <strong style={{ color: '#10b981' }}>Available:</strong>
             <ul style={{ margin: '4px 0 0 16px', padding: 0 }}>
               {availableCapabilities.map(c => (
-                <li key={c} style={{ color: 'var(--text-secondary)' }}>{c}</li>
+                <li key={c} style={{ color: 'var(--text-secondary)' }}>
+                  {c}
+                </li>
               ))}
             </ul>
           </div>
@@ -141,7 +176,9 @@ export function PartialCapabilityState({
             <strong style={{ color: '#ef4444' }}>Missing:</strong>
             <ul style={{ margin: '4px 0 0 16px', padding: 0 }}>
               {missingCapabilities.map(c => (
-                <li key={c} style={{ color: 'var(--text-secondary)' }}>{c}</li>
+                <li key={c} style={{ color: 'var(--text-secondary)' }}>
+                  {c}
+                </li>
               ))}
             </ul>
           </div>
@@ -152,7 +189,13 @@ export function PartialCapabilityState({
 }
 
 /** §209 — Domain-specific processing state */
-export function ProcessingState({ operationName, detail }: { operationName: string; detail?: string }) {
+export function ProcessingState({
+  operationName,
+  detail,
+}: {
+  operationName: string;
+  detail?: string;
+}) {
   return (
     <ScientificState
       variant="processing"
@@ -167,7 +210,15 @@ export function ProcessingState({ operationName, detail }: { operationName: stri
 }
 
 /** §211 — Error state */
-export function ErrorState({ title, message, diagnosticCode }: { title?: string; message?: string; diagnosticCode?: string }) {
+export function ErrorState({
+  title,
+  message,
+  diagnosticCode,
+}: {
+  title?: string;
+  message?: string;
+  diagnosticCode?: string;
+}) {
   return (
     <ScientificState
       variant="error"

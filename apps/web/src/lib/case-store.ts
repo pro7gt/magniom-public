@@ -115,9 +115,27 @@ export interface CaseStateRecord {
 
 class CaseStore {
   private cases: Map<string, CaseStateRecord> = new Map();
+  private listeners: Set<(caseId: string) => void> = new Set();
 
   constructor() {
     this.resetToGoldenCases();
+  }
+
+  public subscribe(listener: (caseId: string) => void): () => void {
+    this.listeners.add(listener);
+    return () => {
+      this.listeners.delete(listener);
+    };
+  }
+
+  public notify(caseId: string): void {
+    for (const listener of this.listeners) {
+      try {
+        listener(caseId);
+      } catch {
+        // Multi-listener error resilience
+      }
+    }
   }
 
   public resetToGoldenCases() {
@@ -409,6 +427,9 @@ class CaseStore {
       },
     });
 
+    this.notify(caseId);
+    broadcastCaseStoreInvalidation('CASE_INDICATION_SWITCHED', caseId);
+
     return record;
   }
 
@@ -434,6 +455,9 @@ class CaseStore {
       occurredAt: new Date().toISOString(),
       details: { isStale, reason, severity },
     });
+
+    this.notify(caseId);
+    broadcastCaseStoreInvalidation('STALENESS_CHANGED', caseId);
   }
 
   /**
@@ -485,7 +509,178 @@ class CaseStore {
       details: { snapshotId: sealedSnapshot.id, snapshotHash: sealedHash, clinicianId },
     });
 
+    this.notify(caseId);
+    broadcastCaseStoreInvalidation('PHENOTYPE_UPDATED', caseId);
+
     return sealedSnapshot;
+  }
+
+  /**
+   * Authoritatively updates the clinical objective and invalidates active target slate per §78
+   */
+  public updateClinicalObjective(
+    caseId: string,
+    objective: {
+      id?: string | undefined;
+      title: string;
+      priorityRank?: number | undefined;
+      burdenScoreText?: string | undefined;
+      isEvidenceMappable?: boolean | undefined;
+    },
+  ): void {
+    const record = this.cases.get(caseId);
+    if (!record) throw new Error(`Case ${caseId} not found`);
+
+    const hasActiveSlate = Boolean(
+      (record.slate.primaryCandidates && record.slate.primaryCandidates.length > 0) ||
+      record.clinicalCase.currentTargetSlateId,
+    );
+
+    record.clinicalObjective = {
+      id: objective.id || record.clinicalObjective?.id || `obj-${caseId}-${Date.now()}`,
+      title: objective.title.trim(),
+      priorityRank: objective.priorityRank ?? record.clinicalObjective?.priorityRank ?? 1,
+      burdenScoreText: objective.burdenScoreText?.trim() || undefined,
+      isEvidenceMappable:
+        objective.isEvidenceMappable ?? record.clinicalObjective?.isEvidenceMappable ?? true,
+    };
+
+    record.clinicalCase = {
+      ...record.clinicalCase,
+      updatedAt: new Date().toISOString(),
+    };
+
+    record.auditEvents.push({
+      id: `evt-obj-${Date.now()}`,
+      eventType: 'CLINICAL_OBJECTIVE_UPDATED',
+      occurredAt: new Date().toISOString(),
+      details: { objective: record.clinicalObjective },
+    });
+
+    if (hasActiveSlate) {
+      this.setStaleness(
+        caseId,
+        true,
+        'Clinical objective changed after slate generation',
+        'blocking',
+      );
+    } else {
+      this.notify(caseId);
+      broadcastCaseStoreInvalidation('CASE_CONTEXT_UPDATED', caseId);
+    }
+  }
+
+  /**
+   * Authoritatively updates lesion context and triggers blocking staleness per §78
+   */
+  public updateLesionContext(
+    caseId: string,
+    lesionContext: NonNullable<CaseStateRecord['lesionContext']>,
+  ): void {
+    const record = this.cases.get(caseId);
+    if (!record) throw new Error(`Case ${caseId} not found`);
+
+    const hasActiveSlate = Boolean(
+      (record.slate.primaryCandidates && record.slate.primaryCandidates.length > 0) ||
+      record.clinicalCase.currentTargetSlateId,
+    );
+
+    record.lesionContext = { ...lesionContext };
+    record.clinicalCase = {
+      ...record.clinicalCase,
+      updatedAt: new Date().toISOString(),
+    };
+
+    record.auditEvents.push({
+      id: `evt-lesion-${Date.now()}`,
+      eventType: 'LESION_CONTEXT_UPDATED',
+      occurredAt: new Date().toISOString(),
+      details: { lesionContext },
+    });
+
+    if (hasActiveSlate) {
+      this.setStaleness(caseId, true, 'Lesion review updated after slate generation', 'blocking');
+    } else {
+      this.notify(caseId);
+      broadcastCaseStoreInvalidation('LESION_CONTEXT_UPDATED', caseId);
+    }
+  }
+
+  /**
+   * Authoritatively updates disease stage and invalidates slate if present per §78
+   */
+  public updateDiseaseStage(
+    caseId: string,
+    diseaseStage: NonNullable<CaseStateRecord['diseaseStage']>,
+  ): void {
+    const record = this.cases.get(caseId);
+    if (!record) throw new Error(`Case ${caseId} not found`);
+
+    const hasActiveSlate = Boolean(
+      (record.slate.primaryCandidates && record.slate.primaryCandidates.length > 0) ||
+      record.clinicalCase.currentTargetSlateId,
+    );
+
+    record.diseaseStage = { ...diseaseStage };
+    record.clinicalCase = {
+      ...record.clinicalCase,
+      updatedAt: new Date().toISOString(),
+    };
+
+    record.auditEvents.push({
+      id: `evt-stage-${Date.now()}`,
+      eventType: 'DISEASE_STAGE_UPDATED',
+      occurredAt: new Date().toISOString(),
+      details: { diseaseStage },
+    });
+
+    if (hasActiveSlate) {
+      this.setStaleness(caseId, true, 'Disease stage updated after slate generation', 'blocking');
+    } else {
+      this.notify(caseId);
+      broadcastCaseStoreInvalidation('CASE_CONTEXT_UPDATED', caseId);
+    }
+  }
+
+  /**
+   * Authoritatively updates treatment context and invalidates slate if present per §78
+   */
+  public updateTreatmentContext(
+    caseId: string,
+    treatmentContext: NonNullable<CaseStateRecord['treatmentContext']>,
+  ): void {
+    const record = this.cases.get(caseId);
+    if (!record) throw new Error(`Case ${caseId} not found`);
+
+    const hasActiveSlate = Boolean(
+      (record.slate.primaryCandidates && record.slate.primaryCandidates.length > 0) ||
+      record.clinicalCase.currentTargetSlateId,
+    );
+
+    record.treatmentContext = { ...treatmentContext };
+    record.clinicalCase = {
+      ...record.clinicalCase,
+      updatedAt: new Date().toISOString(),
+    };
+
+    record.auditEvents.push({
+      id: `evt-treatment-${Date.now()}`,
+      eventType: 'TREATMENT_CONTEXT_UPDATED',
+      occurredAt: new Date().toISOString(),
+      details: { treatmentContext },
+    });
+
+    if (hasActiveSlate) {
+      this.setStaleness(
+        caseId,
+        true,
+        'Treatment context updated after slate generation',
+        'blocking',
+      );
+    } else {
+      this.notify(caseId);
+      broadcastCaseStoreInvalidation('CASE_CONTEXT_UPDATED', caseId);
+    }
   }
 
   /**
@@ -515,6 +710,9 @@ class CaseStore {
       occurredAt: new Date().toISOString(),
       details: { previousDecisionId: previousId, newDecisionId: record.decision.id },
     });
+
+    this.notify(caseId);
+    broadcastCaseStoreInvalidation('DECISION_UPDATED', caseId);
   }
 
   /**
@@ -553,6 +751,9 @@ class CaseStore {
       digitalSignatureHash: '',
       isImmutable: false,
     };
+
+    this.notify(caseId);
+    broadcastCaseStoreInvalidation('DECISION_UPDATED', caseId);
   }
 
   /**
@@ -676,8 +877,100 @@ class CaseStore {
       },
     });
 
+    this.notify(params.caseId);
+    broadcastCaseStoreInvalidation('DECISION_SIGNED', params.caseId);
+
     return signedDecision;
   }
 }
 
 export const caseStore = new CaseStore();
+
+// ==========================================
+// Multi-Tab Safety Coordination (§141)
+// ==========================================
+
+/**
+ * Multi-tab state invalidation via BroadcastChannel (§141).
+ * When another tab modifies case state (phenotype, lesion context, slate generation,
+ * or decision signing), all sibling tabs receive an invalidation event so that
+ * stale-tab guards can prevent consequential action on outdated state.
+ */
+export type MultiTabEventType =
+  | 'PHENOTYPE_UPDATED'
+  | 'LESION_CONTEXT_UPDATED'
+  | 'CASE_CONTEXT_UPDATED'
+  | 'SLATE_REGENERATED'
+  | 'DECISION_SIGNED'
+  | 'DECISION_UPDATED'
+  | 'STALENESS_CHANGED'
+  | 'CASE_INDICATION_SWITCHED';
+
+export interface MultiTabInvalidationEvent {
+  readonly type: MultiTabEventType;
+  readonly caseId: string;
+  readonly timestamp: string;
+  readonly tabId: string;
+}
+
+const CASE_STORE_CHANNEL_NAME = 'magniom-case-store-sync';
+const TAB_ID =
+  typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `tab-${Date.now()}`;
+
+type MultiTabHandler = (event: MultiTabInvalidationEvent) => void;
+const multiTabHandlers: MultiTabHandler[] = [];
+
+/**
+ * Registers a handler for multi-tab invalidation events.
+ * Returns an unsubscribe function.
+ */
+export function onMultiTabInvalidation(handler: MultiTabHandler): () => void {
+  multiTabHandlers.push(handler);
+  return () => {
+    const idx = multiTabHandlers.indexOf(handler);
+    if (idx >= 0) multiTabHandlers.splice(idx, 1);
+  };
+}
+
+/**
+ * Broadcasts a state invalidation event to all sibling tabs.
+ */
+export function broadcastCaseStoreInvalidation(type: MultiTabEventType, caseId: string): void {
+  if (typeof window === 'undefined' || !('BroadcastChannel' in window)) return;
+
+  try {
+    const channel = new BroadcastChannel(CASE_STORE_CHANNEL_NAME);
+    const event: MultiTabInvalidationEvent = {
+      type,
+      caseId,
+      timestamp: new Date().toISOString(),
+      tabId: TAB_ID,
+    };
+    channel.postMessage(event);
+    channel.close();
+  } catch {
+    // BroadcastChannel not supported or blocked — fail silently
+  }
+}
+
+// Listen for incoming multi-tab invalidation events
+if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+  try {
+    const listener = new BroadcastChannel(CASE_STORE_CHANNEL_NAME);
+    listener.onmessage = (msg: MessageEvent<MultiTabInvalidationEvent>) => {
+      const event = msg.data;
+      // Only process events from other tabs
+      if (event.tabId === TAB_ID) return;
+
+      for (const handler of multiTabHandlers) {
+        try {
+          handler(event);
+        } catch {
+          // Multi-tab handlers must not throw
+        }
+      }
+    };
+  } catch {
+    // Fail silently if BroadcastChannel is not available
+  }
+}

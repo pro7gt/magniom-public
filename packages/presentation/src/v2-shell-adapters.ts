@@ -364,8 +364,26 @@ export function deriveModuleWorkflow(input: WorkflowDerivationInput): WorkflowVi
     isRequired: cs.required,
   }));
 
+  const contextPathSegments = [
+    'phenotype',
+    'context',
+    'objective',
+    'body-region',
+    'impairment',
+    'stage',
+    'lesion',
+    'slt-context',
+    'provocation-context',
+    'cue-context',
+    'trauma-context',
+    'assessment',
+    'treatment',
+  ];
   const isContextCurrent =
-    input.activePath.includes('/context') || input.activePath.includes('/phenotype');
+    input.activePath.includes('/context') ||
+    input.activePath.includes('/phenotype') ||
+    descriptor.context_sections.some(cs => input.activePath.includes(`/${cs.pathSuffix}`)) ||
+    contextPathSegments.some(seg => input.activePath.includes(`/${seg}`));
   const contextStep: WorkflowStepViewModel = {
     id: 'context',
     stepNumber: 2,
@@ -410,8 +428,10 @@ export function deriveModuleWorkflow(input: WorkflowDerivationInput): WorkflowVi
     },
   );
 
+  const measurementPathSegments = ['measurements', 'imaging', 'connectome'];
   const isMeasurementsCurrent =
-    input.activePath.includes('/measurements') || input.activePath.includes('/imaging');
+    measurementPathSegments.some(seg => input.activePath.includes(`/${seg}`)) ||
+    descriptor.measurement_sections.some(ms => input.activePath.includes(`/${ms.pathSuffix}`));
   const measurementsStep: WorkflowStepViewModel = {
     id: 'measurements',
     stepNumber: 3,
@@ -477,8 +497,11 @@ export function deriveModuleWorkflow(input: WorkflowDerivationInput): WorkflowVi
     steps.push(decisionStep);
   }
 
-  // Find active step index
-  const activeStep = steps.find(s => s.path === input.activePath) || steps[0]!;
+  // Find active step index: prioritize step explicitly marked as 'current', then exact path match, then overview
+  const activeStep =
+    steps.find(s => s.state === 'current') ||
+    steps.find(s => s.path === input.activePath) ||
+    steps[0]!;
   const currentWorkflowIndex = steps.indexOf(activeStep);
 
   return {

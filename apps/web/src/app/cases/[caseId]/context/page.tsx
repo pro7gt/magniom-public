@@ -5,11 +5,7 @@ import { caseStore } from '../../../../lib/case-store';
 import { resolveCaseShellContext } from '../../../../lib/shell-authority';
 import type { CaseShellViewModel } from '@magniom/presentation';
 
-export default function ClinicalContextPage({
-  params,
-}: {
-  params: Promise<{ caseId: string }>;
-}) {
+export default function ClinicalContextPage({ params }: { params: Promise<{ caseId: string }> }) {
   const resolvedParams = use(params);
   const caseId = resolvedParams.caseId;
 
@@ -17,6 +13,12 @@ export default function ClinicalContextPage({
 
   useEffect(() => {
     setRecord(caseStore.getCaseRecord(caseId));
+    const unsubscribe = caseStore.subscribe(updatedCaseId => {
+      if (updatedCaseId === caseId) {
+        setRecord(caseStore.getCaseRecord(caseId));
+      }
+    });
+    return () => unsubscribe();
   }, [caseId]);
 
   if (!record) {
@@ -61,7 +63,13 @@ export default function ClinicalContextPage({
         )}
       </header>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))', gap: '20px' }}>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))',
+          gap: '20px',
+        }}
+      >
         {/* 1. Clinical Objective (§72, §93) */}
         <section
           className="context-card"
@@ -73,7 +81,15 @@ export default function ClinicalContextPage({
             padding: '20px',
           }}
         >
-          <h3 id="ctx-objective-heading" style={{ margin: '0 0 12px', fontSize: '1rem', color: 'var(--accent-cyan)', fontWeight: 600 }}>
+          <h3
+            id="ctx-objective-heading"
+            style={{
+              margin: '0 0 12px',
+              fontSize: '1rem',
+              color: 'var(--accent-cyan)',
+              fontWeight: 600,
+            }}
+          >
             Clinical Objective
           </h3>
           {effectiveObjective ? (
@@ -85,19 +101,27 @@ export default function ClinicalContextPage({
                 <span className="badge badge-neutral" style={{ fontSize: '0.8rem' }}>
                   Priority: {effectiveObjective.priorityRank}
                 </span>
-                <span className={`badge ${effectiveObjective.isEvidenceMappable ? 'badge-tier1' : 'badge-neutral'}`} style={{ fontSize: '0.8rem' }}>
-                  {effectiveObjective.isEvidenceMappable ? 'Evidence Mappable' : 'Not Directly Mapped'}
+                <span
+                  className={`badge ${effectiveObjective.isEvidenceMappable ? 'badge-tier1' : 'badge-neutral'}`}
+                  style={{ fontSize: '0.8rem' }}
+                >
+                  {effectiveObjective.isEvidenceMappable
+                    ? 'Evidence Mappable'
+                    : 'Not Directly Mapped'}
                 </span>
               </div>
               {effectiveObjective.burdenScoreText && (
-                <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '8px' }}>
+                <p
+                  style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '8px' }}
+                >
                   Burden: {effectiveObjective.burdenScoreText}
                 </p>
               )}
             </div>
           ) : (
             <p style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>
-              No clinical objective has been set for this case. This is required before Target Slate generation.
+              No clinical objective has been set for this case. This is required before Target Slate
+              generation.
             </p>
           )}
         </section>
@@ -113,7 +137,15 @@ export default function ClinicalContextPage({
             padding: '20px',
           }}
         >
-          <h3 id="ctx-stage-heading" style={{ margin: '0 0 12px', fontSize: '1rem', color: 'var(--accent-cyan)', fontWeight: 600 }}>
+          <h3
+            id="ctx-stage-heading"
+            style={{
+              margin: '0 0 12px',
+              fontSize: '1rem',
+              color: 'var(--accent-cyan)',
+              fontWeight: 600,
+            }}
+          >
             Disease Stage
           </h3>
           {effectiveStage ? (
@@ -125,7 +157,10 @@ export default function ClinicalContextPage({
                 Determination: {effectiveStage.determinationMethod}
               </p>
               {effectiveStage.isSubacuteOrAcute && (
-                <span className="badge badge-tier3" style={{ fontSize: '0.8rem', marginTop: '6px', display: 'inline-block' }}>
+                <span
+                  className="badge badge-tier3"
+                  style={{ fontSize: '0.8rem', marginTop: '6px', display: 'inline-block' }}
+                >
                   ⚠ Subacute / Acute — Special targeting considerations apply
                 </span>
               )}
@@ -148,7 +183,15 @@ export default function ClinicalContextPage({
             padding: '20px',
           }}
         >
-          <h3 id="ctx-lesion-heading" style={{ margin: '0 0 12px', fontSize: '1rem', color: 'var(--accent-cyan)', fontWeight: 600 }}>
+          <h3
+            id="ctx-lesion-heading"
+            style={{
+              margin: '0 0 12px',
+              fontSize: '1rem',
+              color: 'var(--accent-cyan)',
+              fontWeight: 600,
+            }}
+          >
             Lesion Context
           </h3>
           {effectiveLesion ? (
@@ -156,7 +199,9 @@ export default function ClinicalContextPage({
               {effectiveLesion.hasLesion ? (
                 <>
                   <p style={{ margin: '0 0 8px', fontWeight: 600, color: 'var(--text-main)' }}>
-                    {effectiveLesion.laterality ? `${effectiveLesion.laterality.toUpperCase()} ` : ''}
+                    {effectiveLesion.laterality
+                      ? `${effectiveLesion.laterality.toUpperCase()} `
+                      : ''}
                     {effectiveLesion.lesionType || 'Lesion Present'}
                   </p>
                   {effectiveLesion.interpretation && (
@@ -204,12 +249,23 @@ export default function ClinicalContextPage({
             padding: '20px',
           }}
         >
-          <h3 id="ctx-treatment-heading" style={{ margin: '0 0 12px', fontSize: '1rem', color: 'var(--accent-cyan)', fontWeight: 600 }}>
+          <h3
+            id="ctx-treatment-heading"
+            style={{
+              margin: '0 0 12px',
+              fontSize: '1rem',
+              color: 'var(--accent-cyan)',
+              fontWeight: 600,
+            }}
+          >
             Treatment Context
           </h3>
           {effectiveTreatment ? (
             <div>
-              <span className={`badge ${effectiveTreatment.isConfirmed ? 'badge-tier1' : 'badge-neutral'}`} style={{ fontSize: '0.85rem' }}>
+              <span
+                className={`badge ${effectiveTreatment.isConfirmed ? 'badge-tier1' : 'badge-neutral'}`}
+                style={{ fontSize: '0.85rem' }}
+              >
                 {effectiveTreatment.statusLabel}
               </span>
               <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '8px' }}>
@@ -236,12 +292,21 @@ export default function ClinicalContextPage({
           }}
           aria-labelledby="ctx-indications-heading"
         >
-          <h3 id="ctx-indications-heading" style={{ margin: '0 0 12px', fontSize: '1rem', color: 'var(--accent-cyan)', fontWeight: 600 }}>
+          <h3
+            id="ctx-indications-heading"
+            style={{
+              margin: '0 0 12px',
+              fontSize: '1rem',
+              color: 'var(--accent-cyan)',
+              fontWeight: 600,
+            }}
+          >
             Available Case Indications
           </h3>
           <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '12px' }}>
-            This patient case has {record.availableIndications.length} registered targeting indications.
-            Each indication governs an independent clinical context and Target Slate (§66).
+            This patient case has {record.availableIndications.length} registered targeting
+            indications. Each indication governs an independent clinical context and Target Slate
+            (§66).
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
             {record.availableIndications.map(ind => (
@@ -249,21 +314,32 @@ export default function ClinicalContextPage({
                 key={ind.caseIndicationId}
                 style={{
                   padding: '10px 16px',
-                  backgroundColor: ind.indicationCode === record.clinicalCase.indicationCode
-                    ? 'rgba(59,130,246,0.15)'
-                    : 'rgba(255,255,255,0.03)',
+                  backgroundColor:
+                    ind.indicationCode === record.clinicalCase.indicationCode
+                      ? 'rgba(59,130,246,0.15)'
+                      : 'rgba(255,255,255,0.03)',
                   border: `1px solid ${ind.indicationCode === record.clinicalCase.indicationCode ? '#3b82f6' : 'rgba(255,255,255,0.08)'}`,
                   borderRadius: '6px',
                   minWidth: '200px',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                <div
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}
+                >
                   <strong style={{ color: 'var(--text-main)' }}>{ind.label}</strong>
                   {ind.isPrimary && (
-                    <span className="badge badge-neutral" style={{ fontSize: '0.7rem' }}>Primary</span>
+                    <span className="badge badge-neutral" style={{ fontSize: '0.7rem' }}>
+                      Primary
+                    </span>
                   )}
                 </div>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>
+                <span
+                  style={{
+                    fontSize: '0.8rem',
+                    color: 'var(--text-secondary)',
+                    fontFamily: 'var(--font-mono)',
+                  }}
+                >
                   {ind.indicationCode}
                 </span>
               </div>
