@@ -4,8 +4,8 @@
  * Conforms to MAG-SEC-009, MAG-SEC-028, and Section 90 of Technical Architecture
  */
 
-import { readFileSync, readdirSync, statSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { readFileSync, readdirSync, statSync, writeFileSync, mkdirSync } from 'node:fs';
+import { join, resolve, dirname } from 'node:path';
 
 interface SecretLeakFinding {
   filePath: string;
@@ -90,17 +90,37 @@ export class SecretHygieneScanner {
 // Direct CLI Execution
 if (import.meta.url === `file://${process.argv[1]}`) {
   const scanner = new SecretHygieneScanner();
-  const findings = scanner.scanDirectory(resolve(process.cwd()));
+  const repoRoot = resolve(process.cwd());
+  const findings = scanner.scanDirectory(repoRoot);
 
   console.log('\n============================================================');
   console.log('       MAGNIOM STATIC SECRET HYGIENE & LEAK SCANNER        ');
   console.log('============================================================\n');
+
+  const reportPath = join(repoRoot, 'docs/security/secret-hygiene-report.json');
+  mkdirSync(dirname(reportPath), { recursive: true });
+  writeFileSync(
+    reportPath,
+    JSON.stringify(
+      {
+        timestamp: new Date().toISOString(),
+        scannedRules: ['MAG-SEC-009', 'MAG-SEC-028'],
+        status: findings.length === 0 ? 'PASS' : 'FAIL',
+        totalFindings: findings.length,
+        findings,
+      },
+      null,
+      2,
+    ),
+    'utf-8',
+  );
 
   if (findings.length === 0) {
     console.log('✓ PASS: Zero hardcoded secrets, service keys, or private certificates detected.');
     console.log(
       '  Scanned apps, packages, services, and docs according to MAG-SEC-009 & MAG-SEC-028.',
     );
+    console.log(`  Report saved to: ${reportPath}`);
     process.exit(0);
   } else {
     console.error(`✗ FAIL: ${findings.length} potential secret leak(s) detected:`);

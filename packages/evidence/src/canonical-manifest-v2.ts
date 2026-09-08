@@ -71,3 +71,6 @@ export const CANONICAL_EVIDENCE_RELEASE_2_0_0_STAGING: EvidenceLibraryReleaseV2 
   ...unhashedManifest,
   manifestSha256: computeEvidenceManifestV2Hash(unhashedManifest),
 };
+
+export const CANONICAL_EVIDENCE_RELEASE_V2 = CANONICAL_EVIDENCE_RELEASE_2_0_0_STAGING;
+

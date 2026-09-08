@@ -1,0 +1,2647 @@
+{
+  "id": "00000000-0000-0000-0000-000000000099",
+  "code": "MAGNIOM-POLICY-V2.0.0",
+  "semanticVersion": "2.0.0",
+  "title": "Canonical Multi-Indication Decision Support Scientific Policy Release v2.0",
+  "description": "Authorizes indication-specific compatibility tuples, candidate generators, measurement capabilities, and parameters for MDD, Pain, Stroke, Aphasia, OCD, TBI, PTSD, and Tinnitus.",
+  "lifecycleStatus": "active",
+  "validationStatus": "clinical_release_qualified",
+  "scope": "multi_indication",
+  "indicationPolicyBindings": [
+    {
+      "id": "00000000-0000-0000-0000-000000000501",
+      "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000001",
+      "modulePermission": "clinical_permitted",
+      "permittedModes": [
+        "clinical",
+        "validation",
+        "research"
+      ],
+      "evidencePathPermissions": [
+        {
+          "evidencePathId": "ep-mdd-sgacc-dlpfc",
+          "permittedModes": [
+            "clinical",
+            "validation",
+            "research"
+          ],
+          "candidateRoles": [
+            "evidence_anchor",
+            "connectome_refinement"
+          ],
+          "candidateGenerationMethodIds": [
+            "gen-mdd-evidence-prior",
+            "gen-mdd-fc-refinement"
+          ],
+          "standalonePrimary": true,
+          "standaloneAdditional": true,
+          "supportingContext": true,
+          "targetGeometryTypes": [
+            "point"
+          ],
+          "limitations": []
+        }
+      ],
+      "targetGeometryPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000001",
+        "targetFamilyPermissions": [
+          {
+            "targetFamilyId": "tf-mdd-dlpfc-sgacc",
+            "permittedGeometryTypes": [
+              "point"
+            ],
+            "permittedGeneratorIds": [
+              "gen-mdd-evidence-prior",
+              "gen-mdd-fc-refinement"
+            ]
+          }
+        ]
+      },
+      "measurementPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000001",
+        "requirements": [
+          {
+            "capabilityCode": "structural_mri",
+            "modality": "structural_mri",
+            "requirement": "required",
+            "permittedCandidateRoles": [
+              "PRIMARY_1",
+              "PRIMARY_2"
+            ],
+            "permittedGeneratorIds": [
+              "gen-mdd-evidence-prior"
+            ],
+            "missingMeasurementBehaviour": "block",
+            "limitations": []
+          },
+          {
+            "capabilityCode": "individual_fc_refinement",
+            "modality": "resting_state_fmri",
+            "requirement": "required_for_refinement",
+            "permittedCandidateRoles": [
+              "PRIMARY_1"
+            ],
+            "permittedGeneratorIds": [
+              "gen-mdd-fc-refinement"
+            ],
+            "minimumReliabilityRuleId": "rule-fc-reliability-min",
+            "missingMeasurementBehaviour": "fallback",
+            "limitations": [
+              "Personalisation unavailable without resting-state fMRI."
+            ]
+          }
+        ],
+        "multimodalFusionPolicy": "prohibited",
+        "fallbackRules": [
+          {
+            "triggeringConditionCode": "FC_RELIABILITY_FAILED",
+            "fromCapability": "individual_fc_refinement",
+            "fallbackConfigurationId": "00000000-0000-0000-0000-000000000302",
+            "resultingCapabilityState": "fallback_only",
+            "explanationTemplateId": "tpl-mdd-fc-fallback"
+          }
+        ]
+      },
+      "reliabilityPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000001",
+        "capabilityRules": [
+          {
+            "capabilityCode": "individual_fc_refinement",
+            "reliabilityMethodIds": [
+              "split_half_fc"
+            ],
+            "minimumParameterRefs": [
+              "param.mdd.fc_reliability_threshold"
+            ],
+            "failureBehaviour": "fallback",
+            "limitations": [
+              "Requires split-half concordance >= 0.70."
+            ]
+          }
+        ],
+        "overallBundleBehaviour": "capability_specific"
+      },
+      "candidateGenerationPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000001",
+        "pluginReleaseId": "plugin-mdd",
+        "generators": [
+          {
+            "generatorId": "gen-mdd-evidence-prior",
+            "generatorVersion": "2.0.0",
+            "status": "permitted",
+            "candidateRoles": [
+              "PRIMARY_1",
+              "PRIMARY_2"
+            ],
+            "evidencePathIds": [
+              "ep-mdd-sgacc-dlpfc"
+            ],
+            "targetFamilyIds": [
+              "tf-mdd-dlpfc-sgacc"
+            ],
+            "geometryTypes": [
+              "point"
+            ],
+            "requiredCapabilityCodes": [
+              "structural_mri"
+            ]
+          },
+          {
+            "generatorId": "gen-mdd-fc-refinement",
+            "generatorVersion": "2.0.0",
+            "status": "permitted",
+            "candidateRoles": [
+              "PRIMARY_1"
+            ],
+            "evidencePathIds": [
+              "ep-mdd-sgacc-dlpfc"
+            ],
+            "targetFamilyIds": [
+              "tf-mdd-dlpfc-sgacc"
+            ],
+            "geometryTypes": [
+              "point"
+            ],
+            "requiredCapabilityCodes": [
+              "individual_fc_refinement"
+            ]
+          }
+        ]
+      },
+      "rankingPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000001",
+        "comparisonDomainPermissions": [
+          {
+            "domainCode": "dom-mdd-dlpfc",
+            "permittedModes": [
+              "clinical",
+              "validation",
+              "research"
+            ],
+            "allowedBasis": "same_target_family_variants"
+          }
+        ],
+        "rankingProfiles": [
+          {
+            "profileId": "prof-mdd-lexicographic",
+            "modelType": "lexicographic",
+            "tieBreakingRuleId": "tie-mdd-default"
+          }
+        ],
+        "crossDomainScalarRanking": "prohibited"
+      },
+      "refinementPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000001",
+        "profiles": [
+          {
+            "id": "prof-mdd-fc-refinement",
+            "refinementKind": "functional_connectivity",
+            "baselineRole": "PRIMARY_2",
+            "refinedRole": "PRIMARY_1",
+            "requiredCapabilityCodes": [
+              "individual_fc_refinement"
+            ],
+            "permittedTargetFamilyIds": [
+              "tf-mdd-dlpfc-sgacc"
+            ],
+            "minimumIncrementalValueParameterRefs": [
+              "param.mdd.min_incremental_gain"
+            ],
+            "adoptionBehaviour": "prefer_if_all_pass",
+            "fallbackBehaviour": "retain_baseline"
+          }
+        ]
+      },
+      "redundancyPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000001",
+        "spatialDistanceThresholdMmParameterRef": "param.mdd.spatial_redundancy_mm",
+        "clinicalDiversityRule": "enforce_distinct_anatomical_families"
+      },
+      "slateAssemblyPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000001",
+        "minCandidates": 1,
+        "maxCandidates": 4,
+        "primarySlotsCount": 2,
+        "allowPartialPrimarySlots": true,
+        "allowEmptySlateWithAbstention": true
+      },
+      "abstentionPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000001",
+        "allowedAbstentionClasses": [
+          "NO_QUALIFIED_CANDIDATES",
+          "RELIABILITY_UNMET_NO_FALLBACK"
+        ],
+        "supportPartialAbstention": true,
+        "mandatoryClinicianAdvisory": true
+      },
+      "explanationPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000001",
+        "requiredSections": [
+          "clinical_rationale",
+          "target_family",
+          "connectivity_basis"
+        ],
+        "disclaimers": [
+          "FC map does not confer autonomous clinical authority."
+        ]
+      },
+      "permittedCompatibilityConfigurationIds": [
+        "00000000-0000-0000-0000-000000000301",
+        "00000000-0000-0000-0000-000000000302"
+      ],
+      "limitations": [
+        "Requires patient clinical safety clearance.",
+        "FC refinement requires minimum 8 minutes usable BOLD scan."
+      ]
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000502",
+      "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000002",
+      "modulePermission": "validation_only",
+      "permittedModes": [
+        "validation",
+        "research"
+      ],
+      "evidencePathPermissions": [
+        {
+          "evidencePathId": "ep-pain-contralateral-m1",
+          "permittedModes": [
+            "validation",
+            "research"
+          ],
+          "candidateRoles": [
+            "somatotopic_target"
+          ],
+          "candidateGenerationMethodIds": [
+            "gen-pain-somatotopic-baseline",
+            "gen-pain-motor-map-refinement"
+          ],
+          "standalonePrimary": true,
+          "standaloneAdditional": true,
+          "supportingContext": true,
+          "targetGeometryTypes": [
+            "point"
+          ],
+          "limitations": [
+            "Target must be contralateral to reported pain side."
+          ]
+        }
+      ],
+      "targetGeometryPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000002",
+        "targetFamilyPermissions": [
+          {
+            "targetFamilyId": "tf-pain-m1-somatotopic",
+            "permittedGeometryTypes": [
+              "point"
+            ],
+            "permittedGeneratorIds": [
+              "gen-pain-somatotopic-baseline",
+              "gen-pain-motor-map-refinement"
+            ]
+          }
+        ]
+      },
+      "measurementPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000002",
+        "requirements": [
+          {
+            "capabilityCode": "structural_mri",
+            "modality": "structural_mri",
+            "requirement": "required",
+            "permittedCandidateRoles": [
+              "PRIMARY_1",
+              "PRIMARY_2"
+            ],
+            "permittedGeneratorIds": [
+              "gen-pain-somatotopic-baseline"
+            ],
+            "missingMeasurementBehaviour": "block",
+            "limitations": []
+          },
+          {
+            "capabilityCode": "motor_hotspot_refinement",
+            "modality": "motor_mapping",
+            "requirement": "required_for_refinement",
+            "permittedCandidateRoles": [
+              "PRIMARY_1"
+            ],
+            "permittedGeneratorIds": [
+              "gen-pain-motor-map-refinement"
+            ],
+            "missingMeasurementBehaviour": "fallback",
+            "limitations": [
+              "Motor hotspot repeatability must be <= 5.0 mm."
+            ]
+          }
+        ],
+        "multimodalFusionPolicy": "prohibited",
+        "fallbackRules": [
+          {
+            "triggeringConditionCode": "MOTOR_HOTSPOT_UNRELIABLE",
+            "fromCapability": "motor_hotspot_refinement",
+            "fallbackConfigurationId": "00000000-0000-0000-0000-000000000304",
+            "resultingCapabilityState": "fallback_only",
+            "explanationTemplateId": "tpl-pain-hotspot-fallback"
+          }
+        ]
+      },
+      "reliabilityPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000002",
+        "capabilityRules": [
+          {
+            "capabilityCode": "motor_hotspot_refinement",
+            "reliabilityMethodIds": [
+              "hotspot_repeatability"
+            ],
+            "minimumParameterRefs": [
+              "param.pain.max_hotspot_repeatability_mm"
+            ],
+            "failureBehaviour": "fallback",
+            "limitations": [
+              "Repeatability exceeding 5.0 mm triggers fallback to somatotopic baseline."
+            ]
+          }
+        ],
+        "overallBundleBehaviour": "capability_specific"
+      },
+      "candidateGenerationPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000002",
+        "pluginReleaseId": "plugin-pain",
+        "generators": [
+          {
+            "generatorId": "gen-pain-somatotopic-baseline",
+            "generatorVersion": "2.0.0",
+            "status": "permitted",
+            "candidateRoles": [
+              "PRIMARY_1",
+              "PRIMARY_2"
+            ],
+            "evidencePathIds": [
+              "ep-pain-contralateral-m1"
+            ],
+            "targetFamilyIds": [
+              "tf-pain-m1-somatotopic"
+            ],
+            "geometryTypes": [
+              "point"
+            ],
+            "requiredCapabilityCodes": [
+              "structural_mri"
+            ]
+          },
+          {
+            "generatorId": "gen-pain-motor-map-refinement",
+            "generatorVersion": "2.0.0",
+            "status": "permitted",
+            "candidateRoles": [
+              "PRIMARY_1"
+            ],
+            "evidencePathIds": [
+              "ep-pain-contralateral-m1"
+            ],
+            "targetFamilyIds": [
+              "tf-pain-m1-somatotopic"
+            ],
+            "geometryTypes": [
+              "point"
+            ],
+            "requiredCapabilityCodes": [
+              "motor_hotspot_refinement"
+            ]
+          }
+        ]
+      },
+      "rankingPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000002",
+        "comparisonDomainPermissions": [
+          {
+            "domainCode": "dom-pain-m1",
+            "permittedModes": [
+              "validation",
+              "research"
+            ],
+            "allowedBasis": "same_target_family_variants"
+          }
+        ],
+        "rankingProfiles": [
+          {
+            "profileId": "prof-pain-lexicographic",
+            "modelType": "lexicographic",
+            "tieBreakingRuleId": "tie-pain-default"
+          }
+        ],
+        "crossDomainScalarRanking": "prohibited"
+      },
+      "refinementPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000002",
+        "profiles": [
+          {
+            "id": "prof-pain-motor-refinement",
+            "refinementKind": "motor_mapping",
+            "baselineRole": "PRIMARY_2",
+            "refinedRole": "PRIMARY_1",
+            "requiredCapabilityCodes": [
+              "motor_hotspot_refinement"
+            ],
+            "permittedTargetFamilyIds": [
+              "tf-pain-m1-somatotopic"
+            ],
+            "minimumIncrementalValueParameterRefs": [
+              "param.pain.min_incremental_gain"
+            ],
+            "adoptionBehaviour": "prefer_if_all_pass",
+            "fallbackBehaviour": "retain_baseline"
+          }
+        ]
+      },
+      "redundancyPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000002",
+        "spatialDistanceThresholdMmParameterRef": "param.pain.spatial_redundancy_mm",
+        "clinicalDiversityRule": "enforce_distinct_anatomical_families"
+      },
+      "slateAssemblyPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000002",
+        "minCandidates": 1,
+        "maxCandidates": 3,
+        "primarySlotsCount": 1,
+        "allowPartialPrimarySlots": true,
+        "allowEmptySlateWithAbstention": true
+      },
+      "abstentionPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000002",
+        "allowedAbstentionClasses": [
+          "NO_QUALIFIED_CANDIDATES",
+          "LATERALITY_AMBIGUOUS"
+        ],
+        "supportPartialAbstention": true,
+        "mandatoryClinicianAdvisory": true
+      },
+      "explanationPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000002",
+        "requiredSections": [
+          "clinical_rationale",
+          "somatotopic_correspondence"
+        ],
+        "disclaimers": [
+          "Somatotopic M1 target does not replace neurological pain evaluation."
+        ]
+      },
+      "permittedCompatibilityConfigurationIds": [
+        "00000000-0000-0000-0000-000000000303",
+        "00000000-0000-0000-0000-000000000304"
+      ],
+      "limitations": [
+        "Research/Validation use only; Clinical mode disabled (§186).",
+        "Somatotopic target strictly contralateral to reported pain limb."
+      ]
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000503",
+      "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000003",
+      "modulePermission": "validation_only",
+      "permittedModes": [
+        "validation",
+        "research"
+      ],
+      "evidencePathPermissions": [
+        {
+          "evidencePathId": "ep-stroke-motor-peri-lesional",
+          "permittedModes": [
+            "validation",
+            "research"
+          ],
+          "candidateRoles": [
+            "ipsilesional_strategy",
+            "contralesional_strategy"
+          ],
+          "candidateGenerationMethodIds": [
+            "gen-stroke-ipsilesional-m1",
+            "gen-stroke-contralesional-m1"
+          ],
+          "standalonePrimary": true,
+          "standaloneAdditional": true,
+          "supportingContext": true,
+          "diseaseStageConstraints": [
+            "stage-post-acute",
+            "stage-chronic"
+          ],
+          "targetGeometryTypes": [
+            "point"
+          ],
+          "limitations": [
+            "Requires verified LesionContext; suppressed if target tissue is destroyed."
+          ]
+        }
+      ],
+      "targetGeometryPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000003",
+        "targetFamilyPermissions": [
+          {
+            "targetFamilyId": "tf-stroke-m1",
+            "permittedGeometryTypes": [
+              "point"
+            ],
+            "permittedGeneratorIds": [
+              "gen-stroke-ipsilesional-m1",
+              "gen-stroke-contralesional-m1"
+            ]
+          }
+        ]
+      },
+      "measurementPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000003",
+        "requirements": [
+          {
+            "capabilityCode": "structural_mri",
+            "modality": "structural_mri",
+            "requirement": "required",
+            "permittedCandidateRoles": [
+              "PRIMARY_1",
+              "PRIMARY_2"
+            ],
+            "permittedGeneratorIds": [
+              "gen-stroke-ipsilesional-m1"
+            ],
+            "missingMeasurementBehaviour": "block",
+            "limitations": []
+          },
+          {
+            "capabilityCode": "native_lesion_mapping",
+            "modality": "lesion_mapping",
+            "requirement": "required",
+            "permittedCandidateRoles": [
+              "PRIMARY_1",
+              "PRIMARY_2"
+            ],
+            "permittedGeneratorIds": [
+              "gen-stroke-ipsilesional-m1",
+              "gen-stroke-contralesional-m1"
+            ],
+            "missingMeasurementBehaviour": "block",
+            "limitations": [
+              "Lesion mapping mandatory. No normal-template fallback permitted (§115, §147)."
+            ]
+          }
+        ],
+        "multimodalFusionPolicy": "prohibited",
+        "fallbackRules": []
+      },
+      "reliabilityPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000003",
+        "capabilityRules": [
+          {
+            "capabilityCode": "native_lesion_mapping",
+            "reliabilityMethodIds": [
+              "lesion_dice_reproducibility"
+            ],
+            "minimumParameterRefs": [
+              "param.stroke.min_lesion_dice"
+            ],
+            "failureBehaviour": "block_module",
+            "limitations": [
+              "Lesion registration failure blocks targeting analysis."
+            ]
+          }
+        ],
+        "overallBundleBehaviour": "capability_specific"
+      },
+      "candidateGenerationPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000003",
+        "pluginReleaseId": "plugin-stroke-motor",
+        "generators": [
+          {
+            "generatorId": "gen-stroke-ipsilesional-m1",
+            "generatorVersion": "2.0.0",
+            "status": "permitted",
+            "candidateRoles": [
+              "PRIMARY_1"
+            ],
+            "evidencePathIds": [
+              "ep-stroke-motor-peri-lesional"
+            ],
+            "targetFamilyIds": [
+              "tf-stroke-m1"
+            ],
+            "geometryTypes": [
+              "point"
+            ],
+            "requiredCapabilityCodes": [
+              "structural_mri",
+              "native_lesion_mapping"
+            ]
+          },
+          {
+            "generatorId": "gen-stroke-contralesional-m1",
+            "generatorVersion": "2.0.0",
+            "status": "permitted",
+            "candidateRoles": [
+              "PRIMARY_2"
+            ],
+            "evidencePathIds": [
+              "ep-stroke-motor-peri-lesional"
+            ],
+            "targetFamilyIds": [
+              "tf-stroke-m1"
+            ],
+            "geometryTypes": [
+              "point"
+            ],
+            "requiredCapabilityCodes": [
+              "structural_mri",
+              "native_lesion_mapping"
+            ]
+          }
+        ]
+      },
+      "rankingPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000003",
+        "comparisonDomainPermissions": [
+          {
+            "domainCode": "dom-stroke-motor",
+            "permittedModes": [
+              "validation",
+              "research"
+            ],
+            "allowedBasis": "same_target_strategy"
+          }
+        ],
+        "rankingProfiles": [
+          {
+            "profileId": "prof-stroke-motor-lexicographic",
+            "modelType": "lexicographic",
+            "tieBreakingRuleId": "tie-stroke-default"
+          }
+        ],
+        "crossDomainScalarRanking": "prohibited"
+      },
+      "refinementPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000003",
+        "profiles": []
+      },
+      "redundancyPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000003",
+        "spatialDistanceThresholdMmParameterRef": "param.stroke.spatial_redundancy_mm",
+        "clinicalDiversityRule": "enforce_distinct_anatomical_families"
+      },
+      "slateAssemblyPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000003",
+        "minCandidates": 1,
+        "maxCandidates": 2,
+        "primarySlotsCount": 1,
+        "allowPartialPrimarySlots": true,
+        "allowEmptySlateWithAbstention": true
+      },
+      "abstentionPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000003",
+        "allowedAbstentionClasses": [
+          "LESION_ABSENT_OR_UNRELIABLE",
+          "TARGET_DESTROYED_BY_LESION",
+          "NO_QUALIFIED_CANDIDATES"
+        ],
+        "supportPartialAbstention": true,
+        "mandatoryClinicianAdvisory": true
+      },
+      "explanationPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000003",
+        "requiredSections": [
+          "clinical_rationale",
+          "lesion_target_relationship",
+          "corticospinal_tract_status"
+        ],
+        "disclaimers": [
+          "Destroyed target coordinates cannot be shifted arbitrarily (§68)."
+        ]
+      },
+      "permittedCompatibilityConfigurationIds": [
+        "00000000-0000-0000-0000-000000000305"
+      ],
+      "limitations": [
+        "Validation only; Clinical mode disabled (§187).",
+        "Mandatory native-space LesionContext. Absent lesion mapping triggers complete module abstention (§115, §147)."
+      ]
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000504",
+      "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000004",
+      "modulePermission": "validation_only",
+      "permittedModes": [
+        "validation",
+        "research"
+      ],
+      "evidencePathPermissions": [
+        {
+          "evidencePathId": "ep-aphasia-chronic-right-ifg",
+          "permittedModes": [
+            "validation",
+            "research"
+          ],
+          "candidateRoles": [
+            "clinical_alternative"
+          ],
+          "candidateGenerationMethodIds": [
+            "gen-aphasia-right-ifg"
+          ],
+          "standalonePrimary": true,
+          "standaloneAdditional": false,
+          "supportingContext": true,
+          "populationConstraints": [
+            "pop-chronic-nonfluent-aphasia"
+          ],
+          "diseaseStageConstraints": [
+            "stage-chronic"
+          ],
+          "treatmentContextConstraints": [
+            "ctx-concurrent-slt"
+          ],
+          "targetGeometryTypes": [
+            "point"
+          ],
+          "limitations": [
+            "Requires chronic stage (>6 months post-stroke) and non-fluent phenotype (§148)."
+          ]
+        }
+      ],
+      "targetGeometryPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000004",
+        "targetFamilyPermissions": [
+          {
+            "targetFamilyId": "tf-aphasia-right-ifg",
+            "permittedGeometryTypes": [
+              "point"
+            ],
+            "permittedGeneratorIds": [
+              "gen-aphasia-right-ifg"
+            ]
+          }
+        ]
+      },
+      "measurementPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000004",
+        "requirements": [
+          {
+            "capabilityCode": "structural_mri",
+            "modality": "structural_mri",
+            "requirement": "required",
+            "permittedCandidateRoles": [
+              "PRIMARY_1"
+            ],
+            "permittedGeneratorIds": [
+              "gen-aphasia-right-ifg"
+            ],
+            "missingMeasurementBehaviour": "block",
+            "limitations": []
+          },
+          {
+            "capabilityCode": "lesion_mapping",
+            "modality": "lesion_mapping",
+            "requirement": "required",
+            "permittedCandidateRoles": [
+              "PRIMARY_1"
+            ],
+            "permittedGeneratorIds": [
+              "gen-aphasia-right-ifg"
+            ],
+            "missingMeasurementBehaviour": "block",
+            "limitations": []
+          }
+        ],
+        "multimodalFusionPolicy": "prohibited",
+        "fallbackRules": []
+      },
+      "reliabilityPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000004",
+        "capabilityRules": [],
+        "overallBundleBehaviour": "capability_specific"
+      },
+      "candidateGenerationPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000004",
+        "pluginReleaseId": "plugin-stroke-aphasia",
+        "generators": [
+          {
+            "generatorId": "gen-aphasia-right-ifg",
+            "generatorVersion": "2.0.0",
+            "status": "permitted",
+            "candidateRoles": [
+              "PRIMARY_1"
+            ],
+            "evidencePathIds": [
+              "ep-aphasia-chronic-right-ifg"
+            ],
+            "targetFamilyIds": [
+              "tf-aphasia-right-ifg"
+            ],
+            "geometryTypes": [
+              "point"
+            ],
+            "requiredCapabilityCodes": [
+              "structural_mri",
+              "lesion_mapping"
+            ]
+          }
+        ]
+      },
+      "rankingPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000004",
+        "comparisonDomainPermissions": [
+          {
+            "domainCode": "dom-aphasia-language",
+            "permittedModes": [
+              "validation",
+              "research"
+            ],
+            "allowedBasis": "same_target_family_variants"
+          }
+        ],
+        "rankingProfiles": [
+          {
+            "profileId": "prof-aphasia-default",
+            "modelType": "ordered_deterministic_rules",
+            "tieBreakingRuleId": "tie-aphasia-default"
+          }
+        ],
+        "crossDomainScalarRanking": "prohibited"
+      },
+      "refinementPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000004",
+        "profiles": []
+      },
+      "redundancyPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000004",
+        "spatialDistanceThresholdMmParameterRef": "param.aphasia.spatial_redundancy_mm",
+        "clinicalDiversityRule": "enforce_distinct_anatomical_families"
+      },
+      "slateAssemblyPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000004",
+        "minCandidates": 1,
+        "maxCandidates": 2,
+        "primarySlotsCount": 1,
+        "allowPartialPrimarySlots": true,
+        "allowEmptySlateWithAbstention": true
+      },
+      "abstentionPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000004",
+        "allowedAbstentionClasses": [
+          "STAGE_INCOMPATIBLE",
+          "PHENOTYPE_INCOMPATIBLE"
+        ],
+        "supportPartialAbstention": false,
+        "mandatoryClinicianAdvisory": true
+      },
+      "explanationPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000004",
+        "requiredSections": [
+          "clinical_rationale",
+          "language_network_model"
+        ],
+        "disclaimers": [
+          "Right IFG target requires concurrent speech-language therapy context."
+        ]
+      },
+      "permittedCompatibilityConfigurationIds": [
+        "00000000-0000-0000-0000-000000000306"
+      ],
+      "limitations": [
+        "Research/Validation only (§188).",
+        "EvidencePath strictly requires chronic non-fluent aphasia. Stage/phenotype mismatch invalidates path (§148)."
+      ]
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000505",
+      "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000005",
+      "modulePermission": "validation_only",
+      "permittedModes": [
+        "validation",
+        "research"
+      ],
+      "evidencePathPermissions": [
+        {
+          "evidencePathId": "ep-ocd-dtms-mpfc-acc",
+          "permittedModes": [
+            "validation",
+            "research"
+          ],
+          "candidateRoles": [
+            "field_target"
+          ],
+          "candidateGenerationMethodIds": [
+            "gen-ocd-mpfc-acc-field"
+          ],
+          "standalonePrimary": true,
+          "standaloneAdditional": true,
+          "supportingContext": true,
+          "treatmentContextConstraints": [
+            "ctx-symptom-provocation"
+          ],
+          "targetGeometryTypes": [
+            "coil_field"
+          ],
+          "limitations": [
+            "Requires deep-TMS H7 coil and symptom provocation context."
+          ]
+        }
+      ],
+      "targetGeometryPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000005",
+        "targetFamilyPermissions": [
+          {
+            "targetFamilyId": "tf-ocd-field",
+            "permittedGeometryTypes": [
+              "coil_field"
+            ],
+            "permittedGeneratorIds": [
+              "gen-ocd-mpfc-acc-field"
+            ]
+          }
+        ]
+      },
+      "measurementPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000005",
+        "requirements": [
+          {
+            "capabilityCode": "structural_mri",
+            "modality": "structural_mri",
+            "requirement": "required",
+            "permittedCandidateRoles": [
+              "PRIMARY_1"
+            ],
+            "permittedGeneratorIds": [
+              "gen-ocd-mpfc-acc-field"
+            ],
+            "missingMeasurementBehaviour": "block",
+            "limitations": []
+          },
+          {
+            "capabilityCode": "efield_field_target",
+            "modality": "efield",
+            "requirement": "required",
+            "permittedCandidateRoles": [
+              "PRIMARY_1"
+            ],
+            "permittedGeneratorIds": [
+              "gen-ocd-mpfc-acc-field"
+            ],
+            "missingMeasurementBehaviour": "block",
+            "limitations": [
+              "E-field coverage simulation required for deep-TMS field target."
+            ]
+          }
+        ],
+        "multimodalFusionPolicy": "prohibited",
+        "fallbackRules": []
+      },
+      "reliabilityPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000005",
+        "capabilityRules": [],
+        "overallBundleBehaviour": "capability_specific"
+      },
+      "candidateGenerationPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000005",
+        "pluginReleaseId": "plugin-ocd",
+        "generators": [
+          {
+            "generatorId": "gen-ocd-mpfc-acc-field",
+            "generatorVersion": "2.0.0",
+            "status": "permitted",
+            "candidateRoles": [
+              "PRIMARY_1"
+            ],
+            "evidencePathIds": [
+              "ep-ocd-dtms-mpfc-acc"
+            ],
+            "targetFamilyIds": [
+              "tf-ocd-field"
+            ],
+            "geometryTypes": [
+              "coil_field"
+            ],
+            "requiredCapabilityCodes": [
+              "structural_mri",
+              "efield_field_target"
+            ]
+          }
+        ]
+      },
+      "rankingPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000005",
+        "comparisonDomainPermissions": [
+          {
+            "domainCode": "dom-ocd-field",
+            "permittedModes": [
+              "validation",
+              "research"
+            ],
+            "allowedBasis": "same_target_family_variants"
+          }
+        ],
+        "rankingProfiles": [
+          {
+            "profileId": "prof-ocd-field-coverage",
+            "modelType": "ordered_deterministic_rules",
+            "tieBreakingRuleId": "tie-ocd-default"
+          }
+        ],
+        "crossDomainScalarRanking": "prohibited"
+      },
+      "refinementPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000005",
+        "profiles": []
+      },
+      "redundancyPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000005",
+        "spatialDistanceThresholdMmParameterRef": "param.ocd.spatial_redundancy_mm",
+        "clinicalDiversityRule": "enforce_distinct_anatomical_families"
+      },
+      "slateAssemblyPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000005",
+        "minCandidates": 1,
+        "maxCandidates": 2,
+        "primarySlotsCount": 1,
+        "allowPartialPrimarySlots": true,
+        "allowEmptySlateWithAbstention": true
+      },
+      "abstentionPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000005",
+        "allowedAbstentionClasses": [
+          "GEOMETRY_UNSUPPORTED",
+          "COIL_INCOMPATIBLE"
+        ],
+        "supportPartialAbstention": false,
+        "mandatoryClinicianAdvisory": true
+      },
+      "explanationPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000005",
+        "requiredSections": [
+          "clinical_rationale",
+          "coil_field_distribution"
+        ],
+        "disclaimers": [
+          "Field targets cannot be delivered using conventional focal figure-8 coils (§78)."
+        ]
+      },
+      "permittedCompatibilityConfigurationIds": [
+        "00000000-0000-0000-0000-000000000307"
+      ],
+      "limitations": [
+        "Validation only (§189).",
+        "Target geometry is coil_field. Downcasting to focal point target is strictly prohibited (§37, §149)."
+      ]
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000506",
+      "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000006",
+      "modulePermission": "research_only",
+      "permittedModes": [
+        "research"
+      ],
+      "evidencePathPermissions": [
+        {
+          "evidencePathId": "ep-tbi-diffuse-circuit",
+          "permittedModes": [
+            "research"
+          ],
+          "candidateRoles": [
+            "research_hypothesis"
+          ],
+          "candidateGenerationMethodIds": [
+            "gen-tbi-circuit-research"
+          ],
+          "standalonePrimary": false,
+          "standaloneAdditional": true,
+          "supportingContext": true,
+          "targetGeometryTypes": [
+            "point"
+          ],
+          "limitations": [
+            "Research only. Cannot borrow MDD DLPFC evidence (§150)."
+          ]
+        }
+      ],
+      "targetGeometryPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000006",
+        "targetFamilyPermissions": [
+          {
+            "targetFamilyId": "tf-tbi-circuit",
+            "permittedGeometryTypes": [
+              "point"
+            ],
+            "permittedGeneratorIds": [
+              "gen-tbi-circuit-research"
+            ]
+          }
+        ]
+      },
+      "measurementPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000006",
+        "requirements": [
+          {
+            "capabilityCode": "structural_mri",
+            "modality": "structural_mri",
+            "requirement": "required",
+            "permittedCandidateRoles": [
+              "research_hypothesis"
+            ],
+            "permittedGeneratorIds": [
+              "gen-tbi-circuit-research"
+            ],
+            "missingMeasurementBehaviour": "block",
+            "limitations": []
+          }
+        ],
+        "multimodalFusionPolicy": "prohibited",
+        "fallbackRules": []
+      },
+      "reliabilityPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000006",
+        "capabilityRules": [],
+        "overallBundleBehaviour": "capability_specific"
+      },
+      "candidateGenerationPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000006",
+        "pluginReleaseId": "plugin-tbi",
+        "generators": [
+          {
+            "generatorId": "gen-tbi-circuit-research",
+            "generatorVersion": "2.0.0",
+            "status": "research_only",
+            "candidateRoles": [
+              "research_hypothesis"
+            ],
+            "evidencePathIds": [
+              "ep-tbi-diffuse-circuit"
+            ],
+            "targetFamilyIds": [
+              "tf-tbi-circuit"
+            ],
+            "geometryTypes": [
+              "point"
+            ],
+            "requiredCapabilityCodes": [
+              "structural_mri"
+            ]
+          }
+        ]
+      },
+      "rankingPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000006",
+        "comparisonDomainPermissions": [
+          {
+            "domainCode": "dom-tbi-research",
+            "permittedModes": [
+              "research"
+            ],
+            "allowedBasis": "same_target_family_variants"
+          }
+        ],
+        "rankingProfiles": [
+          {
+            "profileId": "prof-tbi-research",
+            "modelType": "ordered_deterministic_rules",
+            "tieBreakingRuleId": "tie-tbi-default"
+          }
+        ],
+        "crossDomainScalarRanking": "prohibited"
+      },
+      "refinementPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000006",
+        "profiles": []
+      },
+      "redundancyPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000006",
+        "spatialDistanceThresholdMmParameterRef": "param.tbi.spatial_redundancy_mm",
+        "clinicalDiversityRule": "enforce_distinct_anatomical_families"
+      },
+      "slateAssemblyPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000006",
+        "minCandidates": 0,
+        "maxCandidates": 2,
+        "primarySlotsCount": 1,
+        "allowPartialPrimarySlots": true,
+        "allowEmptySlateWithAbstention": true
+      },
+      "abstentionPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000006",
+        "allowedAbstentionClasses": [
+          "RESEARCH_ONLY_ABSTENTION",
+          "SKULL_DEFECT_COMPLEXITY"
+        ],
+        "supportPartialAbstention": false,
+        "mandatoryClinicianAdvisory": true
+      },
+      "explanationPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000006",
+        "requiredSections": [
+          "research_rationale"
+        ],
+        "disclaimers": [
+          "TBI is a research-only module. Clinical target generation is prohibited."
+        ]
+      },
+      "permittedCompatibilityConfigurationIds": [
+        "00000000-0000-0000-0000-000000000308"
+      ],
+      "limitations": [
+        "Research only (§190).",
+        "Hard cross-indication rejection: Cannot borrow MDD DLPFC evidence or generators for TBI depression (§104, §150)."
+      ]
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000507",
+      "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000007",
+      "modulePermission": "research_only",
+      "permittedModes": [
+        "research",
+        "validation"
+      ],
+      "evidencePathPermissions": [
+        {
+          "evidencePathId": "ep-ptsd-general-circuit",
+          "permittedModes": [
+            "research",
+            "validation"
+          ],
+          "candidateRoles": [
+            "evidence_anchor"
+          ],
+          "candidateGenerationMethodIds": [
+            "gen-ptsd-vmPFC-circuit"
+          ],
+          "standalonePrimary": true,
+          "standaloneAdditional": true,
+          "supportingContext": true,
+          "populationConstraints": [
+            "pop-general-ptsd"
+          ],
+          "targetGeometryTypes": [
+            "point"
+          ],
+          "limitations": [
+            "Partial applicability to combat-related PTSD; no hidden upgrade to full general applicability (§151)."
+          ]
+        }
+      ],
+      "targetGeometryPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000007",
+        "targetFamilyPermissions": [
+          {
+            "targetFamilyId": "tf-ptsd-circuit",
+            "permittedGeometryTypes": [
+              "point"
+            ],
+            "permittedGeneratorIds": [
+              "gen-ptsd-vmPFC-circuit"
+            ]
+          }
+        ]
+      },
+      "measurementPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000007",
+        "requirements": [
+          {
+            "capabilityCode": "structural_mri",
+            "modality": "structural_mri",
+            "requirement": "required",
+            "permittedCandidateRoles": [
+              "PRIMARY_1"
+            ],
+            "permittedGeneratorIds": [
+              "gen-ptsd-vmPFC-circuit"
+            ],
+            "missingMeasurementBehaviour": "block",
+            "limitations": []
+          }
+        ],
+        "multimodalFusionPolicy": "prohibited",
+        "fallbackRules": []
+      },
+      "reliabilityPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000007",
+        "capabilityRules": [],
+        "overallBundleBehaviour": "capability_specific"
+      },
+      "candidateGenerationPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000007",
+        "pluginReleaseId": "plugin-ptsd",
+        "generators": [
+          {
+            "generatorId": "gen-ptsd-vmPFC-circuit",
+            "generatorVersion": "2.0.0",
+            "status": "permitted",
+            "candidateRoles": [
+              "PRIMARY_1"
+            ],
+            "evidencePathIds": [
+              "ep-ptsd-general-circuit"
+            ],
+            "targetFamilyIds": [
+              "tf-ptsd-circuit"
+            ],
+            "geometryTypes": [
+              "point"
+            ],
+            "requiredCapabilityCodes": [
+              "structural_mri"
+            ]
+          }
+        ]
+      },
+      "rankingPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000007",
+        "comparisonDomainPermissions": [
+          {
+            "domainCode": "dom-ptsd-circuit",
+            "permittedModes": [
+              "research",
+              "validation"
+            ],
+            "allowedBasis": "same_target_family_variants"
+          }
+        ],
+        "rankingProfiles": [
+          {
+            "profileId": "prof-ptsd-default",
+            "modelType": "ordered_deterministic_rules",
+            "tieBreakingRuleId": "tie-ptsd-default"
+          }
+        ],
+        "crossDomainScalarRanking": "prohibited"
+      },
+      "refinementPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000007",
+        "profiles": []
+      },
+      "redundancyPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000007",
+        "spatialDistanceThresholdMmParameterRef": "param.ptsd.spatial_redundancy_mm",
+        "clinicalDiversityRule": "enforce_distinct_anatomical_families"
+      },
+      "slateAssemblyPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000007",
+        "minCandidates": 1,
+        "maxCandidates": 2,
+        "primarySlotsCount": 1,
+        "allowPartialPrimarySlots": true,
+        "allowEmptySlateWithAbstention": true
+      },
+      "abstentionPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000007",
+        "allowedAbstentionClasses": [
+          "POPULATION_MISMATCH",
+          "NO_QUALIFIED_CANDIDATES"
+        ],
+        "supportPartialAbstention": false,
+        "mandatoryClinicianAdvisory": true
+      },
+      "explanationPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000007",
+        "requiredSections": [
+          "clinical_rationale",
+          "subpopulation_applicability"
+        ],
+        "disclaimers": [
+          "Subpopulation applicability constraints must remain visible (§151)."
+        ]
+      },
+      "permittedCompatibilityConfigurationIds": [
+        "00000000-0000-0000-0000-000000000309"
+      ],
+      "limitations": [
+        "Research/Validation only (§191).",
+        "Subpopulation constraints retained without hidden upgrade (§151). MDD evidence inheritance prohibited."
+      ]
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000508",
+      "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000008",
+      "modulePermission": "research_only",
+      "permittedModes": [
+        "research"
+      ],
+      "evidencePathPermissions": [
+        {
+          "evidencePathId": "ep-tinnitus-temporoparietal-research",
+          "permittedModes": [
+            "research"
+          ],
+          "candidateRoles": [
+            "research_hypothesis"
+          ],
+          "candidateGenerationMethodIds": [
+            "gen-tinnitus-temporoparietal-research"
+          ],
+          "standalonePrimary": false,
+          "standaloneAdditional": true,
+          "supportingContext": true,
+          "targetGeometryTypes": [
+            "point"
+          ],
+          "limitations": [
+            "Research only. Clinical mode blocked with INDICATION_MODULE_NOT_CLINICALLY_PERMITTED (§152)."
+          ]
+        }
+      ],
+      "targetGeometryPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000008",
+        "targetFamilyPermissions": [
+          {
+            "targetFamilyId": "tf-tinnitus-temporoparietal",
+            "permittedGeometryTypes": [
+              "point"
+            ],
+            "permittedGeneratorIds": [
+              "gen-tinnitus-temporoparietal-research"
+            ]
+          }
+        ]
+      },
+      "measurementPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000008",
+        "requirements": [
+          {
+            "capabilityCode": "pure_tone_audiometry",
+            "modality": "audiology",
+            "requirement": "required",
+            "permittedCandidateRoles": [
+              "research_hypothesis"
+            ],
+            "permittedGeneratorIds": [
+              "gen-tinnitus-temporoparietal-research"
+            ],
+            "missingMeasurementBehaviour": "block",
+            "limitations": [
+              "Audiology required. Prohibition of converting pitch match into tonotopic cortical target coordinate (§69, §105)."
+            ]
+          }
+        ],
+        "multimodalFusionPolicy": "prohibited",
+        "fallbackRules": []
+      },
+      "reliabilityPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000008",
+        "capabilityRules": [],
+        "overallBundleBehaviour": "capability_specific"
+      },
+      "candidateGenerationPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000008",
+        "pluginReleaseId": "plugin-tinnitus",
+        "generators": [
+          {
+            "generatorId": "gen-tinnitus-temporoparietal-research",
+            "generatorVersion": "2.0.0",
+            "status": "research_only",
+            "candidateRoles": [
+              "research_hypothesis"
+            ],
+            "evidencePathIds": [
+              "ep-tinnitus-temporoparietal-research"
+            ],
+            "targetFamilyIds": [
+              "tf-tinnitus-temporoparietal"
+            ],
+            "geometryTypes": [
+              "point"
+            ],
+            "requiredCapabilityCodes": [
+              "pure_tone_audiometry"
+            ]
+          }
+        ]
+      },
+      "rankingPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000008",
+        "comparisonDomainPermissions": [
+          {
+            "domainCode": "dom-tinnitus-research",
+            "permittedModes": [
+              "research"
+            ],
+            "allowedBasis": "same_target_family_variants"
+          }
+        ],
+        "rankingProfiles": [
+          {
+            "profileId": "prof-tinnitus-research",
+            "modelType": "ordered_deterministic_rules",
+            "tieBreakingRuleId": "tie-tinnitus-default"
+          }
+        ],
+        "crossDomainScalarRanking": "prohibited"
+      },
+      "refinementPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000008",
+        "profiles": []
+      },
+      "redundancyPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000008",
+        "spatialDistanceThresholdMmParameterRef": "param.tinnitus.spatial_redundancy_mm",
+        "clinicalDiversityRule": "enforce_distinct_anatomical_families"
+      },
+      "slateAssemblyPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000008",
+        "minCandidates": 0,
+        "maxCandidates": 2,
+        "primarySlotsCount": 1,
+        "allowPartialPrimarySlots": true,
+        "allowEmptySlateWithAbstention": true
+      },
+      "abstentionPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000008",
+        "allowedAbstentionClasses": [
+          "RESEARCH_ONLY_ABSTENTION",
+          "AUDIOLOGY_INSUFFICIENT"
+        ],
+        "supportPartialAbstention": false,
+        "mandatoryClinicianAdvisory": true
+      },
+      "explanationPolicy": {
+        "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000008",
+        "requiredSections": [
+          "research_rationale",
+          "audiological_context"
+        ],
+        "disclaimers": [
+          "Tinnitus is Research-only. Cannot generate authoritative Clinical target slates (§152)."
+        ]
+      },
+      "permittedCompatibilityConfigurationIds": [
+        "00000000-0000-0000-0000-000000000310"
+      ],
+      "limitations": [
+        "Research only (§192). Clinical mode strictly disabled. Requesting clinical mode yields INDICATION_MODULE_NOT_CLINICALLY_PERMITTED (§152)."
+      ]
+    }
+  ],
+  "compatibilityConfigurations": [
+    {
+      "id": "00000000-0000-0000-0000-000000000301",
+      "code": "MDD-CONNECTOME-CLINICAL-2.0",
+      "version": "2.0.0",
+      "scientificPolicyReleaseId": "00000000-0000-0000-0000-000000000099",
+      "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000001",
+      "mode": "clinical",
+      "evidenceLibraryReleaseId": "00000000-0000-0000-0000-000000000101",
+      "targetEngineReleaseId": "00000000-0000-0000-0000-000000000201",
+      "targetingPlugin": {
+        "componentType": "TARGETING_PLUGIN",
+        "componentId": "plugin-mdd",
+        "componentVersion": "2.0.0",
+        "manifestSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "candidateGenerators": [
+        {
+          "componentType": "CANDIDATE_GENERATOR",
+          "componentId": "gen-mdd-evidence-prior",
+          "componentVersion": "2.0.0"
+        },
+        {
+          "componentType": "CANDIDATE_GENERATOR",
+          "componentId": "gen-mdd-fc-refinement",
+          "componentVersion": "2.0.0"
+        }
+      ],
+      "measurementProviders": [
+        {
+          "componentType": "structural_mri",
+          "requirement": "required"
+        },
+        {
+          "componentType": "resting_state_fmri",
+          "requirement": "required"
+        }
+      ],
+      "reliabilityMethods": [
+        {
+          "componentType": "split_half_fc",
+          "requirement": "required"
+        }
+      ],
+      "phenotypeOntologyReleaseId": "00000000-0000-0000-0000-000000000401",
+      "atlasReleases": [
+        {
+          "componentType": "hcp_mmp1",
+          "requirement": "required"
+        }
+      ],
+      "normativeModels": [
+        {
+          "componentType": "hcp_young_adult",
+          "requirement": "optional"
+        }
+      ],
+      "efieldEngine": {
+        "componentType": "simnibs",
+        "requirement": "optional"
+      },
+      "deviceCapabilityProfiles": [
+        {
+          "componentType": "figure8_standard",
+          "requirement": "optional"
+        }
+      ],
+      "acquisitionProfiles": [
+        {
+          "componentType": "mdd_clinical_mri_v1",
+          "requirement": "required"
+        }
+      ],
+      "compatibilityStatus": "approved",
+      "validationEvidenceIds": [
+        "VAL-MDD-001",
+        "VAL-MDD-002"
+      ],
+      "configurationSha256": "9999999999999999999999999999999999999999999999999999999999999901"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000302",
+      "code": "MDD-EVIDENCE-BASELINE-2.0",
+      "version": "2.0.0",
+      "scientificPolicyReleaseId": "00000000-0000-0000-0000-000000000099",
+      "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000001",
+      "mode": "clinical",
+      "evidenceLibraryReleaseId": "00000000-0000-0000-0000-000000000101",
+      "targetEngineReleaseId": "00000000-0000-0000-0000-000000000201",
+      "targetingPlugin": {
+        "componentType": "TARGETING_PLUGIN",
+        "componentId": "plugin-mdd",
+        "componentVersion": "2.0.0",
+        "manifestSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "candidateGenerators": [
+        {
+          "componentType": "CANDIDATE_GENERATOR",
+          "componentId": "gen-mdd-evidence-prior",
+          "componentVersion": "2.0.0"
+        }
+      ],
+      "measurementProviders": [
+        {
+          "componentType": "structural_mri",
+          "requirement": "required"
+        },
+        {
+          "componentType": "resting_state_fmri",
+          "requirement": "disabled"
+        }
+      ],
+      "reliabilityMethods": [],
+      "phenotypeOntologyReleaseId": "00000000-0000-0000-0000-000000000401",
+      "atlasReleases": [
+        {
+          "componentType": "hcp_mmp1",
+          "requirement": "required"
+        }
+      ],
+      "normativeModels": [],
+      "deviceCapabilityProfiles": [],
+      "acquisitionProfiles": [
+        {
+          "componentType": "mdd_clinical_mri_v1",
+          "requirement": "required"
+        }
+      ],
+      "compatibilityStatus": "approved",
+      "validationEvidenceIds": [
+        "VAL-MDD-001"
+      ],
+      "configurationSha256": "9999999999999999999999999999999999999999999999999999999999999902"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000303",
+      "code": "PAIN-MOTOR-MAP-VALIDATION-2.0",
+      "version": "2.0.0",
+      "scientificPolicyReleaseId": "00000000-0000-0000-0000-000000000099",
+      "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000002",
+      "mode": "validation",
+      "evidenceLibraryReleaseId": "00000000-0000-0000-0000-000000000102",
+      "targetEngineReleaseId": "00000000-0000-0000-0000-000000000201",
+      "targetingPlugin": {
+        "componentType": "TARGETING_PLUGIN",
+        "componentId": "plugin-pain",
+        "componentVersion": "2.0.0",
+        "manifestSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "candidateGenerators": [
+        {
+          "componentType": "CANDIDATE_GENERATOR",
+          "componentId": "gen-pain-somatotopic-baseline",
+          "componentVersion": "2.0.0"
+        },
+        {
+          "componentType": "CANDIDATE_GENERATOR",
+          "componentId": "gen-pain-motor-map-refinement",
+          "componentVersion": "2.0.0"
+        }
+      ],
+      "measurementProviders": [
+        {
+          "componentType": "structural_mri",
+          "requirement": "required"
+        },
+        {
+          "componentType": "motor_mapping",
+          "requirement": "required"
+        },
+        {
+          "componentType": "mep",
+          "requirement": "optional"
+        },
+        {
+          "componentType": "resting_state_fmri",
+          "requirement": "disabled"
+        }
+      ],
+      "reliabilityMethods": [
+        {
+          "componentType": "hotspot_repeatability",
+          "requirement": "required"
+        }
+      ],
+      "phenotypeOntologyReleaseId": "00000000-0000-0000-0000-000000000402",
+      "atlasReleases": [
+        {
+          "componentType": "hcp_mmp1",
+          "requirement": "required"
+        }
+      ],
+      "normativeModels": [],
+      "deviceCapabilityProfiles": [
+        {
+          "componentType": "figure8_standard",
+          "requirement": "required"
+        }
+      ],
+      "acquisitionProfiles": [
+        {
+          "componentType": "pain_structural_profile_v1",
+          "requirement": "required"
+        }
+      ],
+      "compatibilityStatus": "validated",
+      "validationEvidenceIds": [
+        "VAL-PAIN-001"
+      ],
+      "configurationSha256": "9999999999999999999999999999999999999999999999999999999999999903"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000304",
+      "code": "PAIN-SOMATOTOPIC-BASELINE-2.0",
+      "version": "2.0.0",
+      "scientificPolicyReleaseId": "00000000-0000-0000-0000-000000000099",
+      "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000002",
+      "mode": "validation",
+      "evidenceLibraryReleaseId": "00000000-0000-0000-0000-000000000102",
+      "targetEngineReleaseId": "00000000-0000-0000-0000-000000000201",
+      "targetingPlugin": {
+        "componentType": "TARGETING_PLUGIN",
+        "componentId": "plugin-pain",
+        "componentVersion": "2.0.0",
+        "manifestSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "candidateGenerators": [
+        {
+          "componentType": "CANDIDATE_GENERATOR",
+          "componentId": "gen-pain-somatotopic-baseline",
+          "componentVersion": "2.0.0"
+        }
+      ],
+      "measurementProviders": [
+        {
+          "componentType": "structural_mri",
+          "requirement": "required"
+        },
+        {
+          "componentType": "motor_mapping",
+          "requirement": "disabled"
+        }
+      ],
+      "reliabilityMethods": [],
+      "phenotypeOntologyReleaseId": "00000000-0000-0000-0000-000000000402",
+      "atlasReleases": [
+        {
+          "componentType": "hcp_mmp1",
+          "requirement": "required"
+        }
+      ],
+      "normativeModels": [],
+      "deviceCapabilityProfiles": [],
+      "acquisitionProfiles": [
+        {
+          "componentType": "pain_structural_profile_v1",
+          "requirement": "required"
+        }
+      ],
+      "compatibilityStatus": "validated",
+      "validationEvidenceIds": [
+        "VAL-PAIN-001"
+      ],
+      "configurationSha256": "9999999999999999999999999999999999999999999999999999999999999904"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000305",
+      "code": "STROKE-MOTOR-LESION-MAP-VALIDATION-2.0",
+      "version": "2.0.0",
+      "scientificPolicyReleaseId": "00000000-0000-0000-0000-000000000099",
+      "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000003",
+      "mode": "validation",
+      "evidenceLibraryReleaseId": "00000000-0000-0000-0000-000000000103",
+      "targetEngineReleaseId": "00000000-0000-0000-0000-000000000201",
+      "targetingPlugin": {
+        "componentType": "TARGETING_PLUGIN",
+        "componentId": "plugin-stroke-motor",
+        "componentVersion": "2.0.0",
+        "manifestSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "candidateGenerators": [
+        {
+          "componentType": "CANDIDATE_GENERATOR",
+          "componentId": "gen-stroke-ipsilesional-m1",
+          "componentVersion": "2.0.0"
+        },
+        {
+          "componentType": "CANDIDATE_GENERATOR",
+          "componentId": "gen-stroke-contralesional-m1",
+          "componentVersion": "2.0.0"
+        }
+      ],
+      "measurementProviders": [
+        {
+          "componentType": "structural_mri",
+          "requirement": "required"
+        },
+        {
+          "componentType": "lesion_mapping",
+          "requirement": "required"
+        },
+        {
+          "componentType": "motor_mapping",
+          "requirement": "optional"
+        },
+        {
+          "componentType": "mep",
+          "requirement": "optional"
+        },
+        {
+          "componentType": "diffusion_mri",
+          "requirement": "disabled"
+        }
+      ],
+      "reliabilityMethods": [
+        {
+          "componentType": "lesion_dice_reproducibility",
+          "requirement": "required"
+        }
+      ],
+      "phenotypeOntologyReleaseId": "00000000-0000-0000-0000-000000000403",
+      "atlasReleases": [
+        {
+          "componentType": "hcp_mmp1",
+          "requirement": "required"
+        }
+      ],
+      "normativeModels": [],
+      "deviceCapabilityProfiles": [
+        {
+          "componentType": "figure8_standard",
+          "requirement": "required"
+        }
+      ],
+      "acquisitionProfiles": [
+        {
+          "componentType": "stroke_structural_profile_v1",
+          "requirement": "required"
+        }
+      ],
+      "compatibilityStatus": "validated",
+      "validationEvidenceIds": [
+        "VAL-STROKE-001"
+      ],
+      "configurationSha256": "9999999999999999999999999999999999999999999999999999999999999905"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000306",
+      "code": "APHASIA-RIGHT-IFG-VALIDATION-2.0",
+      "version": "2.0.0",
+      "scientificPolicyReleaseId": "00000000-0000-0000-0000-000000000099",
+      "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000004",
+      "mode": "validation",
+      "evidenceLibraryReleaseId": "00000000-0000-0000-0000-000000000104",
+      "targetEngineReleaseId": "00000000-0000-0000-0000-000000000201",
+      "targetingPlugin": {
+        "componentType": "TARGETING_PLUGIN",
+        "componentId": "plugin-stroke-aphasia",
+        "componentVersion": "2.0.0",
+        "manifestSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "candidateGenerators": [
+        {
+          "componentType": "CANDIDATE_GENERATOR",
+          "componentId": "gen-aphasia-right-ifg",
+          "componentVersion": "2.0.0"
+        }
+      ],
+      "measurementProviders": [
+        {
+          "componentType": "structural_mri",
+          "requirement": "required"
+        },
+        {
+          "componentType": "lesion_mapping",
+          "requirement": "required"
+        },
+        {
+          "componentType": "task_fmri",
+          "requirement": "optional"
+        }
+      ],
+      "reliabilityMethods": [],
+      "phenotypeOntologyReleaseId": "00000000-0000-0000-0000-000000000404",
+      "atlasReleases": [
+        {
+          "componentType": "hcp_mmp1",
+          "requirement": "required"
+        }
+      ],
+      "normativeModels": [],
+      "deviceCapabilityProfiles": [
+        {
+          "componentType": "figure8_standard",
+          "requirement": "required"
+        }
+      ],
+      "acquisitionProfiles": [
+        {
+          "componentType": "aphasia_structural_profile_v1",
+          "requirement": "required"
+        }
+      ],
+      "compatibilityStatus": "validated",
+      "validationEvidenceIds": [
+        "VAL-APHASIA-001"
+      ],
+      "configurationSha256": "9999999999999999999999999999999999999999999999999999999999999906"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000307",
+      "code": "OCD-FIELD-VALIDATION-2.0",
+      "version": "2.0.0",
+      "scientificPolicyReleaseId": "00000000-0000-0000-0000-000000000099",
+      "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000005",
+      "mode": "validation",
+      "evidenceLibraryReleaseId": "00000000-0000-0000-0000-000000000105",
+      "targetEngineReleaseId": "00000000-0000-0000-0000-000000000201",
+      "targetingPlugin": {
+        "componentType": "TARGETING_PLUGIN",
+        "componentId": "plugin-ocd",
+        "componentVersion": "2.0.0",
+        "manifestSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "candidateGenerators": [
+        {
+          "componentType": "CANDIDATE_GENERATOR",
+          "componentId": "gen-ocd-mpfc-acc-field",
+          "componentVersion": "2.0.0"
+        }
+      ],
+      "measurementProviders": [
+        {
+          "componentType": "structural_mri",
+          "requirement": "required"
+        },
+        {
+          "componentType": "efield_modeling",
+          "requirement": "required"
+        }
+      ],
+      "reliabilityMethods": [],
+      "phenotypeOntologyReleaseId": "00000000-0000-0000-0000-000000000405",
+      "atlasReleases": [
+        {
+          "componentType": "hcp_mmp1",
+          "requirement": "required"
+        }
+      ],
+      "normativeModels": [],
+      "efieldEngine": {
+        "componentType": "simnibs",
+        "requirement": "required"
+      },
+      "deviceCapabilityProfiles": [
+        {
+          "componentType": "deep_tms_h7",
+          "requirement": "required"
+        }
+      ],
+      "acquisitionProfiles": [
+        {
+          "componentType": "ocd_structural_profile_v1",
+          "requirement": "required"
+        }
+      ],
+      "compatibilityStatus": "validated",
+      "validationEvidenceIds": [
+        "VAL-OCD-001"
+      ],
+      "configurationSha256": "9999999999999999999999999999999999999999999999999999999999999907"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000308",
+      "code": "TBI-NETWORK-RESEARCH-2.0",
+      "version": "2.0.0",
+      "scientificPolicyReleaseId": "00000000-0000-0000-0000-000000000099",
+      "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000006",
+      "mode": "research",
+      "evidenceLibraryReleaseId": "00000000-0000-0000-0000-000000000106",
+      "targetEngineReleaseId": "00000000-0000-0000-0000-000000000201",
+      "targetingPlugin": {
+        "componentType": "TARGETING_PLUGIN",
+        "componentId": "plugin-tbi",
+        "componentVersion": "2.0.0",
+        "manifestSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "candidateGenerators": [
+        {
+          "componentType": "CANDIDATE_GENERATOR",
+          "componentId": "gen-tbi-circuit-research",
+          "componentVersion": "2.0.0"
+        }
+      ],
+      "measurementProviders": [
+        {
+          "componentType": "structural_mri",
+          "requirement": "required"
+        }
+      ],
+      "reliabilityMethods": [],
+      "phenotypeOntologyReleaseId": "00000000-0000-0000-0000-000000000406",
+      "atlasReleases": [
+        {
+          "componentType": "hcp_mmp1",
+          "requirement": "required"
+        }
+      ],
+      "normativeModels": [],
+      "deviceCapabilityProfiles": [],
+      "acquisitionProfiles": [
+        {
+          "componentType": "tbi_structural_profile_v1",
+          "requirement": "required"
+        }
+      ],
+      "compatibilityStatus": "draft",
+      "validationEvidenceIds": [
+        "VAL-TBI-RESEARCH-001"
+      ],
+      "configurationSha256": "9999999999999999999999999999999999999999999999999999999999999908"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000309",
+      "code": "PTSD-CIRCUIT-RESEARCH-2.0",
+      "version": "2.0.0",
+      "scientificPolicyReleaseId": "00000000-0000-0000-0000-000000000099",
+      "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000007",
+      "mode": "research",
+      "evidenceLibraryReleaseId": "00000000-0000-0000-0000-000000000107",
+      "targetEngineReleaseId": "00000000-0000-0000-0000-000000000201",
+      "targetingPlugin": {
+        "componentType": "TARGETING_PLUGIN",
+        "componentId": "plugin-ptsd",
+        "componentVersion": "2.0.0",
+        "manifestSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "candidateGenerators": [
+        {
+          "componentType": "CANDIDATE_GENERATOR",
+          "componentId": "gen-ptsd-vmPFC-circuit",
+          "componentVersion": "2.0.0"
+        }
+      ],
+      "measurementProviders": [
+        {
+          "componentType": "structural_mri",
+          "requirement": "required"
+        }
+      ],
+      "reliabilityMethods": [],
+      "phenotypeOntologyReleaseId": "00000000-0000-0000-0000-000000000407",
+      "atlasReleases": [
+        {
+          "componentType": "hcp_mmp1",
+          "requirement": "required"
+        }
+      ],
+      "normativeModels": [],
+      "deviceCapabilityProfiles": [],
+      "acquisitionProfiles": [
+        {
+          "componentType": "ptsd_structural_profile_v1",
+          "requirement": "required"
+        }
+      ],
+      "compatibilityStatus": "draft",
+      "validationEvidenceIds": [
+        "VAL-PTSD-001"
+      ],
+      "configurationSha256": "9999999999999999999999999999999999999999999999999999999999999909"
+    },
+    {
+      "id": "00000000-0000-0000-0000-000000000310",
+      "code": "TINNITUS-AUDIOLOGY-RESEARCH-2.0",
+      "version": "2.0.0",
+      "scientificPolicyReleaseId": "00000000-0000-0000-0000-000000000099",
+      "indicationModuleReleaseId": "00000000-0000-0000-0000-000000000008",
+      "mode": "research",
+      "evidenceLibraryReleaseId": "00000000-0000-0000-0000-000000000108",
+      "targetEngineReleaseId": "00000000-0000-0000-0000-000000000201",
+      "targetingPlugin": {
+        "componentType": "TARGETING_PLUGIN",
+        "componentId": "plugin-tinnitus",
+        "componentVersion": "2.0.0",
+        "manifestSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "candidateGenerators": [
+        {
+          "componentType": "CANDIDATE_GENERATOR",
+          "componentId": "gen-tinnitus-temporoparietal-research",
+          "componentVersion": "2.0.0"
+        }
+      ],
+      "measurementProviders": [
+        {
+          "componentType": "audiology",
+          "requirement": "required"
+        },
+        {
+          "componentType": "structural_mri",
+          "requirement": "optional"
+        }
+      ],
+      "reliabilityMethods": [],
+      "phenotypeOntologyReleaseId": "00000000-0000-0000-0000-000000000408",
+      "atlasReleases": [
+        {
+          "componentType": "hcp_mmp1",
+          "requirement": "required"
+        }
+      ],
+      "normativeModels": [],
+      "deviceCapabilityProfiles": [],
+      "acquisitionProfiles": [
+        {
+          "componentType": "tinnitus_audiology_profile_v1",
+          "requirement": "required"
+        }
+      ],
+      "compatibilityStatus": "draft",
+      "validationEvidenceIds": [
+        "VAL-TINNITUS-RESEARCH-001"
+      ],
+      "configurationSha256": "9999999999999999999999999999999999999999999999999999999999999910"
+    }
+  ],
+  "globalProhibitions": [
+    {
+      "id": "prohib-01",
+      "code": "PROHIBIT_RESEARCH_MODULE_IN_CLINICAL",
+      "description": "Research-only IndicationModule cannot be executed in Clinical Mode (§103).",
+      "conditionPredicate": "mode === clinical && module.maturity === research_only",
+      "severity": "FATAL_REJECT"
+    },
+    {
+      "id": "prohib-02",
+      "code": "PROHIBIT_RESEARCH_EVIDENCE_PATH_IN_CLINICAL",
+      "description": "Research-only EvidencePath cannot establish Clinical targets (§103).",
+      "conditionPredicate": "mode === clinical && path.permittedModes.includes(clinical) === false",
+      "severity": "FATAL_REJECT"
+    },
+    {
+      "id": "prohib-03",
+      "code": "PROHIBIT_UNASSIGNED_EVIDENCE_IN_CLINICAL",
+      "description": "Unassigned evidence governance classification cannot confer Clinical authority (§32, §103, §154).",
+      "conditionPredicate": "mode === clinical && evidence.classification === unassigned",
+      "severity": "FATAL_REJECT"
+    },
+    {
+      "id": "prohib-04",
+      "code": "PROHIBIT_UNAPPROVED_TARGETING_PLUGIN",
+      "description": "Unapproved or integrity-corrupted targeting plugin is prohibited in all modes (§53, §103, §156).",
+      "conditionPredicate": "plugin.status !== approved || plugin.sha256Mismatch === true",
+      "severity": "FATAL_REJECT"
+    },
+    {
+      "id": "prohib-05",
+      "code": "PROHIBIT_UNAPPROVED_CANDIDATE_GENERATOR",
+      "description": "Unapproved candidate generator cannot nominate Clinical targets (§52, §103).",
+      "conditionPredicate": "mode === clinical && generator.status !== permitted && generator.status !== required",
+      "severity": "FATAL_REJECT"
+    },
+    {
+      "id": "prohib-06",
+      "code": "PROHIBIT_GENERATOR_MODULE_MISMATCH",
+      "description": "Candidate generator not explicitly registered to IndicationModule is prohibited (§103).",
+      "conditionPredicate": "generator.moduleReleaseId !== module.releaseId",
+      "severity": "FATAL_REJECT"
+    },
+    {
+      "id": "prohib-07",
+      "code": "PROHIBIT_MODULE_INDICATION_MISMATCH",
+      "description": "Module execution on unaligned patient indication diagnosis is prohibited (§103, §104).",
+      "conditionPredicate": "patient.indicationCode !== module.indicationCode",
+      "severity": "FATAL_REJECT"
+    },
+    {
+      "id": "prohib-08",
+      "code": "PROHIBIT_UNAPPROVED_TARGET_GEOMETRY",
+      "description": "Target geometry unapproved for the active target family is prohibited (§36, §103, §149).",
+      "conditionPredicate": "family.permittedGeometries.includes(target.geometry) === false",
+      "severity": "FATAL_REJECT"
+    },
+    {
+      "id": "prohib-09",
+      "code": "PROHIBIT_RESEARCH_MEASUREMENT_IN_CLINICAL",
+      "description": "Research-only measurement capability cannot be used for Clinical targets (§41, §103).",
+      "conditionPredicate": "mode === clinical && capability.requirement === research_only",
+      "severity": "FATAL_REJECT"
+    },
+    {
+      "id": "prohib-10",
+      "code": "PROHIBIT_FAILED_REQUIRED_RELIABILITY",
+      "description": "Measurement capability with failed reliability check cannot be used without fallback (§42, §103, §145).",
+      "conditionPredicate": "reliability.passed === false && fallbackRule === undefined",
+      "severity": "FATAL_REJECT"
+    },
+    {
+      "id": "prohib-11",
+      "code": "PROHIBIT_INCOMPATIBLE_MEASUREMENT_PROVIDER",
+      "description": "Measurement provider not listed in compatibility configuration is prohibited (§11, §103).",
+      "conditionPredicate": "provider.isWhitelisted === false",
+      "severity": "FATAL_REJECT"
+    },
+    {
+      "id": "prohib-12",
+      "code": "PROHIBIT_INCOMPATIBLE_ACQUISITION_PROFILE",
+      "description": "Acquisition profile violating minimum protocol requirements is prohibited (§103).",
+      "conditionPredicate": "acquisition.meetsMinimumRequirements === false",
+      "severity": "FATAL_REJECT"
+    },
+    {
+      "id": "prohib-13",
+      "code": "PROHIBIT_INCOMPATIBLE_NORMATIVE_MODEL",
+      "description": "Normative model not explicitly authorized for the active indication is prohibited (§73, §103).",
+      "conditionPredicate": "normativeModel.authorizedForIndication === false",
+      "severity": "FATAL_REJECT"
+    },
+    {
+      "id": "prohib-14",
+      "code": "PROHIBIT_INCOMPATIBLE_EFIELD_ENGINE",
+      "description": "E-field simulation engine unverified for clinical target family is prohibited (§75, §103).",
+      "conditionPredicate": "efieldEngine.authorized === false",
+      "severity": "FATAL_REJECT"
+    },
+    {
+      "id": "prohib-15",
+      "code": "PROHIBIT_INCOMPATIBLE_DEVICE_COIL",
+      "description": "TMS device or coil class incompatible with target semantics is prohibited (§78, §103).",
+      "conditionPredicate": "device.isCompatibleWithTargetFamily === false",
+      "severity": "FATAL_REJECT"
+    },
+    {
+      "id": "prohib-16",
+      "code": "PROHIBIT_OUT_OF_BOUNDS_PARAMETER",
+      "description": "Scientific parameter outside validated bounds is rejected; silent clamping is prohibited (§91, §103, §157).",
+      "conditionPredicate": "param.value < param.min || param.value > param.max",
+      "severity": "FATAL_REJECT"
+    },
+    {
+      "id": "prohib-17",
+      "code": "PROHIBIT_MISSING_SCIENTIFIC_PROVENANCE",
+      "description": "Entity lacking complete cryptographically traceable provenance is prohibited (§103, §125).",
+      "conditionPredicate": "provenance.missingOrInvalid === true",
+      "severity": "FATAL_REJECT"
+    },
+    {
+      "id": "prohib-18",
+      "code": "PROHIBIT_UNSIGNED_INVALID_POLICY_RELEASE",
+      "description": "Scientific policy release lacking required cryptographic signatures or hash integrity is prohibited (§103, §126, §127).",
+      "conditionPredicate": "policy.integrityValid === false || policy.signaturesValid === false",
+      "severity": "FATAL_REJECT"
+    },
+    {
+      "id": "prohib-19",
+      "code": "PROHIBIT_UNPINNED_SCIENTIFIC_SELECTOR",
+      "description": "Dynamic unpinned component version selectors (latest, ^, *) are strictly prohibited (§103).",
+      "conditionPredicate": "version.isSemverPinned === false",
+      "severity": "FATAL_REJECT"
+    },
+    {
+      "id": "prohib-20",
+      "code": "PROHIBIT_DYNAMIC_PUBMED_INPUT",
+      "description": "Runtime dynamic scraping of scientific literature into targeting decisions is prohibited (§103).",
+      "conditionPredicate": "dynamicLiteratureScrapeAttempted === true",
+      "severity": "FATAL_REJECT"
+    },
+    {
+      "id": "prohib-21",
+      "code": "PROHIBIT_LLM_GENERATED_RANKING",
+      "description": "Unverifiable LLM-generated coordinates or ranking outputs are prohibited (§103).",
+      "conditionPredicate": "llmGeneratedCoordinatesAttempted === true",
+      "severity": "FATAL_REJECT"
+    },
+    {
+      "id": "prohib-22",
+      "code": "PROHIBIT_RUNTIME_RANDOM_INPUT",
+      "description": "Non-deterministic runtime random numbers in clinical candidate generation are prohibited (§103).",
+      "conditionPredicate": "nonDeterministicRandomUsed === true",
+      "severity": "FATAL_REJECT"
+    },
+    {
+      "id": "prohib-23",
+      "code": "PROHIBIT_ONLINE_AUTO_LEARNING",
+      "description": "Dynamic or outcome-driven weight auto-learning in clinical mode is strictly prohibited (§103, §108).",
+      "conditionPredicate": "mode === clinical && auto_learning === true",
+      "severity": "FATAL_REJECT"
+    },
+    {
+      "id": "prohib-24",
+      "code": "PROHIBIT_ORGANISATION_LOCAL_OVERRIDE",
+      "description": "Administrative or UI override of frozen scientific thresholds is strictly prohibited (§103, §109).",
+      "conditionPredicate": "localScientificOverrideAttempted === true",
+      "severity": "FATAL_REJECT"
+    }
+  ],
+  "parameterDefinitions": [
+    {
+      "id": "param-mdd-fc-rel",
+      "code": "param.mdd.fc_reliability_threshold",
+      "namespace": "mdd",
+      "valueType": "number",
+      "defaultValue": 0.7,
+      "bounds": {
+        "minValue": 0.5,
+        "maxValue": 0.95,
+        "unit": "correlation_r"
+      },
+      "clinicalJustification": "Validated minimum split-half sgACC-DLPFC concordance for patient-specific refinement.",
+      "frozen": true
+    },
+    {
+      "id": "param-mdd-inc-gain",
+      "code": "param.mdd.min_incremental_gain",
+      "namespace": "mdd",
+      "valueType": "number",
+      "defaultValue": 0.1,
+      "bounds": {
+        "minValue": 0.01,
+        "maxValue": 0.5,
+        "unit": "delta_utility"
+      },
+      "clinicalJustification": "Minimum incremental value required for refinement to displace evidence baseline (§64).",
+      "frozen": true
+    },
+    {
+      "id": "param-mdd-redundancy",
+      "code": "param.mdd.spatial_redundancy_mm",
+      "namespace": "mdd",
+      "valueType": "number",
+      "defaultValue": 15,
+      "bounds": {
+        "minValue": 5,
+        "maxValue": 30,
+        "unit": "mm"
+      },
+      "clinicalJustification": "Spatial suppression distance for redundant DLPFC candidates.",
+      "frozen": true
+    },
+    {
+      "id": "param-pain-hotspot-rep",
+      "code": "param.pain.max_hotspot_repeatability_mm",
+      "namespace": "pain",
+      "valueType": "number",
+      "defaultValue": 5,
+      "bounds": {
+        "minValue": 1,
+        "maxValue": 10,
+        "unit": "mm"
+      },
+      "clinicalJustification": "Maximum allowed motor hotspot test-retest displacement for refinement qualification (§146).",
+      "frozen": true
+    },
+    {
+      "id": "param-pain-inc-gain",
+      "code": "param.pain.min_incremental_gain",
+      "namespace": "pain",
+      "valueType": "number",
+      "defaultValue": 0.15,
+      "bounds": {
+        "minValue": 0.05,
+        "maxValue": 0.5,
+        "unit": "delta_utility"
+      },
+      "clinicalJustification": "Minimum gain for motor-map refinement over somatotopic M1 baseline.",
+      "frozen": true
+    },
+    {
+      "id": "param-pain-redundancy",
+      "code": "param.pain.spatial_redundancy_mm",
+      "namespace": "pain",
+      "valueType": "number",
+      "defaultValue": 12,
+      "bounds": {
+        "minValue": 5,
+        "maxValue": 25,
+        "unit": "mm"
+      },
+      "clinicalJustification": "Spatial clustering threshold for M1 somatotopic targets.",
+      "frozen": true
+    },
+    {
+      "id": "param-stroke-dice",
+      "code": "param.stroke.min_lesion_dice",
+      "namespace": "stroke",
+      "valueType": "number",
+      "defaultValue": 0.8,
+      "bounds": {
+        "minValue": 0.6,
+        "maxValue": 0.99,
+        "unit": "dice_coefficient"
+      },
+      "clinicalJustification": "Minimum lesion segmentation agreement required for stroke motor targeting (§147).",
+      "frozen": true
+    },
+    {
+      "id": "param-stroke-redundancy",
+      "code": "param.stroke.spatial_redundancy_mm",
+      "namespace": "stroke",
+      "valueType": "number",
+      "defaultValue": 20,
+      "bounds": {
+        "minValue": 10,
+        "maxValue": 40,
+        "unit": "mm"
+      },
+      "clinicalJustification": "Suppression radius between ipsilesional and contralesional motor candidates.",
+      "frozen": true
+    },
+    {
+      "id": "param-aphasia-redundancy",
+      "code": "param.aphasia.spatial_redundancy_mm",
+      "namespace": "aphasia",
+      "valueType": "number",
+      "defaultValue": 15,
+      "bounds": {
+        "minValue": 5,
+        "maxValue": 30,
+        "unit": "mm"
+      },
+      "clinicalJustification": "Spatial diversity radius for right IFG language candidates.",
+      "frozen": true
+    },
+    {
+      "id": "param-ocd-redundancy",
+      "code": "param.ocd.spatial_redundancy_mm",
+      "namespace": "ocd",
+      "valueType": "number",
+      "defaultValue": 25,
+      "bounds": {
+        "minValue": 15,
+        "maxValue": 50,
+        "unit": "mm"
+      },
+      "clinicalJustification": "Coil-field spatial diversity distance.",
+      "frozen": true
+    },
+    {
+      "id": "param-tbi-redundancy",
+      "code": "param.tbi.spatial_redundancy_mm",
+      "namespace": "tbi",
+      "valueType": "number",
+      "defaultValue": 15,
+      "bounds": {
+        "minValue": 5,
+        "maxValue": 30,
+        "unit": "mm"
+      },
+      "clinicalJustification": "TBI network diversity threshold.",
+      "frozen": true
+    },
+    {
+      "id": "param-ptsd-redundancy",
+      "code": "param.ptsd.spatial_redundancy_mm",
+      "namespace": "ptsd",
+      "valueType": "number",
+      "defaultValue": 15,
+      "bounds": {
+        "minValue": 5,
+        "maxValue": 30,
+        "unit": "mm"
+      },
+      "clinicalJustification": "PTSD circuit diversity threshold.",
+      "frozen": true
+    },
+    {
+      "id": "param-tinnitus-redundancy",
+      "code": "param.tinnitus.spatial_redundancy_mm",
+      "namespace": "tinnitus",
+      "valueType": "number",
+      "defaultValue": 15,
+      "bounds": {
+        "minValue": 5,
+        "maxValue": 30,
+        "unit": "mm"
+      },
+      "clinicalJustification": "Temporoparietal diversity threshold.",
+      "frozen": true
+    }
+  ],
+  "parameterValues": {
+    "param.mdd.fc_reliability_threshold": 0.7,
+    "param.mdd.min_incremental_gain": 0.1,
+    "param.mdd.spatial_redundancy_mm": 15,
+    "param.pain.max_hotspot_repeatability_mm": 5,
+    "param.pain.min_incremental_gain": 0.15,
+    "param.pain.spatial_redundancy_mm": 12,
+    "param.stroke.min_lesion_dice": 0.8,
+    "param.stroke.spatial_redundancy_mm": 20,
+    "param.aphasia.spatial_redundancy_mm": 15,
+    "param.ocd.spatial_redundancy_mm": 25,
+    "param.tbi.spatial_redundancy_mm": 15,
+    "param.ptsd.spatial_redundancy_mm": 15,
+    "param.tinnitus.spatial_redundancy_mm": 15
+  },
+  "validationEvidenceIds": [
+    "VAL-MDD-001",
+    "VAL-MDD-002",
+    "VAL-PAIN-001",
+    "VAL-STROKE-001",
+    "VAL-APHASIA-001",
+    "VAL-OCD-001",
+    "VAL-PTSD-001"
+  ],
+  "changeClassification": "INDICATION_MODULE",
+  "createdAt": "2026-09-02T12:00:00Z",
+  "releasedAt": "2026-09-02T16:00:00Z",
+  "payloadSha256": "a2bbce794e5fbccab91a4cd2882d64034239f417be6fe8a756d5589b926bdc37",
+  "compatibilityManifestSha256": "7810bb9550b12cc9553f2c5e716e1ec47b879c186cc6b219cdf18524e289aea5",
+  "releaseManifestSha256": "6938e1d04fa873769d5b552f0a7086de965b3486498a3047beccc1290d9e3a5a",
+  "approvals": [
+    {
+      "id": "appr-sci-01",
+      "policyReleaseId": "00000000-0000-0000-0000-000000000099",
+      "approvalRole": "scientific",
+      "approverId": "00000000-0000-0000-0000-000000000901",
+      "approverName": "Prof. S. R. Connectomics (Chief Scientific Officer)",
+      "decision": "approved",
+      "rationale": "Positive whitelisting and indication-bound authority validated across all 8 modules.",
+      "approvedAt": "2026-09-02T12:00:00Z"
+    },
+    {
+      "id": "appr-clin-01",
+      "policyReleaseId": "00000000-0000-0000-0000-000000000099",
+      "approvalRole": "clinical",
+      "approverId": "00000000-0000-0000-0000-000000000902",
+      "approverName": "Dr. M. A. Neuromodulation (Clinical Director)",
+      "decision": "approved",
+      "rationale": "Approved MDD clinical continuation, Pain/Stroke/OCD validation, and TBI/PTSD/Tinnitus research boundaries.",
+      "approvedAt": "2026-09-02T12:30:00Z"
+    },
+    {
+      "id": "appr-tech-01",
+      "policyReleaseId": "00000000-0000-0000-0000-000000000099",
+      "approvalRole": "technical",
+      "approverId": "00000000-0000-0000-0000-000000000903",
+      "approverName": "Dr. E. V. Architecture (VP Software Engineering)",
+      "decision": "approved",
+      "rationale": "Deterministic execution and zero-clamp bounds verified.",
+      "approvedAt": "2026-09-02T13:00:00Z"
+    },
+    {
+      "id": "appr-qual-01",
+      "policyReleaseId": "00000000-0000-0000-0000-000000000099",
+      "approvalRole": "quality_regulatory",
+      "approverId": "00000000-0000-0000-0000-000000000904",
+      "approverName": "J. K. Regulatory (Quality & Regulatory Assurance Director)",
+      "decision": "approved",
+      "rationale": "IEC 62304 / ISO 13485 design control requirements verified.",
+      "approvedAt": "2026-09-02T14:00:00Z"
+    }
+  ],
+  "signatures": [
+    {
+      "signerRole": "scientific_lead",
+      "signerName": "Prof. S. R. Connectomics",
+      "signerEmail": "scientific.lead@magniom.org",
+      "keyId": "key-ed25519-sci-lead-2026",
+      "algorithm": "Ed25519",
+      "signature": "7a9c3f81e2b4d605c9a7e1f3d5b7a9c1e3f5d7b9a1c3e5f7d9b1a3c5e7f9d1b37a9c3f81e2b4d605c9a7e1f3d5b7a9c1e3f5d7b9a1c3e5f7d9b1a3c5e7f9d1b3",
+      "signedAt": "2026-09-02T15:00:00Z"
+    },
+    {
+      "signerRole": "technical_lead",
+      "signerName": "Dr. E. V. Architecture",
+      "signerEmail": "technical.lead@magniom.org",
+      "keyId": "key-ed25519-tech-lead-2026",
+      "algorithm": "Ed25519",
+      "signature": "8b0d4a92f3c5e716dab8f2a4e6c8b0d2f4a6e8c0b2d4f6a8e0c2b4d6f8a0e2c48b0d4a92f3c5e716dab8f2a4e6c8b0d2f4a6e8c0b2d4f6a8e0c2b4d6f8a0e2c4",
+      "signedAt": "2026-09-02T15:30:00Z"
+    }
+  ]
+}

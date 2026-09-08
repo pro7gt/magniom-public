@@ -5,7 +5,13 @@
 
 import { z } from 'zod';
 import { MagniomModeSchema } from './schemas.js';
-import { ModuleQualificationLevelSchema, ComponentReleaseRefSchema } from './v2-schemas.js';
+import {
+  ModuleQualificationLevelSchema,
+  ComponentReleaseRefSchema,
+  IndicationModuleReleaseSchema,
+} from './v2-schemas.js';
+
+export { IndicationModuleReleaseSchema };
 
 export const Sha256Schema = z
   .string()

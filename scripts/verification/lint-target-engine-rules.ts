@@ -22,6 +22,8 @@ interface Violation {
 
 const TARGET_ENGINE_DIR = path.resolve(process.cwd(), 'packages/target-engine/src');
 const PURE_DOMAIN_DIR = path.resolve(process.cwd(), 'packages/domain/src');
+const SCIENTIFIC_POLICY_DIR = path.resolve(process.cwd(), 'packages/scientific-policy/src');
+const MEASUREMENT_CORE_DIR = path.resolve(process.cwd(), 'packages/measurement-core/src');
 
 function scanFile(filePath: string): Violation[] {
   const content = fs.readFileSync(filePath, 'utf8');
@@ -124,6 +126,8 @@ export function runTargetEngineStaticLinter(): { passed: boolean; violations: Vi
   const violations: Violation[] = [
     ...scanDirectory(TARGET_ENGINE_DIR),
     ...scanDirectory(PURE_DOMAIN_DIR),
+    ...scanDirectory(SCIENTIFIC_POLICY_DIR),
+    ...scanDirectory(MEASUREMENT_CORE_DIR),
   ];
 
   if (violations.length === 0) {

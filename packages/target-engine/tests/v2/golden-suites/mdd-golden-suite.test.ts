@@ -30,8 +30,12 @@ describe('Roadmap §33: MDD Golden Suite (10 Cases)', () => {
         }
 
         if (caseDef.expected.expectedPrimaryFamilies) {
-          const primaryRefs = result.slate.primaryCandidates;
-          expect(primaryRefs.length).toBeGreaterThanOrEqual(1);
+          const primaryEntities = result.slate.primaryCandidates
+            .map(ref => result.engineOutput.allCandidates.find(c => c.id === ref.targetCandidateId))
+            .filter(Boolean);
+          for (const fam of caseDef.expected.expectedPrimaryFamilies) {
+            expect(primaryEntities.some(c => c?.targetFamilyId === fam)).toBe(true);
+          }
         }
 
         if (caseDef.decisionIntent) {

@@ -156,7 +156,10 @@ export class SBOMGenerator {
     }
 
     const cyclonedxPath = join(outputDir, 'magniom-cyclonedx-sbom.json');
-    writeFileSync(cyclonedxPath, JSON.stringify(sbom, null, 2), 'utf-8');
+    const cyclonedxStandardPath = join(outputDir, 'cyclonedx-sbom-1.5.json');
+    const serialized = JSON.stringify(sbom, null, 2);
+    writeFileSync(cyclonedxPath, serialized, 'utf-8');
+    writeFileSync(cyclonedxStandardPath, serialized, 'utf-8');
 
     return { cyclonedxPath, count: sbom.components.length };
   }
@@ -168,4 +171,5 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const { cyclonedxPath, count } = gen.writeSBOMFiles();
   console.log(`✓ Generated CycloneDX v1.5 SBOM with ${count} tracked components.`);
   console.log(`  Saved to: ${cyclonedxPath}`);
+  console.log(`  Saved to: ${join(gen['repoRoot'], 'docs/security/sbom/cyclonedx-sbom-1.5.json')}`);
 }

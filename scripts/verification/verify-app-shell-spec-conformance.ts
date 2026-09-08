@@ -1360,9 +1360,17 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   fs.mkdirSync(path.dirname(docsReportPath), { recursive: true });
   fs.writeFileSync(docsReportPath, audit.markdownReport, 'utf8');
 
+  const v2ReportPath = path.resolve(
+    process.cwd(),
+    'docs/verification/v2/reports/common-core/16-application-shell-spec-conformance-report.md',
+  );
+  fs.mkdirSync(path.dirname(v2ReportPath), { recursive: true });
+  fs.writeFileSync(v2ReportPath, audit.markdownReport, 'utf8');
+
   console.log(`\n📄 Formal Conformance Reports written to:`);
   console.log(`   - ${pkgReportPath}`);
   console.log(`   - ${docsReportPath}`);
+  console.log(`   - ${v2ReportPath}`);
 
   if (!audit.passed) {
     console.error('\n❌ Application Shell Specification Conformance Verification FAILED.');

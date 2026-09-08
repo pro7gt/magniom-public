@@ -5,6 +5,7 @@
 
 import type { MagniomMode, ModuleQualificationLevel } from './enums.js';
 import type { ComponentReleaseRef } from './compatibility-configuration.js';
+export type { IndicationModuleRelease } from './indication-module.js';
 
 export interface SubsystemReleaseRef {
   readonly componentId: string;

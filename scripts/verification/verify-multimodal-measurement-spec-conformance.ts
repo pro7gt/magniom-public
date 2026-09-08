@@ -1347,13 +1347,32 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     `\nConformance Result: ${audit.passedClusters}/${audit.totalClusters} Clusters Passed`,
   );
 
-  // Write report to packages/measurement-testkit/docs/multimodal-measurement-spec-conformance-report.md
-  const reportPath = path.resolve(
+  // Write formal conformance reports to documentation destinations
+  const pkgReportPath = path.resolve(
     process.cwd(),
     'packages/measurement-testkit/docs/multimodal-measurement-spec-conformance-report.md',
   );
-  fs.writeFileSync(reportPath, audit.markdownReport, 'utf8');
-  console.log(`\n📄 Formal Conformance Report written to:\n   ${reportPath}`);
+  fs.mkdirSync(path.dirname(pkgReportPath), { recursive: true });
+  fs.writeFileSync(pkgReportPath, audit.markdownReport, 'utf8');
+
+  const docsReportPath = path.resolve(
+    process.cwd(),
+    'docs/verification/reports/multimodal-measurement-spec-conformance-report.md',
+  );
+  fs.mkdirSync(path.dirname(docsReportPath), { recursive: true });
+  fs.writeFileSync(docsReportPath, audit.markdownReport, 'utf8');
+
+  const baselineReportPath = path.resolve(
+    process.cwd(),
+    'docs/verification/v2/reports/common-core/06-measurement-core-verification-report.md',
+  );
+  fs.mkdirSync(path.dirname(baselineReportPath), { recursive: true });
+  fs.writeFileSync(baselineReportPath, audit.markdownReport, 'utf8');
+
+  console.log(`\n📄 Formal Conformance Reports written to:`);
+  console.log(`   - ${pkgReportPath}`);
+  console.log(`   - ${docsReportPath}`);
+  console.log(`   - ${baselineReportPath}`);
 
   if (!audit.passed) {
     console.error('\n❌ Multimodal Measurement Specification Conformance Verification FAILED.');

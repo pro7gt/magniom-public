@@ -12,7 +12,7 @@
 
 This document establishes the normative requirements baseline governing MAGNIOM v2 multi-indication development from **M0 (Design)** to **M8 (Clinical Mode)** across all independently promotable `IndicationModuleRelease` lifecycles (Q0–Q5).
 
-All 332 system requirements are formally tracked in [docs/verification/requirement-inventory-v2.json](file:///home/owner/Downloads/Magniom/docs/verification/requirement-inventory-v2.json) and traced to design specifications, implementation packages, verification test suites, risk controls, and validation evidence in [docs/verification/traceability-matrix-v2.md](file:///home/owner/Downloads/Magniom/docs/verification/traceability-matrix-v2.md).
+All 375 system requirements (340 v2 canonical requirements + 35 retained v1 safety requirements) are formally tracked in [docs/verification/requirement-inventory-v2.json](file:///home/owner/Downloads/Magniom/docs/verification/requirement-inventory-v2.json) and [docs/software-requirements/requirement-catalog.json](file:///home/owner/Downloads/Magniom/docs/software-requirements/requirement-catalog.json), and traced to design specifications, implementation packages, verification test suites, risk controls, and validation evidence in [docs/software-requirements/SRS-v2-Traceability-Matrix.md](file:///home/owner/Downloads/Magniom/docs/software-requirements/SRS-v2-Traceability-Matrix.md) and [docs/verification/traceability-matrix-v2.md](file:///home/owner/Downloads/Magniom/docs/verification/traceability-matrix-v2.md).
 
 ---
 

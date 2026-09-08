@@ -37,7 +37,7 @@ const STAGES: StageDefinition[] = [
     stageNumber: 1,
     name: 'Stage 1 — Static Verification & Target Engine Rules',
     command:
-      'npm run verify:boundaries && npm run verify:static-rules && npm run typecheck && npm run format:check',
+      'npm run verify:boundaries && npm run verify:static-rules && npm run verify:srs-spec && npm run verify:target-engine-spec && npm run verify:canonical-data-spec && npm run verify:app-shell-spec && npm run verify:policy-spec && npm run verify:measurement-spec && npm run verify:evidence-spec && npm run verify:arch-spec && npm run verify:cicd-spec && npm run typecheck && npm run format:check',
     description: 'Enforces architectural isolation, Target Engine purity & strict typing (§34–35).',
   },
   {

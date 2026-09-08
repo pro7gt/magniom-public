@@ -3,7 +3,7 @@
 **Standard Reference:** IEC 62304:2006+AMD1:2015 §5.1.1 / ISO 13485:2016 §7.3.3 / ISO 14971:2019 / HIPAA Security Rule  
 **Document Status:** Controlled Requirements Traceability Baseline — Frozen for v2 Implementation  
 **Sealing Date:** 2026-09-03  
-**Total Requirements Traced:** 332 (96 Critical, 5 Major, 231 Standard across 20 Domains)  
+**Total Requirements Traced:** 375 (340 v2 canonical requirements + 35 retained v1 safety requirements; 123 Critical, 13 Major, 239 Standard across 21 Domains)  
 **Historical Continuity:** Preserves and extends the v1 verification matrix (412 requirements) without modifying historical release records.
 
 ---
@@ -60,7 +60,9 @@ Validation Evidence
 | **Chronic Tinnitus** | `MAG-TIN` | 18 | 5 | 0 | 13 | Multimodal Measurement / Target Engine v2.0 | ✅ 100% Traced |
 | **OCD Indication** | `MAG-OCD` | 18 | 8 | 0 | 10 | Target Engine / Scientific Policy v2.0 | ✅ 100% Traced |
 | **Verification & Validation**| `MAG-VAL` | 20 | 4 | 0 | 16 | Implementation & Validation Roadmap v2.0 | ✅ 100% Traced |
-| **TOTALS** | | **332** | **96** | **5** | **231** | | **100.0% Traced** |
+| **v2 SUB-TOTAL** | | **340** | **96** | **5** | **239** | | **100.0% Traced** |
+| **Retained v1 Safety** | | **35** | **27** | **8** | **0** | Historical v1 Baseline Preserved | **100.0% Traced** |
+| **TOTAL ACTIVE PLATFORM** | | **375** | **123** | **13** | **239** | Full Multi-Indication Suite | **100.0% Traced** |
 
 ---
 

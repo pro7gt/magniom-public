@@ -36,6 +36,11 @@ function verifyBoundaries() {
   const rootDir = process.cwd();
   const domainDir = path.join(rootDir, 'packages/domain');
   const engineDir = path.join(rootDir, 'packages/target-engine');
+  const measurementCoreDir = path.join(rootDir, 'packages/measurement-core');
+  const modalitiesDir = path.join(rootDir, 'packages/modalities');
+  const scientificPolicyDir = path.join(rootDir, 'packages/scientific-policy');
+  const schemasDir = path.join(rootDir, 'packages/schemas');
+  const evidenceDir = path.join(rootDir, 'packages/evidence');
 
   const forbiddenForPurePackages = [
     /@supabase\//,
@@ -52,6 +57,11 @@ function verifyBoundaries() {
 
   totalViolations += checkForbiddenImports(domainDir, forbiddenForPurePackages);
   totalViolations += checkForbiddenImports(engineDir, forbiddenForPurePackages);
+  totalViolations += checkForbiddenImports(measurementCoreDir, forbiddenForPurePackages);
+  totalViolations += checkForbiddenImports(modalitiesDir, forbiddenForPurePackages);
+  totalViolations += checkForbiddenImports(scientificPolicyDir, forbiddenForPurePackages);
+  totalViolations += checkForbiddenImports(schemasDir, forbiddenForPurePackages);
+  totalViolations += checkForbiddenImports(evidenceDir, forbiddenForPurePackages);
 
   if (totalViolations > 0) {
     console.error(`\n❌ Boundary verification failed with ${totalViolations} violation(s).`);
@@ -59,7 +69,7 @@ function verifyBoundaries() {
   }
 
   console.log(
-    '✅ All package boundary constraints satisfied (pure domain & target engine are fully isolated).',
+    '✅ All package boundary constraints satisfied (pure domain, target engine, measurement core, modalities, scientific policy, schemas & evidence are fully isolated).',
   );
 }
 

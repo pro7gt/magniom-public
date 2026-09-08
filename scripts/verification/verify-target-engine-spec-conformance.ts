@@ -963,15 +963,30 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     `\nTarget Engine Spec Conformance: ${audit.passedClusters}/${audit.totalClusters} Clusters Passed`,
   );
 
-  const reportPath = path.resolve(
-    process.cwd(),
-    'docs/verification/v2/reports/common-core/04-target-engine-core-verification-report.md',
-  );
-  fs.mkdirSync(path.dirname(reportPath), { recursive: true });
-  fs.writeFileSync(reportPath, audit.markdownReport, 'utf8');
+  const reportPaths = [
+    path.resolve(
+      process.cwd(),
+      'packages/target-engine/docs/target-engine-spec-conformance-report.md',
+    ),
+    path.resolve(
+      process.cwd(),
+      'docs/verification/reports/target-engine-spec-conformance-report.md',
+    ),
+    path.resolve(
+      process.cwd(),
+      'docs/verification/v2/reports/common-core/04-target-engine-core-verification-report.md',
+    ),
+  ];
 
-  console.log(`\n📄 Comprehensive Verification Report written to:`);
-  console.log(`   ${reportPath}`);
+  for (const p of reportPaths) {
+    fs.mkdirSync(path.dirname(p), { recursive: true });
+    fs.writeFileSync(p, audit.markdownReport, 'utf8');
+  }
+
+  console.log(`\n📄 Comprehensive Verification Reports written to:`);
+  for (const p of reportPaths) {
+    console.log(`   - ${p}`);
+  }
 
   if (!audit.passed) {
     console.error('\n❌ Target Engine Specification Conformance Verification FAILED.');

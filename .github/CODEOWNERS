@@ -16,6 +16,8 @@
 /scientific-config/                  @clinical-science @quality
 /evidence/                           @evidence-governance @clinical-science
 /services/neurocompute/              @neuroimaging @clinical-science
+/validation/                         @clinical-science @quality
+/validation/golden-cases/            @clinical-science @quality
 
 # ==============================================================================
 # 2. CORE DOMAIN & SCHEMA CONTRACTS

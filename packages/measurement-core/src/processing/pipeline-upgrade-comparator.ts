@@ -144,7 +144,7 @@ export class PipelineUpgradeComparator {
       : `Non-material change: displacement ${displacementMm.toFixed(2)}mm within 2.0mm tolerance, reliability maintained (${baseClass}->${upClass}).`;
 
     return {
-      comparisonId: `CMP-${input.caseId.slice(0, 8)}-${Date.now()}`,
+      comparisonId: `CMP-${input.caseId.slice(0, 8)}-${input.baselinePipelineVersionId}-${input.upgradedPipelineVersionId}`,
       caseId: input.caseId,
       baselinePipelineVersionId: input.baselinePipelineVersionId,
       upgradedPipelineVersionId: input.upgradedPipelineVersionId,

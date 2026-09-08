@@ -264,6 +264,9 @@ jobs:
           name: magniom-release-qualification-package
           path: |
             docs/verification/verification-build-m3-manifest.json
+            docs/verification/v2/release-manifest-v2.json
             docs/verification/traceability-matrix.md
+            docs/verification/traceability-matrix-v2.md
             docs/verification/reports/*.md
+            docs/verification/v2/reports/**/*.md
             docs/security/sbom/*.json

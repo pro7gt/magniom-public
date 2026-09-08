@@ -22,15 +22,40 @@ describe('Roadmap §34: OCD Golden Suite (8 Cases O01–O08)', () => {
 
         if (caseDef.expected.shouldAbstain) {
           expect(result.slate.status).toBe('abstained');
-        } else if (caseDef.expected.expectedGeometries?.includes('coil_field')) {
-          // O01/O04: Must generate candidate with coil_field geometry
-          const candidates = [
-            ...result.engineOutput.allCandidates,
-            ...result.engineOutput.suppressedCandidates,
-          ];
-          const hasCoilField = candidates.some(c => c.targetGeometry.geometryType === 'coil_field');
-          expect(hasCoilField).toBe(true);
+          expect(result.slate.primaryCandidates).toHaveLength(0);
+        } else {
+          if (caseDef.expected.primaryCandidateCount !== undefined) {
+            expect(result.slate.primaryCandidates.length).toBeGreaterThanOrEqual(1);
+            expect(result.slate.primaryCandidates.length).toBeLessThanOrEqual(3);
+          }
+          if (caseDef.expected.expectedPrimaryFamilies) {
+            const primaryEntities = result.slate.primaryCandidates
+              .map(ref =>
+                result.engineOutput.allCandidates.find(c => c.id === ref.targetCandidateId),
+              )
+              .filter(Boolean);
+            for (const fam of caseDef.expected.expectedPrimaryFamilies) {
+              expect(primaryEntities.some(c => c?.targetFamilyId === fam)).toBe(true);
+            }
+          }
+          if (caseDef.expected.expectedGeometries?.includes('coil_field')) {
+            // O01/O04: Must generate candidate with coil_field geometry
+            const candidates = [
+              ...result.engineOutput.allCandidates,
+              ...result.engineOutput.suppressedCandidates,
+            ];
+            const hasCoilField = candidates.some(
+              c => c.targetGeometry.geometryType === 'coil_field',
+            );
+            expect(hasCoilField).toBe(true);
+          }
         }
+
+        // Prohibited cross-indication contamination check (§139, §159)
+        const mddLeakage = result.engineOutput.allCandidates.filter(c =>
+          c.targetFamilyId.startsWith('TF-MDD'),
+        );
+        expect(mddLeakage).toHaveLength(0);
 
         if (caseDef.decisionIntent) {
           expect(result.clinicianDecision).toBeDefined();

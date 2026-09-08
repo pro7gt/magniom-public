@@ -32,7 +32,25 @@ describe('Roadmap §40: Tinnitus Golden Suite (10 Cases TIN01–TIN10)', () => {
 
           if (caseDef.expected.shouldAbstain) {
             expect(result.slate.status).toBe('abstained');
+            expect(result.slate.primaryCandidates).toHaveLength(0);
+          } else {
+            if (caseDef.expected.expectedPrimaryFamilies) {
+              const primaryEntities = result.slate.primaryCandidates
+                .map(ref =>
+                  result.engineOutput.allCandidates.find(c => c.id === ref.targetCandidateId),
+                )
+                .filter(Boolean);
+              for (const fam of caseDef.expected.expectedPrimaryFamilies) {
+                expect(primaryEntities.some(c => c?.targetFamilyId === fam)).toBe(true);
+              }
+            }
           }
+
+          // Prohibited cross-indication contamination check (§139, §159)
+          const mddLeakage = result.engineOutput.allCandidates.filter(c =>
+            c.targetFamilyId.startsWith('TF-MDD'),
+          );
+          expect(mddLeakage).toHaveLength(0);
 
           if (caseDef.decisionIntent) {
             expect(result.clinicianDecision).toBeDefined();
