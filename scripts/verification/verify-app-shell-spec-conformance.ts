@@ -84,6 +84,10 @@ export function auditAppShellSpecConformance(repoRoot: string = path.resolve(pro
       sections: '§1–§16',
       check: () => {
         const layoutPath = path.join(repoRoot, 'apps/web/src/app/layout.tsx');
+        const shellLayoutPath = path.join(
+          repoRoot,
+          'apps/web/src/components/shell/shell-layout.tsx',
+        );
         const viewModelsPath = path.join(
           repoRoot,
           'packages/presentation/src/v2-shell-view-models.ts',
@@ -94,14 +98,19 @@ export function auditAppShellSpecConformance(repoRoot: string = path.resolve(pro
         }
 
         const layoutSrc = fs.readFileSync(layoutPath, 'utf8');
+        const shellLayoutSrc = fs.existsSync(shellLayoutPath)
+          ? fs.readFileSync(shellLayoutPath, 'utf8')
+          : '';
+        const combinedLayoutSrc = layoutSrc + '\n' + shellLayoutSrc;
         const viewModelsSrc = fs.readFileSync(viewModelsPath, 'utf8');
 
         // Check 4-layer architecture (§2)
         const hasLayers =
-          layoutSrc.includes('MagniomTopBar') &&
-          layoutSrc.includes('GlobalSidebar') &&
-          layoutSrc.includes('role="main"') &&
-          layoutSrc.includes('id="main-content"');
+          (combinedLayoutSrc.includes('MagniomTopBar') ||
+            combinedLayoutSrc.includes('ReactiveShellHeader')) &&
+          combinedLayoutSrc.includes('GlobalSidebar') &&
+          combinedLayoutSrc.includes('role="main"') &&
+          combinedLayoutSrc.includes('id="main-content"');
 
         // Check authoritative context models (§12–16)
         const hasContextModels =
@@ -858,6 +867,10 @@ export function auditAppShellSpecConformance(repoRoot: string = path.resolve(pro
       check: () => {
         const cssPath = path.join(repoRoot, 'apps/web/src/styles/globals.css');
         const layoutPath = path.join(repoRoot, 'apps/web/src/app/layout.tsx');
+        const shellLayoutPath = path.join(
+          repoRoot,
+          'apps/web/src/components/shell/shell-layout.tsx',
+        );
         const sidebarPath = path.join(repoRoot, 'apps/web/src/components/shell/global-sidebar.tsx');
 
         if (!fs.existsSync(cssPath) || !fs.existsSync(layoutPath) || !fs.existsSync(sidebarPath)) {
@@ -869,12 +882,16 @@ export function auditAppShellSpecConformance(repoRoot: string = path.resolve(pro
 
         const cssSrc = fs.readFileSync(cssPath, 'utf8');
         const layoutSrc = fs.readFileSync(layoutPath, 'utf8');
+        const shellLayoutSrc = fs.existsSync(shellLayoutPath)
+          ? fs.readFileSync(shellLayoutPath, 'utf8')
+          : '';
+        const combinedLayoutSrc = layoutSrc + '\n' + shellLayoutSrc;
         const sidebarSrc = fs.readFileSync(sidebarPath, 'utf8');
 
         // Check skip link & landmarks (§176–181)
         const hasAccessibility =
           layoutSrc.includes('skip-to-content') &&
-          layoutSrc.includes('role="main"') &&
+          combinedLayoutSrc.includes('role="main"') &&
           sidebarSrc.includes('role="navigation"');
 
         // Check responsive tokens & focus styles

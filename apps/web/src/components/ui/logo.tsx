@@ -40,13 +40,7 @@ export function MagniomMark({
       }}
       {...props}
     >
-      <img
-        src="/logo.png"
-        alt={alt}
-        width={width}
-        height={size}
-        className="magniom-mark-img"
-      />
+      <img src="/logo.png" alt={alt} width={width} height={size} className="magniom-mark-img" />
     </span>
   );
 }

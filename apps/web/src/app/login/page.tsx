@@ -25,10 +25,7 @@ import {
   ArrowLeftIcon,
   MagniomMark,
 } from '@/components/ui';
-import {
-  authStore,
-  type ClinicianAuthSession,
-} from '../../lib/auth-store';
+import { authStore, type ClinicianAuthSession } from '../../lib/auth-store';
 
 function EyeIcon({ size = 16, className = '' }: { size?: number; className?: string }) {
   return (
@@ -152,9 +149,9 @@ function LoginContent() {
                   <CheckIcon size={16} className="text-emerald" /> Active Clinician Session Detected
                 </div>
                 <p className="text-xs text-secondary mt-1">
-                  You are currently signed in as{' '}
-                  <strong>{existingSession.user.displayName}</strong> ({existingSession.user.roleTitle})
-                  at <strong>{existingSession.organization.organizationName}</strong>.
+                  You are currently signed in as <strong>{existingSession.user.displayName}</strong>{' '}
+                  ({existingSession.user.roleTitle}) at{' '}
+                  <strong>{existingSession.organization.organizationName}</strong>.
                 </p>
               </div>
 
@@ -183,12 +180,10 @@ function LoginContent() {
             /* Standard Specialist Sign In Form */
             <>
               <div className="login-form-heading-area">
-                <h2 className="login-form-title">
-                  Authorised Specialist Sign In
-                </h2>
+                <h2 className="login-form-title">Authorised Specialist Sign In</h2>
                 <CardDescription className="login-form-desc">
-                  Enter your clinician credentials to access patient connectomic slates, target formulation
-                  reviews, and clinical decision signing.
+                  Enter your clinician credentials to access patient connectomic slates, target
+                  formulation reviews, and clinical decision signing.
                 </CardDescription>
               </div>
 
@@ -297,9 +292,10 @@ function LoginContent() {
       {/* 2. Security & Governance Footnote */}
       <footer className="login-security-notice" role="contentinfo">
         <p>
-          <strong>Restricted Clinical Decision Support System.</strong> Unauthorised access or misuse is
-          prohibited. All target selections, modification slates, and clinician sign-offs are
-          cryptographically hashed and audited under 21 CFR Part 11 and hospital IT governance protocols.
+          <strong>Restricted Clinical Decision Support System.</strong> Unauthorised access or
+          misuse is prohibited. All target selections, modification slates, and clinician sign-offs
+          are cryptographically hashed and audited under 21 CFR Part 11 and hospital IT governance
+          protocols.
         </p>
         <div className="login-system-meta">
           <span className="inline-flex items-center gap-1.5">
@@ -320,17 +316,16 @@ export default function LoginPage() {
   return (
     <div className="container page-container-col login-page-container">
       {/* Navigation and Breadcrumbs */}
-      <Breadcrumbs
-        items={[
-          { label: 'Magniom', href: '/' },
-          { label: 'Clinician Portal' },
-        ]}
-      />
+      <Breadcrumbs items={[{ label: 'Magniom', href: '/' }, { label: 'Clinician Portal' }]} />
 
       {/* Dedicated Top Utility Navigation Strip */}
       <nav className="login-nav-strip" aria-label="Portal Navigation">
         <div className="login-nav-left">
-          <Link href="https://magniom.com" className="login-back-link" title="Return to Public Overview">
+          <Link
+            href="https://magniom.com"
+            className="login-back-link"
+            title="Return to Public Overview"
+          >
             <ArrowLeftIcon size={14} />
             <span>Return to Magniom.com</span>
           </Link>

@@ -1,11 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import {
-  authStore,
-  type ClinicianAuthSession,
-  type AuthResult,
-} from './auth-store';
+import { authStore, type ClinicianAuthSession, type AuthResult } from './auth-store';
 
 export function useAuth() {
   const [session, setSession] = useState<ClinicianAuthSession | null>(null);

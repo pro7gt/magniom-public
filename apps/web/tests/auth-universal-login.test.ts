@@ -11,11 +11,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import {
-  authStore,
-  UNIVERSAL_USER_NAME,
-  UNIVERSAL_PASSWORD,
-} from '../src/lib/auth-store';
+import { authStore, UNIVERSAL_USER_NAME, UNIVERSAL_PASSWORD } from '../src/lib/auth-store';
 import { onAuditEvent, type ShellAuditEvent } from '../src/lib/shell-observability';
 
 describe('Universal Clinician Authentication & Session Authority', () => {
