@@ -17,6 +17,7 @@
   "dependencies": {
     "@magniom/domain": "*",
     "@magniom/evidence": "*",
+    "@magniom/networks": "*",
     "@magniom/phenotype": "*",
     "@magniom/presentation": "*",
     "@magniom/schemas": "*",

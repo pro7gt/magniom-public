@@ -18,3 +18,4 @@ export * from './target-v2.js';
 export * from './adapters/v1-to-v2.js';
 export * from './release-v2.js';
 export * from './scientific-policy-v2.js';
+export * from './networks.js';

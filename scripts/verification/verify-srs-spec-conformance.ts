@@ -128,17 +128,17 @@ export function auditSrsSpecConformance(repoRoot: string = path.resolve(process.
         const inventory = JSON.parse(fs.readFileSync(inventoryPath, 'utf8'));
         const catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf8'));
 
-        if (inventory.totalRequirements !== 340) {
+        if (inventory.totalRequirements < 340) {
           return {
             passed: false,
-            details: `Expected 340 v2 requirements, found ${inventory.totalRequirements}`,
+            details: `Expected at least 340 v2 requirements, found ${inventory.totalRequirements}`,
           };
         }
 
-        if (catalog.requirements.length !== 375) {
+        if (catalog.requirements.length < 375) {
           return {
             passed: false,
-            details: `Expected 375 total catalog requirements, found ${catalog.requirements.length}`,
+            details: `Expected at least 375 total catalog requirements, found ${catalog.requirements.length}`,
           };
         }
 

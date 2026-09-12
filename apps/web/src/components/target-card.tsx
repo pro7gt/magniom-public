@@ -130,6 +130,41 @@ export function TargetCard({
               accessibilityRating={candidate.anatomicalAccessibility.rating}
             />
           </div>
+
+          {/* Network Systems Context (§73–80) */}
+          {candidate.networkContext && (
+            <div className="target-card-systems-context">
+              <div className="systems-context-header">
+                <span className="flex items-center gap-1">
+                  <span className="triple-network-indicator" aria-hidden="true" />
+                  Systems Context: {candidate.networkContext.networkCode} Network
+                </span>
+                <Badge variant="neutral">
+                  {candidate.networkContext.relationshipType.replace(/_/g, ' ')}
+                </Badge>
+              </div>
+              {candidate.networkContext.closestNodeName && (
+                <div className="systems-context-row">
+                  Closest Node:{' '}
+                  <span className="text-primary font-semibold">
+                    {candidate.networkContext.closestNodeName}
+                  </span>
+                </div>
+              )}
+              {candidate.networkContext.functionalCouplingFormatted && (
+                <div className="systems-context-row">
+                  Coupling Value:{' '}
+                  <span className="text-cyan font-mono">
+                    {candidate.networkContext.functionalCouplingFormatted}
+                  </span>
+                </div>
+              )}
+              <div className="systems-context-disclaimer">
+                Observational triple-network context only. Does not autonomously determine target
+                validity.
+              </div>
+            </div>
+          )}
         </div>
       )}
 

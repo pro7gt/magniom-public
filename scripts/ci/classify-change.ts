@@ -90,6 +90,12 @@ const PATH_RULES: Array<{
     rationale: 'Evidence knowledge graph or claim synthesis updated (§117).',
   },
   {
+    pattern: /^packages\/networks\//,
+    impactLevel: 'C3',
+    category: 'SCIENTIFIC_ENGINE',
+    rationale: 'Triple-network systems layer or normative connectome solver modified (§117).',
+  },
+  {
     pattern: /^services\/neurocompute\//,
     impactLevel: 'C3',
     category: 'SCIENTIFIC_MEASUREMENT',

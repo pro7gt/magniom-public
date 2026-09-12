@@ -42,7 +42,7 @@ function run() {
   // Match the existing [data-theme="dark"] block with its DARK THEME comment banner.
   // Uses a two-pass approach: first locate the comment+block, then extract.
   const darkRegex =
-    /\/\* =+\s+DARK THEME TOKENS[\s\S]*?\*\/\s*\[data-theme="dark"\]\s*\{[^}]*\}/;
+    /\/\* =+\s+DARK THEME TOKENS[\s\S]*?\*\/\s*\[data-theme=["']dark["']\]\s*\{[^}]*\}/;
 
   if (!rootRegex.test(existingContent)) {
     console.error('❌ Error: Could not locate :root { ... } block in globals.css');
@@ -59,7 +59,9 @@ function run() {
 
     if (currentRootMatch !== generatedRootCss) {
       console.error('❌ Design token drift detected in :root block!');
-      console.error('\nExpected (:root from @magniom/ui):\n' + generatedRootCss.slice(0, 200) + '...');
+      console.error(
+        '\nExpected (:root from @magniom/ui):\n' + generatedRootCss.slice(0, 200) + '...',
+      );
       console.error('\nActual (globals.css):\n' + currentRootMatch.slice(0, 200) + '...');
       hasDrift = true;
     }

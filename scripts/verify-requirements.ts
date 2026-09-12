@@ -68,6 +68,7 @@ function verifyRequirements() {
     'TBI',
     'TIN',
     'OCD',
+    'TNS',
   ]);
 
   const reqIdRegex = /^MAG-([A-Z]{2,4})-\d{3}$/;

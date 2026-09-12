@@ -67,7 +67,12 @@ export function ThemeToggle() {
   // Prevent hydration mismatch by rendering neutral state until mounted
   if (!mounted) {
     return (
-      <div className="theme-toggle" role="switch" aria-checked={false} aria-label="Toggle dark mode">
+      <div
+        className="theme-toggle"
+        role="switch"
+        aria-checked={false}
+        aria-label="Toggle dark mode"
+      >
         <span className="theme-toggle-label">
           <span className="theme-toggle-label-icon" aria-hidden="true">
             <SunIcon size={14} />
@@ -88,7 +93,7 @@ export function ThemeToggle() {
       aria-checked={isDark}
       aria-label="Toggle dark mode"
       onClick={toggleTheme}
-      onKeyDown={(e) => {
+      onKeyDown={e => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           toggleTheme();

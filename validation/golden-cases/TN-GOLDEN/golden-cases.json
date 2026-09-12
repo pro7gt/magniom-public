@@ -1,0 +1,203 @@
+[
+  {
+    "id": "TN-GOLDEN-001",
+    "title": "Canonical Intact Triple-Network Architecture",
+    "description": "Standard adult connectome exhibiting robust anti-correlation between CEN and DMN (r=-0.42), intact modular segregation (0.84), and normal Salience switch modulation.",
+    "indication": "MDD",
+    "mode": "clinical",
+    "inputs": {
+      "withinMeasurements": [
+        { "network_code": "CEN", "raw_value": 0.76 },
+        { "network_code": "DMN", "raw_value": 0.81 },
+        { "network_code": "SN", "raw_value": 0.72 }
+      ],
+      "pairwiseMeasurements": [
+        { "relationship_code": "CEN_DMN", "raw_value": -0.42 },
+        { "relationship_code": "SN_CEN", "raw_value": 0.35 },
+        { "relationship_code": "SN_DMN", "raw_value": -0.15 }
+      ],
+      "scrubbedMinutes": 12.5,
+      "meanFdMm": 0.12,
+      "splitHalfConcordance": 0.85
+    },
+    "expected": {
+      "reliabilityStatus": "high",
+      "clinicalQualification": "qualified",
+      "cenDmnStatus": "normal",
+      "cenStatus": "intact",
+      "dmnStatus": "intact",
+      "snStatus": "intact",
+      "prohibitScalarCollapse": true,
+      "clinicalAuthority": "contextual"
+    }
+  },
+  {
+    "id": "TN-GOLDEN-002",
+    "title": "MDD Hyposegregated / Hypocoupled CEN-DMN Architecture",
+    "description": "Impaired anti-correlation between CEN and DMN (r=-0.05, loss of typical negative coupling), indicating failure of executive network to suppress default mode rumination.",
+    "indication": "MDD",
+    "mode": "clinical",
+    "inputs": {
+      "withinMeasurements": [
+        { "network_code": "CEN", "raw_value": 0.65 },
+        { "network_code": "DMN", "raw_value": 0.82 },
+        { "network_code": "SN", "raw_value": 0.68 }
+      ],
+      "pairwiseMeasurements": [
+        { "relationship_code": "CEN_DMN", "raw_value": -0.05 },
+        { "relationship_code": "SN_CEN", "raw_value": 0.22 },
+        { "relationship_code": "SN_DMN", "raw_value": 0.10 }
+      ],
+      "scrubbedMinutes": 10.0,
+      "meanFdMm": 0.15,
+      "splitHalfConcordance": 0.78
+    },
+    "expected": {
+      "reliabilityStatus": "high",
+      "cenDmnStatus": "altered",
+      "segregationReductionDetected": true,
+      "clinicalAuthority": "contextual"
+    }
+  },
+  {
+    "id": "TN-GOLDEN-003",
+    "title": "MDD Pathological Hyperconnected DMN Architecture",
+    "description": "Marked hyperconnectivity within DMN (0.92, +2.5σ) and hypercoupling to subgenual cingulate, reflecting depressive rumination circuitry.",
+    "indication": "MDD",
+    "mode": "clinical",
+    "inputs": {
+      "withinMeasurements": [
+        { "network_code": "CEN", "raw_value": 0.58 },
+        { "network_code": "DMN", "raw_value": 0.92 },
+        { "network_code": "SN", "raw_value": 0.64 }
+      ],
+      "pairwiseMeasurements": [
+        { "relationship_code": "CEN_DMN", "raw_value": -0.18 },
+        { "relationship_code": "SN_CEN", "raw_value": 0.25 },
+        { "relationship_code": "SN_DMN", "raw_value": -0.08 }
+      ],
+      "scrubbedMinutes": 11.2,
+      "meanFdMm": 0.14,
+      "splitHalfConcordance": 0.82
+    },
+    "expected": {
+      "reliabilityStatus": "high",
+      "dmnStatus": "intact",
+      "clinicalAuthority": "contextual"
+    }
+  },
+  {
+    "id": "TN-GOLDEN-004",
+    "title": "Low Reliability Acquisition Safe Degradation",
+    "description": "Patient with excessive head motion (mean FD 0.38mm) and short usable scan duration (4.8 minutes). Layer emits warning and omits qualification without triggering false clinical abstention.",
+    "indication": "MDD",
+    "mode": "clinical",
+    "inputs": {
+      "withinMeasurements": [
+        { "network_code": "CEN", "raw_value": 0.55 },
+        { "network_code": "DMN", "raw_value": 0.60 },
+        { "network_code": "SN", "raw_value": 0.50 }
+      ],
+      "pairwiseMeasurements": [
+        { "relationship_code": "CEN_DMN", "raw_value": -0.20 },
+        { "relationship_code": "SN_CEN", "raw_value": 0.15 },
+        { "relationship_code": "SN_DMN", "raw_value": -0.05 }
+      ],
+      "scrubbedMinutes": 4.8,
+      "meanFdMm": 0.38,
+      "splitHalfConcordance": 0.52
+    },
+    "expected": {
+      "reliabilityStatus": "limited",
+      "warningCode": "TRIPLE_NETWORK_LOW_RELIABILITY",
+      "falseAbstentionPrevented": true,
+      "fallbackToStandardEvidence": true
+    }
+  },
+  {
+    "id": "TN-GOLDEN-005",
+    "title": "Dynamic Metric Leakage Rejection in Clinical Mode",
+    "description": "Attempt to supply sliding-window dynamic functional connectivity or research state transitions in Clinical Mode triggers immediate fatal fail-closed rejection.",
+    "indication": "MDD",
+    "mode": "clinical",
+    "inputs": {
+      "dynamicMetricsAttempted": true,
+      "dynamicMetrics": { "slidingWindowWidthSec": 30, "stateTransitionCount": 4 }
+    },
+    "expected": {
+      "permitted": false,
+      "failureCode": "TN_003_DYNAMIC_METRIC_PROHIBITED_IN_CLINICAL",
+      "fatalRejected": true
+    }
+  },
+  {
+    "id": "TN-GOLDEN-006",
+    "title": "Prohibition of Autonomous Network Target Nomination",
+    "description": "Network systems layer must never act as an independent candidate generator. Verification confirms candidates originate strictly from authorized clinical generators.",
+    "indication": "MDD",
+    "mode": "clinical",
+    "inputs": {
+      "attemptAutonomousGeneration": true
+    },
+    "expected": {
+      "autonomousCandidatesGenerated": 0,
+      "contextualOnlyEnforced": true
+    }
+  },
+  {
+    "id": "TN-GOLDEN-007",
+    "title": "Prohibition of Composite Scalar Collapse",
+    "description": "Verifies that CEN, DMN, and SN interactions cannot be summed or averaged into a single TripleNetworkScore scalar in clinical decision paths.",
+    "indication": "MDD",
+    "mode": "clinical",
+    "inputs": {},
+    "expected": {
+      "pairwisePreserved": ["CEN_DMN", "SN_CEN", "SN_DMN"],
+      "compositeScalarForbidden": true
+    }
+  },
+  {
+    "id": "TN-GOLDEN-008",
+    "title": "Evidence Ceiling Enforcement",
+    "description": "Candidate with weak empirical clinical evidence (Level D) cannot be upgraded to primary recommendation or higher tier on the basis of high network connectivity.",
+    "indication": "MDD",
+    "mode": "clinical",
+    "inputs": {
+      "baseEvidenceLevel": "D",
+      "networkWithinConnectivity": 0.95,
+      "networkSegregationIndex": 0.99
+    },
+    "expected": {
+      "effectiveEvidenceCeiling": "D",
+      "evidenceUpgraded": false
+    }
+  },
+  {
+    "id": "TN-GOLDEN-009",
+    "title": "Bit-for-Bit Determinism & Canonical Hashing",
+    "description": "100 repeated evaluations of identical inputs across independent instances generate bit-for-bit identical SHA-256 profile digests.",
+    "indication": "MDD",
+    "mode": "clinical",
+    "inputs": {
+      "iterations": 100
+    },
+    "expected": {
+      "uniqueDigestCount": 1,
+      "deterministic": true
+    }
+  },
+  {
+    "id": "TN-GOLDEN-010",
+    "title": "Clinical / Research Mode Hermetic Isolation",
+    "description": "Research network profiles and exploratory features cannot modify clinical slate composition or override clinical policies.",
+    "indication": "MDD",
+    "mode": "clinical",
+    "inputs": {
+      "researchProfileSupplied": true
+    },
+    "expected": {
+      "researchFeaturesLeaked": false,
+      "clinicalSlatePreserved": true
+    }
+  }
+]

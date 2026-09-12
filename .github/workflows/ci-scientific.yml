@@ -15,6 +15,7 @@ on:
       - 'packages/test-fixtures/**'
       - 'scientific-config/**'
       - 'evidence/**'
+      - 'packages/networks/**'
       - 'services/neurocompute/**'
   schedule:
     - cron: '0 2 * * *' # Nightly Scientific Pipeline at 02:00 UTC (§28)

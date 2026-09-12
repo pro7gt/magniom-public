@@ -126,10 +126,8 @@ export const CLINICAL_THEME_TOKENS = {
     // Instrument Sans — unified with landing page
     fontFamilySans:
       '"Instrument Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-    fontFamilyDisplay:
-      '"Instrument Sans", -apple-system, BlinkMacSystemFont, sans-serif',
-    fontFamilyMono:
-      'ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", monospace',
+    fontFamilyDisplay: '"Instrument Sans", -apple-system, BlinkMacSystemFont, sans-serif',
+    fontFamilyMono: 'ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", monospace',
     fontSizeXs: '0.75rem',
     fontSizeSm: '0.875rem',
     fontSizeMd: '0.9375rem',

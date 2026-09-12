@@ -18,6 +18,7 @@ import {
   TargetFamilySchema,
   ClinicalConceptRefSchema,
 } from './schemas.js';
+import { TripleNetworkPolicySchema } from './networks.js';
 
 // ==========================================
 // 1. Enumeration Schemas
@@ -2221,6 +2222,7 @@ export const IndicationPolicyBindingSchema = z.object({
   slateAssemblyPolicy: SlateAssemblyPolicySchema,
   abstentionPolicy: AbstentionPolicySchema,
   explanationPolicy: ExplanationPolicySchema,
+  tripleNetworkPolicy: TripleNetworkPolicySchema.optional(),
   permittedCompatibilityConfigurationIds: z.array(z.string()),
   limitations: z.array(z.string()),
 });

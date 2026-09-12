@@ -259,6 +259,7 @@ export interface IndicationPolicyBinding {
   readonly slateAssemblyPolicy: SlateAssemblyPolicy;
   readonly abstentionPolicy: AbstentionPolicy;
   readonly explanationPolicy: ExplanationPolicy;
+  readonly tripleNetworkPolicy?: import('./networks.js').TripleNetworkPolicy | undefined;
   readonly permittedCompatibilityConfigurationIds: readonly string[];
   readonly limitations: readonly string[];
 }

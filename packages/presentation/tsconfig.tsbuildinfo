@@ -1,1 +1,1 @@
-{"root":["./src/evidence-v2-adapters.ts","./src/export-package-v2.ts","./src/index.ts","./src/module-ui-descriptors.ts","./src/v2-shell-adapters.ts","./src/v2-shell-view-models.ts"],"version":"5.9.3"}
+{"root":["./src/evidence-v2-adapters.ts","./src/export-package-v2.ts","./src/index.ts","./src/module-ui-descriptors.ts","./src/triple-network-view-model.ts","./src/v2-shell-adapters.ts","./src/v2-shell-view-models.ts"],"version":"5.9.3"}

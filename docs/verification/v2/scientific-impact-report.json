@@ -1,6 +1,6 @@
 {
-  "reportId": "SDR-1789189722749",
-  "generatedAt": "2026-09-12T05:08:42.749Z",
+  "reportId": "SDR-1789218262789",
+  "generatedAt": "2026-09-12T13:04:22.789Z",
   "impactLevel": "C1",
   "totalCasesEvaluated": 72,
   "totalCasesPassed": 72,
@@ -90,7 +90,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "b81663752e7fae2e8e95ec0affb2a80ad66d33d4bb2550408ddd41fed652801d",
+      "manifestHash": "61bfcc8753b7eeca00ea9a468de8d9270999550d8ed56c3caca100c793d9f720",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -102,7 +102,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "3a39b926f214fbc00cf5a4fb4a4474328cb0d70559beb58c624c6665cdb2bbf8",
+      "manifestHash": "a352117b043338842405e22f04ae49152958ea60bb4e50ac09b186a2adb293aa",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -114,7 +114,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "6278da20aed8111383c6fa75c8f556b3b68e597fc815b6317d692eb978ae733a",
+      "manifestHash": "8d16813c549f4de1f3d65d5f957b32994c104073bbae92375931d73b23f6d1a7",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -126,7 +126,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "65904d86f91f1ac6a0ef8d9b6efa4e26d3b6c315eaf2ce05c30355d9cd082c66",
+      "manifestHash": "00ea577088166dbe955724b2c082a6f9b831d1b9d0ea2f0c35e3df53b20cc63c",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -138,7 +138,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "a64e048e3591213547e0db6d2552b32debb6c13f54137f0b41c48a0df7d57062",
+      "manifestHash": "548d9a8434e9745d937c6f95d50df3a85d4bc62eeb272ddca9b8a331f07dc8d0",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -150,7 +150,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "1125f587e0963e9c70430d7760ef4c4c6d11854aa1990f4929be8aa30126ca66",
+      "manifestHash": "517a9577e7f63bddb0422ac73e7947bc9e7e3874d628bcd2376644b84d007578",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -162,7 +162,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "89cdace70033e94db6dd97c930a9d1b33b2ff08ae55a90defa3144167396b67f",
+      "manifestHash": "1a32d28015c3a31f0fd39ff34e55a5c59e8c5c5dd846a0cda1d9c966390bf6a7",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -174,7 +174,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "b423628a27c0e72ea672a1f2e986291dd670d7d40f679b18af44ee1484800e16",
+      "manifestHash": "dbb5b0deafa12cf8c03282a611525495da18a21fb600770b231d0b04b0c88c51",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -186,7 +186,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "6d9a6154ba6d33a8d7b26be46a75f0565f03749f7769b641636d3f8ee6589ae6",
+      "manifestHash": "d940d92d2b75732d8f0ce4fe98c0c659cc2b17b0fcff91a69d0e80e660be61f9",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -198,7 +198,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "ec1748a5e44ce49c934d0ecd8ea6e54ce57b2aeb9aa1c985b8e523791a208894",
+      "manifestHash": "ed7bcee30859bb8e6756171f0a7f4a128369d67fc67a9433512f1d942e78618d",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -210,7 +210,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "808c74c5ee0da515285e2b684a3e72a3d145f99e01ebb48fdee7b5dca559e992",
+      "manifestHash": "f66bffb6ac92793d10e84397a19833bf9a1f302b5485e89eefaa1a4d21494190",
       "pass": true,
       "details": "Passed: 2 primary candidate(s), status=ready_for_review"
     },
@@ -222,7 +222,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "1f731a3478d99021539a01b73916381fa42280285b8995d489c7151668112ffc",
+      "manifestHash": "58f8e664422b70c299f9894c476d27010e1febba0ed39206a6ec496fcd34775e",
       "pass": true,
       "details": "Passed: 2 primary candidate(s), status=ready_for_review"
     },
@@ -234,7 +234,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "6c722b4b01a0df571b9172138538de318639d510a6c7ddf8c2135cf2fc018a0b",
+      "manifestHash": "068830edc4f8cfc1643a994d0b14ae47fb249f1f27e67b724c15e85d0a0e082d",
       "pass": true,
       "details": "Passed: 2 primary candidate(s), status=ready_for_review"
     },
@@ -246,7 +246,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "cfb6672b6398458bcd2c2b9730370b9d29a26553f5cb3a846f18bba27f83421b",
+      "manifestHash": "69f4c49cf43c71cc17c5896069109cb59359af74cde16b02a0f5b42479c3b170",
       "pass": true,
       "details": "Passed: 2 primary candidate(s), status=ready_for_review"
     },
@@ -258,7 +258,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "2dd3e6f802b65e8028a4fd83631517e00c87df2ef205a9d3f1595782b5b43959",
+      "manifestHash": "10936dd8ba5fc3962c16bd2695a07b6ce33e475ea013427b12e601ba93a96eb6",
       "pass": true,
       "details": "Passed: 2 primary candidate(s), status=ready_for_review"
     },
@@ -270,7 +270,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "52f5e040b0a548ece8c3b99edaea36967b9548f1e8c241584e71b5ff20caca90",
+      "manifestHash": "1201392bd89291a4ff82f96e3f71af99f599784a69afb6f0ea5cc03b87cd0649",
       "pass": true,
       "details": "Passed: 2 primary candidate(s), status=ready_for_review"
     },
@@ -282,7 +282,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "2e525bb64a402cae55436d76df19261ed12dad4a0658f0f8f28ae57e8ef44b87",
+      "manifestHash": "26d25b3063d6ecc968f828fa724621c8cea6146f7fc58cff034d1f73f80d5c73",
       "pass": true,
       "details": "Passed: 2 primary candidate(s), status=ready_for_review"
     },
@@ -306,7 +306,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "065ca9db97fc1e6afa067df6864b8120b01519f3e40ee257c48f577ee59698d9",
+      "manifestHash": "156547f729e11aaa4781606964cfd36da30a5d4b1f8f0f058a09bfbf3d8cd596",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -318,7 +318,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "fb54ac3f76a65e832b117ae68f4bfa4b2961f9da2786c48ed56a9dcdfe22e793",
+      "manifestHash": "b30c1383f12c1681dbcad5f6d649c3a5a313feeac76c197eef075c8f2694fde4",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -330,7 +330,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "b29a4c1e299f8119c0d6742bb9316be10cd1e67814a2859b4cefc6273059f691",
+      "manifestHash": "06f9d7f6164c833cb19c7e4c242d026ced3ca67126affc7247baf61be139b6fc",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -342,7 +342,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "78699213bf081a91aea8baa8b55fe7cf83562242a5b5e5ab0b824d8d5b23bb54",
+      "manifestHash": "f2475a9c23345a9a0a2c9ea0a76de7925028b2a09d2c312d55f47f75c44343af",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -378,7 +378,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "d4fb1dd7459a23f09a7119458e11838b9b836f6a1c72233b54f2ce9d2689c590",
+      "manifestHash": "65f72a88df3bccad404007246b5d024d89fd221426255c9e866c28e66089c4e1",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -390,7 +390,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "d6f69e27fca17eb33932656bffeb302e0cdce3c46028eeb79ae189257780e64d",
+      "manifestHash": "3633c1d460f4b0e8052a30e3f8701d5e76860841dc5ad01b0a7e9ab0a9fb4d25",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -402,7 +402,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "5a9afe165795e9f0a8feb803ac7e657759aa26450034a8b74c0f8aaed5d57641",
+      "manifestHash": "e21ee91655bd25bfafa5e05187c80fb47b1f3cbb6dbbc5a22232af62cef47a5d",
       "pass": true,
       "details": "Passed: 2 primary candidate(s), status=ready_for_review"
     },
@@ -414,7 +414,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "06a78ad2ed54a9405bb1537c606ce839b23324e01eee2927a4d52f9854a5b332",
+      "manifestHash": "3553b0b9f0d24ab769893a6e6d56a8b26b428610f3751b47da5a22c7c824ad1e",
       "pass": true,
       "details": "Passed: 2 primary candidate(s), status=ready_for_review"
     },
@@ -426,7 +426,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "68483f7fc1fbb2b861d24bce318b09ecbdcb053d0e0fa1654ba29d2d0ac046d6",
+      "manifestHash": "5131b4c9bb3cf3cc7c188d5097d22449171b6481d952679c90592fc28206f388",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -438,7 +438,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "7cfc55a351cb3792230186f58b6731a488062bcf0340450ba3c86fe8024beaad",
+      "manifestHash": "ad9fe61c5e8de701cf7879d23a6d713e2e973f513d62703e0eafd736b0be45e0",
       "pass": true,
       "details": "Passed: 2 primary candidate(s), status=ready_for_review"
     },
@@ -450,7 +450,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "43f559a260e3a12c6cec92afff6cb50d11a0df7947f8c38c273c92d3cf750ac0",
+      "manifestHash": "e87f0418f2f00cf5c0a7bd0ebc9ca3fcf3364c106c79680407c3f5b47e530fad",
       "pass": true,
       "details": "Passed: 2 primary candidate(s), status=ready_for_review"
     },
@@ -462,7 +462,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "a8b94ce39322571ecc620ad4dee1de8bfe4dcf4d855ac669b24bea3f0d23cb94",
+      "manifestHash": "f8607007cc0de80a53308709a647ba6532acf4673f1dee8c6f6944225d8b1d2b",
       "pass": true,
       "details": "Passed: 2 primary candidate(s), status=ready_for_review"
     },
@@ -474,7 +474,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "5a630e267fa96205c63d2eb1557d9c71943269ae5d86a5745c27c3a9d5645460",
+      "manifestHash": "242800bdd4b8dc0ce491cf01ed6fe407d9151980c19d1003df836a8d68668672",
       "pass": true,
       "details": "Passed: 2 primary candidate(s), status=ready_for_review"
     },
@@ -486,7 +486,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "bfdb51da3cd83d9ed83828ad9147e795a5920aed7e91f447478ff43d93f3a5e1",
+      "manifestHash": "0f3ec0fca03e465ee569ddb7fa20bdc464baf4aab6d4396b18c05a3b44a247c9",
       "pass": true,
       "details": "Passed: 2 primary candidate(s), status=ready_for_review"
     },
@@ -498,7 +498,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "3dfdc3b39d0a0eedda544c5726517a887c67e64dbec82f893d28134bf02d2ca0",
+      "manifestHash": "576efe422e82d01ee5058f3935047b4604460a94b881aa16bbf98f537e6817e6",
       "pass": true,
       "details": "Passed: 2 primary candidate(s), status=ready_for_review"
     },
@@ -510,7 +510,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "7fcfe712a21e5d619dea4112e3e15761b1855e73ade0c49ff107322c63a29867",
+      "manifestHash": "30ed66a6cd62ea716fb221dc2e616fc4f8d2dba3d119b6c62b2599d7ef29f14d",
       "pass": true,
       "details": "Passed: 2 primary candidate(s), status=ready_for_review"
     },
@@ -522,7 +522,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "5230f989767cacf3a106eb0d78d9089b40b8de156fc2f541e697eb91e4b17d93",
+      "manifestHash": "49716a01e57397c448dba494187ff59b0c5f351055dc29f9e26375b9836d5846",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -534,7 +534,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "5f5242b61f7ece7f2e89cc766eb17dd4deea1802b2e3f1632bcde133cf86756f",
+      "manifestHash": "380a340ef22f2a9f3264b7d172d0af87319388000b5a380a4e53a714ca2e9fa8",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -546,7 +546,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "e028c0d682d96181ab24464557508cf8ecfd5cbb2faa41282a803f95712da87f",
+      "manifestHash": "d80e2e382d4514d32968c3159d530274ce93bf256b08825c876c9fbefc262520",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -558,7 +558,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "9b3984e84f19c60af5ceaf074d051dc092f7e289aecd70254e7edd6fd715541c",
+      "manifestHash": "dd76a1c2b29373cc48d14cf5971df0063a3c0ee573bbcb0d9fcd36b25fa80c74",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -570,7 +570,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "947a0afc70a1e8eac5d02c870cc1c1fbd61cc4af65acf5f875c2e0ef627f6c4d",
+      "manifestHash": "18f1bdf8fa6aa01a70b131baa98ca5d49fdda09337e91f2be0a8ce708109e9c1",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -582,7 +582,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "b04ebefc1be143c2916ce82edffa4fdf8fdcfff9b8ead528457d323253cea4a2",
+      "manifestHash": "55cef5ca61d1fa58de1e25b4c8e3d2a65fac0a76f2b77193e2f08e3e24ecaa24",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -594,7 +594,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "78e07b8641ee0937f83dad4ac0832f5fe2a9d65bf7164ada64ded23867210b15",
+      "manifestHash": "c2da3a0cc2b5e5ab8a60b3ba36c9967196e1c9ab8334ce41f4ad823dde3a106d",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -606,7 +606,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "8e64674df239dc1fef175af2f9b8e2d555bd6e0a4d27250e848c438cff5de3d7",
+      "manifestHash": "7dbc5a0c4aee9d7cb6c491bf182725858dbf985a5366a2e5915341ed7eb5faf3",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -618,7 +618,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "9fe49b7d7b9edb3a2e58a9ca9d75e4c8e693343dc938f568c50992e627a62cb3",
+      "manifestHash": "0df4dd8439ea080f47a208ecfeba5175b4fdc4faa994478a89c5f4dcdcaa2aaa",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -654,7 +654,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "bd1279ebcfc38c9ad709fcc25e999f7c74d07229ff313ac0e2df056d828e1858",
+      "manifestHash": "1f1ed52241eb7a34994b9e45666f26c7be2987285b18ca172c5956ec1b7b0f09",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -666,7 +666,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "2dd1707044936a9444a5eaadae5455b3a279b0146209f62caf89340d8656b542",
+      "manifestHash": "ef7e5721bac319adcaee80a2073d26de025a33688f806b874eb8703a8089cee1",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -678,7 +678,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "5370854a6d10c319ff0fa40bab3c35c30a32da86967774bccd3cf076c7c89b13",
+      "manifestHash": "b7c056e6adb0efa8218f8e3d1467ae02b23a498d01da6ecc68d30b93ace9b231",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -690,7 +690,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "e97d7b3fb8fd77e1dad222aaa2670090cfb8388556696bc347d2c581dea3380e",
+      "manifestHash": "3b9dd6ddf6a72595784cf04b86e0b431858b49eae4eff158edaeb29f1f00919d",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -702,7 +702,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "acfd0a30b2aeb31c609996d9a3a43e84a59b7d5a3f0e026e3ed4eefdf8281782",
+      "manifestHash": "5a32bfc59dbd5d9fc9bb297e3962ea17b43750dadb6db490a1402b80550160e6",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -714,7 +714,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "87d35eab5924fb7e7cbc32d20a96a8ce052ca96425ccea50dcf0a2041fe5aea9",
+      "manifestHash": "3b29de27257542380cc4f4dd167a34a8e281055ce32a9be6a09ca96be951fe2e",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -726,7 +726,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "d1db881fb686dcc91d32bd4ea0f5cca997e783cb998fb11961b394518ebcba00",
+      "manifestHash": "009619fcc09b134258d564c379290b8732f9ae63fd3c10f11b07e0576b14cb81",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -750,7 +750,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "c8b65b9b16168ba7e1164d4bcf5291b87ea8713d0f0072d0787c9a4e508e7136",
+      "manifestHash": "3a53506be011332b489cf91c6340760ffe9aee4f46446fb723d0e1cf5dc1798a",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -762,7 +762,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "7837e0bb62d0f1dddb7d9e1429fe3c142a707c3e6230d4e2b7db4284492eb62e",
+      "manifestHash": "749349f15aabfe4fe4ac7a2c1677defc83640442e0149f8c568515e72cf9c903",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -774,7 +774,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "0dde48fd977e4d42d8e3cbcdf7e98af87915e2dd248a3da01696d5482b0f6247",
+      "manifestHash": "d3bc1c79c522f3e98774fe617968330a5458056fd1cc042a7349690e26bb3ffa",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -786,7 +786,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "de85497b19d44826f69874cd40bfcc8c735d90a015b9386d2bdb613a297e0844",
+      "manifestHash": "09779b69552017f60d1fba17be21b8966785911cf7f7172aa28cbe793d2f248e",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -798,7 +798,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "432d91d480460d1588964d883d33bc628dad4ddc008b19ec13babee9dfd7345c",
+      "manifestHash": "ccf8e95a2d9335a690e914ca813d23b4db74d8346dc500375c6535933f2453a9",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -810,7 +810,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "3e878ffa55e3ccf7fc72e1c670c883a8ba46fa2fc1e90c866c71133b98c4b966",
+      "manifestHash": "575274f774c372101df63e535bd29506a4f54b69dd8b01afb87c9b4d612cc6be",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -834,7 +834,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "cc019a4d2aae356adc773f700ddf3dbfc3f6e8a98936ee2d5908475971af109d",
+      "manifestHash": "e9fed63487dc998fb381836dc3f8afd6ab35dd16836c74ce86f5ebe0ca6af03c",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -846,7 +846,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "24b28b4309f5d31e32179d63dd40d0c2b0a7376fde97170c66f176dc1e72c0a5",
+      "manifestHash": "502700d4963338f5d21832811298f9b0ba83998644b78d8d711a1c8b8e39a146",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -858,7 +858,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "0734bc7873d505c88500cb5c6c9bd866a64340af9b4277436eac8f689af771e6",
+      "manifestHash": "464520bfb0286363884aba5cd197f9fef232b918bde20fb8f4ff6e38cead0d29",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -870,7 +870,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "cb2dbb96745c8e736cfb79a41facc48b5295db134a835678e2a66291d70dd24f",
+      "manifestHash": "7e05796f98b57025dbdd46c00fd53e95a156631cf366733cc31971788ff47b23",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -882,7 +882,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "b94dfd177c2c1ab1ecfd4acf41bc6339f26da16e54cad0db92697f64509e1a31",
+      "manifestHash": "09c4205134e5548b1e8ea0d7268138bbbd3e303b9ef3cfff5d835f9a68b97d42",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -894,7 +894,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "482c4a2c701050103e3a7c63f2434e4725ba17ee5d65600419027fc8aa2cb74f",
+      "manifestHash": "ef74d19b8bcdef82f8f3e925048265648931e78f457f0643dfd81bc1dba0cb82",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -906,7 +906,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "be5955cde6dd8bc76c14d86a84072fd4caf1b9e0340de1837ab251a49465d6f8",
+      "manifestHash": "f76375ef3f3c9438ef27dd37652b6725b2a208cc80ca5ee3fe7828414f579471",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },
@@ -918,7 +918,7 @@
       "maxCoordinateShiftMm": 0,
       "maxScoreShift": 0,
       "rankOrderPreserved": true,
-      "manifestHash": "213122d328a8fa921fa307943e99003e76c5702443b4fe3c2f10eb40590bb776",
+      "manifestHash": "d683584c755c564ec4796d12af5280c1af001b961c859d4cb2386f1152bb8019",
       "pass": true,
       "details": "Passed: 1 primary candidate(s), status=ready_for_review"
     },

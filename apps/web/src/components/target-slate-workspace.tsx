@@ -225,6 +225,45 @@ export function TargetSlateWorkspace({
               </div>
             </CardContent>
           </Card>
+
+          {/* Guide 2 §182: Network Context Card */}
+          <Card className="bg-surface-card">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle as="h3" className="text-base font-semibold text-primary">
+                  Systems Context Layer
+                </CardTitle>
+                <Badge variant="neutral" className="text-xs">
+                  OBSERVATIONAL
+                </Badge>
+              </div>
+              <CardDescription>Triple-Network Architecture (CEN · DMN · SN)</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col gap-2 text-xs">
+                <div className="data-spec-row">
+                  <span className="text-secondary">Primary Modulation:</span>
+                  <span className="font-mono text-cyan font-semibold">CEN–DMN Anti-Coupled</span>
+                </div>
+                <div className="data-spec-row">
+                  <span className="text-secondary">Salience Switching:</span>
+                  <span className="text-emerald font-medium">Qualified</span>
+                </div>
+                <div className="text-muted text-xs italic mt-1">
+                  Observational systems context only. Does not autonomously determine target
+                  validity.
+                </div>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  href={`/cases/${caseId}/triple-network`}
+                  className="mt-2 text-xs w-full"
+                >
+                  Inspect Triple-Network Layer <ArrowRightIcon size={12} className="ml-1 inline" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </aside>
 
         {/* Column 2 (Centre): 3D Clinical Viewer & Convergence Representation */}

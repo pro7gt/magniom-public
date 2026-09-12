@@ -156,6 +156,18 @@ export interface SlateConvergenceProfileV2 {
   readonly interpretation: string;
 }
 
+export interface SlateContradictionProfileV2 {
+  readonly evaluatedPairs: readonly string[];
+  readonly hasContradiction: boolean;
+  readonly contradictoryFindings: readonly {
+    readonly candidateId: string;
+    readonly conflictingDomain: string;
+    readonly severity: 'low' | 'moderate' | 'severe';
+    readonly clinicalNote: string;
+  }[];
+  readonly interpretation: string;
+}
+
 export interface ClinicalCoverageProfileV2 {
   readonly objectives: readonly {
     readonly clinicalObjectiveId: string;
@@ -198,6 +210,7 @@ export interface TargetSlateV2 {
   readonly primaryCandidates: readonly SlateCandidateRefV2[];
   readonly additionalCandidates: readonly SlateCandidateRefV2[];
   readonly slateConvergence: SlateConvergenceProfileV2;
+  readonly slateContradiction?: SlateContradictionProfileV2 | undefined;
   readonly clinicalCoverage: ClinicalCoverageProfileV2;
   readonly abstention?: AbstentionProfileV2 | undefined;
   readonly globalUncertainty?: UncertaintyObject | undefined;
@@ -516,6 +529,7 @@ export interface RedundancyAssessment {
   readonly isRedundant: boolean;
   readonly dominantCandidateId?: string | undefined;
   readonly suppressedCandidateId?: string | undefined;
+  readonly networkOverlap?: import('./networks.js').NetworkOverlapRedundancy | undefined;
   readonly interpretation: string;
 }
 
@@ -564,6 +578,7 @@ export interface CandidateExplanationV2 {
   readonly evidenceBasis: readonly ExplanationFact[];
   readonly whyNominated: readonly ExplanationFact[];
   readonly patientSpecificContribution: readonly ExplanationFact[];
+  readonly networkContext?: readonly ExplanationFact[] | undefined;
   readonly limitationsAndConflicts: readonly string[];
 }
 
@@ -588,6 +603,7 @@ export interface MagniomTargetEngineRequestV2 {
   readonly targetEngineReleaseId: string;
   readonly deviceContextIds?: readonly string[] | undefined;
   readonly requestedAt?: string | undefined;
+  readonly tripleNetworkProfileId?: string | undefined;
 }
 
 export interface ScientificPolicyReleaseContext {
@@ -614,6 +630,7 @@ export interface ResolvedTargetEngineContextV2 {
   readonly permittedEvidencePaths: readonly import('./evidence-governance.js').EvidencePath[];
   readonly permittedTargetFamilies: readonly import('./types.js').TargetFamily[];
   readonly scientificPolicy: ScientificPolicyReleaseContext;
+  readonly tripleNetworkContext?: import('./networks.js').TripleNetworkTargetContext | undefined;
 }
 
 export interface ReproducibilityManifestV2 {

@@ -60,7 +60,7 @@
       "subsystem": "UX_WORKSPACE",
       "version": "MAGNIOM-UX-1.0.0",
       "frozenArtifactPath": "apps/web",
-      "sha256": "e366303ac0ce4a11b3f30e338f53c4e84272c015c0747d0b27d7d7ec435ecaaf",
+      "sha256": "537250ffe24e0e7dc2b65e34ab63a70ecd834e86fc6ccc6639b95b90f2a428d4",
       "status": "FROZEN",
       "changeControlLocked": true,
       "freezeTimestamp": "2026-09-05T06:18:45.490Z"

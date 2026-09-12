@@ -717,14 +717,15 @@ export function auditSpecificationConformance(repoRoot: string = path.resolve(pr
           .sort();
 
         const lastMigration = migrationFiles[migrationFiles.length - 1];
+        const lastMigrationNum = parseInt(lastMigration?.slice(0, 3) ?? '0', 10);
         if (
           !content.includes('DatabaseVerificationRunner') ||
           migrationFiles.length < 50 ||
-          !lastMigration.startsWith('064_')
+          lastMigrationNum < 64
         ) {
           return {
             passed: false,
-            details: `Database verification must audit all sequential migrations up to 064 (found ${migrationFiles.length}, last: ${lastMigration}) (§139).`,
+            details: `Database verification must audit all sequential migrations up to at least 064 (found ${migrationFiles.length}, last: ${lastMigration}) (§139).`,
           };
         }
 

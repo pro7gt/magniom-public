@@ -254,6 +254,21 @@ export const MDD_INDICATION_POLICY_BINDING: IndicationPolicyBinding = {
     requiredSections: ['clinical_rationale', 'target_family', 'connectivity_basis'],
     disclaimers: ['FC map does not confer autonomous clinical authority.'],
   },
+  tripleNetworkPolicy: {
+    enabled: true,
+    allowed_network_definitions: [
+      'c0000000-0000-4000-8000-000000000011',
+      'd0000000-0000-4000-8000-000000000012',
+      'e0000000-0000-4000-8000-000000000013',
+    ],
+    allowed_metric_releases: ['1.0.0'],
+    minimum_reliability: 'moderate',
+    allowed_clinical_roles: ['context', 'convergence', 'explanation'],
+    allowed_indications: [MDD_MODULE_RELEASE_ID],
+    allowed_objectives: ['00000000-0000-0000-0000-000000000040'],
+    dynamic_metrics_allowed: false,
+    ranking_features: [],
+  },
   permittedCompatibilityConfigurationIds: [
     MDD_CONNECTOME_CONFIG_ID,
     MDD_EVIDENCE_BASELINE_CONFIG_ID,
@@ -263,3 +278,5 @@ export const MDD_INDICATION_POLICY_BINDING: IndicationPolicyBinding = {
     'FC refinement requires minimum 8 minutes usable BOLD scan.',
   ],
 };
+
+export const MDD_TRIPLE_NETWORK_POLICY = MDD_INDICATION_POLICY_BINDING.tripleNetworkPolicy!;

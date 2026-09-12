@@ -2,7 +2,7 @@
   "srsVersion": "2.0",
   "extractionDate": "2026-09-04T10:41:33.194Z",
   "sourceFile": "public/guides/MAGNIOM-System Requirements Specification v2.0.md",
-  "totalRequirements": 340,
+  "totalRequirements": 395,
   "criticalCount": 96,
   "majorCount": 5,
   "standardCount": 239,
@@ -132,6 +132,12 @@
       "critical": 0,
       "major": 0,
       "standard": 8
+    },
+    "MAG-TNS": {
+      "total": 20,
+      "critical": 16,
+      "major": 0,
+      "standard": 4
     }
   },
   "requirements": [

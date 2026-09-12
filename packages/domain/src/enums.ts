@@ -360,6 +360,16 @@ export type AbstentionType =
   | 'other';
 
 export type CandidateRoleV2 =
+  | 'P1'
+  | 'P2'
+  | 'P3'
+  | 'A1'
+  | 'A2'
+  | 'P1_evidence_anchor'
+  | 'P2_clinical_alternative'
+  | 'P3_personalised_refinement'
+  | 'A1_network_alternative'
+  | 'A2_technical_alternative'
   | 'evidence_anchor'
   | 'phenotype_specific'
   | 'connectome_refinement'
@@ -398,7 +408,12 @@ export type GateCode =
   | 'G6_ANATOMY_LESION'
   | 'G7_GEOMETRY_DEVICE'
   | 'G8_TREATMENT_CONTEXT'
-  | 'G9_GENERATOR_CONSTRAINTS';
+  | 'G9_GENERATOR_CONSTRAINTS'
+  | 'G10_DEVICE_ACCESSIBILITY'
+  | 'G11_TREATMENT_CONTEXT'
+  | 'G12_PERSONALISATION_AUTHORITY'
+  | 'G13_SYSTEMS_CONTEXT_AUTHORITY'
+  | 'G14_RESEARCH_LEAKAGE_PREVENTION';
 
 export type GateResultStatus = 'pass' | 'fail' | 'conditional';
 

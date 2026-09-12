@@ -24,7 +24,7 @@ describe('MDD Reference Plugin v2 End-to-End Pipeline', () => {
     const result = runTargetEngineV2(context);
 
     // Slate validation
-    expect(result.slate.version).toBe('2.0.0');
+    expect(result.slate.version).toBe('2.1.0');
     expect(result.slate.status).toBe('ready_for_review');
     expect(result.slate.primaryCandidates.length).toBeGreaterThanOrEqual(1);
     expect(result.slate.primaryCandidates.length).toBeLessThanOrEqual(3);
@@ -43,7 +43,7 @@ describe('MDD Reference Plugin v2 End-to-End Pipeline', () => {
     for (const trace of result.candidateTraces) {
       expect(trace.candidateId).toBeDefined();
       expect(trace.explanation.shortSummary).toBeDefined();
-      expect(trace.gateEvaluations.length).toBe(10); // G0 through G9
+      expect(trace.gateEvaluations.length).toBe(15); // G0 through G14
     }
   });
 });

@@ -24,4 +24,6 @@ export * from './graph.js';
 export * from './seeds/index.js';
 export * from './graph-v2.js';
 export * from './canonical-manifest-v2.js';
+export * from './networks/claims.js';
+export * from './networks/circuit-bindings.js';
 

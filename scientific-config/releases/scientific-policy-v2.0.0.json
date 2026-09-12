@@ -245,6 +245,21 @@
           "FC map does not confer autonomous clinical authority."
         ]
       },
+      "tripleNetworkPolicy": {
+        "enabled": true,
+        "allowed_network_definitions": [
+          "c0000000-0000-4000-8000-000000000011",
+          "d0000000-0000-4000-8000-000000000012",
+          "e0000000-0000-4000-8000-000000000013"
+        ],
+        "allowed_metric_releases": ["1.0.0"],
+        "minimum_reliability": "moderate",
+        "allowed_clinical_roles": ["context", "convergence", "explanation"],
+        "allowed_indications": ["00000000-0000-0000-0000-000000000001"],
+        "allowed_objectives": ["00000000-0000-0000-0000-000000000040"],
+        "dynamic_metrics_allowed": false,
+        "ranking_features": []
+      },
       "permittedCompatibilityConfigurationIds": [
         "00000000-0000-0000-0000-000000000301",
         "00000000-0000-0000-0000-000000000302"

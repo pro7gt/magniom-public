@@ -2,7 +2,7 @@
   "$schema": "./requirement-schema.json",
   "version": "2.0.0",
   "lastUpdated": "2026-09-04T10:41:42.781Z",
-  "totalRequirements": 375,
+  "totalRequirements": 395,
   "v2Requirements": 340,
   "retainedV1Requirements": 35,
   "requirements": [
@@ -5015,6 +5015,335 @@
       "safetyClass": "standard",
       "appliesToMode": "all",
       "verificationMethod": "integration_test",
+      "status": "approved"
+    },
+    {
+      "id": "MAG-TNS-001",
+      "domain": "TNS",
+      "statement": "CEN, DMN and SN SHALL exist as canonical versioned NetworkSystem objects.",
+      "sourceSpecification": [
+        "MAGNIOM Multi-Indication Technical & Scientific Architecture Specification v2.1 §149",
+        "MAGNIOM-Triple-Network Systems Layer v1.0 §6-10"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "unit_test",
+      "riskControlIds": [
+        "HAZ-003"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-TNS-002",
+      "domain": "TNS",
+      "statement": "Every Clinical Triple-Network Profile SHALL reference an immutable network-definition release.",
+      "sourceSpecification": [
+        "MAGNIOM Multi-Indication Technical & Scientific Architecture Specification v2.1 §150",
+        "MAGNIOM-Triple-Network Systems Layer v1.0 §11"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "clinical",
+      "verificationMethod": "integration_test",
+      "riskControlIds": [
+        "HAZ-003",
+        "HAZ-005"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-TNS-003",
+      "domain": "TNS",
+      "statement": "CEN-DMN, SN-CEN and SN-DMN SHALL be represented as first-class network relationships.",
+      "sourceSpecification": [
+        "MAGNIOM Multi-Indication Technical & Scientific Architecture Specification v2.1 §151",
+        "MAGNIOM-Triple-Network Systems Layer v1.0 §12-16"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "unit_test",
+      "riskControlIds": [
+        "HAZ-003"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-TNS-004",
+      "domain": "TNS",
+      "statement": "A Clinical Triple-Network Profile SHALL preserve individual network states and pairwise relationships rather than collapsing them into one universal Triple-Network score.",
+      "sourceSpecification": [
+        "MAGNIOM Multi-Indication Technical & Scientific Architecture Specification v2.1 §152",
+        "MAGNIOM-Triple-Network Systems Layer v1.0 §16, §62"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "clinical",
+      "verificationMethod": "unit_test",
+      "riskControlIds": [
+        "HAZ-001",
+        "HAZ-003"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-TNS-005",
+      "domain": "TNS",
+      "statement": "Every clinically interpretable network measurement SHALL have a reliability qualification.",
+      "sourceSpecification": [
+        "MAGNIOM Multi-Indication Technical & Scientific Architecture Specification v2.1 §153",
+        "MAGNIOM-Triple-Network Systems Layer v1.0 §18, §44"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "clinical",
+      "verificationMethod": "integration_test",
+      "riskControlIds": [
+        "HAZ-003",
+        "HAZ-007"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-TNS-006",
+      "domain": "TNS",
+      "statement": "Every clinically interpretable network statement SHALL have evidence provenance.",
+      "sourceSpecification": [
+        "MAGNIOM Multi-Indication Technical & Scientific Architecture Specification v2.1 §154",
+        "MAGNIOM-Triple-Network Systems Layer v1.0 §21-23"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "clinical",
+      "verificationMethod": "integration_test",
+      "riskControlIds": [
+        "HAZ-005",
+        "HAZ-006"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-TNS-007",
+      "domain": "TNS",
+      "statement": "Triple-Network context SHALL NOT independently generate Clinical target candidates.",
+      "sourceSpecification": [
+        "MAGNIOM Multi-Indication Technical & Scientific Architecture Specification v2.1 §155",
+        "MAGNIOM-Triple-Network Systems Layer v1.0 §2, §34, §96"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "clinical",
+      "verificationMethod": "unit_test",
+      "riskControlIds": [
+        "HAZ-001",
+        "HAZ-003"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-TNS-008",
+      "domain": "TNS",
+      "statement": "Triple-Network information SHALL NOT override evidence ceilings.",
+      "sourceSpecification": [
+        "MAGNIOM Multi-Indication Technical & Scientific Architecture Specification v2.1 §156",
+        "MAGNIOM-Triple-Network Systems Layer v1.0 §24"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "clinical",
+      "verificationMethod": "unit_test",
+      "riskControlIds": [
+        "HAZ-003",
+        "HAZ-006"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-TNS-009",
+      "domain": "TNS",
+      "statement": "Research-only network features SHALL NOT influence Clinical Mode.",
+      "sourceSpecification": [
+        "MAGNIOM Multi-Indication Technical & Scientific Architecture Specification v2.1 §157",
+        "MAGNIOM-Triple-Network Systems Layer v1.0 §40, §46, §47"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "clinical",
+      "verificationMethod": "unit_test",
+      "riskControlIds": [
+        "HAZ-005"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-TNS-010",
+      "domain": "TNS",
+      "statement": "Network clinical authority SHALL be indication-specific and Scientific-Policy-controlled.",
+      "sourceSpecification": [
+        "MAGNIOM Multi-Indication Technical & Scientific Architecture Specification v2.1 §158",
+        "MAGNIOM-Triple-Network Systems Layer v1.0 §48, §49"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "clinical",
+      "verificationMethod": "unit_test",
+      "riskControlIds": [
+        "HAZ-003",
+        "HAZ-005"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-TNS-011",
+      "domain": "TNS",
+      "statement": "Network uncertainty SHALL remain visible to the clinician.",
+      "sourceSpecification": [
+        "MAGNIOM Multi-Indication Technical & Scientific Architecture Specification v2.1 §159",
+        "MAGNIOM-Triple-Network Systems Layer v1.0 §65, §73"
+      ],
+      "safetyClass": "standard",
+      "appliesToMode": "clinical",
+      "verificationMethod": "human_factors",
+      "riskControlIds": [
+        "HAZ-001"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-TNS-012",
+      "domain": "TNS",
+      "statement": "Network context SHALL NOT be represented as a universal causal seesaw controller.",
+      "sourceSpecification": [
+        "MAGNIOM Multi-Indication Technical & Scientific Architecture Specification v2.1 §160",
+        "MAGNIOM-Triple-Network Systems Layer v1.0 §62"
+      ],
+      "safetyClass": "standard",
+      "appliesToMode": "all",
+      "verificationMethod": "human_factors",
+      "riskControlIds": [
+        "HAZ-001"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-TNS-013",
+      "domain": "TNS",
+      "statement": "Network context may contribute to convergence only when explicitly qualified by policy.",
+      "sourceSpecification": [
+        "MAGNIOM Multi-Indication Technical & Scientific Architecture Specification v2.1 §161",
+        "MAGNIOM-Triple-Network Systems Layer v1.0 §38, §68"
+      ],
+      "safetyClass": "standard",
+      "appliesToMode": "clinical",
+      "verificationMethod": "unit_test",
+      "riskControlIds": [
+        "HAZ-003"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-TNS-014",
+      "domain": "TNS",
+      "statement": "High network convergence SHALL NOT automatically create additional target candidates.",
+      "sourceSpecification": [
+        "MAGNIOM Multi-Indication Technical & Scientific Architecture Specification v2.1 §162",
+        "MAGNIOM-Triple-Network Systems Layer v1.0 §39"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "clinical",
+      "verificationMethod": "unit_test",
+      "riskControlIds": [
+        "HAZ-001",
+        "HAZ-003"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-TNS-015",
+      "domain": "TNS",
+      "statement": "Network profile computation SHALL be deterministic.",
+      "sourceSpecification": [
+        "MAGNIOM Multi-Indication Technical & Scientific Architecture Specification v2.1 §163",
+        "MAGNIOM-Triple-Network Systems Layer v1.0 §50, §51"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "unit_test",
+      "riskControlIds": [
+        "HAZ-003"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-TNS-016",
+      "domain": "TNS",
+      "statement": "Historical network profiles SHALL remain immutable.",
+      "sourceSpecification": [
+        "MAGNIOM Multi-Indication Technical & Scientific Architecture Specification v2.1 §164",
+        "MAGNIOM-Triple-Network Systems Layer v1.0 §52"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "integration_test",
+      "riskControlIds": [
+        "HAZ-005"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-TNS-017",
+      "domain": "TNS",
+      "statement": "Changes to network definitions, metrics, reliability or interpretation SHALL create versioned scientific releases.",
+      "sourceSpecification": [
+        "MAGNIOM Multi-Indication Technical & Scientific Architecture Specification v2.1 §165",
+        "MAGNIOM-Triple-Network Systems Layer v1.0 §11, §84"
+      ],
+      "safetyClass": "standard",
+      "appliesToMode": "all",
+      "verificationMethod": "integration_test",
+      "riskControlIds": [
+        "HAZ-005"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-TNS-018",
+      "domain": "TNS",
+      "statement": "Network features used in Clinical ranking SHALL identify their Scientific Policy release and validation evidence.",
+      "sourceSpecification": [
+        "MAGNIOM Multi-Indication Technical & Scientific Architecture Specification v2.1 §166",
+        "MAGNIOM-Triple-Network Systems Layer v1.0 §48"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "clinical",
+      "verificationMethod": "integration_test",
+      "riskControlIds": [
+        "HAZ-003",
+        "HAZ-005"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-TNS-019",
+      "domain": "TNS",
+      "statement": "Network context SHALL NOT be accepted from arbitrary frontend parameters.",
+      "sourceSpecification": [
+        "MAGNIOM Multi-Indication Technical & Scientific Architecture Specification v2.1 §167",
+        "MAGNIOM-Triple-Network Systems Layer v1.0 §80"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "clinical",
+      "verificationMethod": "unit_test",
+      "riskControlIds": [
+        "HAZ-005"
+      ],
+      "status": "approved"
+    },
+    {
+      "id": "MAG-TNS-020",
+      "domain": "TNS",
+      "statement": "The specialist remains the final clinical authority over all target decisions.",
+      "sourceSpecification": [
+        "MAGNIOM Multi-Indication Technical & Scientific Architecture Specification v2.1 §168",
+        "MAGNIOM-Triple-Network Systems Layer v1.0 §92"
+      ],
+      "safetyClass": "critical",
+      "appliesToMode": "all",
+      "verificationMethod": "human_factors",
+      "riskControlIds": [
+        "HAZ-001"
+      ],
       "status": "approved"
     }
   ]

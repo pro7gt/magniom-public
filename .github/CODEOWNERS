@@ -18,6 +18,7 @@
 /services/neurocompute/              @neuroimaging @clinical-science
 /validation/                         @clinical-science @quality
 /validation/golden-cases/            @clinical-science @quality
+/packages/networks/                  @platform-architecture @clinical-science @quality
 
 # ==============================================================================
 # 2. CORE DOMAIN & SCHEMA CONTRACTS

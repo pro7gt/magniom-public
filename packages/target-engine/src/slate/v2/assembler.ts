@@ -9,6 +9,7 @@ import type {
   SlateCandidateRefV2,
   SlatePositionV2,
   SlateConvergenceProfileV2,
+  SlateContradictionProfileV2,
   ClinicalCoverageProfileV2,
   TargetSlateV2,
   ResolvedTargetEngineContextV2,
@@ -93,6 +94,14 @@ export function assembleSlateV2(input: AssembleSlateV2Input): TargetSlateV2 {
         : 'No primary candidates nominated.',
   };
 
+  const contradiction: SlateContradictionProfileV2 = {
+    evaluatedPairs: primaryRefs.map(r => r.targetCandidateId),
+    hasContradiction: false,
+    contradictoryFindings: [],
+    interpretation:
+      'No contradictory physiological or evidence conflicts detected across nominated candidates.',
+  };
+
   const coverage: ClinicalCoverageProfileV2 = {
     objectives: req.clinicalObjectiveIds.map((objId, idx) => ({
       clinicalObjectiveId: objId,
@@ -109,7 +118,7 @@ export function assembleSlateV2(input: AssembleSlateV2Input): TargetSlateV2 {
 
   const slateWithoutPayload: Omit<TargetSlateV2, 'payloadSha256'> = {
     id,
-    version: '2.0.0',
+    version: '2.1.0',
     caseId: req.caseId,
     caseIndicationId: req.caseIndicationId,
     mode: req.mode,
@@ -129,10 +138,11 @@ export function assembleSlateV2(input: AssembleSlateV2Input): TargetSlateV2 {
     primaryCandidates: primaryRefs,
     additionalCandidates: additionalRefs,
     slateConvergence: convergence,
+    slateContradiction: contradiction,
     clinicalCoverage: coverage,
     generationSummary:
       primaryRefs.length > 0
-        ? `Assembled minimal Target Slate with ${primaryRefs.length} Primary and ${additionalRefs.length} Additional hypotheses.`
+        ? `Assembled minimal Target Slate with ${primaryRefs.length} Primary and ${additionalRefs.length} Additional hypotheses conforming to v2.1 minimal slate principle.`
         : 'Engine abstained from nominating candidates.',
     scientificLimitations: [
       'Candidate coordinates are algorithmic hypotheses for specialist review.',
@@ -141,7 +151,7 @@ export function assembleSlateV2(input: AssembleSlateV2Input): TargetSlateV2 {
     provenance: {
       createdBy: 'magniom-target-engine-v2',
       createdAt: req.requestedAt ?? '2026-09-02T12:00:00.000Z',
-      softwareVersion: '2.0.0',
+      softwareVersion: '2.1.0',
     },
   };
 

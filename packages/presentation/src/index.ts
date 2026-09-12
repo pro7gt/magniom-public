@@ -277,6 +277,14 @@ export interface CandidateCardViewModel {
   readonly hasConflicts: boolean;
   readonly isResearchOnly: boolean;
   readonly geometryType?: TargetGeometryType | string | undefined;
+  readonly networkContext?:
+    | {
+        readonly networkCode: string;
+        readonly relationshipType: string;
+        readonly closestNodeName?: string | undefined;
+        readonly functionalCouplingFormatted?: string | undefined;
+      }
+    | undefined;
 }
 
 export function toCandidateCardViewModel(
@@ -372,6 +380,17 @@ export function toCandidateCardViewModel(
     hasConflicts: (candidate.contraindicationsOrConflicts?.length || 0) > 0,
     isResearchOnly: candidate.evidenceTier === 'T_EXP',
     geometryType: 'point',
+    networkContext: (candidate as any).networkContext
+      ? {
+          networkCode: (candidate as any).networkContext.networkCode,
+          relationshipType: (candidate as any).networkContext.relationshipType,
+          closestNodeName: (candidate as any).networkContext.closestNodeName,
+          functionalCouplingFormatted:
+            (candidate as any).networkContext.functionalCoupling !== undefined
+              ? `${(candidate as any).networkContext.functionalCoupling > 0 ? '+' : ''}${(candidate as any).networkContext.functionalCoupling.toFixed(2)}`
+              : undefined,
+        }
+      : undefined,
   };
 }
 
@@ -2074,3 +2093,4 @@ export * from './module-ui-descriptors.js';
 export * from './v2-shell-adapters.js';
 export * from './export-package-v2.js';
 export * from './evidence-v2-adapters.js';
+export * from './triple-network-view-model.js';
