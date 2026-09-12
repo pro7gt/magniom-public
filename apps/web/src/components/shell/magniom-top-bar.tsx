@@ -14,6 +14,7 @@ import {
   FileTextIcon,
   LockIcon,
   ThemeToggle,
+  MagniomMark,
 } from '@/components/ui';
 import { getModeBadgeColor } from '@magniom/ui';
 
@@ -152,9 +153,8 @@ export function MagniomTopBar({
       {/* 1. Left: Brand & Clinical Descriptor */}
       <div className="top-bar-left">
         <Link href="/" className="top-bar-brand" aria-label="MAGNIOM Home">
-          <span className="brand-title">
-            MAGNIOM<span className="brand-dot">.</span>
-          </span>
+          <MagniomMark size={26} className="brand-logo-mark" aria-hidden="true" />
+          <span className="brand-title">MAGNIOM</span>
           <span className="brand-separator" aria-hidden="true">
             |
           </span>

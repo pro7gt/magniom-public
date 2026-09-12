@@ -11,3 +11,4 @@ export * from './alert';
 export * from './filter-bar';
 export * from './form-controls';
 export * from './theme-toggle';
+export * from './logo';

@@ -8,6 +8,13 @@ export const metadata: Metadata = {
   title: 'Magniom — Clinician Decision Support Workspace',
   description:
     'Connectome-Informed TMS Target Decision Support System (IEC 62304 / ISO 14971 Aligned)',
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', sizes: 'any' },
+    ],
+    apple: [{ url: '/apple-touch-icon.png' }],
+  },
 };
 
 /**

@@ -23,6 +23,7 @@ import {
   AlertTriangleIcon,
   ArrowRightIcon,
   ArrowLeftIcon,
+  MagniomMark,
 } from '@/components/ui';
 import {
   authStore,
@@ -121,8 +122,11 @@ function LoginContent() {
       <Card className="login-card" aria-label="Clinician Login Card">
         {/* Magniom Brand & Clinical System Header */}
         <CardHeader className="login-brand-header">
+          <div className="login-brand-logo-wrap" aria-hidden="true">
+            <MagniomMark size={40} className="login-brand-mark" />
+          </div>
           <CardTitle as="h1" className="login-brand-title" id="login-brand-heading">
-            MAGNIOM<span className="login-brand-dot">.</span>
+            MAGNIOM
           </CardTitle>
           <p className="login-brand-sub">TMS Target Decision Support System</p>
 
