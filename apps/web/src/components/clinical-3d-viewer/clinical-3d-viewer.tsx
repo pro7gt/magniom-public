@@ -1,5 +1,8 @@
 'use client';
 
+import { Button, Badge, Card, CardHeader, CardTitle, CardDescription } from '@/components/ui';
+import { HEX_NUMERIC_TOKENS } from '@magniom/ui';
+
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import type { CameraOrientationPreset, SurfaceMeshType } from '@magniom/domain';
@@ -66,9 +69,9 @@ export function Clinical3DViewer({ viewModel, onSelectCandidate }: Clinical3DVie
     const width = container.clientWidth || 640;
     const height = 480;
 
-    // 1. Scene
+    // 1. Scene (§128-§130 dark canvas invariant: 0x090d16)
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x090d16);
+    scene.background = new THREE.Color(HEX_NUMERIC_TOKENS.background /* 0x090d16 */);
     sceneRef.current = scene;
 
     // 2. Camera
@@ -94,11 +97,11 @@ export function Clinical3DViewer({ viewModel, onSelectCandidate }: Clinical3DVie
     dirLight1.position.set(-100, 100, 100);
     scene.add(dirLight1);
 
-    const dirLight2 = new THREE.DirectionalLight(0x38bdf8, 0.35);
+    const dirLight2 = new THREE.DirectionalLight(HEX_NUMERIC_TOKENS.primary, 0.35);
     dirLight2.position.set(100, -50, -50);
     scene.add(dirLight2);
 
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x1e293b, 0.5);
+    const hemiLight = new THREE.HemisphereLight(0xffffff, HEX_NUMERIC_TOKENS.borderSubtle, 0.5);
     scene.add(hemiLight);
 
     // 5. Brain Mesh & Overlays Groups
@@ -354,7 +357,7 @@ export function Clinical3DViewer({ viewModel, onSelectCandidate }: Clinical3DVie
       // Surface ROI circular patch
       const patchGeom = new THREE.RingGeometry(1.5, 5.2, 32);
       const patchMat = new THREE.MeshBasicMaterial({
-        color: new THREE.Color(0x38bdf8),
+        color: new THREE.Color(HEX_NUMERIC_TOKENS.primary),
         side: THREE.DoubleSide,
         transparent: true,
         opacity: 0.7,
@@ -382,7 +385,7 @@ export function Clinical3DViewer({ viewModel, onSelectCandidate }: Clinical3DVie
         pos.clone().add(normalVector),
       ]);
       const lineMat = new THREE.LineBasicMaterial({
-        color: 0x38bdf8,
+        color: HEX_NUMERIC_TOKENS.primary,
         linewidth: 2,
       });
       const normalLine = new THREE.Line(lineGeom, lineMat);
@@ -402,7 +405,7 @@ export function Clinical3DViewer({ viewModel, onSelectCandidate }: Clinical3DVie
       const radius = conf.dispersionRadiusMm;
       const confGeom = new THREE.SphereGeometry(radius, 24, 24);
       const confMat = new THREE.MeshStandardMaterial({
-        color: 0x10b981,
+        color: HEX_NUMERIC_TOKENS.success,
         transparent: true,
         opacity: 0.28,
         roughness: 0.5,
@@ -426,7 +429,7 @@ export function Clinical3DViewer({ viewModel, onSelectCandidate }: Clinical3DVie
       // ○ Evidence baseline open ring marker
       const ringGeom = new THREE.RingGeometry(1.8, 3.2, 24);
       const ringMat = new THREE.MeshBasicMaterial({
-        color: 0x9ca3af,
+        color: HEX_NUMERIC_TOKENS.textSecondary,
         side: THREE.DoubleSide,
         wireframe: true,
       });
@@ -438,7 +441,7 @@ export function Clinical3DViewer({ viewModel, onSelectCandidate }: Clinical3DVie
       const linePoints = [baselinePos, candidatePos];
       const trajGeom = new THREE.BufferGeometry().setFromPoints(linePoints);
       const trajMat = new THREE.LineDashedMaterial({
-        color: 0xf59e0b,
+        color: HEX_NUMERIC_TOKENS.warning,
         dashSize: 2.0,
         gapSize: 1.5,
       });
@@ -540,66 +543,48 @@ export function Clinical3DViewer({ viewModel, onSelectCandidate }: Clinical3DVie
 
         {/* Viewport Floating Indicator Overlay */}
         <div className="viewport-overlay-badges">
-          <span className="badge badge-neutral" style={{ backdropFilter: 'blur(4px)' }}>
+          <Badge variant="neutral" className="backdrop-blur">
             Coordinate Space: MNI152NLin2009cAsym (RAS)
-          </span>
-          <span className="badge badge-neutral" style={{ backdropFilter: 'blur(4px)' }}>
+          </Badge>
+          <Badge variant="neutral" className="backdrop-blur">
             Target: {viewModel.selectedTarget.targetFamily}
-          </span>
+          </Badge>
         </div>
 
         {/* Non-WebGL Fallback if WebGL unsupported */}
         {!isWebGlSupported && (
-          <div className="webgl-fallback-card">
-            <h4>WebGL Hardware Acceleration Disabled</h4>
-            <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
-              Operating in WCAG 2.2 AA accessible schematic mode. All spatial coordinates, parcel
-              boundaries, and counterfactuals remain fully accessible below.
-            </p>
-          </div>
+          <Card className="webgl-fallback-card">
+            <CardHeader className="p-0">
+              <CardTitle as="h4">WebGL Hardware Acceleration Disabled</CardTitle>
+              <CardDescription className="text-sm text-secondary">
+                Operating in WCAG 2.2 AA accessible schematic mode. All spatial coordinates, parcel
+                boundaries, and counterfactuals remain fully accessible below.
+              </CardDescription>
+            </CardHeader>
+          </Card>
         )}
       </div>
 
       {/* Candidate Focus Selector Chips */}
       {viewModel.candidates3D.length > 1 && (
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            flexWrap: 'wrap',
-            padding: '0.25rem 0',
-          }}
-        >
-          <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
-            Focus Target:
-          </span>
+        <div className="flex items-center gap-2 flex-wrap py-1">
+          <span className="text-xs font-semibold text-secondary">Focus Target:</span>
           {viewModel.candidates3D.map(c => {
             const isSelected = c.id === viewModel.selectedCandidateId;
             return (
-              <button
+              <Button
+                className={`btn-sm flex items-center gap-1.5 text-xs ${isSelected ? 'btn-primary' : 'btn-secondary'}`}
                 key={c.id}
                 type="button"
-                className={`btn btn-sm ${isSelected ? 'btn-primary' : 'btn-secondary'}`}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.4rem',
-                  fontSize: '0.75rem',
-                }}
                 onClick={() => onSelectCandidate?.(c.id)}
               >
                 <span
-                  style={{
-                    width: '8px',
-                    height: '8px',
-                    borderRadius: '50%',
-                    background: c.markerColor,
-                  }}
+                  className="w-2 h-2 rounded-full inline-block shrink-0"
+                  style={{ background: c.markerColor }}
                 />
                 <strong>{c.roleTitle}</strong>
                 <span>{c.mniFormatted}</span>
-              </button>
+              </Button>
             );
           })}
         </div>

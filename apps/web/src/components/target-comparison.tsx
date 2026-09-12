@@ -1,7 +1,21 @@
 'use client';
 
+import {
+  Button,
+  Badge,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  Breadcrumbs,
+  ChevronUpIcon,
+  ChevronDownIcon,
+  ArrowRightIcon,
+  ArrowLeftIcon,
+  PageHeader,
+} from '@/components/ui';
+
 import React, { useState } from 'react';
-import Link from 'next/link';
 import {
   ComparisonTableViewModel,
   ConvergenceViewModel,
@@ -11,6 +25,7 @@ import { Comparison3DMatrix } from './clinical-3d-viewer';
 
 interface TargetComparisonProps {
   caseId: string;
+  caseCode?: string;
   tableViewModel: ComparisonTableViewModel;
   convergenceViewModel: ConvergenceViewModel;
   comparison3D?: Comparison3DViewModel | undefined;
@@ -20,6 +35,7 @@ type SortField = 'role' | 'evidence' | 'domain' | 'reliability';
 
 export function TargetComparison({
   caseId,
+  caseCode,
   tableViewModel,
   convergenceViewModel,
   comparison3D,
@@ -30,6 +46,17 @@ export function TargetComparison({
   const [sortField, setSortField] = useState<SortField>('role');
   const [sortAsc, setSortAsc] = useState(true);
 
+  const sortedRows = [...tableViewModel.rows].sort((a, b) => {
+    let comparison = 0;
+    if (sortField === 'role') comparison = a.roleLabel.localeCompare(b.roleLabel);
+    if (sortField === 'evidence')
+      comparison = a.evidenceTierLabel.localeCompare(b.evidenceTierLabel);
+    if (sortField === 'domain') comparison = a.clinicalDomain.localeCompare(b.clinicalDomain);
+    if (sortField === 'reliability')
+      comparison = a.reliabilityLabel.localeCompare(b.reliabilityLabel);
+    return sortAsc ? comparison : -comparison;
+  });
+
   const handleSort = (field: SortField) => {
     if (sortField === field) {
       setSortAsc(!sortAsc);
@@ -39,61 +66,34 @@ export function TargetComparison({
     }
   };
 
-  const sortedRows = [...tableViewModel.rows].sort((a, b) => {
-    let cmp = 0;
-    if (sortField === 'role') {
-      cmp = a.roleLabel.localeCompare(b.roleLabel);
-    } else if (sortField === 'evidence') {
-      cmp = a.evidenceTierLabel.localeCompare(b.evidenceTierLabel);
-    } else if (sortField === 'domain') {
-      cmp = a.clinicalDomain.localeCompare(b.clinicalDomain);
-    } else if (sortField === 'reliability') {
-      cmp = a.reliabilityLabel.localeCompare(b.reliabilityLabel);
-    }
-    return sortAsc ? cmp : -cmp;
-  });
-
   return (
-    <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'flex-start',
-          flexWrap: 'wrap',
-          gap: '1rem',
-        }}
-      >
-        <div>
-          <h1
-            style={{
-              fontSize: '1.5rem',
-              fontWeight: 700,
-              color: 'var(--text-primary)',
-              marginBottom: '0.25rem',
-            }}
-          >
-            Multi-Attribute Target Candidate Comparison
-          </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-            Systematic evaluation of competing candidate hypotheses across clinical, biological, and
-            reliability dimensions without forced single-score ranking.
-          </p>
-        </div>
+    <div className="container page-container-col">
+      <Breadcrumbs
+        ariaLabel="Comparison Breadcrumb"
+        items={[
+          { label: caseCode || caseId, href: `/cases/${caseId}` },
+          { label: 'Multi-Attribute Comparison', current: true },
+        ]}
+      />
 
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <Link href={`/cases/${caseId}/targets`} className="btn btn-secondary">
-            ← Return to Target Slate
-          </Link>
-          <Link
-            href={`/cases/${caseId}/decision`}
-            className="btn btn-primary"
-            id="proceed-to-decision-btn"
-          >
-            Proceed to Clinical Decision →
-          </Link>
-        </div>
-      </div>
+      <PageHeader
+        title="Multi-Attribute Target Candidate Comparison"
+        subtitle="Systematic evaluation of competing candidate hypotheses across clinical, biological, and reliability dimensions without forced single-score ranking."
+        actions={
+          <>
+            <Button variant="secondary" href={`/cases/${caseId}/targets`}>
+              <ArrowLeftIcon size={14} className="mr-1 inline" /> Return to Target Slate
+            </Button>
+            <Button
+              variant="primary"
+              href={`/cases/${caseId}/decision`}
+              id="proceed-to-decision-btn"
+            >
+              Proceed to Clinical Decision <ArrowRightIcon size={14} className="ml-1 inline" />
+            </Button>
+          </>
+        }
+      />
 
       {/* 3D Multi-Target Spatial Matrix */}
       {comparison3D && (
@@ -105,42 +105,61 @@ export function TargetComparison({
       )}
 
       {/* Convergence Diagnostic Banner */}
-      <div className="card" style={{ background: '#0d1527', borderColor: '#1e3a5f' }}>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '0.5rem',
-          }}
-        >
-          <h2 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--accent-cyan)' }}>
+      <Card className="bg-surface-card border-subtle">
+        <CardHeader className="flex justify-between items-center mb-2">
+          <CardTitle as="h2" className="text-lg font-bold text-cyan">
             Spatial Convergence Diagnostic: {convergenceViewModel.headline}
-          </h2>
-          <span className={`badge ${convergenceViewModel.badgeClass}`}>
+          </CardTitle>
+          <Badge className={`${convergenceViewModel.badgeClass}`}>
             {convergenceViewModel.convergenceLevel} CONVERGENCE
-          </span>
-        </div>
-        <p style={{ fontSize: '0.875rem', color: '#cbd5e1' }}>{convergenceViewModel.summary}</p>
-      </div>
+          </Badge>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-secondary">{convergenceViewModel.summary}</p>
+        </CardContent>
+      </Card>
 
       {/* Comparison Table */}
       <div className="comparison-table-wrapper">
         <table className="comparison-table" aria-label="Target Candidate Comparison Matrix">
           <thead>
             <tr>
-              <th style={{ cursor: 'pointer' }} onClick={() => handleSort('role')}>
-                Role & Subtitle {sortField === 'role' ? (sortAsc ? '▲' : '▼') : ''}
+              <th className="cursor-pointer" onClick={() => handleSort('role')}>
+                Role & Subtitle
+                {sortField === 'role' &&
+                  (sortAsc ? (
+                    <ChevronUpIcon size={12} className="sort-icon" />
+                  ) : (
+                    <ChevronDownIcon size={12} className="sort-icon" />
+                  ))}
               </th>
               <th>Target Family & MNI</th>
-              <th style={{ cursor: 'pointer' }} onClick={() => handleSort('evidence')}>
-                Evidence Tier {sortField === 'evidence' ? (sortAsc ? '▲' : '▼') : ''}
+              <th className="cursor-pointer" onClick={() => handleSort('evidence')}>
+                Evidence Tier
+                {sortField === 'evidence' &&
+                  (sortAsc ? (
+                    <ChevronUpIcon size={12} className="sort-icon" />
+                  ) : (
+                    <ChevronDownIcon size={12} className="sort-icon" />
+                  ))}
               </th>
-              <th style={{ cursor: 'pointer' }} onClick={() => handleSort('domain')}>
-                Clinical Domain {sortField === 'domain' ? (sortAsc ? '▲' : '▼') : ''}
+              <th className="cursor-pointer" onClick={() => handleSort('domain')}>
+                Clinical Domain
+                {sortField === 'domain' &&
+                  (sortAsc ? (
+                    <ChevronUpIcon size={12} className="sort-icon" />
+                  ) : (
+                    <ChevronDownIcon size={12} className="sort-icon" />
+                  ))}
               </th>
-              <th style={{ cursor: 'pointer' }} onClick={() => handleSort('reliability')}>
-                Connectome Reliability {sortField === 'reliability' ? (sortAsc ? '▲' : '▼') : ''}
+              <th className="cursor-pointer" onClick={() => handleSort('reliability')}>
+                Connectome Reliability
+                {sortField === 'reliability' &&
+                  (sortAsc ? (
+                    <ChevronUpIcon size={12} className="sort-icon" />
+                  ) : (
+                    <ChevronDownIcon size={12} className="sort-icon" />
+                  ))}
               </th>
               <th>Personalisation Displacement</th>
               <th>Anatomical Accessibility</th>
@@ -151,36 +170,24 @@ export function TargetComparison({
             {sortedRows.map(row => (
               <tr key={row.candidateId}>
                 <td>
-                  <strong style={{ color: 'var(--accent-cyan)' }}>{row.roleLabel}</strong>
+                  <strong className="text-cyan">{row.roleLabel}</strong>
                 </td>
                 <td>
                   <div>{row.targetFamily}</div>
-                  <div
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: '0.75rem',
-                      color: 'var(--text-secondary)',
-                    }}
-                  >
-                    {row.coordinateFormatted}
-                  </div>
+                  <div className="font-mono text-xs text-secondary">{row.coordinateFormatted}</div>
                 </td>
                 <td>
-                  <span className={`badge ${row.evidenceTierBadgeClass}`}>
-                    {row.evidenceTierLabel}
-                  </span>
+                  <Badge className={`${row.evidenceTierBadgeClass}`}>{row.evidenceTierLabel}</Badge>
                 </td>
                 <td>{row.clinicalDomain}</td>
                 <td>
-                  <span className={`badge ${row.reliabilityBadgeClass}`}>
-                    {row.reliabilityLabel}
-                  </span>
+                  <Badge className={`${row.reliabilityBadgeClass}`}>{row.reliabilityLabel}</Badge>
                 </td>
                 <td>
-                  <strong style={{ color: '#e2e8f0' }}>{row.personalisationDisplacement}</strong>
+                  <strong className="text-primary">{row.personalisationDisplacement}</strong>
                 </td>
                 <td>{row.anatomicalAccessibility}</td>
-                <td style={{ color: '#fca5a5', fontSize: '0.8125rem' }}>{row.mainUncertainty}</td>
+                <td className="text-rose text-sm">{row.mainUncertainty}</td>
               </tr>
             ))}
           </tbody>
@@ -188,109 +195,57 @@ export function TargetComparison({
       </div>
 
       {/* Persistent Uncertainty Breakdown Grid */}
-      <div className="card">
-        <h2 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: '1rem' }}>
-          7-Dimensional Decision Uncertainty Matrix
-        </h2>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '1rem',
-          }}
-        >
-          <div
-            style={{
-              background: 'var(--bg-surface-elevated)',
-              padding: '0.875rem',
-              borderRadius: '0.5rem',
-              fontSize: '0.8125rem',
-            }}
-          >
-            <strong style={{ color: 'var(--accent-cyan)' }}>1. Evidence Uncertainty:</strong>
-            <p style={{ color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
-              Level of replicated prospective randomized trial support for candidate target family.
-            </p>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold text-primary">
+            7-Dimensional Decision Uncertainty Matrix
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="stat-card-grid">
+            <div className="p-3.5 rounded-lg bg-glass-card text-sm">
+              <strong className="text-cyan">1. Evidence Uncertainty:</strong>
+              <p className="text-secondary mt-1">
+                Level of replicated prospective randomized trial support for candidate target
+                family.
+              </p>
+            </div>
+            <div className="p-3.5 rounded-lg bg-glass-card text-sm">
+              <strong className="text-cyan">2. Phenotype Concordance Uncertainty:</strong>
+              <p className="text-secondary mt-1">
+                Alignment between patient dominant symptom clusters and target circuit biological
+                engagement.
+              </p>
+            </div>
+            <div className="p-3.5 rounded-lg bg-glass-card text-sm">
+              <strong className="text-cyan">3. Connectome Reliability Uncertainty:</strong>
+              <p className="text-secondary mt-1">
+                Test-retest stability across split-half time series and scan-to-scan motion
+                variance.
+              </p>
+            </div>
+            <div className="p-3.5 rounded-lg bg-glass-card text-sm">
+              <strong className="text-cyan">4. Spatial Geodesic Uncertainty:</strong>
+              <p className="text-secondary mt-1">
+                Displacement distance from established group normative reference coordinates.
+              </p>
+            </div>
+            <div className="p-3.5 rounded-lg bg-glass-card text-sm">
+              <strong className="text-cyan">5. Anatomical Accessibility Uncertainty:</strong>
+              <p className="text-secondary mt-1">
+                Cortical depth and scalp-to-cortex distance affecting induced electric field focus.
+              </p>
+            </div>
+            <div className="p-3.5 rounded-lg bg-glass-card text-sm">
+              <strong className="text-cyan">6. External Validity Uncertainty:</strong>
+              <p className="text-secondary mt-1">
+                Degree of clinical trial population overlap with specific patient treatment
+                resistance history.
+              </p>
+            </div>
           </div>
-          <div
-            style={{
-              background: 'var(--bg-surface-elevated)',
-              padding: '0.875rem',
-              borderRadius: '0.5rem',
-              fontSize: '0.8125rem',
-            }}
-          >
-            <strong style={{ color: 'var(--accent-cyan)' }}>
-              2. Phenotype Concordance Uncertainty:
-            </strong>
-            <p style={{ color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
-              Alignment between patient dominant symptom clusters and target circuit biological
-              engagement.
-            </p>
-          </div>
-          <div
-            style={{
-              background: 'var(--bg-surface-elevated)',
-              padding: '0.875rem',
-              borderRadius: '0.5rem',
-              fontSize: '0.8125rem',
-            }}
-          >
-            <strong style={{ color: 'var(--accent-cyan)' }}>
-              3. Connectome Reliability Uncertainty:
-            </strong>
-            <p style={{ color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
-              Test-retest stability across split-half time series and scan-to-scan motion variance.
-            </p>
-          </div>
-          <div
-            style={{
-              background: 'var(--bg-surface-elevated)',
-              padding: '0.875rem',
-              borderRadius: '0.5rem',
-              fontSize: '0.8125rem',
-            }}
-          >
-            <strong style={{ color: 'var(--accent-cyan)' }}>
-              4. Spatial Geodesic Uncertainty:
-            </strong>
-            <p style={{ color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
-              Displacement distance from established group normative reference coordinates.
-            </p>
-          </div>
-          <div
-            style={{
-              background: 'var(--bg-surface-elevated)',
-              padding: '0.875rem',
-              borderRadius: '0.5rem',
-              fontSize: '0.8125rem',
-            }}
-          >
-            <strong style={{ color: 'var(--accent-cyan)' }}>
-              5. Anatomical Accessibility Uncertainty:
-            </strong>
-            <p style={{ color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
-              Cortical depth and scalp-to-cortex distance affecting induced electric field focus.
-            </p>
-          </div>
-          <div
-            style={{
-              background: 'var(--bg-surface-elevated)',
-              padding: '0.875rem',
-              borderRadius: '0.5rem',
-              fontSize: '0.8125rem',
-            }}
-          >
-            <strong style={{ color: 'var(--accent-cyan)' }}>
-              6. External Validity Uncertainty:
-            </strong>
-            <p style={{ color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
-              Degree of clinical trial population overlap with specific patient treatment resistance
-              history.
-            </p>
-          </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -2,7 +2,7 @@
 **Document Reference:** MAG-VR-v2-SRS-CONFORMANCE  
 **Standard Reference:** IEC 62304:2006+AMD1:2015 §5.2, §5.5-§5.7 (Class C/B/A) / ISO 13485:2016 §7.3.3, §7.3.5 / ISO 14971:2019  
 **Specification Reference:** [`MAGNIOM-System Requirements Specification v2.0.md`](file:///home/owner/Downloads/Magniom/public/guides/MAGNIOM-System%20Requirements%20Specification%20v2.0.md)  
-**Execution Date:** 2026-09-08T13:25:39.740Z  
+**Execution Date:** 2026-09-12T05:16:52.621Z  
 **Status:** PASS (100% Conformance)  
 
 ---

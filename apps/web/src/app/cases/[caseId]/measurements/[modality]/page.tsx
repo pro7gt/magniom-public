@@ -1,7 +1,20 @@
 'use client';
 
 import React, { use, useState, useEffect } from 'react';
-import Link from 'next/link';
+import {
+  CheckIcon,
+  Breadcrumbs,
+  Button,
+  Badge,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CaseNotFoundState,
+  ArrowRightIcon,
+  ArrowLeftIcon,
+  PageHeader,
+} from '@/components/ui';
 import { caseStore } from '../../../../../lib/case-store';
 import { resolveCaseShellContext } from '../../../../../lib/shell-authority';
 import type { MeasurementSummaryViewModel, CaseShellViewModel } from '@magniom/presentation';
@@ -59,14 +72,8 @@ export default function MeasurementModalityDetailPage({
 
   if (!record) {
     return (
-      <div className="container" style={{ textAlign: 'center', padding: '4rem' }}>
-        <h2>Case Not Found</h2>
-        <p style={{ color: 'var(--text-secondary)' }}>
-          Case ID {caseId} does not exist in the active case store.
-        </p>
-        <Link href="/cases" className="btn btn-secondary">
-          Return to Cases
-        </Link>
+      <div className="container page-container-col">
+        <CaseNotFoundState caseId={caseId} />
       </div>
     );
   }
@@ -105,588 +112,253 @@ export default function MeasurementModalityDetailPage({
   };
 
   return (
-    <div className="measurement-detail-workspace" style={{ padding: '24px' }}>
+    <div className="container page-container-col">
       {/* Breadcrumb Navigation */}
-      <nav
-        aria-label="Measurement Breadcrumb"
-        style={{ marginBottom: '16px', fontSize: '0.85rem' }}
-      >
-        <Link
-          href={`/cases/${caseId}`}
-          style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}
-        >
-          {record.clinicalCase.caseCode}
-        </Link>
-        <span style={{ margin: '0 8px', color: 'var(--text-muted)' }}>/</span>
-        <Link
-          href={`/cases/${caseId}/measurements`}
-          style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}
-        >
-          Measurements
-        </Link>
-        <span style={{ margin: '0 8px', color: 'var(--text-muted)' }}>/</span>
-        <span style={{ color: 'var(--accent-cyan)', fontWeight: 600 }}>{modalityTitle}</span>
-      </nav>
+      <Breadcrumbs
+        ariaLabel="Measurement Breadcrumb"
+        items={[
+          { label: record.clinicalCase.caseCode, href: `/cases/${caseId}` },
+          { label: 'Measurements', href: `/cases/${caseId}/measurements` },
+          { label: modalityTitle, current: true },
+        ]}
+      />
 
       {/* Header Banner */}
-      <header
-        style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.03)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '8px',
-          padding: '20px',
-          marginBottom: '24px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '16px',
-        }}
-      >
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <h1
-              style={{ margin: 0, fontSize: '1.4rem', color: 'var(--text-main)', fontWeight: 700 }}
-            >
-              {modalityTitle}
-            </h1>
-            <span
-              className={`badge ${getBadgeClass(qualification)}`}
-              style={{ textTransform: 'capitalize' }}
-            >
+      <PageHeader
+        variant="case-workspace"
+        title={
+          <span className="flex items-center gap-2 flex-wrap">
+            <span>{modalityTitle}</span>
+            <Badge className={`${getBadgeClass(qualification)} capitalize`}>
               {qualification.replace(/_/g, ' ')}
-            </span>
+            </Badge>
             {isRequired ? (
-              <span className="badge badge-tier1">Required Modality</span>
+              <Badge variant="tier1">Required Modality</Badge>
             ) : (
-              <span className="badge badge-tierexp">Optional / Research</span>
+              <Badge variant="tierexp">Optional / Research</Badge>
             )}
-          </div>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', margin: '6px 0 0' }}>
+          </span>
+        }
+        subtitle={
+          <>
             Indication Module: <strong>{record.clinicalCase.indicationCode}</strong> · Case ID:{' '}
             {record.clinicalCase.caseCode}
-          </p>
-        </div>
-
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <Link href={`/cases/${caseId}/measurements`} className="btn btn-secondary">
-            ← All Measurements
-          </Link>
-          <Link href={`/cases/${caseId}/targets`} className="btn btn-primary">
-            Target Slate →
-          </Link>
-        </div>
-      </header>
+          </>
+        }
+        actions={
+          <>
+            <Button variant="secondary" href={`/cases/${caseId}/measurements`}>
+              <ArrowLeftIcon size={14} className="mr-1 inline" /> All Measurements
+            </Button>
+            <Button variant="primary" href={`/cases/${caseId}/targets`}>
+              Target Slate <ArrowRightIcon size={14} className="ml-1 inline" />
+            </Button>
+          </>
+        }
+      />
 
       {/* Grid: Quality Control & Provenance */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '20px',
-          marginBottom: '24px',
-        }}
-      >
+      <div className="grid-cards-320 mb-6">
         {/* Card 1: ISO 14971 QC Qualification */}
-        <section
-          className="metric-card"
-          style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.03)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderRadius: '8px',
-            padding: '20px',
-          }}
-        >
-          <h3
-            style={{
-              margin: '0 0 12px',
-              fontSize: '1rem',
-              color: 'var(--accent-cyan)',
-              fontWeight: 600,
-            }}
-          >
-            Quality Control & Reliability
-          </h3>
-          <ul
-            style={{
-              listStyle: 'none',
-              padding: 0,
-              margin: 0,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '8px',
-              fontSize: '0.85rem',
-            }}
-          >
-            <li style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Qualification Status:</span>
-              <strong style={{ color: 'var(--text-main)', textTransform: 'uppercase' }}>
-                {qualification}
-              </strong>
-            </li>
-            <li style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Signal-to-Noise Ratio (SNR):</span>
-              <strong style={{ color: 'var(--text-main)' }}>48.6 dB (PASS &gt; 35 dB)</strong>
-            </li>
-            <li style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Motion Artifact / FD:</span>
-              <strong style={{ color: 'var(--text-main)' }}>
-                0.14 mm (&lt; 0.30 mm threshold)
-              </strong>
-            </li>
-            <li style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Defacing Verification:</span>
-              <strong style={{ color: 'var(--accent-green)' }}>✓ Cryptographically Verified</strong>
-            </li>
-            <li style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Laterality Cross-Check:</span>
-              <strong style={{ color: 'var(--accent-green)' }}>✓ Left/Right Verified</strong>
-            </li>
-          </ul>
-        </section>
+        <Card className="metric-card">
+          <CardHeader>
+            <CardTitle as="h2" className="section-subheading m-0">
+              Quality Control & Reliability
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="spec-list">
+              <li className="flex justify-between">
+                <span className="text-secondary">Qualification Status:</span>
+                <strong className="text-primary uppercase">{qualification}</strong>
+              </li>
+              <li className="flex justify-between">
+                <span className="text-secondary">Signal-to-Noise Ratio (SNR):</span>
+                <strong className="text-primary">48.6 dB (PASS &gt; 35 dB)</strong>
+              </li>
+              <li className="flex justify-between">
+                <span className="text-secondary">Motion Artifact / FD:</span>
+                <strong className="text-primary">0.14 mm (&lt; 0.30 mm threshold)</strong>
+              </li>
+              <li className="flex justify-between">
+                <span className="text-secondary">Defacing Verification:</span>
+                <strong className="text-emerald">
+                  <CheckIcon size={14} className="text-emerald mr-1 inline" /> Cryptographically
+                  Verified
+                </strong>
+              </li>
+              <li className="flex justify-between">
+                <span className="text-secondary">Laterality Cross-Check:</span>
+                <strong className="text-emerald">
+                  <CheckIcon size={14} className="text-emerald mr-1 inline" /> Left/Right Verified
+                </strong>
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
 
         {/* Card 2: Stereotactic Space & Registration */}
-        <section
-          className="metric-card"
-          style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.03)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderRadius: '8px',
-            padding: '20px',
-          }}
-        >
-          <h3
-            style={{
-              margin: '0 0 12px',
-              fontSize: '1rem',
-              color: 'var(--accent-cyan)',
-              fontWeight: 600,
-            }}
-          >
-            Stereotactic Space & Transforms
-          </h3>
-          <ul
-            style={{
-              listStyle: 'none',
-              padding: 0,
-              margin: 0,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '8px',
-              fontSize: '0.85rem',
-            }}
-          >
-            <li style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Target Reference Space:</span>
-              <strong style={{ color: 'var(--text-main)' }}>
-                MNI152 Non-linear 6th Generation
-              </strong>
-            </li>
-            <li style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Voxel Resolution:</span>
-              <strong style={{ color: 'var(--text-main)' }}>1.0 × 1.0 × 1.0 mm³ Isotropic</strong>
-            </li>
-            <li style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Transform Warp Field:</span>
-              <strong style={{ color: 'var(--text-main)' }}>SyN Diffeomorphic Non-linear</strong>
-            </li>
-            <li style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Registration Dice Overlap:</span>
-              <strong style={{ color: 'var(--text-main)' }}>
-                0.941 (Sub-millimetre precision)
-              </strong>
-            </li>
-          </ul>
-        </section>
+        <Card className="metric-card">
+          <CardHeader>
+            <CardTitle as="h2" className="section-subheading m-0">
+              Stereotactic Space & Transforms
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="spec-list">
+              <li className="flex justify-between">
+                <span className="text-secondary">Target Reference Space:</span>
+                <strong className="text-primary">MNI152 Non-linear 6th Generation</strong>
+              </li>
+              <li className="flex justify-between">
+                <span className="text-secondary">Voxel Resolution:</span>
+                <strong className="text-primary">1.0 × 1.0 × 1.0 mm³ Isotropic</strong>
+              </li>
+              <li className="flex justify-between">
+                <span className="text-secondary">Transform Warp Field:</span>
+                <strong className="text-primary">SyN Diffeomorphic Non-linear</strong>
+              </li>
+              <li className="flex justify-between">
+                <span className="text-secondary">Registration Dice Overlap:</span>
+                <strong className="text-primary">0.941 (Sub-millimetre precision)</strong>
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
 
         {/* Card 3: Clinical Ranking Role (§225–§228) */}
-        <section
-          className="metric-card"
-          style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.03)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderRadius: '8px',
-            padding: '20px',
-          }}
-        >
-          <h3
-            style={{
-              margin: '0 0 12px',
-              fontSize: '1rem',
-              color: 'var(--accent-cyan)',
-              fontWeight: 600,
-            }}
-          >
-            Clinical Ranking Disclosure (§225–228)
-          </h3>
-          <div style={{ marginBottom: '12px' }}>
-            {isUsedForRanking ? (
-              <span
-                className="badge badge-tier1"
-                style={{ fontSize: '0.85rem', display: 'inline-block', marginBottom: '8px' }}
-              >
-                ✓ Used for Primary Clinical Ranking
-              </span>
-            ) : (
-              <span
-                className="badge badge-tierexp"
-                style={{ fontSize: '0.85rem', display: 'inline-block', marginBottom: '8px' }}
-              >
-                ○ Explanatory / Secondary Evidence Only
-              </span>
-            )}
-            <p
-              style={{
-                margin: 0,
-                fontSize: '0.85rem',
-                color: 'var(--text-secondary)',
-                lineHeight: 1.4,
-              }}
-            >
-              {isUsedForRanking
-                ? 'This modality directly drives target coordinate selection, electric field calculations, and ranking ordering in Stage 12 of the Target Engine.'
-                : 'This modality provides contextual evidence and does not perturb the primary stereotactic coordinates or ranking order.'}
-            </p>
-          </div>
-        </section>
+        <Card className="metric-card">
+          <CardHeader>
+            <CardTitle as="h2" className="section-subheading m-0">
+              Clinical Ranking Disclosure (§225–228)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="mb-3">
+              {isUsedForRanking ? (
+                <Badge variant="tier1" className="text-sm inline-block mb-2">
+                  <CheckIcon size={14} className="text-emerald mr-1 inline" /> Used for Primary
+                  Clinical Ranking
+                </Badge>
+              ) : (
+                <Badge variant="tierexp" className="text-sm inline-block mb-2">
+                  ○ Explanatory / Secondary Evidence Only
+                </Badge>
+              )}
+              <p className="m-0 text-sm text-secondary leading-relaxed">
+                {isUsedForRanking
+                  ? 'This modality directly drives target coordinate selection, electric field calculations, and ranking ordering in Stage 12 of the Target Engine.'
+                  : 'This modality provides contextual evidence and does not perturb the primary stereotactic coordinates or ranking order.'}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Specialized Modality Widgets */}
-      <section
-        style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.03)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '8px',
-          padding: '20px',
-        }}
-      >
-        <h3
-          style={{
-            margin: '0 0 16px',
-            fontSize: '1.1rem',
-            color: 'var(--text-main)',
-            fontWeight: 600,
-          }}
-        >
-          Modality Protocol & Scientific Parameters
-        </h3>
-
-        {/* Dynamic content depending on modality */}
-        {normalizedKey === 'motor_evoked_potential' || normalizedKey === 'motor_mapping' ? (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-              gap: '16px',
-            }}
-          >
-            <div style={{ padding: '12px', background: 'rgba(0,0,0,0.2)', borderRadius: '6px' }}>
-              <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
-                RESTING MOTOR THRESHOLD (rMT)
+      <Card>
+        <CardHeader>
+          <CardTitle as="h2" className="m-0 text-lg text-primary font-semibold">
+            Modality Protocol & Scientific Parameters
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {/* Dynamic content depending on modality */}
+          {normalizedKey === 'motor_evoked_potential' || normalizedKey === 'motor_mapping' ? (
+            <div className="grid-cards-240">
+              <div className="panel-dark">
+                <div className="text-xs text-muted">RESTING MOTOR THRESHOLD (rMT)</div>
+                <div className="text-xl font-bold text-primary mt-1">54% MSO</div>
+                <div className="text-xs text-secondary">Magstim 200² Figure-8 Coil</div>
               </div>
-              <div
-                style={{
-                  fontSize: '1.25rem',
-                  fontWeight: 700,
-                  color: 'var(--text-main)',
-                  marginTop: '4px',
-                }}
-              >
-                54% MSO
+              <div className="panel-dark">
+                <div className="text-xs text-muted">MEP PEAK-TO-PEAK AMPLITUDE</div>
+                <div className="text-xl font-bold text-cyan mt-1">1.42 mV</div>
+                <div className="text-xs text-secondary">Right FDI (120% rMT, n=10 pulses)</div>
               </div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                Magstim 200² Figure-8 Coil
+              <div className="panel-dark">
+                <div className="text-xs text-muted">HOTSPOT COORDINATES (MNI)</div>
+                <div className="text-lg font-bold text-primary mt-1">[-37, -21, 58] mm</div>
+                <div className="text-xs text-secondary">Precentral Gyrus / Hand Knob</div>
               </div>
             </div>
-            <div style={{ padding: '12px', background: 'rgba(0,0,0,0.2)', borderRadius: '6px' }}>
-              <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
-                MEP PEAK-TO-PEAK AMPLITUDE
+          ) : normalizedKey === 'efield' ? (
+            <div className="grid-cards-240">
+              <div className="panel-dark">
+                <div className="text-xs text-muted">PEAK GRAY MATTER E-FIELD</div>
+                <div className="text-xl font-bold text-cyan mt-1">128.4 V/m</div>
+                <div className="text-xs text-secondary">Target ROI Exposure</div>
               </div>
-              <div
-                style={{
-                  fontSize: '1.25rem',
-                  fontWeight: 700,
-                  color: 'var(--accent-cyan)',
-                  marginTop: '4px',
-                }}
-              >
-                1.42 mV
+              <div className="panel-dark">
+                <div className="text-xs text-muted">99.9th PERCENTILE FIELD</div>
+                <div className="text-xl font-bold text-primary mt-1">142.1 V/m</div>
+                <div className="text-xs text-secondary">Finite Element Mesh (FEM) 5-tissue</div>
               </div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                Right FDI (120% rMT, n=10 pulses)
-              </div>
-            </div>
-            <div style={{ padding: '12px', background: 'rgba(0,0,0,0.2)', borderRadius: '6px' }}>
-              <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
-                HOTSPOT COORDINATES (MNI)
-              </div>
-              <div
-                style={{
-                  fontSize: '1.1rem',
-                  fontWeight: 700,
-                  color: 'var(--text-main)',
-                  marginTop: '4px',
-                }}
-              >
-                [-37, -21, 58] mm
-              </div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                Precentral Gyrus / Hand Knob
+              <div className="panel-dark">
+                <div className="text-xs text-muted">SKULL DEFECT ATTENUATION</div>
+                <div className="text-lg font-bold text-emerald mt-1">NOMINAL (0.0%)</div>
+                <div className="text-xs text-secondary">No craniotomy breach detected</div>
               </div>
             </div>
-          </div>
-        ) : normalizedKey === 'efield' ? (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-              gap: '16px',
-            }}
-          >
-            <div style={{ padding: '12px', background: 'rgba(0,0,0,0.2)', borderRadius: '6px' }}>
-              <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
-                PEAK GRAY MATTER E-FIELD
+          ) : normalizedKey === 'lesion_mapping' ? (
+            <div className="grid-cards-240">
+              <div className="panel-dark">
+                <div className="text-xs text-muted">LESION MORPHOLOGY</div>
+                <div className="text-xl font-bold text-primary mt-1">Ischemic Infarct</div>
+                <div className="text-xs text-secondary">Left MCA Superior Division</div>
               </div>
-              <div
-                style={{
-                  fontSize: '1.25rem',
-                  fontWeight: 700,
-                  color: 'var(--accent-cyan)',
-                  marginTop: '4px',
-                }}
-              >
-                128.4 V/m
+              <div className="panel-dark">
+                <div className="text-xs text-muted">INFARCTION CORE VOLUME</div>
+                <div className="text-xl font-bold text-primary mt-1">14.8 cm³</div>
+                <div className="text-xs text-secondary">
+                  Subcortical White Matter / Corona Radiata
+                </div>
               </div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                Target ROI Exposure
+              <div className="panel-dark">
+                <div className="text-xs text-muted">TARGET OVERLAP CLEARANCE</div>
+                <div className="text-lg font-bold text-emerald mt-1">&gt; 18 mm (PASS)</div>
+                <div className="text-xs text-secondary">Zero lesion tissue in stimulation cone</div>
               </div>
             </div>
-            <div style={{ padding: '12px', background: 'rgba(0,0,0,0.2)', borderRadius: '6px' }}>
-              <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
-                99.9th PERCENTILE FIELD
+          ) : normalizedKey === 'audiology' ? (
+            <div className="grid-cards-240">
+              <div className="panel-dark">
+                <div className="text-xs text-muted">TINNITUS PITCH MATCH</div>
+                <div className="text-xl font-bold text-cyan mt-1">6.2 kHz</div>
+                <div className="text-xs text-secondary">Bilateral High-Frequency Tonal</div>
               </div>
-              <div
-                style={{
-                  fontSize: '1.25rem',
-                  fontWeight: 700,
-                  color: 'var(--text-main)',
-                  marginTop: '4px',
-                }}
-              >
-                142.1 V/m
+              <div className="panel-dark">
+                <div className="text-xs text-muted">LOUDNESS MATCH</div>
+                <div className="text-xl font-bold text-primary mt-1">8 dB SL</div>
+                <div className="text-xs text-secondary">Sensation Level above threshold</div>
               </div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                Finite Element Mesh (FEM) 5-tissue
-              </div>
-            </div>
-            <div style={{ padding: '12px', background: 'rgba(0,0,0,0.2)', borderRadius: '6px' }}>
-              <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
-                SKULL DEFECT ATTENUATION
-              </div>
-              <div
-                style={{
-                  fontSize: '1.1rem',
-                  fontWeight: 700,
-                  color: 'var(--accent-green)',
-                  marginTop: '4px',
-                }}
-              >
-                NOMINAL (0.0%)
-              </div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                No craniotomy breach detected
+              <div className="panel-dark">
+                <div className="text-xs text-muted">MINIMUM MASKING LEVEL</div>
+                <div className="text-lg font-bold text-primary mt-1">42 dB HL</div>
+                <div className="text-xs text-secondary">Narrow-band noise centered at 6 kHz</div>
               </div>
             </div>
-          </div>
-        ) : normalizedKey === 'lesion_mapping' ? (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-              gap: '16px',
-            }}
-          >
-            <div style={{ padding: '12px', background: 'rgba(0,0,0,0.2)', borderRadius: '6px' }}>
-              <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
-                LESION MORPHOLOGY
+          ) : (
+            <div className="grid-cards-240">
+              <div className="panel-dark">
+                <div className="text-xs text-muted">ACQUISITION SCANNER</div>
+                <div className="text-lg font-bold text-primary mt-1">Siemens Prisma 3.0T</div>
+                <div className="text-xs text-secondary">64-Channel Head Neck Coil</div>
               </div>
-              <div
-                style={{
-                  fontSize: '1.25rem',
-                  fontWeight: 700,
-                  color: 'var(--text-main)',
-                  marginTop: '4px',
-                }}
-              >
-                Ischemic Infarct
+              <div className="panel-dark">
+                <div className="text-xs text-muted">DATA CONFORMANCE</div>
+                <div className="text-lg font-bold text-emerald mt-1">DICOM / BIDS 1.8.0</div>
+                <div className="text-xs text-secondary">NIfTI-1 with qform/sform alignment</div>
               </div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                Left MCA Superior Division
+              <div className="panel-dark">
+                <div className="text-xs text-muted">RELIABILITY INDEX</div>
+                <div className="text-lg font-bold text-cyan mt-1">0.985 (HIGH)</div>
+                <div className="text-xs text-secondary">Automated quality pipeline verified</div>
               </div>
             </div>
-            <div style={{ padding: '12px', background: 'rgba(0,0,0,0.2)', borderRadius: '6px' }}>
-              <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
-                INFARCTION CORE VOLUME
-              </div>
-              <div
-                style={{
-                  fontSize: '1.25rem',
-                  fontWeight: 700,
-                  color: 'var(--text-main)',
-                  marginTop: '4px',
-                }}
-              >
-                14.8 cm³
-              </div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                Subcortical White Matter / Corona Radiata
-              </div>
-            </div>
-            <div style={{ padding: '12px', background: 'rgba(0,0,0,0.2)', borderRadius: '6px' }}>
-              <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
-                TARGET OVERLAP CLEARANCE
-              </div>
-              <div
-                style={{
-                  fontSize: '1.1rem',
-                  fontWeight: 700,
-                  color: 'var(--accent-green)',
-                  marginTop: '4px',
-                }}
-              >
-                &gt; 18 mm (PASS)
-              </div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                Zero lesion tissue in stimulation cone
-              </div>
-            </div>
-          </div>
-        ) : normalizedKey === 'audiology' ? (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-              gap: '16px',
-            }}
-          >
-            <div style={{ padding: '12px', background: 'rgba(0,0,0,0.2)', borderRadius: '6px' }}>
-              <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
-                TINNITUS PITCH MATCH
-              </div>
-              <div
-                style={{
-                  fontSize: '1.25rem',
-                  fontWeight: 700,
-                  color: 'var(--accent-cyan)',
-                  marginTop: '4px',
-                }}
-              >
-                6.2 kHz
-              </div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                Bilateral High-Frequency Tonal
-              </div>
-            </div>
-            <div style={{ padding: '12px', background: 'rgba(0,0,0,0.2)', borderRadius: '6px' }}>
-              <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>LOUDNESS MATCH</div>
-              <div
-                style={{
-                  fontSize: '1.25rem',
-                  fontWeight: 700,
-                  color: 'var(--text-main)',
-                  marginTop: '4px',
-                }}
-              >
-                8 dB SL
-              </div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                Sensation Level above threshold
-              </div>
-            </div>
-            <div style={{ padding: '12px', background: 'rgba(0,0,0,0.2)', borderRadius: '6px' }}>
-              <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
-                MINIMUM MASKING LEVEL
-              </div>
-              <div
-                style={{
-                  fontSize: '1.1rem',
-                  fontWeight: 700,
-                  color: 'var(--text-main)',
-                  marginTop: '4px',
-                }}
-              >
-                42 dB HL
-              </div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                Narrow-band noise centered at 6 kHz
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-              gap: '16px',
-            }}
-          >
-            <div style={{ padding: '12px', background: 'rgba(0,0,0,0.2)', borderRadius: '6px' }}>
-              <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
-                ACQUISITION SCANNER
-              </div>
-              <div
-                style={{
-                  fontSize: '1.1rem',
-                  fontWeight: 700,
-                  color: 'var(--text-main)',
-                  marginTop: '4px',
-                }}
-              >
-                Siemens Prisma 3.0T
-              </div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                64-Channel Head Neck Coil
-              </div>
-            </div>
-            <div style={{ padding: '12px', background: 'rgba(0,0,0,0.2)', borderRadius: '6px' }}>
-              <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
-                DATA CONFORMANCE
-              </div>
-              <div
-                style={{
-                  fontSize: '1.1rem',
-                  fontWeight: 700,
-                  color: 'var(--accent-green)',
-                  marginTop: '4px',
-                }}
-              >
-                DICOM / BIDS 1.8.0
-              </div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                NIfTI-1 with qform/sform alignment
-              </div>
-            </div>
-            <div style={{ padding: '12px', background: 'rgba(0,0,0,0.2)', borderRadius: '6px' }}>
-              <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
-                RELIABILITY INDEX
-              </div>
-              <div
-                style={{
-                  fontSize: '1.1rem',
-                  fontWeight: 700,
-                  color: 'var(--accent-cyan)',
-                  marginTop: '4px',
-                }}
-              >
-                0.985 (HIGH)
-              </div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                Automated quality pipeline verified
-              </div>
-            </div>
-          </div>
-        )}
-      </section>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

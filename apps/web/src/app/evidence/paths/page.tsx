@@ -1,11 +1,12 @@
 'use client';
 
+import { Breadcrumbs, Button, Badge, Card, CardHeader, CardTitle, CardContent, ArrowRightIcon, ArrowLeftIcon, ArrowDownIcon, PageHeader } from '@/components/ui';
+
 import React from 'react';
-import Link from 'next/link';
 
 // ==========================================
 // Evidence Paths Browser (§197)
-// Visualisation of the governed path from Indication → Claim → Circuit → TargetFamily → Candidate.
+// Visualisation of the governed path from Indication -> Claim -> Circuit -> TargetFamily -> Candidate.
 // ==========================================
 
 const EVIDENCE_PATHS = [
@@ -41,86 +42,83 @@ const EVIDENCE_PATHS = [
   },
 ];
 
-const NODE_COLOURS: Record<string, string> = {
-  INDICATION: '#818cf8',
-  CLAIM: '#38bdf8',
-  CIRCUIT: '#34d399',
-  TARGET_FAMILY: '#fbbf24',
-  CANDIDATE: '#f87171',
+const NODE_BORDER_CLASSES: Record<string, string> = {
+  INDICATION: 'border-l-indigo',
+  CLAIM: 'border-l-cyan',
+  CIRCUIT: 'border-l-emerald',
+  TARGET_FAMILY: 'border-l-amber',
+  CANDIDATE: 'border-l-rose',
+};
+
+const NODE_BADGE_VARIANTS: Record<string, 'indication' | 'claim' | 'circuit' | 'target-family' | 'candidate'> = {
+  INDICATION: 'indication',
+  CLAIM: 'claim',
+  CIRCUIT: 'circuit',
+  TARGET_FAMILY: 'target-family',
+  CANDIDATE: 'candidate',
 };
 
 export default function EvidencePathsPage() {
   return (
-    <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.25rem' }}>
-          <span className="badge badge-tier1">EVIDENCE KNOWLEDGE GRAPH</span>
-          <span className="badge badge-neutral">Evidence Paths</span>
-        </div>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-          Evidence Paths
-        </h1>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginTop: '0.25rem' }}>
-          Governed scientific pathways from Indication → Claim → Circuit → TargetFamily → Candidate (§197).
-          Each path represents a traceable, governed chain of scientific justification.
-        </p>
+    <div className="container page-container-col">
+      <Breadcrumbs
+        items={[
+          { label: 'Evidence', href: '/evidence' },
+          { label: 'Evidence Paths', current: true },
+        ]}
+      />
+
+      <PageHeader
+        eyebrow={<Badge variant="neutral" className="uppercase">Evidence Architecture</Badge>}
+        title="Evidence-to-Target Paths (§197)"
+        subtitle="Auditable trace graph showing the governed path from Clinical Indication through Scientific Claim, Circuit Architecture, and Target Family to Patient Candidate Target."
+      />
+
+      <div className="flex flex-col gap-6">
+        {EVIDENCE_PATHS.map(path => (
+          <Card key={path.id}>
+            <CardHeader className="flex justify-between items-center">
+              <CardTitle as="h2" className="text-base font-bold text-cyan">
+                {path.id}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col gap-1">
+                {path.nodes.map((node, idx) => (
+                  <React.Fragment key={idx}>
+                    <div
+                      className={`flex items-start gap-3 p-3 bg-surface-elevated rounded-md ${NODE_BORDER_CLASSES[node.type] || 'border-l-cyan'}`}
+                    >
+                      <Badge
+                        variant={NODE_BADGE_VARIANTS[node.type] || 'neutral'}
+                        className="text-xs font-bold shrink-0 min-w-28 text-center justify-center"
+                      >
+                        {node.type.replace('_', ' ')}
+                      </Badge>
+                      <div>
+                        <strong className="text-sm text-primary">{node.label}</strong>
+                        <p className="mt-0.5 text-xs text-secondary">
+                          {node.description}
+                        </p>
+                      </div>
+                    </div>
+                  {idx < path.nodes.length - 1 && (
+                    <div className="flex justify-center py-1">
+                      <ArrowDownIcon size={14} className="text-muted" />
+                    </div>
+                  )}
+                </React.Fragment>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      ))}
       </div>
 
-      {EVIDENCE_PATHS.map(path => (
-        <div key={path.id} className="card" style={{ padding: '24px' }}>
-          <h3 style={{ margin: '0 0 16px', fontSize: '1rem', fontWeight: 700, color: 'var(--text-main)' }}>
-            <code style={{ color: 'var(--accent-cyan)', marginRight: '8px' }}>{path.id}</code>
-          </h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            {path.nodes.map((node, idx) => (
-              <React.Fragment key={idx}>
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    gap: '12px',
-                    padding: '12px',
-                    backgroundColor: 'rgba(255,255,255,0.03)',
-                    borderRadius: '6px',
-                    borderLeft: `3px solid ${NODE_COLOURS[node.type] || '#64748b'}`,
-                  }}
-                >
-                  <span
-                    className="badge"
-                    style={{
-                      backgroundColor: `${NODE_COLOURS[node.type]}22`,
-                      color: NODE_COLOURS[node.type],
-                      fontSize: '0.7rem',
-                      fontWeight: 700,
-                      minWidth: '110px',
-                      textAlign: 'center',
-                      flexShrink: 0,
-                    }}
-                  >
-                    {node.type.replace('_', ' ')}
-                  </span>
-                  <div>
-                    <strong style={{ fontSize: '0.9rem', color: 'var(--text-main)' }}>{node.label}</strong>
-                    <p style={{ margin: '2px 0 0', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                      {node.description}
-                    </p>
-                  </div>
-                </div>
-                {idx < path.nodes.length - 1 && (
-                  <div style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.8rem', padding: '2px 0' }}>
-                    ↓
-                  </div>
-                )}
-              </React.Fragment>
-            ))}
-          </div>
-        </div>
-      ))}
-
-      <div style={{ display: 'flex', gap: '0.75rem' }}>
-        <Link href="/evidence" className="btn btn-secondary">← Evidence Library</Link>
-        <Link href="/evidence/claims" className="btn btn-secondary">Claims →</Link>
-        <Link href="/evidence/target-families" className="btn btn-secondary">Target Families →</Link>
+      <div className="flex gap-3">
+        <Button variant="secondary" href="/evidence"><ArrowLeftIcon size={14} className="mr-1 inline" /> Evidence Library</Button>
+        <Button variant="secondary" href="/evidence/claims">Claims <ArrowRightIcon size={14} className="ml-1 inline" /></Button>
+        <Button variant="secondary" href="/evidence/target-families">Target Families <ArrowRightIcon size={14} className="ml-1 inline" /></Button>
       </div>
     </div>
   );

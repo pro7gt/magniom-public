@@ -1,7 +1,24 @@
 'use client';
 
 import React, { use, useState, useEffect } from 'react';
-import Link from 'next/link';
+import {
+  CheckIcon,
+  Breadcrumbs,
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CaseNotFoundState,
+  ArrowRightIcon,
+  PageHeader,
+  Alert,
+  Checkbox,
+  Select,
+  RangeSlider,
+  FormGroup,
+  FormLabel,
+} from '@/components/ui';
 import { caseStore } from '../../../../lib/case-store';
 
 export default function LesionContextPage({ params }: { params: Promise<{ caseId: string }> }) {
@@ -39,12 +56,8 @@ export default function LesionContextPage({ params }: { params: Promise<{ caseId
 
   if (!record) {
     return (
-      <div className="container" style={{ textAlign: 'center', padding: '4rem' }}>
-        <h2>Case Not Found</h2>
-        <p style={{ color: 'var(--text-secondary)' }}>Case ID {caseId} does not exist.</p>
-        <Link href="/cases" className="btn btn-secondary">
-          Return to Cases
-        </Link>
+      <div className="container page-container-col">
+        <CaseNotFoundState caseId={caseId} />
       </div>
     );
   }
@@ -68,306 +81,156 @@ export default function LesionContextPage({ params }: { params: Promise<{ caseId
   };
 
   return (
-    <div className="clinical-context-workspace" style={{ padding: '24px' }}>
-      <nav
-        aria-label="Lesion Context Breadcrumb"
-        style={{ marginBottom: '16px', fontSize: '0.85rem' }}
-      >
-        <Link
-          href={`/cases/${caseId}`}
-          style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}
-        >
-          {record.clinicalCase.caseCode}
-        </Link>
-        <span style={{ margin: '0 8px', color: 'var(--text-muted)' }}>/</span>
-        <span style={{ color: 'var(--accent-cyan)', fontWeight: 600 }}>
-          Structural Lesion Context
-        </span>
-      </nav>
+    <div className="container page-container-col">
+      <Breadcrumbs
+        ariaLabel="Lesion Context Breadcrumb"
+        items={[
+          { label: record.clinicalCase.caseCode, href: `/cases/${caseId}` },
+          { label: 'Structural Lesion Context', current: true },
+        ]}
+      />
 
-      <header
-        style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.03)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '8px',
-          padding: '20px',
-          marginBottom: '24px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '16px',
-        }}
-      >
-        <div>
-          <h1 style={{ margin: 0, fontSize: '1.4rem', color: 'var(--text-main)', fontWeight: 700 }}>
-            Structural Lesion Context & Boundary Exclusions
-          </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', margin: '6px 0 0' }}>
-            Hard Gate G3 Structural Exclusions & Skull Breach Safety Invariants (§54, §93)
-          </p>
-        </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <Link href={`/cases/${caseId}/measurements/lesion-mask`} className="btn btn-secondary">
-            Lesion Mask Details →
-          </Link>
-          <Link href={`/cases/${caseId}/targets`} className="btn btn-primary">
-            Target Slate →
-          </Link>
-        </div>
-      </header>
+      <PageHeader
+        variant="case-workspace"
+        title="Structural Lesion Context & Boundary Exclusions"
+        subtitle="Hard Gate G3 Structural Exclusions & Skull Breach Safety Invariants (§54, §93)"
+        actions={
+          <>
+            <Button variant="secondary" href={`/cases/${caseId}/measurements/lesion-mask`}>
+              Lesion Mask Details <ArrowRightIcon size={14} className="ml-1 inline" />
+            </Button>
+            <Button variant="primary" href={`/cases/${caseId}/targets`}>
+              Target Slate <ArrowRightIcon size={14} className="ml-1 inline" />
+            </Button>
+          </>
+        }
+      />
 
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-          gap: '20px',
-        }}
-      >
-        <section
-          style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.04)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderRadius: '8px',
-            padding: '20px',
-          }}
-        >
-          <h3
-            style={{
-              margin: '0 0 16px',
-              fontSize: '1.05rem',
-              color: 'var(--accent-cyan)',
-              fontWeight: 600,
-            }}
-          >
-            Lesion Segmentation & Safety Parameters
-          </h3>
-          <form
-            onSubmit={handleSave}
-            style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <input
-                type="checkbox"
-                id="has-lesion"
-                checked={hasLesion}
-                onChange={e => setHasLesion(e.target.checked)}
-                style={{ accentColor: 'var(--accent-cyan)' }}
-              />
-              <label
-                htmlFor="has-lesion"
-                style={{
-                  fontSize: '0.9rem',
-                  fontWeight: 600,
-                  color: 'var(--text-main)',
-                  cursor: 'pointer',
-                }}
-              >
-                Structural Parenchymal Lesion Present
-              </label>
-            </div>
-
-            {hasLesion && (
-              <>
-                <div>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: '0.85rem',
-                      color: 'var(--text-secondary)',
-                      marginBottom: '6px',
-                    }}
-                  >
-                    Lesion Etiology & Territory
-                  </label>
-                  <select
-                    value={lesionType}
-                    onChange={e => setLesionType(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '8px 12px',
-                      borderRadius: '6px',
-                      backgroundColor: 'rgba(0,0,0,0.4)',
-                      border: '1px solid var(--border-subtle)',
-                      color: 'var(--text-main)',
-                    }}
-                  >
-                    <option>Ischemic Infarct (Left MCA Superior Division)</option>
-                    <option>Ischemic Infarct (Right MCA Deep Territory)</option>
-                    <option>Intracerebral Hemorrhage (Basal Ganglia Resorbed)</option>
-                    <option>Traumatic Cortical Contusion (Frontal Pole)</option>
-                    <option>Arteriovenous Malformation Treated (Stable)</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label
-                    style={{
-                      display: 'block',
-                      fontSize: '0.85rem',
-                      color: 'var(--text-secondary)',
-                      marginBottom: '6px',
-                    }}
-                  >
-                    Target-to-Lesion Clearance Distance: <strong>{clearanceMm} mm</strong>
-                  </label>
-                  <input
-                    type="range"
-                    min="5"
-                    max="40"
-                    step="0.5"
-                    value={clearanceMm}
-                    onChange={e => setClearanceMm(Number(e.target.value))}
-                    style={{ width: '100%', accentColor: 'var(--accent-cyan)' }}
-                  />
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      fontSize: '0.75rem',
-                      color: 'var(--text-muted)',
-                    }}
-                  >
-                    <span>5 mm (DANGER)</span>
-                    <span>15 mm (Minimum Threshold)</span>
-                    <span>40 mm (Generous)</span>
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <input
-                    type="checkbox"
-                    id="skull-defect"
-                    checked={skullAbnormality}
-                    onChange={e => setSkullAbnormality(e.target.checked)}
-                    style={{ accentColor: 'var(--accent-red)' }}
-                  />
-                  <label
-                    htmlFor="skull-defect"
-                    style={{
-                      fontSize: '0.85rem',
-                      color: skullAbnormality ? 'var(--accent-red)' : 'var(--text-main)',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Skull breach, decompressive hemicraniectomy, or burr hole present
-                  </label>
-                </div>
-              </>
-            )}
-
-            <div
-              style={{
-                padding: '12px',
-                borderRadius: '6px',
-                backgroundColor: isGateG3Passed
-                  ? 'rgba(16, 185, 129, 0.1)'
-                  : 'rgba(239, 68, 68, 0.15)',
-                border: `1px solid ${isGateG3Passed ? 'var(--accent-green)' : 'var(--accent-red)'}`,
-              }}
-            >
-              <div
-                style={{
-                  fontWeight: 600,
-                  color: isGateG3Passed ? 'var(--accent-green)' : 'var(--accent-red)',
-                  fontSize: '0.85rem',
-                }}
-              >
-                {isGateG3Passed
-                  ? '✓ Gate G3 Passed: Structural Safety Cleared'
-                  : '✗ Gate G3 Block: Safety Violation'}
+      <div className="stat-card-grid">
+        <Card>
+          <CardHeader>
+            <CardTitle as="h2" className="text-cyan">
+              Lesion Segmentation & Safety Parameters
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSave} className="flex flex-col gap-4">
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id="has-lesion"
+                  checked={hasLesion}
+                  onChange={e => setHasLesion(e.target.checked)}
+                />
+                <label
+                  htmlFor="has-lesion"
+                  className="text-sm font-semibold text-primary cursor-pointer"
+                >
+                  Structural Parenchymal Lesion Present
+                </label>
               </div>
-              <p style={{ margin: '4px 0 0', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                {isGateG3Passed
-                  ? `Clearance of ${clearanceMm} mm exceeds 15.0 mm safety margin with intact cranium.`
-                  : skullAbnormality
-                    ? 'CRANIAL BREACH DETECTED: TMS across a cranial defect induces severe current distortion and is strictly contraindicated.'
-                    : 'INSUFFICIENT CLEARANCE: Candidate stimulation cone encroaches directly on encephalomalacic cavity.'}
-              </p>
-            </div>
 
-            <button type="submit" className="btn btn-primary" style={{ alignSelf: 'flex-start' }}>
-              Confirm Lesion Boundaries
-            </button>
-            {isSaved && (
-              <span style={{ color: 'var(--accent-green)', fontSize: '0.85rem' }}>
-                ✓ Lesion context updated
-              </span>
-            )}
-          </form>
-        </section>
+              {hasLesion && (
+                <>
+                  <FormGroup>
+                    <FormLabel>Lesion Etiology & Territory</FormLabel>
+                    <Select value={lesionType} onChange={e => setLesionType(e.target.value)}>
+                      <option>Ischemic Infarct (Left MCA Superior Division)</option>
+                      <option>Ischemic Infarct (Right MCA Deep Territory)</option>
+                      <option>Intracerebral Hemorrhage (Basal Ganglia Resorbed)</option>
+                      <option>Traumatic Cortical Contusion (Frontal Pole)</option>
+                      <option>Arteriovenous Malformation Treated (Stable)</option>
+                    </Select>
+                  </FormGroup>
 
-        <section
-          style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.04)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderRadius: '8px',
-            padding: '20px',
-          }}
-        >
-          <h3
-            style={{
-              margin: '0 0 16px',
-              fontSize: '1.05rem',
-              color: 'var(--accent-cyan)',
-              fontWeight: 600,
-            }}
-          >
-            Lesion Exclusion Rules (ISO 14971)
-          </h3>
-          <ul
-            style={{
-              listStyle: 'none',
-              padding: 0,
-              margin: 0,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '10px',
-              fontSize: '0.85rem',
-              color: 'var(--text-secondary)',
-            }}
-          >
-            <li
-              style={{
-                padding: '8px 12px',
-                background: 'rgba(255,255,255,0.02)',
-                borderRadius: '4px',
-              }}
-            >
-              <strong style={{ color: 'var(--text-main)', display: 'block' }}>
-                Zero Direct Cavity Stimulation:
-              </strong>
-              Necrotic core tissue contains no viable neurons; direct stimulation wastes coil energy
-              and can cause erratic current channeling.
-            </li>
-            <li
-              style={{
-                padding: '8px 12px',
-                background: 'rgba(255,255,255,0.02)',
-                borderRadius: '4px',
-              }}
-            >
-              <strong style={{ color: 'var(--text-main)', display: 'block' }}>
-                Perilesional Penumbra Target:
-              </strong>
-              Stimulation is prioritized to the intact functionally connected margin immediately
-              surrounding the lesion boundary.
-            </li>
-            <li
-              style={{
-                padding: '8px 12px',
-                background: 'rgba(255,255,255,0.02)',
-                borderRadius: '4px',
-              }}
-            >
-              <strong style={{ color: 'var(--text-main)', display: 'block' }}>
-                Skull Defect Shunting:
-              </strong>
-              Bone defects alter regional impedance by up to 10×, concentrating electric fields to
-              seizure-inducing intensities.
-            </li>
-          </ul>
-        </section>
+                  <FormGroup>
+                    <FormLabel>
+                      Target-to-Lesion Clearance Distance: <strong>{clearanceMm} mm</strong>
+                    </FormLabel>
+                    <RangeSlider
+                      min={5}
+                      max={40}
+                      step={0.5}
+                      value={clearanceMm}
+                      onChange={e => setClearanceMm(Number(e.target.value))}
+                    />
+                    <div className="flex justify-between text-xs text-muted">
+                      <span>5 mm (DANGER)</span>
+                      <span>15 mm (Minimum Threshold)</span>
+                      <span>40 mm (Generous)</span>
+                    </div>
+                  </FormGroup>
+
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="skull-defect"
+                      checked={skullAbnormality}
+                      onChange={e => setSkullAbnormality(e.target.checked)}
+                    />
+                    <label
+                      htmlFor="skull-defect"
+                      className={`text-sm cursor-pointer ${skullAbnormality ? 'text-rose' : 'text-primary'}`}
+                    >
+                      Skull breach, decompressive hemicraniectomy, or burr hole present
+                    </label>
+                  </div>
+                </>
+              )}
+
+              <Alert
+                variant={isGateG3Passed ? 'success' : 'danger'}
+                title={
+                  isGateG3Passed
+                    ? 'Gate G3 Passed: Structural Safety Cleared'
+                    : 'Gate G3 Block: Safety Violation'
+                }
+                description={
+                  isGateG3Passed
+                    ? `Clearance of ${clearanceMm} mm exceeds 15.0 mm safety margin with intact cranium.`
+                    : skullAbnormality
+                      ? 'CRANIAL BREACH DETECTED: TMS across a cranial defect induces severe current distortion and is strictly contraindicated.'
+                      : 'INSUFFICIENT CLEARANCE: Candidate stimulation cone encroaches directly on encephalomalacic cavity.'
+                }
+              />
+
+              <Button variant="primary" type="submit" className="self-start">
+                Confirm Lesion Boundaries
+              </Button>
+              {isSaved && (
+                <span className="text-emerald text-sm">
+                  <CheckIcon size={14} className="text-emerald mr-1 inline" /> Lesion context
+                  updated
+                </span>
+              )}
+            </form>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle as="h2" className="text-cyan">
+              Lesion Exclusion Rules (ISO 14971)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="rule-list">
+              <li className="panel-subtle">
+                <strong className="text-primary block">Zero Direct Cavity Stimulation:</strong>
+                Necrotic core tissue contains no viable neurons; direct stimulation wastes coil
+                energy and can cause erratic current channeling.
+              </li>
+              <li className="panel-subtle">
+                <strong className="text-primary block">Perilesional Penumbra Target:</strong>
+                Stimulation is prioritized to the intact functionally connected margin immediately
+                surrounding the lesion boundary.
+              </li>
+              <li className="panel-subtle">
+                <strong className="text-primary block">Skull Defect Shunting:</strong>
+                Bone defects alter regional impedance by up to 10×, concentrating electric fields to
+                seizure-inducing intensities.
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

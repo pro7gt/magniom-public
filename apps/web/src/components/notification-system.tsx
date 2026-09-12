@@ -1,5 +1,7 @@
 'use client';
 
+import { Button, Badge, BellIcon, XIcon, ArrowRightIcon } from '@/components/ui';
+
 import React, { useState, createContext, useContext } from 'react';
 import Link from 'next/link';
 
@@ -120,187 +122,88 @@ export function NotificationBell() {
   };
 
   return (
-    <div style={{ position: 'relative' }}>
-      <button
+    <div className="notification-container">
+      <Button
+        variant="ghost"
+        size="sm"
         onClick={() => setIsOpen(!isOpen)}
-        className="topbar-action-btn"
+        className="topbar-action-btn relative flex items-center gap-1"
         aria-label={`Notifications: ${unreadCount} unread`}
         aria-expanded={isOpen}
-        style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '4px' }}
       >
-        <span aria-hidden="true" style={{ fontSize: '1rem' }}>
-          🔔
+        <span aria-hidden="true" className="inline-flex items-center">
+          <BellIcon size={16} />
         </span>
         {unreadCount > 0 && (
-          <span
-            style={{
-              position: 'absolute',
-              top: '-4px',
-              right: '-4px',
-              backgroundColor: '#ef4444',
-              color: '#ffffff',
-              fontSize: '0.65rem',
-              fontWeight: 700,
-              borderRadius: '9999px',
-              padding: '1px 5px',
-              minWidth: '16px',
-              textAlign: 'center',
-            }}
-          >
+          <Badge variant="danger" size="sm" className="notification-badge-count">
             {unreadCount}
-          </span>
+          </Badge>
         )}
-      </button>
+      </Button>
 
       {isOpen && (
-        <div
-          role="region"
-          aria-label="Notification Center"
-          style={{
-            position: 'absolute',
-            top: 'calc(100% + 8px)',
-            right: 0,
-            width: '360px',
-            maxHeight: '480px',
-            backgroundColor: 'var(--bg-card)',
-            border: '1px solid var(--border-subtle)',
-            borderRadius: '8px',
-            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
-            zIndex: 1000,
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden',
-          }}
-        >
+        <div role="region" aria-label="Notification Center" className="notification-popover">
           {/* Header */}
-          <div
-            style={{
-              padding: '12px 16px',
-              borderBottom: '1px solid var(--border-subtle)',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <strong style={{ fontSize: '0.9rem', color: 'var(--text-main)' }}>
-                Notifications
-              </strong>
-              <span className="badge badge-neutral" style={{ fontSize: '0.7rem' }}>
+          <div className="notification-header">
+            <div className="flex items-center gap-1.5">
+              <strong className="text-sm text-primary">Notifications</strong>
+              <Badge variant="neutral" className="text-xs">
                 {unreadCount}
-              </span>
+              </Badge>
             </div>
             {notifications.length > 0 && (
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={clearAll}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: 'var(--text-muted)',
-                  fontSize: '0.75rem',
-                  cursor: 'pointer',
-                  padding: '2px 6px',
-                }}
+                className="text-muted text-xs px-1.5 py-0.5"
               >
                 Clear all
-              </button>
+              </Button>
             )}
           </div>
 
           {/* List */}
-          <div style={{ overflowY: 'auto', flex: 1, padding: '8px' }}>
+          <div className="notification-list">
             {notifications.length === 0 ? (
-              <div
-                style={{
-                  padding: '24px 16px',
-                  textAlign: 'center',
-                  color: 'var(--text-muted)',
-                  fontSize: '0.85rem',
-                }}
-              >
+              <div className="py-6 px-4 text-center text-muted text-sm">
                 No active notifications.
               </div>
             ) : (
               notifications.map(notif => (
                 <div
                   key={notif.id}
-                  style={{
-                    padding: '10px 12px',
-                    borderRadius: '6px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-                    marginBottom: '6px',
-                    borderLeft: `3px solid ${
-                      notif.severity === 'blocking'
-                        ? '#ef4444'
-                        : notif.severity === 'important'
-                          ? '#f59e0b'
-                          : '#3b82f6'
-                    }`,
-                  }}
+                  className={`notification-item ${
+                    notif.severity === 'blocking'
+                      ? 'notification-item-blocking'
+                      : notif.severity === 'important'
+                        ? 'notification-item-important'
+                        : 'notification-item-info'
+                  }`}
                 >
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'flex-start',
-                      marginBottom: '4px',
-                    }}
-                  >
-                    <span
-                      className={`badge ${severityBadgeClass(notif.severity)}`}
-                      style={{ fontSize: '0.65rem' }}
-                    >
+                  <div className="flex justify-between items-start mb-1">
+                    <Badge className={`${severityBadgeClass(notif.severity)} text-xs`}>
                       {notif.severity.toUpperCase()}
-                    </span>
-                    <button
+                    </Badge>
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => dismissNotification(notif.id)}
                       aria-label="Dismiss notification"
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        color: 'var(--text-muted)',
-                        cursor: 'pointer',
-                        fontSize: '0.8rem',
-                        lineHeight: 1,
-                        padding: '2px',
-                      }}
+                      className="text-muted p-0.5 inline-flex items-center"
                     >
-                      ×
-                    </button>
+                      <XIcon size={12} />
+                    </Button>
                   </div>
-                  <strong
-                    style={{
-                      fontSize: '0.825rem',
-                      color: 'var(--text-main)',
-                      display: 'block',
-                      marginBottom: '2px',
-                    }}
-                  >
-                    {notif.title}
-                  </strong>
-                  <p
-                    style={{
-                      margin: '0 0 6px',
-                      fontSize: '0.775rem',
-                      color: 'var(--text-secondary)',
-                      lineHeight: 1.35,
-                    }}
-                  >
-                    {notif.message}
-                  </p>
+                  <strong className="text-sm text-primary block mb-0.5">{notif.title}</strong>
+                  <p className="m-0 mb-1.5 text-xs text-secondary leading-tight">{notif.message}</p>
                   {notif.actionHref && notif.actionLabel && (
                     <Link
                       href={notif.actionHref}
                       onClick={() => setIsOpen(false)}
-                      style={{
-                        fontSize: '0.75rem',
-                        color: 'var(--accent-cyan)',
-                        textDecoration: 'none',
-                        fontWeight: 600,
-                        display: 'inline-block',
-                      }}
+                      className="text-xs text-cyan font-semibold inline-block"
                     >
-                      {notif.actionLabel} →
+                      {notif.actionLabel} <ArrowRightIcon size={14} className="ml-1 inline" />
                     </Link>
                   )}
                 </div>

@@ -1,7 +1,19 @@
 'use client';
 
+import {
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  Breadcrumbs,
+  CaseNotFoundState,
+  ArrowRightIcon,
+  ArrowLeftIcon,
+  PageHeader,
+} from '@/components/ui';
+
 import React, { use, useState, useEffect } from 'react';
-import Link from 'next/link';
 import { caseStore } from '../../../../lib/case-store';
 
 export default function CaseTreatmentPage({ params }: { params: Promise<{ caseId: string }> }) {
@@ -19,113 +31,94 @@ export default function CaseTreatmentPage({ params }: { params: Promise<{ caseId
     return () => unsubscribe();
   }, [caseId]);
 
-  if (!record) return <div className="container">Case not found.</div>;
+  if (!record) {
+    return (
+      <div className="container page-container-col">
+        <CaseNotFoundState caseId={caseId} />
+      </div>
+    );
+  }
 
   const isSigned = Boolean(record.decision?.isImmutable);
 
   return (
-    <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '1rem',
-        }}
-      >
-        <div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-            TMS Treatment Prescription &amp; Neuronavigation Plan
-          </h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-            Protocol dosing parameters, coil angle orientations, and neuronavigation export package.
-          </p>
-        </div>
+    <div className="container page-container-col">
+      <Breadcrumbs
+        ariaLabel="Treatment History Breadcrumb"
+        items={[
+          { label: record.clinicalCase.caseCode, href: `/cases/${caseId}` },
+          { label: 'Treatment Prescription', current: true },
+        ]}
+      />
+      <PageHeader
+        title="TMS Treatment Prescription & Neuronavigation Plan"
+        subtitle="Protocol dosing parameters, coil angle orientations, and neuronavigation export package."
+        actions={
+          <>
+            <Button variant="secondary" href={`/cases/${caseId}/decision`}>
+              <ArrowLeftIcon size={14} className="mr-1 inline" /> Decision Record
+            </Button>
+            <Button variant="primary" href={`/cases/${caseId}/outcomes`}>
+              Clinical Outcomes <ArrowRightIcon size={14} className="ml-1 inline" />
+            </Button>
+          </>
+        }
+      />
 
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <Link href={`/cases/${caseId}/decision`} className="btn btn-secondary">
-            ← Decision Record
-          </Link>
-          <Link href={`/cases/${caseId}/outcomes`} className="btn btn-primary">
-            Clinical Outcomes →
-          </Link>
-        </div>
-      </div>
-
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '1.5rem',
-        }}
-      >
+      <div className="stat-card-grid">
         {/* Prescription Parameters */}
-        <div className="card">
-          <h3
-            style={{
-              fontSize: '1.125rem',
-              fontWeight: 700,
-              color: 'var(--accent-cyan)',
-              marginBottom: '0.75rem',
-            }}
-          >
-            TMS Protocol Specification
-          </h3>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.5rem',
-              fontSize: '0.875rem',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Protocol Paradigm:</span>
-              <strong>Intermittent Theta Burst (iTBS) / 10 Hz rTMS</strong>
+        <Card>
+          <CardHeader>
+            <CardTitle as="h2" className="text-lg font-bold text-cyan">
+              TMS Protocol Specification
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col gap-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-secondary">Protocol Paradigm:</span>
+                <strong>Intermittent Theta Burst (iTBS) / 10 Hz rTMS</strong>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-secondary">Stimulation Intensity:</span>
+                <strong>120% Resting Motor Threshold (rMT)</strong>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-secondary">Pulses per Session:</span>
+                <strong>1,800 Pulses (600 iTBS x 3 trains)</strong>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-secondary">Total Planned Sessions:</span>
+                <strong>30 Sessions (6 weeks)</strong>
+              </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Stimulation Intensity:</span>
-              <strong>120% Resting Motor Threshold (rMT)</strong>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Pulses per Session:</span>
-              <strong>1,800 Pulses (600 iTBS x 3 trains)</strong>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Total Planned Sessions:</span>
-              <strong>30 Sessions (6 weeks)</strong>
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* Neuronavigation Export */}
-        <div className="card">
-          <h3
-            style={{
-              fontSize: '1.125rem',
-              fontWeight: 700,
-              color: 'var(--accent-cyan)',
-              marginBottom: '0.75rem',
-            }}
-          >
-            Neuronavigation Export Package
-          </h3>
-          <p style={{ fontSize: '0.8125rem', color: '#cbd5e1', marginBottom: '0.75rem' }}>
-            {isSigned
-              ? 'Signed clinical target coordinate sealed with SHA-256 attestation. Ready for Brainsight / Localite / Nexstim export.'
-              : 'Target coordinates are provisional until clinical decision is formally signed and sealed.'}
-          </p>
-          <button
-            className={`btn ${isSigned ? 'btn-primary' : 'btn-secondary'}`}
-            disabled={!isSigned}
-            style={{ width: '100%', fontSize: '0.8125rem' }}
-          >
-            {isSigned
-              ? '📥 Export DICOM / Neuronavigation XML'
-              : '🔒 Signing Required for Clinical Export'}
-          </button>
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle as="h2" className="text-lg font-bold text-cyan">
+              Neuronavigation Export Package
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-secondary mb-3">
+              {isSigned
+                ? 'Signed clinical target coordinate sealed with SHA-256 attestation. Ready for Brainsight / Localite / Nexstim export.'
+                : 'Target coordinates are provisional until clinical decision is formally signed and sealed.'}
+            </p>
+            <Button
+              variant={isSigned ? 'primary' : 'secondary'}
+              disabled={!isSigned}
+              className="w-full text-sm"
+            >
+              {isSigned
+                ? 'Export DICOM / Neuronavigation XML'
+                : 'Signing Required for Clinical Export'}
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

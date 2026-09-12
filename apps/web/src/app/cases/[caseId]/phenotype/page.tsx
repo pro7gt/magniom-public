@@ -1,6 +1,7 @@
 'use client';
 
 import React, { use, useState, useEffect } from 'react';
+import { CaseNotFoundState } from '@/components/ui';
 import { caseStore } from '../../../../lib/case-store';
 import { toPhenotypeViewModel } from '@magniom/presentation';
 import { PhenotypeWorkspace } from '../../../../components/phenotype-workspace';
@@ -20,7 +21,11 @@ export default function PhenotypePage({ params }: { params: Promise<{ caseId: st
   }, [caseId]);
 
   if (!record) {
-    return <div className="container">Case not found.</div>;
+    return (
+      <div className="container page-container-col">
+        <CaseNotFoundState caseId={caseId} />
+      </div>
+    );
   }
 
   const phenotypeVM = toPhenotypeViewModel(record.phenotype);
@@ -30,5 +35,12 @@ export default function PhenotypePage({ params }: { params: Promise<{ caseId: st
     setRecord(caseStore.getCaseRecord(caseId));
   };
 
-  return <PhenotypeWorkspace initialViewModel={phenotypeVM} onApprove={handleApprove} />;
+  return (
+    <PhenotypeWorkspace
+      caseId={caseId}
+      caseCode={record.clinicalCase.caseCode}
+      initialViewModel={phenotypeVM}
+      onApprove={handleApprove}
+    />
+  );
 }

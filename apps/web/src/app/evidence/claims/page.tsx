@@ -1,7 +1,22 @@
 'use client';
 
+import {
+  Breadcrumbs,
+  Button,
+  Badge,
+  Card,
+  CardContent,
+  ArrowRightIcon,
+  ArrowLeftIcon,
+  TableEmptyRow,
+  PageHeader,
+  FilterBar,
+  FilterBarGroup,
+  FilterBarSelect,
+  FilterBarActions,
+} from '@/components/ui';
+
 import React, { useState } from 'react';
-import Link from 'next/link';
 
 // ==========================================
 // Evidence Claims Browser (§197)
@@ -50,22 +65,34 @@ const CANONICAL_CLAIMS = [
     id: 'CLM-STR-M1-001',
     title: 'Ipsilesional M1 Motor Recovery Claim',
     indication: 'Stroke Motor',
+    tier: 'T1',
+    tierLabel: 'Tier 1 — Established',
+    tierBadge: 'badge-tier1',
+    statement: 'Excitatory rTMS of ipsilesional primary motor cortex promotes motor recovery following subcortical ischemic stroke.',
+    governanceStatus: 'Approved',
+    lastReviewed: '2026-07-12',
+    sourceCount: 15,
+  },
+  {
+    id: 'CLM-STR-BROCA-001',
+    title: 'Broca Area Language Plasticity Claim',
+    indication: 'Stroke Aphasia',
     tier: 'T2',
     tierLabel: 'Tier 2 — Prospectively Supported',
     tierBadge: 'badge-tier2',
-    statement: 'Excitatory stimulation of ipsilesional M1 enhances motor recovery when combined with rehabilitation.',
+    statement: 'Targeting preserved perilesional language nodes enhances naming recovery when paired with concurrent speech therapy.',
     governanceStatus: 'Approved',
-    lastReviewed: '2026-07-20',
+    lastReviewed: '2026-05-20',
     sourceCount: 7,
   },
   {
-    id: 'CLM-OCD-MPFC-001',
-    title: 'mPFC/ACC Field Stimulation OCD Claim',
+    id: 'CLM-OCD-SMA-001',
+    title: 'SMA Inhibitory Control Claim',
     indication: 'OCD',
-    tier: 'T2',
-    tierLabel: 'Tier 2 — Prospectively Supported',
-    tierBadge: 'badge-tier2',
-    statement: 'Medial prefrontal / anterior cingulate field stimulation modulates compulsive behaviour circuitry.',
+    tier: 'T1',
+    tierLabel: 'Tier 1 — Established',
+    tierBadge: 'badge-tier1',
+    statement: 'Low-frequency stimulation of supplementary motor area reduces Y-BOCS scores by modulating hyperactive CSTC loop.',
     governanceStatus: 'Approved',
     lastReviewed: '2026-06-28',
     sourceCount: 5,
@@ -96,103 +123,117 @@ export default function EvidenceClaimsPage() {
   });
 
   return (
-    <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.25rem' }}>
-          <span className="badge badge-tier1">EVIDENCE KNOWLEDGE GRAPH</span>
-          <span className="badge badge-neutral">Claims Registry</span>
-        </div>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-          Evidence Claims
-        </h1>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginTop: '0.25rem' }}>
-          Approved scientific claims governing target family eligibility. Each claim is independently governed and version-controlled (§197).
-        </p>
-      </div>
+    <div className="container page-container-col">
+      <Breadcrumbs
+        items={[
+          { label: 'Evidence', href: '/evidence' },
+          { label: 'Evidence Claims', current: true },
+        ]}
+      />
+
+      <PageHeader
+        eyebrow={
+          <div className="flex items-center gap-2 mb-1">
+            <Badge variant="tier1">EVIDENCE KNOWLEDGE GRAPH</Badge>
+            <Badge variant="neutral">Claims Registry</Badge>
+          </div>
+        }
+        title="Evidence Claims"
+        subtitle="Approved scientific claims governing target family eligibility. Each claim is independently governed and version-controlled (§197)."
+      />
 
       {/* Filters */}
-      <div className="card" style={{ padding: '12px', display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)' }}>Indication:</label>
-          <select
+      <FilterBar>
+        <FilterBarGroup label="Indication:" htmlFor="claims-indication-filter">
+          <FilterBarSelect
+            id="claims-indication-filter"
             value={indicationFilter}
             onChange={e => setIndicationFilter(e.target.value)}
-            style={{ backgroundColor: 'var(--bg-surface-elevated)', color: 'var(--text-main)', border: '1px solid var(--border-color)', borderRadius: '4px', padding: '4px 8px', fontSize: '0.8rem' }}
           >
             <option value="all">All Indications</option>
             {indications.map(ind => (
               <option key={ind} value={ind}>{ind}</option>
             ))}
-          </select>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <label style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)' }}>Tier:</label>
-          <select
+          </FilterBarSelect>
+        </FilterBarGroup>
+        <FilterBarGroup label="Tier:" htmlFor="claims-tier-filter">
+          <FilterBarSelect
+            id="claims-tier-filter"
             value={tierFilter}
             onChange={e => setTierFilter(e.target.value)}
-            style={{ backgroundColor: 'var(--bg-surface-elevated)', color: 'var(--text-main)', border: '1px solid var(--border-color)', borderRadius: '4px', padding: '4px 8px', fontSize: '0.8rem' }}
           >
             <option value="all">All Tiers</option>
             <option value="T1">Tier 1 — Established</option>
             <option value="T2">Tier 2 — Prospectively Supported</option>
             <option value="T3">Tier 3 — Retrospectively Supported</option>
             <option value="T_EXP">Tier Exp — Research Only</option>
-          </select>
-        </div>
-        <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-          Showing {filtered.length} of {CANONICAL_CLAIMS.length} claims
-        </span>
-      </div>
+          </FilterBarSelect>
+        </FilterBarGroup>
+        <FilterBarActions>
+          <span className="filter-bar-count">
+            Showing {filtered.length} of {CANONICAL_CLAIMS.length} claims
+          </span>
+        </FilterBarActions>
+      </FilterBar>
 
       {/* Claims Table */}
-      <div className="card">
-        <div className="comparison-table-wrapper">
-          <table className="comparison-table" aria-label="Evidence Claims Registry">
-            <thead>
-              <tr>
-                <th scope="col">Claim ID</th>
-                <th scope="col">Indication</th>
-                <th scope="col">Claim Title</th>
-                <th scope="col">Evidence Tier</th>
-                <th scope="col">Governance</th>
-                <th scope="col">Sources</th>
-                <th scope="col">Last Reviewed</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map(claim => (
-                <tr key={claim.id}>
-                  <td>
-                    <code style={{ color: 'var(--accent-cyan)', fontSize: '0.8rem' }}>{claim.id}</code>
-                  </td>
-                  <td><span className="badge badge-neutral">{claim.indication}</span></td>
-                  <td>
-                    <strong style={{ fontSize: '0.85rem' }}>{claim.title}</strong>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
-                      {claim.statement}
-                    </div>
-                  </td>
-                  <td><span className={`badge ${claim.tierBadge}`}>{claim.tierLabel}</span></td>
-                  <td>
-                    <span className={`badge ${claim.governanceStatus === 'Approved' ? 'badge-tier1' : 'badge-tierexp'}`}>
-                      {claim.governanceStatus}
-                    </span>
-                  </td>
-                  <td style={{ textAlign: 'center' }}>{claim.sourceCount}</td>
-                  <td style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{claim.lastReviewed}</td>
+      <Card>
+        <CardContent>
+          <div className="comparison-table-wrapper">
+            <table className="comparison-table" aria-label="Evidence Claims Registry">
+              <thead>
+                <tr>
+                  <th scope="col">Claim ID</th>
+                  <th scope="col">Indication</th>
+                  <th scope="col">Claim Title</th>
+                  <th scope="col">Evidence Tier</th>
+                  <th scope="col">Governance</th>
+                  <th scope="col">Sources</th>
+                  <th scope="col">Last Reviewed</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+              </thead>
+              <tbody>
+                {filtered.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={7}
+                    message="No evidence claims match current filter criteria."
+                  />
+                ) : (
+                  filtered.map(claim => (
+                    <tr key={claim.id}>
+                      <td>
+                        <code className="text-cyan text-xs">{claim.id}</code>
+                      </td>
+                      <td><Badge variant="neutral">{claim.indication}</Badge></td>
+                      <td>
+                        <strong className="text-sm">{claim.title}</strong>
+                        <div className="text-xs text-secondary mt-0.5">
+                          {claim.statement}
+                        </div>
+                      </td>
+                      <td><Badge className={`${claim.tierBadge}`}>{claim.tierLabel}</Badge></td>
+                      <td>
+                        <Badge className={`${claim.governanceStatus === 'Approved' ? 'badge-tier1' : 'badge-tierexp'}`}>
+                          {claim.governanceStatus}
+                        </Badge>
+                      </td>
+                      <td className="text-center">{claim.sourceCount}</td>
+                      <td className="text-xs text-secondary">{claim.lastReviewed}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Navigation */}
-      <div style={{ display: 'flex', gap: '0.75rem' }}>
-        <Link href="/evidence" className="btn btn-secondary">← Evidence Library</Link>
-        <Link href="/evidence/paths" className="btn btn-secondary">Evidence Paths →</Link>
-        <Link href="/evidence/target-families" className="btn btn-secondary">Target Families →</Link>
-        <Link href="/evidence/sources" className="btn btn-secondary">Sources →</Link>
+      <div className="flex gap-3">
+        <Button variant="secondary" href="/evidence"><ArrowLeftIcon size={14} className="mr-1 inline" /> Evidence Library</Button>
+        <Button variant="secondary" href="/evidence/paths">Evidence Paths <ArrowRightIcon size={14} className="ml-1 inline" /></Button>
+        <Button variant="secondary" href="/evidence/target-families">Target Families <ArrowRightIcon size={14} className="ml-1 inline" /></Button>
+        <Button variant="secondary" href="/evidence/sources">Sources <ArrowRightIcon size={14} className="ml-1 inline" /></Button>
       </div>
     </div>
   );

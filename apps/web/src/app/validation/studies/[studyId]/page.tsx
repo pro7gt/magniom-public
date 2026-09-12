@@ -1,7 +1,7 @@
 'use client';
 
 import React, { use } from 'react';
-import Link from 'next/link';
+import { Breadcrumbs, Button, Badge, Card, CardHeader, CardTitle, CardContent, ScientificState, ArrowRightIcon, ArrowLeftIcon, PageHeader, Alert } from '@/components/ui';
 
 interface StudyRecord {
   id: string;
@@ -58,91 +58,112 @@ export default function ValidationStudyDetailPage({
 }) {
   const resolvedParams = use(params);
   const studyId = resolvedParams.studyId;
-  const study = STUDIES[studyId] || {
-    id: studyId,
-    title: `Validation Study ${studyId}`,
-    module: 'MAGNIOM Module',
-    protocol: 'Controlled Validation Protocol',
-    participants: 10,
-    status: 'Active',
-    phase: 'Data Collection',
-    description: 'Controlled clinical validation study protocol.',
-    primaryEndpoint: 'Target reproducibility and safety adherence.',
-  };
+  const study = STUDIES[studyId];
+
+  if (!study) {
+    return (
+      <div className="container page-container-col">
+        <Breadcrumbs
+          ariaLabel="Study Breadcrumb"
+          items={[
+            { label: 'Validation', href: '/validation' },
+            { label: 'Studies', href: '/validation/studies' },
+            { label: studyId, current: true },
+          ]}
+        />
+        <ScientificState
+          variant="empty"
+          title="Validation Study Not Found"
+          message={`The requested validation study identifier (${studyId}) could not be located in the current validation registry.`}
+          resolution="Verify the study identifier or return to the active validation studies registry."
+        >
+          <div className="flex justify-center gap-2 mt-4">
+            <Button variant="secondary" href="/validation/studies">
+              Return to Validation Studies
+            </Button>
+          </div>
+        </ScientificState>
+      </div>
+    );
+  }
 
   return (
-    <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+    <div className="container page-container-col">
       {/* Breadcrumbs */}
-      <nav aria-label="Study Breadcrumb" style={{ fontSize: '0.85rem' }}>
-        <Link href="/validation" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>
-          Validation
-        </Link>
-        <span style={{ margin: '0 8px', color: 'var(--text-muted)' }}>/</span>
-        <Link href="/validation/studies" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>
-          Studies
-        </Link>
-        <span style={{ margin: '0 8px', color: 'var(--text-muted)' }}>/</span>
-        <span style={{ color: 'var(--accent-cyan)', fontWeight: 600 }}>{study.id}</span>
-      </nav>
+      <Breadcrumbs
+        ariaLabel="Study Breadcrumb"
+        items={[
+          { label: 'Validation', href: '/validation' },
+          { label: 'Studies', href: '/validation/studies' },
+          { label: study.id, current: true },
+        ]}
+      />
 
       {/* Header */}
-      <div>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.25rem' }}>
-          <span className="badge badge-tier2">VALIDATION ENVIRONMENT</span>
-          <span className="badge badge-neutral">{study.id}</span>
-          <span className="badge badge-tier1">{study.status}</span>
-        </div>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-          {study.title}
-        </h1>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginTop: '0.25rem' }}>
-          {study.description}
-        </p>
-      </div>
+      <PageHeader
+        eyebrow={
+          <div className="flex items-center gap-2 mb-1">
+            <Badge variant="tier2">VALIDATION ENVIRONMENT</Badge>
+            <Badge variant="neutral">{study.id}</Badge>
+            <Badge variant="tier1">{study.status}</Badge>
+          </div>
+        }
+        title={study.title}
+        subtitle={study.description}
+      />
+
 
       {/* Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
-        <div className="card">
-          <h2 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.75rem', color: 'var(--accent-cyan)' }}>
-            Protocol Specifications (§196)
-          </h2>
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.85rem' }}>
-            <li style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Governing Module:</span>
-              <strong>{study.module}</strong>
-            </li>
-            <li style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Protocol Classification:</span>
-              <span className="badge badge-tier2">{study.protocol}</span>
-            </li>
-            <li style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Current Phase:</span>
-              <strong>{study.phase}</strong>
-            </li>
-            <li style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Enrolled Participants:</span>
-              <strong style={{ fontFamily: 'var(--font-mono)' }}>{study.participants} subjects</strong>
-            </li>
-          </ul>
-        </div>
+      <div className="stat-card-grid">
+        <Card>
+          <CardHeader>
+            <CardTitle as="h2" className="text-lg font-bold text-cyan">
+              Protocol Specifications (§196)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="list-none p-0 m-0 flex flex-col gap-2 text-sm">
+              <li className="flex justify-between">
+                <span className="text-secondary">Governing Module:</span>
+                <strong>{study.module}</strong>
+              </li>
+              <li className="flex justify-between">
+                <span className="text-secondary">Protocol Classification:</span>
+                <Badge variant="tier2">{study.protocol}</Badge>
+              </li>
+              <li className="flex justify-between">
+                <span className="text-secondary">Current Phase:</span>
+                <strong>{study.phase}</strong>
+              </li>
+              <li className="flex justify-between">
+                <span className="text-secondary">Enrolled Participants:</span>
+                <strong className="font-mono">{study.participants} subjects</strong>
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
 
-        <div className="card">
-          <h2 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.75rem', color: 'var(--accent-cyan)' }}>
-            Endpoints &amp; Governance
-          </h2>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5, margin: '0 0 12px' }}>
-            <strong>Primary Endpoint:</strong> {study.primaryEndpoint}
-          </p>
-          <div style={{ backgroundColor: 'rgba(56, 189, 248, 0.08)', padding: '12px', borderRadius: '6px', fontSize: '0.8rem' }}>
-            <strong>Safety Notice (§196):</strong> Validation routes operate under protocol governance. Clinical decision signing is locked for blinded arms.
-          </div>
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle as="h2" className="text-lg font-bold text-cyan">
+              Endpoints &amp; Governance
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-secondary leading-relaxed mb-3">
+              <strong>Primary Endpoint:</strong> {study.primaryEndpoint}
+            </p>
+            <Alert variant="info" className="text-xs" title="Safety Notice (§196):">
+              Validation routes operate under protocol governance. Clinical decision signing is locked for blinded arms.
+            </Alert>
+          </CardContent>
+        </Card>
       </div>
 
-      <div style={{ display: 'flex', gap: '0.75rem' }}>
-        <Link href="/validation/studies" className="btn btn-secondary">← All Studies</Link>
-        <Link href="/validation/cases" className="btn btn-secondary">Validation Cases →</Link>
-        <Link href="/validation/golden" className="btn btn-secondary">Golden Cases →</Link>
+      <div className="flex gap-3">
+        <Button variant="secondary" href="/validation/studies"><ArrowLeftIcon size={14} className="mr-1 inline" /> All Studies</Button>
+        <Button variant="secondary" href="/validation/cases">Validation Cases <ArrowRightIcon size={14} className="ml-1 inline" /></Button>
+        <Button variant="secondary" href="/validation/golden">Golden Cases <ArrowRightIcon size={14} className="ml-1 inline" /></Button>
       </div>
     </div>
   );

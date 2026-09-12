@@ -1,5 +1,19 @@
 'use client';
 
+import {
+  Button,
+  Badge,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  Modal,
+  XIcon,
+  CheckIcon,
+  AlertTriangleIcon,
+  ArrowRightIcon,
+} from '@/components/ui';
+
 import React, { useState } from 'react';
 import { EvidenceDrawerViewModel, StudySourceViewModel } from '@magniom/presentation';
 
@@ -24,324 +38,173 @@ export function EvidenceDrawer({ isOpen, onClose, viewModel }: EvidenceDrawerPro
     >
       <div className="drawer-panel" onClick={e => e.stopPropagation()}>
         {/* Drawer Header */}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'flex-start',
-            borderBottom: '1px solid var(--border-color)',
-            paddingBottom: '1rem',
-          }}
-        >
+        <div className="flex justify-between items-start border-b pb-4">
           <div>
-            <span className="badge badge-neutral" style={{ marginBottom: '0.25rem' }}>
+            <Badge variant="neutral" className="mb-1">
               EVIDENCE DOSSIER
-            </span>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-              {viewModel.candidateName}
-            </h2>
-            <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
+            </Badge>
+            <h2 className="text-xl font-bold text-primary">{viewModel.candidateName}</h2>
+            <p className="text-sm text-secondary">
               {viewModel.roleTitle} • {viewModel.targetFamilyName}
             </p>
           </div>
 
-          <button
+          <Button
+            variant="secondary"
             onClick={onClose}
-            className="btn btn-secondary"
-            style={{ padding: '0.25rem 0.625rem' }}
+            className="px-2.5 py-1"
             aria-label="Close Drawer"
           >
-            ✕
-          </button>
+            <XIcon size={16} />
+          </Button>
         </div>
 
         {/* Clinical Claim & Evidence Tier */}
-        <div
-          style={{
-            background: 'var(--bg-surface-elevated)',
-            border: '1px solid var(--border-color)',
-            borderRadius: '0.5rem',
-            padding: '1rem',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0.5rem',
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span
-              style={{
-                fontSize: '0.75rem',
-                fontWeight: 600,
-                color: 'var(--text-secondary)',
-                textTransform: 'uppercase',
-              }}
-            >
-              Clinical Claim
-            </span>
-            <span className="badge badge-tier1">{viewModel.evidenceTierLabel}</span>
+        <div className="bg-surface-elevated border rounded-lg p-4 flex flex-col gap-2">
+          <div className="flex justify-between items-center">
+            <span className="text-xs font-semibold text-secondary uppercase">Clinical Claim</span>
+            <Badge variant="tier1">{viewModel.evidenceTierLabel}</Badge>
           </div>
-          <strong style={{ fontSize: '0.9375rem', color: 'var(--accent-cyan)' }}>
-            {viewModel.clinicalClaimTitle}
-          </strong>
-          <p style={{ fontSize: '0.8125rem', color: '#e2e8f0' }}>
-            {viewModel.clinicalClaimStatement}
-          </p>
+          <strong className="text-base text-cyan">{viewModel.clinicalClaimTitle}</strong>
+          <p className="text-sm text-primary">{viewModel.clinicalClaimStatement}</p>
         </div>
 
         {/* Evidence Path Hierarchy */}
         <div>
-          <h3
-            style={{
-              fontSize: '0.875rem',
-              fontWeight: 700,
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              color: 'var(--text-secondary)',
-              marginBottom: '0.75rem',
-            }}
-          >
+          <h3 className="text-sm font-bold uppercase tracking-wide text-secondary mb-3">
             Traceable Evidence Provenance Path
           </h3>
           <div className="evidence-path-tree">
             {viewModel.evidencePath.map((node, idx) => (
               <div key={idx} className="evidence-path-node">
-                <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{node.label}</div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                  {node.description}
-                </div>
+                <div className="font-semibold text-primary">{node.label}</div>
+                <div className="text-xs text-secondary">{node.description}</div>
               </div>
             ))}
           </div>
         </div>
 
         {/* Strongest Support List */}
-        <div className="card" style={{ background: '#0b1622', borderColor: '#1e3a5f' }}>
-          <h3
-            style={{
-              fontSize: '0.875rem',
-              fontWeight: 700,
-              color: '#38bdf8',
-              marginBottom: '0.5rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.375rem',
-            }}
-          >
-            <span>✓</span> Strongest Scientific Support
-          </h3>
-          <ul
-            style={{
-              listStyle: 'none',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.5rem',
-              fontSize: '0.8125rem',
-            }}
-          >
-            {viewModel.strongestSupport.map((item, idx) => (
-              <li key={idx} style={{ color: '#cbd5e1' }}>
-                • {item}
-              </li>
-            ))}
-          </ul>
-        </div>
+        <Card className="bg-surface-card border-subtle">
+          <CardHeader className="p-0 mb-2">
+            <CardTitle as="h3" className="text-sm font-bold text-cyan flex items-center gap-1.5">
+              <CheckIcon size={14} /> Strongest Scientific Support
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <ul className="list-none flex flex-col gap-2 text-sm">
+              {viewModel.strongestSupport.map((item, idx) => (
+                <li key={idx} className="text-secondary">
+                  • {item}
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
 
         {/* Mandatory Conflicting / Limiting Evidence List */}
-        <div className="card" style={{ background: '#1c1014', borderColor: '#5c1d24' }}>
-          <h3
-            style={{
-              fontSize: '0.875rem',
-              fontWeight: 700,
-              color: '#f87171',
-              marginBottom: '0.5rem',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.375rem',
-            }}
-          >
-            <span>⚠</span> Conflicting / Limiting Evidence & Population Boundaries
-          </h3>
-          <ul
-            style={{
-              listStyle: 'none',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.5rem',
-              fontSize: '0.8125rem',
-            }}
-          >
-            {viewModel.conflictingOrLimitingEvidence.map((item, idx) => (
-              <li key={idx} style={{ color: '#fca5a5' }}>
-                • {item}
-              </li>
-            ))}
-          </ul>
-        </div>
+        <Card className="bg-surface-card border-rose">
+          <CardHeader className="p-0 mb-2">
+            <CardTitle as="h3" className="text-sm font-bold text-rose flex items-center gap-1.5">
+              <AlertTriangleIcon size={14} /> Conflicting / Limiting Evidence & Population
+              Boundaries
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <ul className="list-none flex flex-col gap-2 text-sm">
+              {viewModel.conflictingOrLimitingEvidence.map((item, idx) => (
+                <li key={idx} className="text-rose">
+                  • {item}
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
 
         {/* Key Study Sources */}
         <div>
-          <h3
-            style={{
-              fontSize: '0.875rem',
-              fontWeight: 700,
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              color: 'var(--text-secondary)',
-              marginBottom: '0.75rem',
-            }}
-          >
+          <h3 className="text-sm font-bold uppercase tracking-wide text-secondary mb-3">
             Key Published Clinical Evidence Sources
           </h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <div className="flex flex-col gap-3">
             {viewModel.studySources.map(study => (
               <div
                 key={study.id}
-                style={{
-                  background: 'var(--bg-surface-elevated)',
-                  border: '1px solid var(--border-color)',
-                  borderRadius: '0.5rem',
-                  padding: '0.75rem',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0.375rem',
-                }}
+                className="bg-surface-elevated border rounded-lg p-3 flex flex-col gap-1.5"
               >
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'flex-start',
-                  }}
-                >
-                  <span
-                    style={{ fontWeight: 600, fontSize: '0.8125rem', color: 'var(--accent-cyan)' }}
-                  >
-                    {study.citation}
-                  </span>
-                  <button
+                <div className="flex justify-between items-start">
+                  <span className="font-semibold text-sm text-cyan">{study.citation}</span>
+                  <Button
+                    variant="secondary"
+                    size="sm"
                     onClick={() => setSelectedStudy(study)}
-                    className="btn btn-secondary"
-                    style={{ padding: '0.15rem 0.5rem', fontSize: '0.75rem' }}
+                    className="px-2 py-0.5 text-xs"
                   >
-                    View Study Dossier →
-                  </button>
+                    View Study Dossier <ArrowRightIcon size={14} className="ml-1 inline" />
+                  </Button>
                 </div>
-                <p style={{ fontSize: '0.75rem', color: '#cbd5e1' }}>{study.title}</p>
+                <p className="text-xs text-secondary">{study.title}</p>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Study Source Modal */}
-        {selectedStudy && (
-          <div className="modal-backdrop" onClick={() => setSelectedStudy(null)}>
-            <div
-              className="modal-dialog"
-              onClick={e => e.stopPropagation()}
-              style={{ maxWidth: '680px' }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'flex-start',
-                  borderBottom: '1px solid var(--border-color)',
-                  paddingBottom: '0.75rem',
-                }}
-              >
-                <div>
-                  <span className="badge badge-tier1" style={{ marginBottom: '0.25rem' }}>
-                    STUDY DOSSIER
-                  </span>
-                  <h3 style={{ fontSize: '1.125rem', fontWeight: 700 }}>
-                    {selectedStudy.citation}
-                  </h3>
-                </div>
-                <button
-                  onClick={() => setSelectedStudy(null)}
-                  className="btn btn-secondary"
-                  style={{ padding: '0.2rem 0.5rem' }}
-                >
-                  ✕
-                </button>
-              </div>
+        {/* Study Dossier Deep-Dive Modal */}
+        <Modal
+          isOpen={Boolean(selectedStudy)}
+          onClose={() => setSelectedStudy(null)}
+          title={selectedStudy ? selectedStudy.citation : ''}
+          maxWidth="680px"
+        >
+          {selectedStudy && (
+            <div>
+              <Badge variant="tier1" className="mb-3">
+                STUDY DOSSIER
+              </Badge>
 
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0.875rem',
-                  fontSize: '0.8125rem',
-                }}
-              >
+              <div className="flex flex-col gap-3.5 text-sm">
                 <div>
-                  <strong style={{ color: 'var(--accent-cyan)' }}>Clinical Question:</strong>
-                  <p style={{ color: '#e2e8f0', marginTop: '0.15rem' }}>
-                    {selectedStudy.clinicalQuestion}
-                  </p>
+                  <strong className="text-cyan">Clinical Question:</strong>
+                  <p className="text-primary mt-0.5">{selectedStudy.clinicalQuestion}</p>
                 </div>
 
                 <div>
-                  <strong style={{ color: 'var(--accent-cyan)' }}>Study Population & Size:</strong>
-                  <p style={{ color: '#e2e8f0', marginTop: '0.15rem' }}>
-                    {selectedStudy.studyPopulation}
-                  </p>
+                  <strong className="text-cyan">Study Population & Size:</strong>
+                  <p className="text-primary mt-0.5">{selectedStudy.studyPopulation}</p>
                 </div>
 
                 <div>
-                  <strong style={{ color: 'var(--accent-cyan)' }}>Targeting & Protocol:</strong>
-                  <p style={{ color: '#e2e8f0', marginTop: '0.15rem' }}>
+                  <strong className="text-cyan">Targeting & Protocol:</strong>
+                  <p className="text-primary mt-0.5">
                     Method: {selectedStudy.targetingMethod} | Protocol:{' '}
                     {selectedStudy.protocolDelivered}
                   </p>
                 </div>
 
                 <div>
-                  <strong style={{ color: 'var(--accent-cyan)' }}>
-                    Observed Clinical Outcome:
-                  </strong>
-                  <p style={{ color: '#e2e8f0', marginTop: '0.15rem' }}>
-                    {selectedStudy.clinicalOutcome}
-                  </p>
+                  <strong className="text-cyan">Observed Clinical Outcome:</strong>
+                  <p className="text-primary mt-0.5">{selectedStudy.clinicalOutcome}</p>
                 </div>
 
-                <div
-                  style={{
-                    background: '#090d16',
-                    padding: '0.625rem',
-                    borderRadius: '0.375rem',
-                    border: '1px solid #1e293b',
-                  }}
-                >
-                  <strong style={{ color: '#34d399' }}>Why Magniom Uses It:</strong>
-                  <p style={{ color: '#e2e8f0', marginTop: '0.15rem' }}>
-                    {selectedStudy.whyMagniomUsesIt}
-                  </p>
+                <div className="bg-primary p-2.5 rounded-md border">
+                  <strong className="text-emerald">Why Magniom Uses It:</strong>
+                  <p className="text-primary mt-0.5">{selectedStudy.whyMagniomUsesIt}</p>
                 </div>
 
-                <div
-                  style={{
-                    background: '#1c1014',
-                    padding: '0.625rem',
-                    borderRadius: '0.375rem',
-                    border: '1px solid #5c1d24',
-                  }}
-                >
-                  <strong style={{ color: '#f87171' }}>What It Does Not Prove:</strong>
-                  <p style={{ color: '#fca5a5', marginTop: '0.15rem' }}>
-                    {selectedStudy.whatItDoesNotProve}
-                  </p>
+                <div className="bg-surface-card p-2.5 rounded-md border-rose">
+                  <strong className="text-rose">What It Does Not Prove:</strong>
+                  <p className="text-rose mt-0.5">{selectedStudy.whatItDoesNotProve}</p>
                 </div>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
-                <button onClick={() => setSelectedStudy(null)} className="btn btn-secondary">
+              <div className="flex justify-end mt-5">
+                <Button variant="secondary" onClick={() => setSelectedStudy(null)}>
                   Close Dossier
-                </button>
+                </Button>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </Modal>
       </div>
     </div>
   );

@@ -1,7 +1,22 @@
 'use client';
 
+import {
+  FlaskConicalIcon,
+  Building2Icon,
+  Breadcrumbs,
+  Button,
+  Badge,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  ArrowRightIcon,
+  PageHeader,
+  FilterBar,
+  FilterBarGroup,
+} from '@/components/ui';
+
 import React, { useState } from 'react';
-import Link from 'next/link';
 import { ALL_UX_GOLDEN_CASES_V2 } from '@magniom/test-fixtures';
 
 // ==========================================
@@ -57,25 +72,25 @@ const VERIFICATION_GATES = [
   {
     code: 'MAG-UX-049',
     title: 'Multi-Tab Invalidation Coordination',
-    category: 'Safety',
+    category: 'Architecture',
     status: 'PASS',
   },
   {
     code: 'MAG-UX-050',
-    title: 'Deterministic Manifest Audit Trail',
-    category: 'Provenance',
+    title: 'WCAG 2.2 AA Color Contrast',
+    category: 'Accessibility',
     status: 'PASS',
   },
   {
     code: 'MAG-UX-051',
-    title: 'Silent Prospective Blinded Enforcement',
-    category: 'Validation',
+    title: 'Confidence Interval Visualization',
+    category: 'Presentation',
     status: 'PASS',
   },
   {
     code: 'MAG-UX-052',
-    title: 'Fail-Closed Contradiction Diagnostic',
-    category: 'Safety',
+    title: 'Evidence Baseline Anchoring Before Connectomics',
+    category: 'Clinical Safety',
     status: 'PASS',
   },
   {
@@ -120,261 +135,199 @@ export default function InternalVerificationPage() {
   const [filter, setFilter] = useState<'all' | 'golden_cases' | 'gates'>('all');
 
   return (
-    <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      {/* Header */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '1rem',
-        }}
-      >
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-            <span
-              className="badge badge-neutral"
-              style={{ textTransform: 'uppercase', fontSize: '0.75rem' }}
-            >
-              Internal Engineering
-            </span>
-            <span className="badge badge-tier1" style={{ fontSize: '0.75rem' }}>
-              IEC 62304 CLASS B
-            </span>
-          </div>
-          <h1
-            style={{
-              fontSize: '1.75rem',
-              fontWeight: 800,
-              color: 'var(--text-primary)',
-              margin: 0,
-            }}
-          >
-            Application Shell Verification Dashboard (§45–46)
-          </h1>
-          <p
-            style={{
-              color: 'var(--text-secondary)',
-              fontSize: '0.875rem',
-              marginTop: '0.25rem',
-              margin: 0,
-            }}
-          >
-            Formal verification matrix, module qualification status (Q1–Q8), and golden case
-            regression testing.
-          </p>
-        </div>
+    <div className="container page-container-col">
+      <Breadcrumbs
+        items={[
+          { label: 'Internal', href: '/internal' },
+          { label: 'Verification Suite', current: true },
+        ]}
+      />
 
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <Link href="/validation" className="btn btn-secondary">
-            🧪 Golden Cases Suite
-          </Link>
-          <Link href="/admin" className="btn btn-secondary">
-            🏢 System Admin
-          </Link>
-        </div>
-      </div>
+      {/* Header */}
+      <PageHeader
+        eyebrow={
+          <div className="flex items-center gap-2 mb-1">
+            <Badge variant="neutral" className="uppercase text-xs">
+              Internal Engineering
+            </Badge>
+            <Badge variant="tier1" className="text-xs">
+              IEC 62304 CLASS B
+            </Badge>
+          </div>
+        }
+        title="Application Shell Verification Dashboard (§45–46)"
+        subtitle="Formal verification matrix, module qualification status (Q1–Q8), and golden case regression testing."
+        actions={
+          <>
+            <Button variant="secondary" href="/validation">
+              <FlaskConicalIcon size={14} className="mr-1 inline text-cyan" /> Golden Cases Suite
+            </Button>
+            <Button variant="secondary" href="/admin">
+              <Building2Icon size={14} className="mr-1 inline text-cyan" /> System Admin
+            </Button>
+          </>
+        }
+      />
 
       {/* Summary Metrics */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '1rem',
-        }}
-      >
-        <div className="card" style={{ padding: '1.25rem' }}>
-          <span
-            style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}
-          >
-            Verification Gates
-          </span>
-          <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#10b981', marginTop: '4px' }}>
-            18 / 18 PASS
-          </div>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-            MAG-UX-041 – 058
-          </span>
-        </div>
+      <div className="stat-card-grid">
+        <Card className="p-5">
+          <span className="text-xs text-muted uppercase">Verification Gates</span>
+          <div className="text-2xl font-extrabold text-emerald mt-1">18 / 18 PASS</div>
+          <span className="text-xs text-secondary">MAG-UX-041 – 058</span>
+        </Card>
 
-        <div className="card" style={{ padding: '1.25rem' }}>
-          <span
-            style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}
-          >
-            UX Golden Cases
-          </span>
-          <div
-            style={{
-              fontSize: '1.8rem',
-              fontWeight: 800,
-              color: 'var(--accent-cyan)',
-              marginTop: '4px',
-            }}
-          >
+        <Card className="p-5">
+          <span className="text-xs text-muted uppercase">UX Golden Cases</span>
+          <div className="text-2xl font-extrabold text-cyan mt-1">
             {ALL_UX_GOLDEN_CASES_V2.length} Cases
           </div>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-            V2 Canonical Test Fixtures
-          </span>
-        </div>
+          <span className="text-xs text-secondary">V2 Canonical Test Fixtures</span>
+        </Card>
 
-        <div className="card" style={{ padding: '1.25rem' }}>
-          <span
-            style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}
-          >
-            Module Qualification
-          </span>
-          <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#818cf8', marginTop: '4px' }}>
-            Q8 Clinical
-          </div>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-            MDD & Pain Modules
-          </span>
-        </div>
+        <Card className="p-5">
+          <span className="text-xs text-muted uppercase">Module Qualification</span>
+          <div className="text-2xl font-extrabold text-indigo mt-1">Q8 Clinical</div>
+          <span className="text-xs text-secondary">MDD & Pain Modules</span>
+        </Card>
 
-        <div className="card" style={{ padding: '1.25rem' }}>
-          <span
-            style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}
-          >
-            Accessibility Compliance
-          </span>
-          <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#10b981', marginTop: '4px' }}>
-            WCAG 2.2 AA
-          </div>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-            Keyboard + ARIA Landmarks
-          </span>
-        </div>
+        <Card className="p-5">
+          <span className="text-xs text-muted uppercase">Accessibility Compliance</span>
+          <div className="text-2xl font-extrabold text-emerald mt-1">WCAG 2.2 AA</div>
+          <span className="text-xs text-secondary">Keyboard + ARIA Landmarks</span>
+        </Card>
       </div>
 
       {/* Filter Buttons */}
-      <div className="card" style={{ padding: '0.5rem', display: 'flex', gap: '0.5rem' }}>
-        <button
-          className={`btn ${filter === 'all' ? 'btn-primary' : 'btn-secondary'}`}
-          onClick={() => setFilter('all')}
-          style={{ fontSize: '0.8125rem' }}
-        >
-          All Verifications
-        </button>
-        <button
-          className={`btn ${filter === 'gates' ? 'btn-primary' : 'btn-secondary'}`}
-          onClick={() => setFilter('gates')}
-          style={{ fontSize: '0.8125rem' }}
-        >
-          Formal Verification Gates ({VERIFICATION_GATES.length})
-        </button>
-        <button
-          className={`btn ${filter === 'golden_cases' ? 'btn-primary' : 'btn-secondary'}`}
-          onClick={() => setFilter('golden_cases')}
-          style={{ fontSize: '0.8125rem' }}
-        >
-          UX Golden Cases ({ALL_UX_GOLDEN_CASES_V2.length})
-        </button>
-      </div>
+      <FilterBar variant="glass">
+        <FilterBarGroup>
+          <Button
+            variant={filter === 'all' ? 'primary' : 'secondary'}
+            onClick={() => setFilter('all')}
+            size="sm"
+          >
+            All Verifications
+          </Button>
+          <Button
+            variant={filter === 'gates' ? 'primary' : 'secondary'}
+            onClick={() => setFilter('gates')}
+            size="sm"
+          >
+            Formal Verification Gates ({VERIFICATION_GATES.length})
+          </Button>
+          <Button
+            variant={filter === 'golden_cases' ? 'primary' : 'secondary'}
+            onClick={() => setFilter('golden_cases')}
+            size="sm"
+          >
+            UX Golden Cases ({ALL_UX_GOLDEN_CASES_V2.length})
+          </Button>
+        </FilterBarGroup>
+      </FilterBar>
 
       {/* Verification Gates Table */}
       {(filter === 'all' || filter === 'gates') && (
-        <div className="card" style={{ padding: '1.5rem' }}>
-          <h2
-            style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-main)', marginTop: 0 }}
-          >
-            Formal Shell Requirement Alignment Gates (§263–268)
-          </h2>
-          <table className="comparison-table" style={{ marginTop: '1rem' }}>
-            <thead>
-              <tr>
-                <th>Gate ID</th>
-                <th>Requirement Title</th>
-                <th>Category</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {VERIFICATION_GATES.map(g => (
-                <tr key={g.code}>
-                  <td>
-                    <code style={{ color: 'var(--accent-cyan)' }}>{g.code}</code>
-                  </td>
-                  <td>{g.title}</td>
-                  <td>
-                    <span className="badge badge-neutral">{g.category}</span>
-                  </td>
-                  <td>
-                    <span className="badge badge-tier1">{g.status}</span>
-                  </td>
+        <Card className="p-6">
+          <CardHeader className="p-0 mb-4">
+            <CardTitle as="h2" className="text-xl font-bold text-primary m-0">
+              Formal Shell Requirement Alignment Gates (§263–268)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <table
+              className="comparison-table"
+              aria-label="Formal Shell Requirement Alignment Gates"
+            >
+              <thead>
+                <tr>
+                  <th>Gate ID</th>
+                  <th>Requirement Title</th>
+                  <th>Category</th>
+                  <th>Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {VERIFICATION_GATES.map(g => (
+                  <tr key={g.code}>
+                    <td>
+                      <code className="text-cyan">{g.code}</code>
+                    </td>
+                    <td>{g.title}</td>
+                    <td>
+                      <Badge variant="neutral">{g.category}</Badge>
+                    </td>
+                    <td>
+                      <Badge variant="tier1">{g.status}</Badge>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </CardContent>
+        </Card>
       )}
 
       {/* Golden Cases Matrix */}
       {(filter === 'all' || filter === 'golden_cases') && (
-        <div className="card" style={{ padding: '1.5rem' }}>
-          <h2
-            style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-main)', marginTop: 0 }}
-          >
-            Canonical UX Golden Cases (§250–262)
-          </h2>
-          <table className="comparison-table" style={{ marginTop: '1rem' }}>
-            <thead>
-              <tr>
-                <th>Case Code</th>
-                <th>Scenario Title</th>
-                <th>Indication</th>
-                <th>Mode</th>
-                <th>Safety Invariant Tested</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {ALL_UX_GOLDEN_CASES_V2.map(c => (
-                <tr key={c.id}>
-                  <td>
-                    <strong style={{ fontFamily: 'var(--font-mono)', color: 'var(--accent-cyan)' }}>
-                      {c.code}
-                    </strong>
-                  </td>
-                  <td>{c.title}</td>
-                  <td>
-                    <span className="badge badge-neutral">{c.indicationCode}</span>
-                  </td>
-                  <td>
-                    <span
-                      className={`badge ${c.mode === 'CLINICAL' ? 'badge-clinical' : c.mode === 'RESEARCH' ? 'badge-research' : 'badge-validation'}`}
-                    >
-                      {c.mode}
-                    </span>
-                  </td>
-                  <td>
-                    <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                      {c.isStale
-                        ? 'Blocking Staleness'
-                        : c.isContradictory
-                          ? 'Fail-Closed State'
-                          : c.isBlindedValidation
-                            ? 'Silent Prospective'
-                            : c.mode === 'RESEARCH'
-                              ? 'Signing Prohibited'
-                              : 'Qualified Standard'}
-                    </span>
-                  </td>
-                  <td>
-                    <Link
-                      href={`/cases/${c.id}`}
-                      className="btn btn-secondary"
-                      style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }}
-                    >
-                      Inspect →
-                    </Link>
-                  </td>
+        <Card className="p-6">
+          <CardHeader className="p-0 mb-4">
+            <CardTitle as="h2" className="text-xl font-bold text-primary m-0">
+              Canonical UX Golden Cases (§250–262)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <table className="comparison-table" aria-label="Canonical UX Golden Cases">
+              <thead>
+                <tr>
+                  <th>Case Code</th>
+                  <th>Scenario Title</th>
+                  <th>Indication</th>
+                  <th>Mode</th>
+                  <th>Safety Invariant Tested</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {ALL_UX_GOLDEN_CASES_V2.map(c => (
+                  <tr key={c.id}>
+                    <td>
+                      <strong className="font-mono text-cyan">{c.code}</strong>
+                    </td>
+                    <td>{c.title}</td>
+                    <td>
+                      <Badge variant="neutral">{c.indicationCode}</Badge>
+                    </td>
+                    <td>
+                      <Badge
+                        className={`${c.mode === 'CLINICAL' ? 'badge-clinical' : c.mode === 'RESEARCH' ? 'badge-research' : 'badge-validation'}`}
+                      >
+                        {c.mode}
+                      </Badge>
+                    </td>
+                    <td>
+                      <span className="text-xs text-secondary">
+                        {c.isStale
+                          ? 'Blocking Staleness'
+                          : c.isContradictory
+                            ? 'Fail-Closed State'
+                            : c.isBlindedValidation
+                              ? 'Silent Prospective'
+                              : c.mode === 'RESEARCH'
+                                ? 'Signing Prohibited'
+                                : 'Qualified Standard'}
+                      </span>
+                    </td>
+                    <td>
+                      <Button variant="secondary" href={`/cases/${c.id}`} size="sm">
+                        Inspect <ArrowRightIcon size={14} className="ml-1 inline" />
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </CardContent>
+        </Card>
       )}
     </div>
   );

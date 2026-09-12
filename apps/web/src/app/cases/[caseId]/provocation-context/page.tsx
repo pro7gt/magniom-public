@@ -1,7 +1,23 @@
 'use client';
 
 import React, { use, useState, useEffect } from 'react';
-import Link from 'next/link';
+import {
+  CheckIcon,
+  Breadcrumbs,
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CaseNotFoundState,
+  ArrowRightIcon,
+  ArrowLeftIcon,
+  PageHeader,
+  Textarea,
+  RangeSlider,
+  FormGroup,
+  FormLabel,
+} from '@/components/ui';
 import { caseStore } from '../../../../lib/case-store';
 
 export default function ProvocationContextPage({
@@ -31,12 +47,8 @@ export default function ProvocationContextPage({
 
   if (!record) {
     return (
-      <div className="container" style={{ textAlign: 'center', padding: '4rem' }}>
-        <h2>Case Not Found</h2>
-        <p style={{ color: 'var(--text-secondary)' }}>Case ID {caseId} does not exist.</p>
-        <Link href="/cases" className="btn btn-secondary">
-          Return to Cases
-        </Link>
+      <div className="container page-container-col">
+        <CaseNotFoundState caseId={caseId} />
       </div>
     );
   }
@@ -63,233 +75,114 @@ export default function ProvocationContextPage({
   };
 
   return (
-    <div className="clinical-context-workspace" style={{ padding: '24px' }}>
-      <nav
-        aria-label="Provocation Context Breadcrumb"
-        style={{ marginBottom: '16px', fontSize: '0.85rem' }}
-      >
-        <Link
-          href={`/cases/${caseId}`}
-          style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}
-        >
-          {record.clinicalCase.caseCode}
-        </Link>
-        <span style={{ margin: '0 8px', color: 'var(--text-muted)' }}>/</span>
-        <Link
-          href={`/cases/${caseId}/ocd-context`}
-          style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}
-        >
-          OCD Context
-        </Link>
-        <span style={{ margin: '0 8px', color: 'var(--text-muted)' }}>/</span>
-        <span style={{ color: 'var(--accent-cyan)', fontWeight: 600 }}>
-          Symptom Provocation Protocol
-        </span>
-      </nav>
+    <div className="container page-container-col">
+      <Breadcrumbs
+        ariaLabel="Provocation Context Breadcrumb"
+        items={[
+          { label: record.clinicalCase.caseCode, href: `/cases/${caseId}` },
+          { label: 'OCD Context', href: `/cases/${caseId}/ocd-context` },
+          { label: 'Symptom Provocation Protocol', current: true },
+        ]}
+      />
 
-      <header
-        style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.03)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '8px',
-          padding: '20px',
-          marginBottom: '24px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '16px',
-        }}
-      >
-        <div>
-          <h1 style={{ margin: 0, fontSize: '1.4rem', color: 'var(--text-main)', fontWeight: 700 }}>
-            Individualized Symptom Provocation Protocol
-          </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', margin: '6px 0 0' }}>
-            State-Dependent CSTC Network Engagement & SUDS Trigger Hierarchy (§55, §93)
-          </p>
-        </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <Link href={`/cases/${caseId}/ocd-context`} className="btn btn-secondary">
-            ← OCD Context
-          </Link>
-          <Link href={`/cases/${caseId}/targets`} className="btn btn-primary">
-            Target Slate →
-          </Link>
-        </div>
-      </header>
+      <PageHeader
+        variant="case-workspace"
+        title="Individualized Symptom Provocation Protocol"
+        subtitle="State-Dependent CSTC Network Engagement & SUDS Trigger Hierarchy (§55, §93)"
+        actions={
+          <>
+            <Button variant="secondary" href={`/cases/${caseId}/ocd-context`}>
+              <ArrowLeftIcon size={14} className="mr-1 inline" /> OCD Context
+            </Button>
+            <Button variant="primary" href={`/cases/${caseId}/targets`}>
+              Target Slate <ArrowRightIcon size={14} className="ml-1 inline" />
+            </Button>
+          </>
+        }
+      />
 
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-          gap: '20px',
-        }}
-      >
-        <section
-          style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.04)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderRadius: '8px',
-            padding: '20px',
-          }}
-        >
-          <h3
-            style={{
-              margin: '0 0 16px',
-              fontSize: '1.05rem',
-              color: 'var(--accent-cyan)',
-              fontWeight: 600,
-            }}
-          >
-            Target Trigger Formulation
-          </h3>
-          <form
-            onSubmit={handleSave}
-            style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
-          >
-            <div>
-              <label
-                style={{
-                  display: 'block',
-                  fontSize: '0.85rem',
-                  color: 'var(--text-secondary)',
-                  marginBottom: '6px',
-                }}
-              >
-                Individualized Provocation Trigger Description
-              </label>
-              <textarea
-                value={triggerText}
-                onChange={e => setTriggerText(e.target.value)}
-                rows={3}
-                style={{
-                  width: '100%',
-                  padding: '8px 12px',
-                  borderRadius: '6px',
-                  backgroundColor: 'rgba(0,0,0,0.4)',
-                  border: '1px solid var(--border-subtle)',
-                  color: 'var(--text-main)',
-                  fontFamily: 'inherit',
-                  fontSize: '0.85rem',
-                }}
-              />
-            </div>
+      <div className="stat-card-grid">
+        <Card>
+          <CardHeader>
+            <CardTitle as="h2" className="section-subheading">
+              Target Trigger Formulation
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSave} className="flex flex-col gap-4">
+              <FormGroup>
+                <FormLabel>Individualized Provocation Trigger Description</FormLabel>
+                <Textarea
+                  value={triggerText}
+                  onChange={e => setTriggerText(e.target.value)}
+                  rows={3}
+                />
+              </FormGroup>
 
-            <div>
-              <label
-                style={{
-                  display: 'block',
-                  fontSize: '0.85rem',
-                  color: 'var(--text-secondary)',
-                  marginBottom: '6px',
-                }}
-              >
-                Target Subjective Units of Distress (SUDS): <strong>{sudsScore} / 100</strong>
-              </label>
-              <input
-                type="range"
-                min="30"
-                max="90"
-                value={sudsScore}
-                onChange={e => setSudsScore(Number(e.target.value))}
-                style={{ width: '100%', accentColor: 'var(--accent-cyan)' }}
-              />
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  fontSize: '0.75rem',
-                  color: 'var(--text-muted)',
-                }}
-              >
-                <span>30 (Minimal Anxiety)</span>
-                <span>50–70 (Target Therapeutic Range)</span>
-                <span>90 (Panic / Overwhelming)</span>
+              <FormGroup>
+                <FormLabel>
+                  Target Subjective Units of Distress (SUDS): <strong>{sudsScore} / 100</strong>
+                </FormLabel>
+                <RangeSlider
+                  min={30}
+                  max={90}
+                  value={sudsScore}
+                  onChange={e => setSudsScore(Number(e.target.value))}
+                />
+                <div className="flex justify-between text-xs text-muted">
+                  <span>30 (Minimal Anxiety)</span>
+                  <span>50–70 (Target Therapeutic Range)</span>
+                  <span>90 (Panic / Overwhelming)</span>
+                </div>
+              </FormGroup>
+
+              <div className="panel-dark">
+                <div className="text-emerald font-semibold text-sm">
+                  <CheckIcon size={14} className="text-emerald mr-1 inline" /> Optimal State
+                  Activation Profile
+                </div>
+                <p className="mt-1 text-xs text-secondary">
+                  SUDS between 50 and 70 reliably engages hyperconnected anterior cingulate and
+                  orbitofrontal nodes without triggering severe behavioral panic during coil
+                  positioning.
+                </p>
               </div>
-            </div>
 
-            <div style={{ padding: '12px', background: 'rgba(0,0,0,0.25)', borderRadius: '6px' }}>
-              <div style={{ color: 'var(--accent-green)', fontWeight: 600, fontSize: '0.85rem' }}>
-                ✓ Optimal State Activation Profile
-              </div>
-              <p style={{ margin: '4px 0 0', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                SUDS between 50 and 70 reliably engages hyperconnected anterior cingulate and
-                orbitofrontal nodes without triggering severe behavioral panic during coil
-                positioning.
-              </p>
-            </div>
+              <Button variant="primary" type="submit" className="self-start">
+                Confirm Provocation Design
+              </Button>
+              {isSaved && (
+                <span className="text-emerald text-sm">
+                  <CheckIcon size={14} className="text-emerald mr-1 inline" /> Provocation protocol
+                  confirmed
+                </span>
+              )}
+            </form>
+          </CardContent>
+        </Card>
 
-            <button type="submit" className="btn btn-primary" style={{ alignSelf: 'flex-start' }}>
-              Confirm Provocation Design
-            </button>
-            {isSaved && (
-              <span style={{ color: 'var(--accent-green)', fontSize: '0.85rem' }}>
-                ✓ Provocation protocol confirmed
-              </span>
-            )}
-          </form>
-        </section>
-
-        <section
-          style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.04)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderRadius: '8px',
-            padding: '20px',
-          }}
-        >
-          <h3
-            style={{
-              margin: '0 0 16px',
-              fontSize: '1.05rem',
-              color: 'var(--accent-cyan)',
-              fontWeight: 600,
-            }}
-          >
-            State-Dependent Neuromodulation Rules
-          </h3>
-          <ul
-            style={{
-              listStyle: 'none',
-              padding: 0,
-              margin: 0,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '10px',
-              fontSize: '0.85rem',
-              color: 'var(--text-secondary)',
-            }}
-          >
-            <li
-              style={{
-                padding: '8px 12px',
-                background: 'rgba(255,255,255,0.02)',
-                borderRadius: '4px',
-              }}
-            >
-              <strong style={{ color: 'var(--text-main)', display: 'block' }}>
-                Synaptic Plasticity Threshold:
-              </strong>
-              Stimulating a quiescent circuit produces weak or unpredictable synaptic depression.
-              Brief provocation immediately prior to stimulation primes active NMDA receptor subunit
-              trafficking.
-            </li>
-            <li
-              style={{
-                padding: '8px 12px',
-                background: 'rgba(255,255,255,0.02)',
-                borderRadius: '4px',
-              }}
-            >
-              <strong style={{ color: 'var(--text-main)', display: 'block' }}>
-                Session Timing Discipline:
-              </strong>
-              Trigger exposure must occur precisely 5 minutes before the first rTMS pulse train.
-              Response prevention is maintained throughout the stimulation session.
-            </li>
-          </ul>
-        </section>
+        <Card>
+          <CardHeader>
+            <CardTitle as="h2" className="section-subheading">
+              State-Dependent Neuromodulation Rules
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="list-none p-0 m-0 flex flex-col gap-2.5 text-sm text-secondary">
+              <li className="panel-subtle">
+                <strong className="text-primary block">Synaptic Plasticity Threshold:</strong>
+                Stimulating a quiescent circuit produces weak or unpredictable synaptic depression.
+                Brief provocation immediately prior to stimulation primes active NMDA receptor
+                subunit trafficking.
+              </li>
+              <li className="panel-subtle">
+                <strong className="text-primary block">Session Timing Discipline:</strong>
+                Trigger exposure must occur precisely 5 minutes before the first rTMS pulse train.
+                Response prevention is maintained throughout the stimulation session.
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

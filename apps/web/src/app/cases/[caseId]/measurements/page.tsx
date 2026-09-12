@@ -1,7 +1,16 @@
 'use client';
 
+import {
+  Button,
+  Badge,
+  Breadcrumbs,
+  CaseNotFoundState,
+  ScientificState,
+  ArrowRightIcon,
+  PageHeader,
+} from '@/components/ui';
+
 import React, { use, useState, useEffect } from 'react';
-import Link from 'next/link';
 import { caseStore } from '../../../../lib/case-store';
 import { resolveCaseShellContext } from '../../../../lib/shell-authority';
 import type { MeasurementSummaryViewModel, CaseShellViewModel } from '@magniom/presentation';
@@ -24,11 +33,8 @@ export default function MeasurementsPage({ params }: { params: Promise<{ caseId:
 
   if (!record) {
     return (
-      <div className="container" style={{ textAlign: 'center', padding: '4rem' }}>
-        <h2>Case Not Found</h2>
-        <p style={{ color: 'var(--text-secondary)' }}>
-          Case ID {caseId} does not exist in the active case store.
-        </p>
+      <div className="container page-container-col">
+        <CaseNotFoundState caseId={caseId} />
       </div>
     );
   }
@@ -66,115 +72,58 @@ export default function MeasurementsPage({ params }: { params: Promise<{ caseId:
   };
 
   return (
-    <div className="measurements-workspace" style={{ padding: '24px' }}>
+    <div className="container page-container-col">
+      <Breadcrumbs
+        ariaLabel="Measurements Breadcrumb"
+        items={[
+          { label: record.clinicalCase.caseCode, href: `/cases/${caseId}` },
+          { label: 'Clinical Measurements', current: true },
+        ]}
+      />
       {/* Section Header (§96) */}
-      <header style={{ marginBottom: '24px' }}>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: '12px',
-          }}
-        >
-          <div>
-            <h2
-              style={{ margin: 0, color: 'var(--text-main)', fontSize: '1.4rem', fontWeight: 700 }}
-            >
-              Measurements
-            </h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '4px' }}>
-              Module-specific measurement modalities for{' '}
-              <strong>
-                {indication?.indicationFormatted || record.clinicalCase.indicationCode}
-              </strong>
-              . Zero false measurement requirements are enforced per §87.
-            </p>
-          </div>
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            <span className={`badge ${allRequiredQualified ? 'badge-tier1' : 'badge-tier3'}`}>
-              {allRequiredQualified
-                ? '✓ All Required Qualified'
-                : '⚠ Required Measurements Pending'}
-            </span>
+      <PageHeader
+        title="Measurements"
+        subtitle={
+          <>
+            Module-specific measurement modalities for{' '}
+            <strong>{indication?.indicationFormatted || record.clinicalCase.indicationCode}</strong>
+            . Zero false measurement requirements are enforced per §87.
+          </>
+        }
+        actions={
+          <div className="flex items-center gap-2">
+            <Badge className={`${allRequiredQualified ? 'badge-tier1' : 'badge-tier3'}`}>
+              {allRequiredQualified ? 'All Required Qualified' : 'Required Measurements Pending'}
+            </Badge>
             {moduleAuthority && (
-              <span
-                className="badge badge-neutral"
-                style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem' }}
-              >
+              <Badge variant="neutral" className="font-mono text-xs">
                 {moduleAuthority.moduleCode} v{moduleAuthority.moduleVersion}
-              </span>
+              </Badge>
             )}
           </div>
-        </div>
-      </header>
+        }
+      />
 
       {/* Required Measurements (§97–99) */}
       {requiredMeasurements.length > 0 && (
-        <section style={{ marginBottom: '24px' }}>
-          <h3
-            style={{
-              margin: '0 0 16px',
-              fontSize: '1.1rem',
-              color: 'var(--text-main)',
-              fontWeight: 600,
-            }}
-          >
-            Required Modalities
-          </h3>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
-              gap: '16px',
-            }}
-          >
+        <section className="mb-6">
+          <h2 className="section-subheading m-0 mb-4">Required Modalities</h2>
+          <div className="grid-cards-340">
             {requiredMeasurements.map(m => {
               const q = getQualificationBadge(m);
+              const cardModifier =
+                m.qualification === 'qualified'
+                  ? 'measurement-card-qualified'
+                  : m.qualification === 'failed'
+                    ? 'measurement-card-failed'
+                    : 'measurement-card-other';
               return (
-                <article
-                  key={m.modality}
-                  className="measurement-card"
-                  style={{
-                    backgroundColor: 'rgba(255,255,255,0.04)',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    borderRadius: '8px',
-                    padding: '20px',
-                    borderLeft: `3px solid ${m.qualification === 'qualified' ? '#10b981' : m.qualification === 'failed' ? '#ef4444' : '#6366f1'}`,
-                  }}
-                >
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      marginBottom: '8px',
-                    }}
-                  >
-                    <h4
-                      style={{
-                        margin: 0,
-                        color: 'var(--text-main)',
-                        fontSize: '1rem',
-                        fontWeight: 600,
-                      }}
-                    >
-                      {m.modalityLabel}
-                    </h4>
-                    <span className={`badge ${q.badge}`} style={{ fontSize: '0.8rem' }}>
-                      {q.label}
-                    </span>
+                <article key={m.modality} className={`measurement-card ${cardModifier}`}>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="m-0 text-primary text-base font-semibold">{m.modalityLabel}</h3>
+                    <Badge className={`${q.badge} text-xs`}>{q.label}</Badge>
                   </div>
-                  <div
-                    style={{
-                      fontSize: '0.85rem',
-                      color: 'var(--text-secondary)',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '4px',
-                    }}
-                  >
+                  <div className="text-sm text-secondary flex flex-col gap-1">
                     <span>
                       Availability: <strong>{m.isAvailable ? 'Available' : 'Not Available'}</strong>
                     </span>
@@ -189,39 +138,34 @@ export default function MeasurementsPage({ params }: { params: Promise<{ caseId:
                       </span>
                     )}
                     {/* Clinical ranking disclosure (§225–228) */}
-                    <span style={{ marginTop: '4px' }}>
+                    <span className="mt-1">
                       {m.isUsedForClinicalRanking ? (
-                        <span className="badge badge-tier1" style={{ fontSize: '0.75rem' }}>
+                        <Badge variant="tier1" className="text-xs">
                           Used for Clinical Ranking
-                        </span>
+                        </Badge>
                       ) : (
                         <>
-                          <span className="badge badge-tierexp" style={{ fontSize: '0.75rem' }}>
+                          <Badge variant="tierexp" className="text-xs">
                             Not used for Clinical Ranking
-                          </span>
+                          </Badge>
                           {m.nonUseExplanation && (
-                            <span
-                              style={{
-                                display: 'block',
-                                fontSize: '0.8rem',
-                                color: 'var(--text-muted)',
-                                marginTop: '2px',
-                              }}
-                            >
+                            <span className="block text-xs text-muted mt-0.5">
                               {m.nonUseExplanation}
                             </span>
                           )}
                         </>
                       )}
                     </span>
-                    <div style={{ marginTop: '12px', display: 'flex', justifyContent: 'flex-end' }}>
-                      <Link
+                    <div className="mt-3 flex justify-end">
+                      <Button
+                        variant="secondary"
+                        size="sm"
                         href={`/cases/${caseId}/measurements/${m.modality.toLowerCase().replace(/_/g, '-')}`}
-                        className="btn btn-secondary btn-sm"
-                        style={{ fontSize: '0.8rem', padding: '4px 10px' }}
+                        className="text-xs py-1 px-2.5"
                       >
-                        Inspect Modality Details →
-                      </Link>
+                        Inspect Modality Details{' '}
+                        <ArrowRightIcon size={14} className="ml-1 inline" />
+                      </Button>
                     </div>
                   </div>
                 </article>
@@ -233,77 +177,34 @@ export default function MeasurementsPage({ params }: { params: Promise<{ caseId:
 
       {/* Optional / Research Measurements (§100, §225–228) */}
       {optionalMeasurements.length > 0 && (
-        <section style={{ marginBottom: '24px' }}>
-          <h3
-            style={{
-              margin: '0 0 16px',
-              fontSize: '1.1rem',
-              color: 'var(--text-main)',
-              fontWeight: 600,
-            }}
-          >
-            Optional / Research Modalities
-          </h3>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
-              gap: '16px',
-            }}
-          >
+        <section className="mb-6">
+          <h2 className="section-subheading m-0 mb-4">Optional / Research Modalities</h2>
+          <div className="grid-cards-340">
             {optionalMeasurements.map(m => {
               const q = getQualificationBadge(m);
               return (
-                <article
-                  key={m.modality}
-                  className="measurement-card"
-                  style={{
-                    backgroundColor: 'rgba(255,255,255,0.04)',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    borderRadius: '8px',
-                    padding: '20px',
-                    opacity: 0.85,
-                    borderLeft: '3px solid rgba(255,255,255,0.1)',
-                  }}
-                >
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      marginBottom: '8px',
-                    }}
-                  >
-                    <h4
-                      style={{
-                        margin: 0,
-                        color: 'var(--text-main)',
-                        fontSize: '1rem',
-                        fontWeight: 600,
-                      }}
-                    >
-                      {m.modalityLabel}
-                    </h4>
-                    <div style={{ display: 'flex', gap: '6px' }}>
-                      <span className={`badge ${q.badge}`} style={{ fontSize: '0.8rem' }}>
-                        {q.label}
-                      </span>
-                      <span className="badge badge-tierexp" style={{ fontSize: '0.75rem' }}>
+                <article key={m.modality} className="measurement-card measurement-card-optional">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="m-0 text-primary text-base font-semibold">{m.modalityLabel}</h3>
+                    <div className="flex gap-1.5">
+                      <Badge className={`${q.badge} text-xs`}>{q.label}</Badge>
+                      <Badge variant="tierexp" className="text-xs">
                         Optional
-                      </span>
+                      </Badge>
                     </div>
                   </div>
-                  <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', margin: 0 }}>
+                  <p className="text-sm text-secondary m-0">
                     {m.reliabilitySummary || 'Optional modality for enhanced targeting context.'}
                   </p>
-                  <div style={{ marginTop: '12px', display: 'flex', justifyContent: 'flex-end' }}>
-                    <Link
+                  <div className="mt-3 flex justify-end">
+                    <Button
+                      variant="secondary"
+                      size="sm"
                       href={`/cases/${caseId}/measurements/${m.modality.toLowerCase().replace(/_/g, '-')}`}
-                      className="btn btn-secondary btn-sm"
-                      style={{ fontSize: '0.8rem', padding: '4px 10px' }}
+                      className="text-xs py-1 px-2.5"
                     >
-                      Inspect Modality Details →
-                    </Link>
+                      Inspect Modality Details <ArrowRightIcon size={14} className="ml-1 inline" />
+                    </Button>
                   </div>
                 </article>
               );
@@ -314,23 +215,12 @@ export default function MeasurementsPage({ params }: { params: Promise<{ caseId:
 
       {/* Empty State (§206) */}
       {measurements.length === 0 && (
-        <div
-          style={{
-            textAlign: 'center',
-            padding: '3rem',
-            backgroundColor: 'rgba(255,255,255,0.03)',
-            borderRadius: '8px',
-            border: '1px solid rgba(255,255,255,0.06)',
-          }}
-        >
-          <p style={{ color: 'var(--text-secondary)', fontSize: '1rem', margin: 0 }}>
-            No measurements have been registered for this case.
-          </p>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '8px' }}>
-            Measurement modalities are defined by the governing indication module. Consult the
-            module specification for required acquisitions.
-          </p>
-        </div>
+        <ScientificState
+          variant="empty"
+          title="No Measurements Registered"
+          message="No measurement modalities have been qualified or registered for this case record."
+          resolution="Inspect indication requirements in the clinical module specification or upload pending modalities."
+        />
       )}
     </div>
   );

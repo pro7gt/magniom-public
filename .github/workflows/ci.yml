@@ -138,8 +138,8 @@ jobs:
       - name: Run Golden Cases Suite & Scientific Impact Evaluation (S0–S4)
         run: npm run verify:scientific-impact
 
-  stage6-application-and-worker-integration:
-    name: Stage 6 — Application Integration & Synthetic Workflow Worker
+  stage6-laterality-and-adversarial:
+    name: Stage 6 — Release-Blocking Laterality & Adversarial Boundaries
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -154,11 +154,11 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Run Workflow Worker & Synthetic E2E Verification
+      - name: Run Laterality, Adversarial Boundaries & Kill Switch Verification
         run: npm run verify:stage6
 
-  stage7-presentation-and-safety-views:
-    name: Stage 7 — Presentation & UX Visual Safety Assertions
+  stage7-presentation-and-workflow-worker:
+    name: Stage 7 — Presentation & Workflow Worker Integration
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -173,7 +173,7 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Run Presentation Model & UX Safety Tests
+      - name: Run Presentation Model & Synthetic Workflow Worker Tests
         run: npm run verify:stage7
 
   stage8-security-and-supply-chain:
@@ -235,8 +235,8 @@ jobs:
       - stage3-property-invariants
       - stage4-database-and-rls
       - stage5-golden-and-scientific-impact
-      - stage6-application-and-worker-integration
-      - stage7-presentation-and-safety-views
+      - stage6-laterality-and-adversarial
+      - stage7-presentation-and-workflow-worker
       - stage8-security-and-supply-chain
       - stage-neurocompute-scientific-service
     steps:
@@ -255,8 +255,8 @@ jobs:
       - name: Build All Monorepo Workspaces
         run: npm run build
 
-      - name: Generate & Seal Master Release Manifest
-        run: npm run release:manifest
+      - name: Generate & Seal Master Release Manifest v2
+        run: npm run release:manifest-v2
 
       - name: Archive Release Qualification Package
         uses: actions/upload-artifact@v4

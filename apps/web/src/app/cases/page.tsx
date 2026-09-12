@@ -1,7 +1,24 @@
 'use client';
 
+import {
+  FlaskConicalIcon,
+  Breadcrumbs,
+  Button,
+  Badge,
+  Card,
+  CardContent,
+  ArrowRightIcon,
+  RefreshCwIcon,
+  TableEmptyRow,
+  PageHeader,
+  FilterBar,
+  FilterBarRow,
+  FilterBarGroup,
+  FilterBarSearch,
+  FilterBarSelect,
+} from '@/components/ui';
+
 import React, { useState } from 'react';
-import Link from 'next/link';
 import { caseStore } from '../../lib/case-store';
 
 export default function CasesRegistryPage() {
@@ -48,237 +65,187 @@ export default function CasesRegistryPage() {
   });
 
   return (
-    <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      {/* Registry Page Header (§28, §152) */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '1rem',
-        }}
-      >
-        <div>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-            Clinical Case Registry
-          </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginTop: '0.25rem' }}>
-            Authoritative clinical registry of active TMS target planning cases, indications, and
-            workflow states.
-          </p>
-        </div>
+    <div className="container page-container-col">
+      <Breadcrumbs
+        items={[
+          { label: 'Home', href: '/' },
+          { label: 'Cases', current: true },
+        ]}
+      />
 
-        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-          <Link href="/cases/new" className="btn btn-primary" style={{ fontWeight: 600 }}>
-            + Create New Case
-          </Link>
-          <Link
-            href="/validation"
-            className="btn btn-secondary"
-            title="Open Validation and Golden Cases harness"
-          >
-            🧪 Golden Cases Suite
-          </Link>
-          <button
-            onClick={() => {
-              caseStore.resetToGoldenCases();
-              window.location.reload();
-            }}
-            className="btn btn-secondary"
-            title="Reset active in-memory case store to default state"
-          >
-            Reset Store ↺
-          </button>
-        </div>
-      </div>
+      {/* Registry Page Header (§28, §152) */}
+      <PageHeader
+        title="Clinical Case Registry"
+        subtitle="Authoritative clinical registry of active TMS target planning cases, indications, and workflow states."
+        actions={
+          <>
+            <Button variant="primary" href="/cases/new">
+              + Create New Case
+            </Button>
+            <Button
+              variant="secondary"
+              href="/validation"
+              title="Open Validation and Golden Cases harness"
+            >
+              <FlaskConicalIcon size={14} className="mr-1 inline text-cyan" /> Golden Cases Suite
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                caseStore.resetToGoldenCases();
+                window.location.reload();
+              }}
+              title="Reset active in-memory case store to default state"
+            >
+              Reset Store <RefreshCwIcon size={14} className="ml-1 inline" />
+            </Button>
+          </>
+        }
+      />
 
       {/* Filter and Search Bar (§38–39) */}
-      <div
-        className="card"
-        style={{
-          padding: '1rem',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '0.75rem',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '1rem',
-          }}
-        >
+      <FilterBar stacked>
+        <FilterBarRow justify="between">
           {/* Mode Filter (§38) */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-              MODE:
-            </span>
+          <FilterBarGroup label="MODE:">
             {(['all', 'CLINICAL', 'VALIDATION', 'RESEARCH'] as const).map(m => (
-              <button
+              <Button
+                variant={modeFilter === m ? 'primary' : 'secondary'}
                 key={m}
-                className={`btn ${modeFilter === m ? 'btn-primary' : 'btn-secondary'}`}
-                style={{ fontSize: '0.75rem', padding: '0.25rem 0.6rem' }}
+                size="sm"
+                className="text-xs py-1 px-2.5"
                 onClick={() => setModeFilter(m)}
               >
                 {m === 'all' ? 'All Modes' : m}
-              </button>
+              </Button>
             ))}
-          </div>
+          </FilterBarGroup>
 
           {/* Search Box */}
-          <div style={{ minWidth: '240px' }}>
-            <input
-              type="search"
-              className="global-search-input"
-              placeholder="Filter cases by code, title..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              style={{ padding: '0.375rem 0.75rem', fontSize: '0.8125rem', width: '100%' }}
-            />
-          </div>
-        </div>
+          <FilterBarSearch
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            onClear={() => setSearch('')}
+            placeholder="Filter cases by code, title..."
+            className="global-search-input"
+          />
+        </FilterBarRow>
 
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '1rem',
-            borderTop: '1px solid var(--border-subtle)',
-            paddingTop: '0.75rem',
-          }}
-        >
+        <FilterBarRow justify="between" divider>
           {/* Indication Filter (§39) */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-              INDICATION:
-            </span>
-            <button
-              className={`btn ${indicationFilter === 'all' ? 'btn-primary' : 'btn-secondary'}`}
-              style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
+          <FilterBarGroup label="INDICATION:">
+            <Button
+              variant={indicationFilter === 'all' ? 'primary' : 'secondary'}
+              size="sm"
+              className="text-xs py-1 px-2"
               onClick={() => setIndicationFilter('all')}
             >
               All
-            </button>
+            </Button>
             {uniqueIndications.map(ind => (
-              <button
+              <Button
+                variant={indicationFilter === ind ? 'primary' : 'secondary'}
                 key={ind}
-                className={`btn ${indicationFilter === ind ? 'btn-primary' : 'btn-secondary'}`}
-                style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
+                size="sm"
+                className="text-xs py-1 px-2"
                 onClick={() => setIndicationFilter(ind)}
               >
                 {ind}
-              </button>
+              </Button>
             ))}
-          </div>
+          </FilterBarGroup>
 
           {/* Quick status filters */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 600 }}>
-              STATUS:
-            </span>
-            <select
+          <FilterBarGroup label="STATUS:">
+            <FilterBarSelect
               value={stateFilter}
               onChange={e => setStateFilter(e.target.value as any)}
-              className="btn btn-secondary"
-              style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
             >
               <option value="all">All Statuses ({allCases.length})</option>
               <option value="awaiting_review">Awaiting Review</option>
               <option value="stale">Stale Slates ({allCases.filter(c => c.isStale).length})</option>
               <option value="signed">Signed</option>
-            </select>
-          </div>
-        </div>
-      </div>
+            </FilterBarSelect>
+          </FilterBarGroup>
+        </FilterBarRow>
+      </FilterBar>
 
       {/* Cases Registry Table */}
-      <div className="card">
-        <div className="comparison-table-wrapper">
-          <table className="comparison-table" aria-label="Clinical Cases Registry Table">
-            <thead>
-              <tr>
-                <th scope="col">Case Code</th>
-                <th scope="col">Case Title / Clinical Hypothesis</th>
-                <th scope="col">Mode</th>
-                <th scope="col">Indication</th>
-                <th scope="col">Lifecycle State</th>
-                <th scope="col">Slate Status</th>
-                <th scope="col">Clinical Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredCases.map(c => (
-                <tr key={c.id}>
-                  <td>
-                    <strong style={{ fontFamily: 'var(--font-mono)', color: 'var(--accent-cyan)' }}>
-                      {c.code}
-                    </strong>
-                  </td>
-                  <td>
-                    <div>
-                      <strong>{c.title}</strong>
-                    </div>
-                    <div
-                      style={{
-                        fontSize: '0.75rem',
-                        color: 'var(--text-secondary)',
-                        marginTop: '0.125rem',
-                      }}
-                    >
-                      Case ID: {c.id}
-                    </div>
-                  </td>
-                  <td>
-                    <span
-                      className={`badge ${c.mode.toUpperCase() === 'CLINICAL' ? 'badge-clinical' : c.mode.toUpperCase() === 'RESEARCH' ? 'badge-research' : 'badge-validation'}`}
-                      style={{ fontSize: '0.75rem' }}
-                    >
-                      {c.mode.toUpperCase()}
-                    </span>
-                  </td>
-                  <td>
-                    <span className="badge badge-neutral">{c.indication}</span>
-                  </td>
-                  <td>
-                    <span className="badge badge-tier1">{c.state}</span>
-                  </td>
-                  <td>
-                    {c.isStale ? (
-                      <span className="badge badge-tier3">STALE SLATE</span>
-                    ) : (
-                      <span className="badge badge-tier1">CURRENT</span>
-                    )}
-                  </td>
-                  <td>
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
-                      <Link
-                        href={`/cases/${c.id}`}
-                        className="btn btn-secondary"
-                        style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}
-                      >
-                        Overview
-                      </Link>
-                      <Link
-                        href={`/cases/${c.id}/targets`}
-                        className="btn btn-primary"
-                        style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}
-                      >
-                        Target Slate →
-                      </Link>
-                    </div>
-                  </td>
+      <Card>
+        <CardContent className="p-0">
+          <div className="comparison-table-wrapper">
+            <table className="comparison-table" aria-label="Clinical Cases Registry Table">
+              <thead>
+                <tr>
+                  <th scope="col">Case Code</th>
+                  <th scope="col">Case Title / Clinical Hypothesis</th>
+                  <th scope="col">Mode</th>
+                  <th scope="col">Indication</th>
+                  <th scope="col">Lifecycle State</th>
+                  <th scope="col">Slate Status</th>
+                  <th scope="col">Clinical Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+              </thead>
+              <tbody>
+                {filteredCases.length === 0 && (
+                  <TableEmptyRow
+                    colSpan={7}
+                    message="No clinical cases match the selected filter criteria."
+                    subMessage="Try adjusting your search query, mode filter, or status filter."
+                  />
+                )}
+                {filteredCases.map(c => (
+                  <tr key={c.id}>
+                    <td>
+                      <strong className="font-mono text-cyan">{c.code}</strong>
+                    </td>
+                    <td>
+                      <div>
+                        <strong>{c.title}</strong>
+                      </div>
+                      <div className="text-xs text-secondary mt-0.5">Case ID: {c.id}</div>
+                    </td>
+                    <td>
+                      <Badge
+                        className={`${c.mode.toUpperCase() === 'CLINICAL' ? 'badge-clinical' : c.mode.toUpperCase() === 'RESEARCH' ? 'badge-research' : 'badge-validation'} text-xs`}
+                      >
+                        {c.mode.toUpperCase()}
+                      </Badge>
+                    </td>
+                    <td>
+                      <Badge variant="neutral">{c.indication}</Badge>
+                    </td>
+                    <td>
+                      <Badge variant="tier1">{c.state}</Badge>
+                    </td>
+                    <td>
+                      {c.isStale ? (
+                        <Badge variant="tier3">STALE SLATE</Badge>
+                      ) : (
+                        <Badge variant="tier1">CURRENT</Badge>
+                      )}
+                    </td>
+                    <td>
+                      <div className="flex gap-2">
+                        <Button variant="secondary" href={`/cases/${c.id}`} className="p-1 text-xs">
+                          Overview
+                        </Button>
+                        <Button
+                          variant="primary"
+                          href={`/cases/${c.id}/targets`}
+                          className="p-1 text-xs"
+                        >
+                          Target Slate <ArrowRightIcon size={14} className="ml-1 inline" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

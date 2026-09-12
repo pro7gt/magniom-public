@@ -1,7 +1,16 @@
 'use client';
 
 import React, { use, useState, useEffect } from 'react';
-import Link from 'next/link';
+import {
+  CheckIcon,
+  Breadcrumbs,
+  Button,
+  Badge,
+  CaseNotFoundState,
+  ArrowRightIcon,
+  ArrowLeftIcon,
+  PageHeader,
+} from '@/components/ui';
 import { useRouter } from 'next/navigation';
 import { caseStore } from '../../../../lib/case-store';
 
@@ -24,14 +33,8 @@ export default function CaseIndicationsPage({ params }: { params: Promise<{ case
 
   if (!record) {
     return (
-      <div className="container" style={{ textAlign: 'center', padding: '4rem' }}>
-        <h2>Case Not Found</h2>
-        <p style={{ color: 'var(--text-secondary)' }}>
-          Case ID {caseId} does not exist in the active case store.
-        </p>
-        <Link href="/cases" className="btn btn-secondary">
-          Return to Cases
-        </Link>
+      <div className="container page-container-col">
+        <CaseNotFoundState caseId={caseId} />
       </div>
     );
   }
@@ -45,172 +48,100 @@ export default function CaseIndicationsPage({ params }: { params: Promise<{ case
   };
 
   return (
-    <div className="case-indications-workspace" style={{ padding: '24px' }}>
+    <div className="container page-container-col">
       {/* Breadcrumb Navigation */}
-      <nav
-        aria-label="Indications Breadcrumb"
-        style={{ marginBottom: '16px', fontSize: '0.85rem' }}
-      >
-        <Link
-          href={`/cases/${caseId}`}
-          style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}
-        >
-          {record.clinicalCase.caseCode}
-        </Link>
-        <span style={{ margin: '0 8px', color: 'var(--text-muted)' }}>/</span>
-        <span style={{ color: 'var(--accent-cyan)', fontWeight: 600 }}>
-          Indication Module Registry
-        </span>
-      </nav>
+      <Breadcrumbs
+        ariaLabel="Indications Breadcrumb"
+        items={[
+          { label: record.clinicalCase.caseCode, href: `/cases/${caseId}` },
+          { label: 'Indication Module Registry', current: true },
+        ]}
+      />
 
       {/* Header */}
-      <header
-        style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.03)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '8px',
-          padding: '20px',
-          marginBottom: '24px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '16px',
-        }}
-      >
-        <div>
-          <h1 style={{ margin: 0, fontSize: '1.4rem', color: 'var(--text-main)', fontWeight: 700 }}>
-            Case Indication Modules (§191–§194)
-          </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', margin: '6px 0 0' }}>
+      <PageHeader
+        variant="case-workspace"
+        title="Case Indication Modules (§191–§194)"
+        subtitle={
+          <>
             Multi-indication target governance for patient{' '}
             <strong>{record.clinicalCase.patientId}</strong>. Each indication is validated
             independently under distinct scientific release controls.
-          </p>
-        </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <Link href={`/cases/${caseId}`} className="btn btn-secondary">
-            ← Case Overview
-          </Link>
-          <Link href={`/cases/${caseId}/targets`} className="btn btn-primary">
-            Target Slate →
-          </Link>
-        </div>
-      </header>
+          </>
+        }
+        actions={
+          <>
+            <Button variant="secondary" href={`/cases/${caseId}`}>
+              <ArrowLeftIcon size={14} className="mr-1 inline" /> Case Overview
+            </Button>
+            <Button variant="primary" href={`/cases/${caseId}/targets`}>
+              Target Slate <ArrowRightIcon size={14} className="ml-1 inline" />
+            </Button>
+          </>
+        }
+      />
 
       {/* Grid of Indication Modules */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
-          gap: '20px',
-        }}
-      >
+      <div className="grid-cards-340">
         {record.availableIndications.map(ind => {
           const isActive = ind.caseIndicationId === activeCiId;
 
           return (
             <article
               key={ind.caseIndicationId}
-              style={{
-                backgroundColor: isActive
-                  ? 'rgba(56, 189, 248, 0.06)'
-                  : 'rgba(255, 255, 255, 0.03)',
-                border: `1px solid ${isActive ? 'var(--accent-cyan)' : 'rgba(255, 255, 255, 0.08)'}`,
-                borderRadius: '8px',
-                padding: '20px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                boxShadow: isActive ? '0 0 16px rgba(56, 189, 248, 0.15)' : 'none',
-              }}
+              className={`indication-module-card ${isActive ? 'indication-module-card-active' : ''}`}
             >
               <div>
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'flex-start',
-                    marginBottom: '10px',
-                  }}
-                >
+                <div className="flex justify-between items-start mb-2.5">
                   <div>
-                    <h3
-                      style={{
-                        margin: 0,
-                        fontSize: '1.15rem',
-                        color: 'var(--text-main)',
-                        fontWeight: 700,
-                      }}
-                    >
-                      {ind.label}
-                    </h3>
-                    <span
-                      style={{
-                        fontSize: '0.8rem',
-                        color: 'var(--text-muted)',
-                        fontFamily: 'var(--font-mono)',
-                      }}
-                    >
+                    <h2 className="m-0 text-lg text-primary font-bold">{ind.label}</h2>
+                    <span className="text-xs text-muted font-mono">
                       {ind.caseIndicationId} · IMR-{ind.indicationCode}-2.0.0
                     </span>
                   </div>
-                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                    {ind.isPrimary && <span className="badge badge-tier1">Primary</span>}
+                  <div className="flex gap-1.5 flex-wrap">
+                    {ind.isPrimary && <Badge variant="tier1">Primary</Badge>}
                     {isActive ? (
-                      <span
-                        className="badge badge-tier1"
-                        style={{ backgroundColor: 'var(--accent-cyan)', color: '#000' }}
-                      >
+                      <Badge variant="tier1" className="badge-active-cyan">
                         ACTIVE
-                      </span>
+                      </Badge>
                     ) : (
-                      <span className="badge badge-neutral">Inactive</span>
+                      <Badge variant="neutral">Inactive</Badge>
                     )}
                   </div>
                 </div>
 
-                <p
-                  style={{
-                    fontSize: '0.85rem',
-                    color: 'var(--text-secondary)',
-                    lineHeight: 1.4,
-                    margin: '0 0 16px',
-                  }}
-                >
+                <p className="text-sm text-secondary leading-relaxed m-0 mb-4">
                   Status: <strong>{ind.status}</strong>. Full scientific policy configuration and
                   indication-specific measurements are active for this patient record.
                 </p>
               </div>
 
-              <div style={{ display: 'flex', gap: '8px', marginTop: '12px', flexWrap: 'wrap' }}>
+              <div className="flex gap-2 mt-3 flex-wrap">
                 {!isActive ? (
-                  <button
+                  <Button
+                    variant="primary"
+                    size="sm"
                     onClick={() => handleSwitchIndication(ind.caseIndicationId)}
-                    className="btn btn-primary btn-sm"
-                    style={{ fontSize: '0.8rem' }}
+                    className="text-xs"
                   >
                     Activate {ind.indicationCode} Module
-                  </button>
+                  </Button>
                 ) : (
-                  <span
-                    style={{
-                      fontSize: '0.8rem',
-                      color: 'var(--accent-cyan)',
-                      display: 'flex',
-                      alignItems: 'center',
-                    }}
-                  >
-                    ✓ Currently Governing Targeting
+                  <span className="text-xs text-cyan inline-flex items-center">
+                    <CheckIcon size={14} className="text-emerald mr-1 inline" /> Currently Governing
+                    Targeting
                   </span>
                 )}
-                <Link
+                <Button
+                  variant="secondary"
+                  size="sm"
                   href={`/cases/${caseId}/indications/${ind.caseIndicationId}`}
-                  className="btn btn-secondary btn-sm"
-                  style={{ fontSize: '0.8rem' }}
+
+                  className="text-xs"
                 >
-                  Indication View →
-                </Link>
+                  Indication View <ArrowRightIcon size={14} className="ml-1 inline" />
+                </Button>
               </div>
             </article>
           );

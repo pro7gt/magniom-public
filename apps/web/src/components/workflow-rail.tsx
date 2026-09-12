@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import type { WorkflowViewModel, WorkflowStepViewModel } from '@magniom/presentation';
+import { ArrowRightIcon, CheckIcon, CircleIcon } from '@/components/ui';
 
 export type WorkflowStage =
   | 'overview'
@@ -75,7 +76,7 @@ export function WorkflowRail({
 
               {idx < workflow.steps.length - 1 && (
                 <span className="workflow-connector" aria-hidden="true">
-                  →
+                  <ArrowRightIcon size={12} />
                 </span>
               )}
             </React.Fragment>
@@ -143,7 +144,13 @@ export function WorkflowRail({
     <nav aria-label="Clinical Case Workflow Rail" className="workflow-rail">
       {steps.map((step, idx) => {
         const isActive = activeStage === step.id;
-        const icon = step.isCompleted ? '✓' : isActive ? '●' : '○';
+        const icon = step.isCompleted ? (
+          <CheckIcon size={12} />
+        ) : isActive ? (
+          <CircleIcon size={8} fill="currentColor" />
+        ) : (
+          <CircleIcon size={8} />
+        );
 
         return (
           <React.Fragment key={step.id}>
@@ -169,7 +176,7 @@ export function WorkflowRail({
 
             {idx < steps.length - 1 && (
               <span className="workflow-connector" aria-hidden="true">
-                →
+                <ArrowRightIcon size={12} />
               </span>
             )}
           </React.Fragment>

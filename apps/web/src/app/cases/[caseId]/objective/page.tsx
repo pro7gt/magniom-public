@@ -1,7 +1,23 @@
 'use client';
 
 import React, { use, useState, useEffect } from 'react';
-import Link from 'next/link';
+import {
+  Breadcrumbs,
+  Button,
+  Badge,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CaseNotFoundState,
+  ArrowRightIcon,
+  PageHeader,
+  Alert,
+  Input,
+  Select,
+  FormGroup,
+  FormLabel,
+} from '@/components/ui';
 import { caseStore } from '../../../../lib/case-store';
 import { resolveCaseShellContext } from '../../../../lib/shell-authority';
 import type { CaseShellViewModel } from '@magniom/presentation';
@@ -40,18 +56,8 @@ export default function ClinicalObjectivePage({ params }: { params: Promise<{ ca
 
   if (!record) {
     return (
-      <div className="container" style={{ textAlign: 'center', padding: '4rem' }}>
-        <h2>Case Not Found</h2>
-        <p style={{ color: 'var(--text-secondary)' }}>
-          Case ID {caseId} does not exist in the active case store.
-        </p>
-        <Link
-          href="/cases"
-          className="btn btn-primary"
-          style={{ marginTop: '1rem', display: 'inline-block' }}
-        >
-          Return to Cases
-        </Link>
+      <div className="container page-container-col">
+        <CaseNotFoundState caseId={caseId} />
       </div>
     );
   }
@@ -78,131 +84,64 @@ export default function ClinicalObjectivePage({ params }: { params: Promise<{ ca
   };
 
   return (
-    <div
-      className="clinical-objective-workspace"
-      style={{ padding: '24px', maxWidth: '1100px', margin: '0 auto' }}
-    >
+    <div className="container page-container-col max-w-5xl mx-auto p-6">
       {/* Breadcrumb Navigation */}
-      <nav aria-label="Breadcrumb" style={{ marginBottom: '16px', fontSize: '0.85rem' }}>
-        <Link
-          href={`/cases/${caseId}`}
-          style={{ color: 'var(--accent-cyan)', textDecoration: 'none' }}
-        >
-          Case Overview
-        </Link>{' '}
-        /{' '}
-        <Link
-          href={`/cases/${caseId}/context`}
-          style={{ color: 'var(--accent-cyan)', textDecoration: 'none' }}
-        >
-          Clinical Context
-        </Link>{' '}
-        / <span style={{ color: 'var(--text-secondary)' }}>Clinical Objective</span>
-      </nav>
+      <Breadcrumbs
+        ariaLabel="Breadcrumb"
+        items={[
+          { label: 'Case Overview', href: `/cases/${caseId}` },
+          { label: 'Clinical Context', href: `/cases/${caseId}/context` },
+          { label: 'Clinical Objective', current: true },
+        ]}
+      />
 
       {/* Header (§72, §95) */}
-      <header
-        style={{
-          marginBottom: '24px',
-          borderBottom: '1px solid rgba(255,255,255,0.08)',
-          paddingBottom: '16px',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: '12px',
-          }}
-        >
-          <div>
-            <h2
-              style={{ margin: 0, color: 'var(--text-main)', fontSize: '1.5rem', fontWeight: 700 }}
-            >
-              Clinical Objective Formulation
-            </h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '6px' }}>
-              Defines the clinical target intention governing Target Slate calculation and ranking
-              for{' '}
-              <strong>
-                {indication?.indicationFormatted || record.clinicalCase.indicationCode}
-              </strong>
-              .
-            </p>
-          </div>
-          {moduleAuthority && (
-            <span
-              className={`badge ${moduleAuthority.isClinicalAuthorised ? 'badge-tier1' : moduleAuthority.isResearchOnly ? 'badge-tierexp' : 'badge-tier2'}`}
+      <PageHeader
+        title="Clinical Objective Formulation"
+        subtitle={
+          <>
+            Defines the clinical target intention governing Target Slate calculation and ranking for{' '}
+            <strong>{indication?.indicationFormatted || record.clinicalCase.indicationCode}</strong>
+            .
+          </>
+        }
+        actions={
+          moduleAuthority && (
+            <Badge
+              className={`${moduleAuthority.isClinicalAuthorised ? 'badge-tier1' : moduleAuthority.isResearchOnly ? 'badge-tierexp' : 'badge-tier2'}`}
               title={`Module: ${moduleAuthority.humanReadableName} (${moduleAuthority.moduleVersion})`}
             >
               {moduleAuthority.permissionLabel}
-            </span>
-          )}
-        </div>
+            </Badge>
+          )
+        }
+      />
 
-        {/* Normative Principle Alert (§95) */}
-        <div
-          role="note"
-          style={{
-            marginTop: '16px',
-            padding: '12px 16px',
-            backgroundColor: 'rgba(59, 130, 246, 0.08)',
-            borderLeft: '4px solid #3b82f6',
-            borderRadius: '4px',
-            fontSize: '0.875rem',
-            color: 'var(--text-secondary)',
-          }}
-        >
-          <strong style={{ color: 'var(--text-main)' }}>§95 Clinical Objective First:</strong> Each
-          target workspace SHALL keep visible what the candidate is intended to address. A target
-          should never become a decontextualised coordinate.
-        </div>
-      </header>
+      {/* Normative Principle Alert (§95) */}
+      <Alert
+        variant="info"
+        className="mb-6"
+        title="§95 Clinical Objective First:"
+        description="Each target workspace SHALL keep visible what the candidate is intended to address. A target should never become a decontextualised coordinate."
+      />
 
       {/* Main Content Grid */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '24px',
-        }}
-      >
+      <div className="grid-cards-320">
         {/* Active Clinical Objective Card */}
-        <section
-          className="context-card"
-          aria-labelledby="active-objective-heading"
-          style={{
-            backgroundColor: 'rgba(255,255,255,0.04)',
-            border: '1px solid rgba(255,255,255,0.1)',
-            borderRadius: '8px',
-            padding: '24px',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              marginBottom: '16px',
-            }}
-          >
-            <h3
+        <Card className="context-card" aria-labelledby="active-objective-heading">
+          <CardHeader>
+            <CardTitle
+              as="h2"
               id="active-objective-heading"
-              style={{
-                margin: 0,
-                fontSize: '1.1rem',
-                color: 'var(--accent-cyan)',
-                fontWeight: 600,
-              }}
+              className="m-0 text-lg text-cyan font-semibold"
             >
               Active Objective Specification
-            </h3>
+            </CardTitle>
             {!isEditing && (
-              <button
+              <Button
+                variant="secondary"
+                size="sm"
                 type="button"
-                className="btn btn-secondary"
                 onClick={() => {
                   if (effectiveObjective) {
                     setTitleInput(effectiveObjective.title);
@@ -211,265 +150,155 @@ export default function ClinicalObjectivePage({ params }: { params: Promise<{ ca
                   }
                   setIsEditing(true);
                 }}
-                style={{ fontSize: '0.8rem', padding: '4px 10px' }}
+                className="text-xs py-1 px-2.5"
               >
                 {effectiveObjective ? 'Edit Objective' : 'Formulate Objective'}
-              </button>
+              </Button>
             )}
-          </div>
+          </CardHeader>
+          <CardContent>
+            {isEditing ? (
+              <form onSubmit={handleSave} className="flex flex-col gap-4">
+                <FormGroup>
+                  <FormLabel htmlFor="obj-title" required>
+                    Objective Title / Intention
+                  </FormLabel>
+                  <Input
+                    id="obj-title"
+                    type="text"
+                    value={titleInput}
+                    onChange={e => setTitleInput(e.target.value)}
+                    placeholder="e.g., Left DLPFC-SGC Circuit Modulation for MDD Remission"
+                    required
+                  />
+                </FormGroup>
 
-          {isEditing ? (
-            <form
-              onSubmit={handleSave}
-              style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
-            >
-              <div>
-                <label
-                  htmlFor="obj-title"
-                  style={{
-                    display: 'block',
-                    fontSize: '0.85rem',
-                    marginBottom: '6px',
-                    color: 'var(--text-secondary)',
-                  }}
-                >
-                  Objective Title / Intention *
-                </label>
-                <input
-                  id="obj-title"
-                  type="text"
-                  value={titleInput}
-                  onChange={e => setTitleInput(e.target.value)}
-                  placeholder="e.g., Left DLPFC-SGC Circuit Modulation for MDD Remission"
-                  style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    borderRadius: '4px',
-                    border: '1px solid rgba(255,255,255,0.15)',
-                    backgroundColor: 'rgba(0,0,0,0.3)',
-                    color: 'var(--text-main)',
-                    fontSize: '0.9rem',
-                  }}
-                  required
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="obj-priority"
-                  style={{
-                    display: 'block',
-                    fontSize: '0.85rem',
-                    marginBottom: '6px',
-                    color: 'var(--text-secondary)',
-                  }}
-                >
-                  Priority Rank
-                </label>
-                <select
-                  id="obj-priority"
-                  value={priorityInput}
-                  onChange={e => setPriorityInput(Number(e.target.value))}
-                  style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    borderRadius: '4px',
-                    border: '1px solid rgba(255,255,255,0.15)',
-                    backgroundColor: 'rgba(0,0,0,0.3)',
-                    color: 'var(--text-main)',
-                    fontSize: '0.9rem',
-                  }}
-                >
-                  <option value={1}>1 (Primary Clinical Target)</option>
-                  <option value={2}>2 (Secondary Adjunctive)</option>
-                  <option value={3}>3 (Exploratory / Alternative)</option>
-                </select>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="obj-burden"
-                  style={{
-                    display: 'block',
-                    fontSize: '0.85rem',
-                    marginBottom: '6px',
-                    color: 'var(--text-secondary)',
-                  }}
-                >
-                  Symptom / Burden Metric
-                </label>
-                <input
-                  id="obj-burden"
-                  type="text"
-                  value={burdenInput}
-                  onChange={e => setBurdenInput(e.target.value)}
-                  placeholder="e.g., MADRS: 34 (Severe depression), HAM-D: 26"
-                  style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    borderRadius: '4px',
-                    border: '1px solid rgba(255,255,255,0.15)',
-                    backgroundColor: 'rgba(0,0,0,0.3)',
-                    color: 'var(--text-main)',
-                    fontSize: '0.9rem',
-                  }}
-                />
-              </div>
-
-              <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
-                <button
-                  type="submit"
-                  className="btn btn-primary"
-                  style={{ fontSize: '0.85rem', padding: '6px 14px' }}
-                >
-                  Save Objective
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => setIsEditing(false)}
-                  style={{ fontSize: '0.85rem', padding: '6px 14px' }}
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          ) : effectiveObjective ? (
-            <div>
-              <p
-                style={{
-                  margin: '0 0 12px',
-                  fontSize: '1.15rem',
-                  fontWeight: 600,
-                  color: 'var(--text-main)',
-                }}
-              >
-                {effectiveObjective.title}
-              </p>
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '16px' }}>
-                <span className="badge badge-neutral" style={{ fontSize: '0.8rem' }}>
-                  Priority Rank: #{effectiveObjective.priorityRank}
-                </span>
-                <span
-                  className={`badge ${effectiveObjective.isEvidenceMappable ? 'badge-tier1' : 'badge-neutral'}`}
-                  style={{ fontSize: '0.8rem' }}
-                >
-                  {effectiveObjective.isEvidenceMappable
-                    ? 'Evidence Mappable'
-                    : 'Not Directly Mapped'}
-                </span>
-              </div>
-              {effectiveObjective.burdenScoreText && (
-                <div
-                  style={{
-                    padding: '10px 14px',
-                    backgroundColor: 'rgba(255,255,255,0.02)',
-                    borderRadius: '4px',
-                    border: '1px solid rgba(255,255,255,0.06)',
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: '0.8rem',
-                      color: 'var(--text-muted)',
-                      display: 'block',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.05em',
-                    }}
+                <FormGroup>
+                  <FormLabel htmlFor="obj-priority">Priority Rank</FormLabel>
+                  <Select
+                    id="obj-priority"
+                    value={priorityInput}
+                    onChange={e => setPriorityInput(Number(e.target.value))}
                   >
-                    Symptom Burden Baseline
-                  </span>
-                  <p
-                    style={{
-                      margin: '4px 0 0',
-                      color: 'var(--text-secondary)',
-                      fontSize: '0.9rem',
-                    }}
+                    <option value={1}>1 (Primary Clinical Target)</option>
+                    <option value={2}>2 (Secondary Adjunctive)</option>
+                    <option value={3}>3 (Exploratory / Alternative)</option>
+                  </Select>
+                </FormGroup>
+
+                <FormGroup>
+                  <FormLabel htmlFor="obj-burden">Symptom / Burden Metric</FormLabel>
+                  <Input
+                    id="obj-burden"
+                    type="text"
+                    value={burdenInput}
+                    onChange={e => setBurdenInput(e.target.value)}
+                    placeholder="e.g., MADRS: 34 (Severe depression), HAM-D: 26"
+                  />
+                </FormGroup>
+
+                <div className="flex gap-2.5 mt-2">
+                  <Button variant="primary" type="submit" className="text-sm py-1.5 px-3.5">
+                    Save Objective
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    type="button"
+                    onClick={() => setIsEditing(false)}
+                    className="text-sm py-1.5 px-3.5"
                   >
-                    {effectiveObjective.burdenScoreText}
-                  </p>
+                    Cancel
+                  </Button>
                 </div>
-              )}
-            </div>
-          ) : (
-            <div style={{ textAlign: 'center', padding: '24px 0' }}>
-              <p style={{ color: 'var(--text-muted)', fontStyle: 'italic', marginBottom: '16px' }}>
-                No clinical objective has been formulated for this case. Clinical formulation must
-                precede algorithmic Target Slate generation.
-              </p>
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={() => setIsEditing(true)}
-                style={{ fontSize: '0.85rem' }}
-              >
-                Formulate Clinical Objective Now
-              </button>
-            </div>
-          )}
-        </section>
+              </form>
+            ) : effectiveObjective ? (
+              <div>
+                <p className="m-0 mb-3 text-lg font-semibold text-primary">
+                  {effectiveObjective.title}
+                </p>
+                <div className="flex gap-2 flex-wrap mb-4">
+                  <Badge variant="neutral" className="text-xs">
+                    Priority Rank: #{effectiveObjective.priorityRank}
+                  </Badge>
+                  <Badge
+                    className={`${effectiveObjective.isEvidenceMappable ? 'badge-tier1' : 'badge-neutral'} text-xs`}
+                  >
+                    {effectiveObjective.isEvidenceMappable
+                      ? 'Evidence Mappable'
+                      : 'Not Directly Mapped'}
+                  </Badge>
+                </div>
+                {effectiveObjective.burdenScoreText && (
+                  <div className="p-2.5 px-3.5 bg-glass-card rounded border border-subtle">
+                    <span className="text-xs text-muted block uppercase tracking-wide">
+                      Symptom Burden Baseline
+                    </span>
+                    <p className="mt-1 mb-0 text-secondary text-sm">
+                      {effectiveObjective.burdenScoreText}
+                    </p>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="text-center py-6">
+                <p className="text-muted italic mb-4">
+                  No clinical objective has been formulated for this case. Clinical formulation must
+                  precede algorithmic Target Slate generation.
+                </p>
+                <Button
+                  variant="primary"
+                  type="button"
+                  onClick={() => setIsEditing(true)}
+                  className="text-sm"
+                >
+                  Formulate Clinical Objective Now
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Context Relationships & Invariants */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <section
-            style={{
-              backgroundColor: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: '8px',
-              padding: '20px',
-            }}
-          >
-            <h4
-              style={{
-                margin: '0 0 10px',
-                fontSize: '0.95rem',
-                color: 'var(--text-main)',
-                fontWeight: 600,
-              }}
-            >
-              Governing Clinical Invariants
-            </h4>
-            <ul
-              style={{
-                margin: 0,
-                paddingLeft: '20px',
-                fontSize: '0.85rem',
-                color: 'var(--text-secondary)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '8px',
-              }}
-            >
-              <li>
-                <strong>Clinical Formulation Precedence (§7):</strong> Algorithmic candidate
-                generation cannot proceed until clinical objective is established.
-              </li>
-              <li>
-                <strong>No Cross-Indication Reuse (§67):</strong> Objective modifications for{' '}
-                {record.clinicalCase.indicationCode} do not alter other registered indications.
-              </li>
-              <li>
-                <strong>Staleness Invalidation (§78):</strong> Modifying the clinical objective
-                invalidates any existing Target Slate to prevent mismatched targeting.
-              </li>
-            </ul>
-          </section>
+        <div className="flex flex-col gap-4">
+          <Card>
+            <CardHeader>
+              <CardTitle as="h2" className="m-0 text-base text-primary font-semibold">
+                Governing Clinical Invariants
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="m-0 pl-5 text-sm text-secondary flex flex-col gap-2">
+                <li>
+                  <strong>Clinical Formulation Precedence (§7):</strong> Algorithmic candidate
+                  generation cannot proceed until clinical objective is established.
+                </li>
+                <li>
+                  <strong>No Cross-Indication Reuse (§67):</strong> Objective modifications for{' '}
+                  {record.clinicalCase.indicationCode} do not alter other registered indications.
+                </li>
+                <li>
+                  <strong>Staleness Invalidation (§78):</strong> Modifying the clinical objective
+                  invalidates any existing Target Slate to prevent mismatched targeting.
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
 
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-            <Link
+          <div className="flex gap-3 flex-wrap">
+            <Button
+              variant="secondary"
               href={`/cases/${caseId}/context`}
-              className="btn btn-secondary"
-              style={{ flex: 1, textAlign: 'center', textDecoration: 'none', padding: '10px' }}
+              className="flex-1 text-center py-2.5"
             >
               View Full Clinical Context
-            </Link>
-            <Link
+            </Button>
+            <Button
+              variant="primary"
               href={`/cases/${caseId}/targets`}
-              className="btn btn-primary"
-              style={{ flex: 1, textAlign: 'center', textDecoration: 'none', padding: '10px' }}
+              className="flex-1 text-center py-2.5"
             >
-              Inspect Target Slate →
-            </Link>
+              Inspect Target Slate <ArrowRightIcon size={14} className="ml-1 inline" />
+            </Button>
           </div>
         </div>
       </div>

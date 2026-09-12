@@ -1,7 +1,18 @@
 'use client';
 
+import {
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  Breadcrumbs,
+  CaseNotFoundState,
+  ArrowRightIcon,
+  PageHeader,
+} from '@/components/ui';
+
 import React, { use, useState, useEffect } from 'react';
-import Link from 'next/link';
 import { caseStore } from '../../../../../lib/case-store';
 import { getModuleUiDescriptor } from '@magniom/presentation';
 
@@ -34,7 +45,11 @@ export default function CaseIndicationOverviewPage({
   }, [caseId, caseIndicationId]);
 
   if (!record) {
-    return <div className="container">Case not found.</div>;
+    return (
+      <div className="container page-container-col">
+        <CaseNotFoundState caseId={caseId} />
+      </div>
+    );
   }
 
   const matchingInd = record.availableIndications?.find(
@@ -44,117 +59,81 @@ export default function CaseIndicationOverviewPage({
   const descriptor = getModuleUiDescriptor(activeIndCode);
 
   return (
-    <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+    <div className="container page-container-col">
+      <Breadcrumbs
+        ariaLabel="Indication Detail Breadcrumb"
+        items={[
+          { label: record.clinicalCase.caseCode, href: `/cases/${caseId}` },
+          { label: 'Indications', href: `/cases/${caseId}/indications` },
+          { label: activeIndCode, current: true },
+        ]}
+      />
       {/* Indication Orientation Banner (§63) */}
-      <div
-        className="card"
-        style={{
-          background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-          borderColor: '#334155',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '1rem',
-          }}
-        >
-          <div>
-            <span
-              style={{
-                fontSize: '0.75rem',
-                fontWeight: 600,
-                color: 'var(--accent-cyan)',
-                textTransform: 'uppercase',
-              }}
-            >
-              INDICATION WORKSPACE CONTEXT
-            </span>
-            <h1
-              style={{ fontSize: '1.5rem', fontWeight: 700, color: '#fff', marginTop: '0.25rem' }}
-            >
-              {descriptor.indication_name}
-            </h1>
-            <p style={{ color: '#cbd5e1', fontSize: '0.875rem', marginTop: '0.25rem' }}>
-              Case Code:{' '}
-              <strong style={{ fontFamily: 'var(--font-mono)' }}>
-                {record.clinicalCase.caseCode}
-              </strong>{' '}
-              • Module: <strong>{descriptor.indication_module_release_id}</strong>
-            </p>
-          </div>
-
-          <div style={{ display: 'flex', gap: '0.75rem' }}>
-            <Link
-              href={`/cases/${caseId}/targets`}
-              className="btn btn-primary"
-              id="review-target-slate-overview-btn"
-            >
-              Enter Target Workspace →
-            </Link>
-          </div>
-        </div>
-      </div>
+      <Card>
+        <CardContent>
+          <PageHeader
+            eyebrow={
+              <span className="text-xs font-semibold text-cyan uppercase">
+                INDICATION WORKSPACE CONTEXT
+              </span>
+            }
+            title={descriptor.indication_name}
+            subtitle={
+              <>
+                Case Code: <strong className="font-mono">{record.clinicalCase.caseCode}</strong> •
+                Module: <strong>{descriptor.indication_module_release_id}</strong>
+              </>
+            }
+            actions={
+              <Button
+                variant="primary"
+                href={`/cases/${caseId}/targets`}
+                id="review-target-slate-overview-btn"
+              >
+                Enter Target Workspace <ArrowRightIcon size={14} className="ml-1 inline" />
+              </Button>
+            }
+          />
+        </CardContent>
+      </Card>
 
       {/* Indication Clinical Question & Measurements */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '1.5rem',
-        }}
-      >
-        <div className="card">
-          <span
-            style={{
-              fontSize: '0.75rem',
-              fontWeight: 600,
-              color: 'var(--text-secondary)',
-              textTransform: 'uppercase',
-            }}
-          >
-            CLINICAL OBJECTIVE
-          </span>
-          <h3 style={{ marginTop: '0.5rem', color: '#fff' }}>
-            {record.clinicalObjective?.title ||
-              `Targeting for ${record.clinicalCase.indicationCode}`}
-          </h3>
-          <p style={{ color: '#94a3b8', fontSize: '0.875rem' }}>
-            {record.clinicalObjective?.burdenScoreText
-              ? `Current baseline burden: ${record.clinicalObjective.burdenScoreText}`
-              : 'Clinical formulation active for this indication.'}
-          </p>
-        </div>
+      <div className="stat-card-grid">
+        <Card>
+          <CardHeader>
+            <span className="text-xs font-semibold text-secondary uppercase">
+              CLINICAL OBJECTIVE
+            </span>
+            <CardTitle as="h2" className="mt-2">
+              {record.clinicalObjective?.title ||
+                `Targeting for ${record.clinicalCase.indicationCode}`}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-secondary m-0">
+              {record.clinicalObjective?.burdenScoreText
+                ? `Current baseline burden: ${record.clinicalObjective.burdenScoreText}`
+                : 'Clinical formulation active for this indication.'}
+            </p>
+          </CardContent>
+        </Card>
 
-        <div className="card">
-          <span
-            style={{
-              fontSize: '0.75rem',
-              fontWeight: 600,
-              color: 'var(--text-secondary)',
-              textTransform: 'uppercase',
-            }}
-          >
-            REQUIRED MEASUREMENTS
-          </span>
-          <ul
-            style={{
-              marginTop: '0.5rem',
-              paddingLeft: '1.25rem',
-              color: '#cbd5e1',
-              fontSize: '0.875rem',
-            }}
-          >
-            {descriptor.measurement_sections.map(ms => (
-              <li key={ms.modality}>
-                {ms.label} {ms.required ? '(Required)' : '(Optional / Research)'}
-              </li>
-            ))}
-          </ul>
-        </div>
+        <Card>
+          <CardHeader>
+            <span className="text-xs font-semibold text-secondary uppercase">
+              REQUIRED MEASUREMENTS
+            </span>
+          </CardHeader>
+          <CardContent>
+            <ul className="mt-2 pl-5 text-secondary text-sm m-0">
+              {descriptor.measurement_sections.map(ms => (
+                <li key={ms.modality}>
+                  {ms.label} {ms.required ? '(Required)' : '(Optional / Research)'}
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

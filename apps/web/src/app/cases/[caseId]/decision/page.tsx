@@ -1,6 +1,7 @@
 'use client';
 
 import React, { use, useState, useEffect } from 'react';
+import { CaseNotFoundState } from '@/components/ui';
 import { caseStore } from '../../../../lib/case-store';
 import { toTargetSlateViewModel, toDecisionReviewViewModel } from '@magniom/presentation';
 import { DecisionWorkspace } from '../../../../components/decision-workspace';
@@ -21,7 +22,11 @@ export default function DecisionPage({ params }: { params: Promise<{ caseId: str
   }, [caseId]);
 
   if (!record) {
-    return <div className="container">Case not found.</div>;
+    return (
+      <div className="container page-container-col">
+        <CaseNotFoundState caseId={caseId} />
+      </div>
+    );
   }
 
   const slateVM = toTargetSlateViewModel(record.slate, {
@@ -81,6 +86,7 @@ export default function DecisionPage({ params }: { params: Promise<{ caseId: str
   return (
     <DecisionWorkspace
       caseId={caseId}
+      caseCode={record.clinicalCase.caseCode}
       slateVM={slateVM}
       existingDecisionVM={decisionVM}
       onSignDecision={handleSign}

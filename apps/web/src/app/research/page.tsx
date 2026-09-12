@@ -1,7 +1,20 @@
 'use client';
 
+import {
+  Breadcrumbs,
+  Button,
+  Badge,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  ArrowRightIcon,
+  TableEmptyRow,
+  PageHeader,
+  Alert,
+} from '@/components/ui';
+
 import React from 'react';
-import Link from 'next/link';
 import { caseStore } from '../../lib/case-store';
 
 export default function ResearchWorkspacePage() {
@@ -11,82 +24,83 @@ export default function ResearchWorkspacePage() {
   );
 
   return (
-    <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+    <div className="container page-container-col">
+      <Breadcrumbs
+        items={[
+          { label: 'Home', href: '/' },
+          { label: 'Research Workspace', current: true },
+        ]}
+      />
+
       {/* Research Mode Warning Banner (§13, §155) */}
-      <div className="research-banner" style={{ margin: 0 }}>
-        <strong>RESEARCH MODE — NOT FOR CLINICAL USE:</strong> Experimental neuroimaging and
-        exploratory circuit targets. Clinical decision signing is strictly restricted in this
-        environment.
-      </div>
+      <Alert
+        variant="research"
+        title="RESEARCH MODE — NOT FOR CLINICAL USE:"
+        description="Experimental neuroimaging and exploratory circuit targets. Clinical decision signing is strictly restricted in this environment."
+      />
 
-      <div>
-        <div
-          style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.25rem' }}
-        >
-          <span className="badge badge-tierexp">RESEARCH ENVIRONMENT</span>
-        </div>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-          Research & Exploratory Neuroimaging Workspace
-        </h1>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginTop: '0.25rem' }}>
-          Experimental connectomic hypotheses, novel symptom-to-circuit formulations, and Tier-Exp
-          exploratory targets (Section 32).
-        </p>
-      </div>
+      <PageHeader
+        eyebrow={<Badge variant="tierexp">RESEARCH ENVIRONMENT</Badge>}
+        title="Research & Exploratory Neuroimaging Workspace"
+        subtitle="Experimental connectomic hypotheses, novel symptom-to-circuit formulations, and Tier-Exp exploratory targets (Section 32)."
+      />
 
-      <div className="card">
-        <h2
-          style={{
-            fontSize: '1.125rem',
-            fontWeight: 700,
-            marginBottom: '1rem',
-            color: 'var(--accent-cyan)',
-          }}
-        >
-          Active Research Cases
-        </h2>
+      <Card>
+        <CardHeader>
+          <CardTitle as="h2" className="text-cyan">
+            Active Research Cases
+          </CardTitle>
+        </CardHeader>
 
-        <div className="comparison-table-wrapper">
-          <table className="comparison-table" aria-label="Research Cases Table">
-            <thead>
-              <tr>
-                <th scope="col">Case Code</th>
-                <th scope="col">Research Hypothesis</th>
-                <th scope="col">Modality</th>
-                <th scope="col">Safety Constraints</th>
-                <th scope="col">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {researchCases.map(c => (
-                <tr key={c.id}>
-                  <td>
-                    <strong style={{ fontFamily: 'var(--font-mono)', color: '#f87171' }}>
-                      {c.code}
-                    </strong>
-                  </td>
-                  <td>{c.title}</td>
-                  <td>
-                    <span className="badge badge-neutral">rs-fMRI BOLD + DTI</span>
-                  </td>
-                  <td>
-                    <span className="badge badge-tierexp">Clinical Sign Lockout</span>
-                  </td>
-                  <td>
-                    <Link
-                      href={`/cases/${c.id}/targets`}
-                      className="btn btn-primary"
-                      style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}
-                    >
-                      Open Research Slate →
-                    </Link>
-                  </td>
+        <CardContent>
+          <div className="comparison-table-wrapper">
+            <table className="comparison-table" aria-label="Research Cases Table">
+              <thead>
+                <tr>
+                  <th scope="col">Case Code</th>
+                  <th scope="col">Research Hypothesis</th>
+                  <th scope="col">Modality</th>
+                  <th scope="col">Safety Constraints</th>
+                  <th scope="col">Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+              </thead>
+              <tbody>
+                {researchCases.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={5}
+                    message="No active research cases found."
+                    subMessage="New exploratory neuroimaging cases can be provisioned through the Intake Workspace."
+                  />
+                ) : (
+                  researchCases.map(c => (
+                    <tr key={c.id}>
+                      <td>
+                        <strong className="font-mono text-rose">{c.code}</strong>
+                      </td>
+                      <td>{c.title}</td>
+                      <td>
+                        <Badge variant="neutral">rs-fMRI BOLD + DTI</Badge>
+                      </td>
+                      <td>
+                        <Badge variant="tierexp">Clinical Sign Lockout</Badge>
+                      </td>
+                      <td>
+                        <Button
+                          variant="primary"
+                          href={`/cases/${c.id}/targets`}
+                          className="p-1 text-xs"
+                        >
+                          Open Research Slate <ArrowRightIcon size={14} className="ml-1 inline" />
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

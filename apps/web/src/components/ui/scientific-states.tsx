@@ -2,15 +2,18 @@
 
 import React from 'react';
 
+import { InfoIcon, AlertTriangleIcon, RefreshCwIcon, AlertOctagonIcon, CircleIcon } from './icon';
+import { Button } from './button';
+
 // ==========================================
 // Scientific Empty/Error/Processing/Abstention States (§206–211)
 // Language must use scientific restraint — no "bad scan", "weak patient", etc. (§182).
 // ==========================================
 
-interface ScientificStateProps {
+export interface ScientificStateProps {
   title: string;
   message: string;
-  icon?: string;
+  icon?: React.ReactNode;
   resolution?: string;
   variant?: 'empty' | 'abstention' | 'partial' | 'processing' | 'error';
   children?: React.ReactNode;
@@ -27,87 +30,29 @@ export function ScientificState({
   variant = 'empty',
   children,
 }: ScientificStateProps) {
-  const variantStyles: Record<
+  const defaultIcons: Record<
     'empty' | 'abstention' | 'partial' | 'processing' | 'error',
-    { bg: string; border: string; iconColor: string }
+    React.ReactNode
   > = {
-    empty: {
-      bg: 'rgba(255,255,255,0.03)',
-      border: 'rgba(255,255,255,0.08)',
-      iconColor: 'var(--text-muted)',
-    },
-    abstention: { bg: 'rgba(217,119,6,0.08)', border: 'rgba(217,119,6,0.3)', iconColor: '#fbbf24' },
-    partial: { bg: 'rgba(99,102,241,0.08)', border: 'rgba(99,102,241,0.3)', iconColor: '#818cf8' },
-    processing: {
-      bg: 'rgba(59,130,246,0.08)',
-      border: 'rgba(59,130,246,0.3)',
-      iconColor: '#60a5fa',
-    },
-    error: { bg: 'rgba(239,68,68,0.08)', border: 'rgba(239,68,68,0.3)', iconColor: '#f87171' },
+    empty: <InfoIcon size={24} />,
+    abstention: <AlertOctagonIcon size={24} />,
+    partial: <CircleIcon size={24} />,
+    processing: <RefreshCwIcon size={24} />,
+    error: <AlertTriangleIcon size={24} />,
   };
-
-  const style = variantStyles[variant] ?? variantStyles.empty;
-  const defaultIcons: Record<'empty' | 'abstention' | 'partial' | 'processing' | 'error', string> =
-    {
-      empty: 'ℹ',
-      abstention: '⊘',
-      partial: '◐',
-      processing: '⏳',
-      error: '⚠',
-    };
 
   return (
     <div
       role={variant === 'error' ? 'alert' : 'status'}
-      style={{
-        textAlign: 'center',
-        padding: '2.5rem 2rem',
-        backgroundColor: style.bg,
-        border: `1px solid ${style.border}`,
-        borderRadius: '10px',
-        maxWidth: '560px',
-        margin: '2rem auto',
-      }}
+      className={`scientific-state scientific-state-${variant}`}
     >
-      <span
-        aria-hidden="true"
-        style={{ fontSize: '2rem', display: 'block', marginBottom: '12px', color: style.iconColor }}
-      >
+      <span aria-hidden="true" className="scientific-state-icon">
         {icon || defaultIcons[variant]}
       </span>
-      <h3
-        style={{
-          margin: '0 0 8px',
-          color: 'var(--text-main)',
-          fontSize: '1.1rem',
-          fontWeight: 600,
-        }}
-      >
-        {title}
-      </h3>
-      <p
-        style={{
-          margin: '0 0 12px',
-          color: 'var(--text-secondary)',
-          fontSize: '0.9rem',
-          lineHeight: 1.5,
-        }}
-      >
-        {message}
-      </p>
-      {resolution && (
-        <p
-          style={{
-            margin: 0,
-            color: 'var(--text-muted)',
-            fontSize: '0.85rem',
-            fontStyle: 'italic',
-          }}
-        >
-          {resolution}
-        </p>
-      )}
-      {children && <div style={{ marginTop: '16px' }}>{children}</div>}
+      <h3 className="scientific-state-title">{title}</h3>
+      <p className="scientific-state-message">{message}</p>
+      {resolution && <p className="scientific-state-resolution">{resolution}</p>}
+      {children && <div className="scientific-state-actions mt-3">{children}</div>}
     </div>
   );
 }
@@ -158,13 +103,13 @@ export function PartialCapabilityState({
       message={`This case has ${availableCapabilities.length} of ${availableCapabilities.length + missingCapabilities.length} required capabilities. The targeting module is operating with reduced functionality.`}
       resolution="Ensure all required measurement modalities are available and qualified to restore full targeting capability."
     >
-      <div style={{ textAlign: 'left', marginTop: '12px', fontSize: '0.85rem' }}>
+      <div className="text-left mt-3 text-sm">
         {availableCapabilities.length > 0 && (
-          <div style={{ marginBottom: '8px' }}>
-            <strong style={{ color: '#10b981' }}>Available:</strong>
-            <ul style={{ margin: '4px 0 0 16px', padding: 0 }}>
+          <div className="mb-2">
+            <strong className="text-emerald">Available:</strong>
+            <ul className="mt-1 ml-4 p-0">
               {availableCapabilities.map(c => (
-                <li key={c} style={{ color: 'var(--text-secondary)' }}>
+                <li key={c} className="text-secondary">
                   {c}
                 </li>
               ))}
@@ -173,10 +118,10 @@ export function PartialCapabilityState({
         )}
         {missingCapabilities.length > 0 && (
           <div>
-            <strong style={{ color: '#ef4444' }}>Missing:</strong>
-            <ul style={{ margin: '4px 0 0 16px', padding: 0 }}>
+            <strong className="text-rose">Missing:</strong>
+            <ul className="mt-1 ml-4 p-0">
               {missingCapabilities.map(c => (
-                <li key={c} style={{ color: 'var(--text-secondary)' }}>
+                <li key={c} className="text-secondary">
                   {c}
                 </li>
               ))}
@@ -257,5 +202,27 @@ export function EmptyCaseListState() {
       message="No clinical cases match the current filter criteria, or no cases have been created in this organisation."
       resolution="Create a new case or adjust the active filters."
     />
+  );
+}
+
+/** §206 — Canonical fallback state when a requested case record cannot be found */
+export function CaseNotFoundState({ caseId }: { caseId?: string }) {
+  return (
+    <ScientificState
+      variant="empty"
+      title="Case Record Unavailable"
+      message={
+        caseId
+          ? `The requested clinical case identifier (${caseId}) could not be located in the current repository partition or the record has been archived.`
+          : 'The requested clinical case record could not be located in the active session repository.'
+      }
+      resolution="Verify the case identifier or return to the clinical case repository registry."
+    >
+      <div className="flex justify-center gap-2 mt-4">
+        <Button variant="secondary" href="/cases">
+          Return to Case Registry
+        </Button>
+      </div>
+    </ScientificState>
   );
 }

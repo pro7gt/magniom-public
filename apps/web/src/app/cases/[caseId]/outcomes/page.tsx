@@ -1,7 +1,19 @@
 'use client';
 
+import {
+  Button,
+  Badge,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  Breadcrumbs,
+  CaseNotFoundState,
+  ArrowRightIcon,
+  PageHeader,
+} from '@/components/ui';
+
 import React, { use, useState, useEffect } from 'react';
-import Link from 'next/link';
 import { caseStore } from '../../../../lib/case-store';
 
 export default function CaseOutcomesPage({ params }: { params: Promise<{ caseId: string }> }) {
@@ -19,143 +31,86 @@ export default function CaseOutcomesPage({ params }: { params: Promise<{ caseId:
     return () => unsubscribe();
   }, [caseId]);
 
-  if (!record) return <div className="container">Case not found.</div>;
+  if (!record) {
+    return (
+      <div className="container page-container-col">
+        <CaseNotFoundState caseId={caseId} />
+      </div>
+    );
+  }
 
   return (
-    <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '1rem',
-        }}
-      >
-        <div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-            Clinical Outcomes &amp; Longitudinal Symptom Response
-          </h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-            Tracking MADRS, GAD-7, and clinical global impression trajectories across TMS treatment
-            sessions.
-          </p>
-        </div>
+    <div className="container page-container-col">
+      <Breadcrumbs
+        ariaLabel="Outcomes Breadcrumb"
+        items={[
+          { label: record.clinicalCase.caseCode, href: `/cases/${caseId}` },
+          { label: 'Clinical Outcomes', current: true },
+        ]}
+      />
+      <PageHeader
+        title="Clinical Outcomes & Longitudinal Symptom Response"
+        subtitle="Tracking MADRS, GAD-7, and clinical global impression trajectories across TMS treatment sessions."
+        actions={
+          <Button variant="primary" href={`/cases/${caseId}/audit`}>
+            View Cryptographic Audit Trail <ArrowRightIcon size={14} className="ml-1 inline" />
+          </Button>
+        }
+      />
 
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <Link href={`/cases/${caseId}/audit`} className="btn btn-primary">
-            View Cryptographic Audit Trail →
-          </Link>
-        </div>
-      </div>
-
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '1.5rem',
-        }}
-      >
+      <div className="stat-card-grid">
         {/* Longitudinal Response Trajectory */}
-        <div className="card">
-          <h3
-            style={{
-              fontSize: '1.125rem',
-              fontWeight: 700,
-              color: 'var(--accent-cyan)',
-              marginBottom: '0.75rem',
-            }}
-          >
-            Depression Trajectory (MADRS)
-          </h3>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.5rem',
-              fontSize: '0.875rem',
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                padding: '0.5rem',
-                background: 'var(--bg-surface-elevated)',
-                borderRadius: '0.375rem',
-              }}
-            >
-              <span>Baseline (Session 0)</span>
-              <strong>34 (Severe)</strong>
-            </div>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                padding: '0.5rem',
-                background: 'var(--bg-surface-elevated)',
-                borderRadius: '0.375rem',
-              }}
-            >
-              <span>Mid-Treatment (Session 15)</span>
-              <strong style={{ color: '#38bdf8' }}>21 (Moderate — 38% reduction)</strong>
-            </div>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                padding: '0.5rem',
-                background: 'var(--bg-surface-elevated)',
-                borderRadius: '0.375rem',
-              }}
-            >
-              <span>Post-Treatment (Session 30)</span>
-              <strong style={{ color: '#34d399' }}>
-                11 (Mild / Near Remission — 68% reduction)
-              </strong>
-            </div>
-          </div>
-        </div>
-
-        {/* Clinical Response Classification */}
-        <div className="card">
-          <h3
-            style={{
-              fontSize: '1.125rem',
-              fontWeight: 700,
-              color: 'var(--accent-cyan)',
-              marginBottom: '0.75rem',
-            }}
-          >
-            Clinical Response Status
-          </h3>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.75rem',
-              fontSize: '0.875rem',
-            }}
-          >
-            <div>
-              <span style={{ color: 'var(--text-secondary)' }}>Outcome Category:</span>
-              <div style={{ marginTop: '0.25rem' }}>
-                <span className="badge badge-tier1" style={{ fontSize: '0.8125rem' }}>
-                  CLINICAL RESPONDER (≥ 50% MADRS Reduction)
-                </span>
+        <Card>
+          <CardHeader>
+            <CardTitle as="h2" className="text-lg font-bold text-cyan">
+              Depression Trajectory (MADRS)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col gap-2 text-sm">
+              <div className="flex justify-between p-2 bg-surface-elevated rounded-md">
+                <span>Baseline (Session 0)</span>
+                <strong>34 (Severe)</strong>
+              </div>
+              <div className="flex justify-between p-2 bg-surface-elevated rounded-md">
+                <span>Mid-Treatment (Session 15)</span>
+                <strong className="text-cyan">21 (Moderate — 38% reduction)</strong>
+              </div>
+              <div className="flex justify-between p-2 bg-surface-elevated rounded-md">
+                <span>Post-Treatment (Session 30)</span>
+                <strong className="text-emerald">11 (Mild / Near Remission — 68% reduction)</strong>
               </div>
             </div>
-            <div>
-              <span style={{ color: 'var(--text-secondary)' }}>
-                Target Engagement Verification:
-              </span>
-              <p style={{ fontSize: '0.8125rem', color: '#cbd5e1', marginTop: '0.25rem' }}>
-                Concordant with predicted therapeutic circuit engagement on sgACC anti-correlation
-                network.
-              </p>
+          </CardContent>
+        </Card>
+
+        {/* Clinical Response Classification */}
+        <Card>
+          <CardHeader>
+            <CardTitle as="h2" className="text-lg font-bold text-cyan">
+              Clinical Response Status
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col gap-3 text-sm">
+              <div>
+                <span className="text-secondary">Outcome Category:</span>
+                <div className="mt-1">
+                  <Badge variant="tier1" className="text-sm">
+                    CLINICAL RESPONDER (≥ 50% MADRS Reduction)
+                  </Badge>
+                </div>
+              </div>
+              <div>
+                <span className="text-secondary">Target Engagement Verification:</span>
+                <p className="text-sm text-secondary mt-1">
+                  Concordant with predicted therapeutic circuit engagement on sgACC anti-correlation
+                  network.
+                </p>
+              </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

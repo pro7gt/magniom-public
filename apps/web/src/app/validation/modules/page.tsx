@@ -1,5 +1,17 @@
+import {
+  Breadcrumbs,
+  Button,
+  Badge,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  ArrowRightIcon,
+  ArrowLeftIcon,
+  TableEmptyRow,
+  PageHeader,
+} from '@/components/ui';
 import React from 'react';
-import Link from 'next/link';
 import { getAllModuleUiDescriptors, type IndicationModuleUiDescriptor } from '@magniom/presentation';
 
 // ==========================================
@@ -22,70 +34,90 @@ export default function ValidationModulesPage() {
   const descriptors = getAllModuleUiDescriptors();
 
   return (
-    <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.25rem' }}>
-          <span className="badge badge-tier2">VALIDATION ENVIRONMENT</span>
-          <span className="badge badge-neutral">Module Qualification</span>
-        </div>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-          Module Qualification Status
-        </h1>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginTop: '0.25rem' }}>
-          Q-level progression for all indication modules (Q0–Q8). Clinical authorisation requires full compatibility configuration (§196, §71).
-        </p>
-      </div>
+    <div className="container page-container-col">
+      <Breadcrumbs
+        items={[
+          { label: 'Validation', href: '/validation' },
+          { label: 'Module Qualification', current: true },
+        ]}
+      />
 
-      <div className="card">
-        <div className="comparison-table-wrapper">
-          <table className="comparison-table" aria-label="Module Qualification Status">
-            <thead>
-              <tr>
-                <th scope="col">Module</th>
-                <th scope="col">Indication</th>
-                <th scope="col">Version</th>
-                <th scope="col">Q-Level</th>
-                <th scope="col">Permission</th>
-                <th scope="col">Clinical Authority</th>
-              </tr>
-            </thead>
-            <tbody>
-              {descriptors.map((mod: IndicationModuleUiDescriptor) => {
-                const info = MODULE_QUAL_INFO[mod.indication_code] || {
-                  qualification_level: 'Q0',
-                  effective_permission: 'research',
-                  is_authorised: false,
-                };
-                return (
-                  <tr key={mod.indication_module_release_id}>
-                    <td><strong>{mod.indication_name}</strong></td>
-                    <td><code style={{ color: 'var(--accent-cyan)', fontSize: '0.8rem' }}>{mod.indication_code}</code></td>
-                    <td>{mod.indication_module_release_id}</td>
-                    <td>
-                      <span className={`badge ${info.qualification_level === 'Q8' ? 'badge-tier1' : info.qualification_level >= 'Q5' ? 'badge-tier2' : 'badge-tierexp'}`}>
-                        {info.qualification_level}
-                      </span>
-                    </td>
-                    <td>
-                      <span className={`badge ${info.effective_permission === 'clinical' ? 'badge-tier1' : info.effective_permission === 'validation' ? 'badge-tier2' : 'badge-tierexp'}`}>
-                        {info.effective_permission}
-                      </span>
-                    </td>
-                    <td style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                      {info.is_authorised ? 'Authorised' : 'Not authorised for Clinical targeting'}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <PageHeader
+        eyebrow={
+          <div className="flex items-center gap-2 mb-1">
+            <Badge variant="tier2">VALIDATION ENVIRONMENT</Badge>
+            <Badge variant="neutral">Module Qualification</Badge>
+          </div>
+        }
+        title="Module Qualification Status"
+        subtitle="Q-level progression for all indication modules (Q0–Q8). Clinical authorisation requires full compatibility configuration (§196, §71)."
+      />
 
-      <div style={{ display: 'flex', gap: '0.75rem' }}>
-        <Link href="/validation" className="btn btn-secondary">← Validation Home</Link>
-        <Link href="/validation/studies" className="btn btn-secondary">Studies →</Link>
-        <Link href="/validation/golden" className="btn btn-secondary">Golden Cases →</Link>
+
+      <Card>
+        <CardHeader>
+          <CardTitle as="h2" className="text-cyan">
+            Module Release Qualifications
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="comparison-table-wrapper">
+            <table className="comparison-table" aria-label="Module Qualification Status">
+              <thead>
+                <tr>
+                  <th scope="col">Module</th>
+                  <th scope="col">Indication</th>
+                  <th scope="col">Version</th>
+                  <th scope="col">Q-Level</th>
+                  <th scope="col">Permission</th>
+                  <th scope="col">Clinical Authority</th>
+                </tr>
+              </thead>
+              <tbody>
+                {descriptors.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={6}
+                    message="No modules available for qualification."
+                  />
+                ) : (
+                  descriptors.map((mod: IndicationModuleUiDescriptor) => {
+                    const info = MODULE_QUAL_INFO[mod.indication_code] || {
+                      qualification_level: 'Q0',
+                      effective_permission: 'research',
+                      is_authorised: false,
+                    };
+                    return (
+                      <tr key={mod.indication_module_release_id}>
+                        <td><strong>{mod.indication_name}</strong></td>
+                        <td><code className="text-cyan text-xs">{mod.indication_code}</code></td>
+                        <td>{mod.indication_module_release_id}</td>
+                        <td>
+                          <Badge className={`${info.qualification_level === 'Q8' ? 'badge-tier1' : info.qualification_level >= 'Q5' ? 'badge-tier2' : 'badge-tierexp'}`}>
+                            {info.qualification_level}
+                          </Badge>
+                        </td>
+                        <td>
+                          <Badge className={`${info.effective_permission === 'clinical' ? 'badge-tier1' : info.effective_permission === 'validation' ? 'badge-tier2' : 'badge-tierexp'}`}>
+                            {info.effective_permission}
+                          </Badge>
+                        </td>
+                        <td className="text-sm text-secondary">
+                          {info.is_authorised ? 'Authorised' : 'Not authorised for Clinical targeting'}
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="flex gap-3">
+        <Button variant="secondary" href="/validation"><ArrowLeftIcon size={14} className="mr-1 inline" /> Validation Home</Button>
+        <Button variant="secondary" href="/validation/studies">Studies <ArrowRightIcon size={14} className="ml-1 inline" /></Button>
+        <Button variant="secondary" href="/validation/golden">Golden Cases <ArrowRightIcon size={14} className="ml-1 inline" /></Button>
       </div>
     </div>
   );

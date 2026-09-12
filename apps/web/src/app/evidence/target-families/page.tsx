@@ -1,7 +1,20 @@
 'use client';
 
+import {
+  Breadcrumbs,
+  Button,
+  Badge,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  ArrowRightIcon,
+  ArrowLeftIcon,
+  TableEmptyRow,
+  PageHeader,
+} from '@/components/ui';
+
 import React from 'react';
-import Link from 'next/link';
 
 // ==========================================
 // Target Families Browser (§197)
@@ -20,60 +33,80 @@ const TARGET_FAMILIES = [
 
 export default function TargetFamiliesPage() {
   return (
-    <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.25rem' }}>
-          <span className="badge badge-tier1">EVIDENCE KNOWLEDGE GRAPH</span>
-          <span className="badge badge-neutral">Target Families</span>
-        </div>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-          Target Families
-        </h1>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginTop: '0.25rem' }}>
-          Governed anatomical-functional territories from which candidate targets may be derived (§197).
-        </p>
-      </div>
+    <div className="container page-container-col">
+      <Breadcrumbs
+        items={[
+          { label: 'Evidence', href: '/evidence' },
+          { label: 'Target Families', current: true },
+        ]}
+      />
 
-      <div className="card">
-        <div className="comparison-table-wrapper">
-          <table className="comparison-table" aria-label="Target Families Registry">
-            <thead>
-              <tr>
-                <th scope="col">Family ID</th>
-                <th scope="col">Name</th>
-                <th scope="col">Indication</th>
-                <th scope="col">Evidence Tier</th>
-                <th scope="col">Geometry Type</th>
-                <th scope="col">Claims</th>
-                <th scope="col">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {TARGET_FAMILIES.map(tf => (
-                <tr key={tf.id}>
-                  <td><code style={{ color: 'var(--accent-cyan)', fontSize: '0.8rem' }}>{tf.id}</code></td>
-                  <td><strong style={{ fontSize: '0.85rem' }}>{tf.name}</strong></td>
-                  <td><span className="badge badge-neutral">{tf.indication}</span></td>
-                  <td><span className={`badge ${tf.tierBadge}`}>{tf.tier}</span></td>
-                  <td style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{tf.geometryType}</td>
-                  <td style={{ textAlign: 'center' }}>{tf.claimCount}</td>
-                  <td>
-                    <span className={`badge ${tf.status === 'Active Clinical' ? 'badge-tier1' : tf.status === 'Validation' ? 'badge-tier2' : 'badge-tierexp'}`}>
-                      {tf.status}
-                    </span>
-                  </td>
+      <PageHeader
+        eyebrow={
+          <div className="flex items-center gap-2 mb-1">
+            <Badge variant="tier1">EVIDENCE KNOWLEDGE GRAPH</Badge>
+            <Badge variant="neutral">Target Families</Badge>
+          </div>
+        }
+        title="Target Families"
+        subtitle="Governed anatomical-functional territories from which candidate targets may be derived (§197)."
+      />
+
+
+      <Card>
+        <CardHeader>
+          <CardTitle as="h2" className="text-cyan">
+            Active Target Family Registry
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="comparison-table-wrapper">
+            <table className="comparison-table" aria-label="Target Families Registry">
+              <thead>
+                <tr>
+                  <th scope="col">Family ID</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">Indication</th>
+                  <th scope="col">Evidence Tier</th>
+                  <th scope="col">Geometry Type</th>
+                  <th scope="col">Claims</th>
+                  <th scope="col">Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+              </thead>
+              <tbody>
+                {TARGET_FAMILIES.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={7}
+                    message="No target families registered."
+                  />
+                ) : (
+                  TARGET_FAMILIES.map(tf => (
+                    <tr key={tf.id}>
+                      <td><code className="text-cyan text-xs">{tf.id}</code></td>
+                      <td><strong className="text-sm">{tf.name}</strong></td>
+                      <td><Badge variant="neutral">{tf.indication}</Badge></td>
+                      <td><Badge className={`${tf.tierBadge}`}>{tf.tier}</Badge></td>
+                      <td className="text-sm text-secondary">{tf.geometryType}</td>
+                      <td className="text-center">{tf.claimCount}</td>
+                      <td>
+                        <Badge className={`${tf.status === 'Active Clinical' ? 'badge-tier1' : tf.status === 'Validation' ? 'badge-tier2' : 'badge-tierexp'}`}>
+                          {tf.status}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
 
-      <div style={{ display: 'flex', gap: '0.75rem' }}>
-        <Link href="/evidence" className="btn btn-secondary">← Evidence Library</Link>
-        <Link href="/evidence/claims" className="btn btn-secondary">Claims →</Link>
-        <Link href="/evidence/paths" className="btn btn-secondary">Evidence Paths →</Link>
-        <Link href="/evidence/sources" className="btn btn-secondary">Sources →</Link>
+      <div className="flex gap-3">
+        <Button variant="secondary" href="/evidence"><ArrowLeftIcon size={14} className="mr-1 inline" /> Evidence Library</Button>
+        <Button variant="secondary" href="/evidence/claims">Claims <ArrowRightIcon size={14} className="ml-1 inline" /></Button>
+        <Button variant="secondary" href="/evidence/paths">Evidence Paths <ArrowRightIcon size={14} className="ml-1 inline" /></Button>
+        <Button variant="secondary" href="/evidence/sources">Sources <ArrowRightIcon size={14} className="ml-1 inline" /></Button>
       </div>
     </div>
   );

@@ -1,7 +1,19 @@
 'use client';
 
+import {
+  Button,
+  Badge,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  Breadcrumbs,
+  CaseNotFoundState,
+  ArrowRightIcon,
+  PageHeader,
+} from '@/components/ui';
+
 import React, { use, useState, useEffect } from 'react';
-import Link from 'next/link';
 import { caseStore } from '../../../../lib/case-store';
 
 export default function CaseImagingPage({ params }: { params: Promise<{ caseId: string }> }) {
@@ -19,136 +31,101 @@ export default function CaseImagingPage({ params }: { params: Promise<{ caseId: 
     return () => unsubscribe();
   }, [caseId]);
 
-  if (!record) return <div className="container">Case not found.</div>;
+  if (!record) {
+    return (
+      <div className="container page-container-col">
+        <CaseNotFoundState caseId={caseId} />
+      </div>
+    );
+  }
 
   const connectomeQual = record.slate?.personalisationQualification;
   const isLowReliability = connectomeQual === 'limited';
   const isNotAcquired = !connectomeQual || connectomeQual === 'not_available';
 
   return (
-    <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '1rem',
-        }}
-      >
-        <div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-            Neuroimaging Acquisition QC &amp; Technical Qualification
-          </h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-            Verification of T1w structural and BOLD resting-state fMRI technical quality metrics
-            (Section 62).
-          </p>
-        </div>
+    <div className="container page-container-col">
+      <Breadcrumbs
+        ariaLabel="Neuroimaging Breadcrumb"
+        items={[
+          { label: record.clinicalCase.caseCode, href: `/cases/${caseId}` },
+          { label: 'Neuroimaging', current: true },
+        ]}
+      />
+      <PageHeader
+        title="Neuroimaging Acquisition QC & Technical Qualification"
+        subtitle="Verification of T1w structural and BOLD resting-state fMRI technical quality metrics (Section 62)."
+        actions={
+          <Button variant="primary" href={`/cases/${caseId}/connectome`}>
+            Inspect Connectome Maps <ArrowRightIcon size={14} className="ml-1 inline" />
+          </Button>
+        }
+      />
 
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <Link href={`/cases/${caseId}/connectome`} className="btn btn-primary">
-            Inspect Connectome Maps →
-          </Link>
-        </div>
-      </div>
-
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '1.5rem',
-        }}
-      >
+      <div className="stat-card-grid">
         {/* Card 1: Structural QC */}
-        <div className="card">
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: '0.75rem',
-            }}
-          >
-            <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--accent-cyan)' }}>
+        <Card>
+          <CardHeader>
+            <CardTitle as="h2" className="text-cyan">
               T1w Structural Acquisition
-            </h3>
-            <span className="badge badge-tier1">QC PASS</span>
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.5rem',
-              fontSize: '0.875rem',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Resolution:</span>
+            </CardTitle>
+            <Badge variant="tier1">QC PASS</Badge>
+          </CardHeader>
+          <CardContent className="gap-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-secondary">Resolution:</span>
               <strong>0.8 mm isotropic (3D MPRAGE)</strong>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>SNR / CNR:</span>
-              <strong style={{ color: '#34d399' }}>32.4 (High SNR)</strong>
+            <div className="flex justify-between">
+              <span className="text-secondary">SNR / CNR:</span>
+              <strong className="text-emerald">32.4 (High SNR)</strong>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>
-                MNI152 Non-linear Registration:
-              </span>
-              <strong style={{ color: '#34d399' }}>Dice 0.94 (Optimal)</strong>
+            <div className="flex justify-between">
+              <span className="text-secondary">MNI152 Non-linear Registration:</span>
+              <strong className="text-emerald">Dice 0.94 (Optimal)</strong>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* Card 2: Resting-State fMRI QC */}
-        <div className="card">
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: '0.75rem',
-            }}
-          >
-            <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--accent-cyan)' }}>
+        <Card>
+          <CardHeader>
+            <CardTitle as="h2" className="text-cyan">
               Resting-State BOLD Series
-            </h3>
-            <span
-              className={`badge ${isLowReliability ? 'badge-tier3' : isNotAcquired ? 'badge-neutral' : 'badge-tier1'}`}
+            </CardTitle>
+            <Badge
+              className={`${isLowReliability ? 'badge-tier3' : isNotAcquired ? 'badge-neutral' : 'badge-tier1'}`}
             >
               {isLowReliability
                 ? 'ELEVATED MOTION'
                 : isNotAcquired
                   ? 'NOT ACQUIRED'
                   : 'QC QUALIFIED'}
-            </span>
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.5rem',
-              fontSize: '0.875rem',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Acquired Runs:</span>
+            </Badge>
+          </CardHeader>
+          <CardContent className="gap-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-secondary">Acquired Runs:</span>
               <strong>
                 {isNotAcquired ? '0 Runs (Evidence Baseline Protocol)' : '3 Runs (30 mins total)'}
               </strong>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Retained BOLD Time:</span>
+            <div className="flex justify-between">
+              <span className="text-secondary">Retained BOLD Time:</span>
               <strong>
                 {isLowReliability ? '7.2 usable mins' : isNotAcquired ? 'N/A' : '27.4 usable mins'}
               </strong>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Mean Framewise Displacement:</span>
+            <div className="flex justify-between">
+              <span className="text-secondary">Mean Framewise Displacement:</span>
               <strong
-                style={{
-                  color: isLowReliability ? '#fbbf24' : isNotAcquired ? '#94a3b8' : '#34d399',
-                }}
+                className={
+                  isLowReliability
+                    ? 'text-amber'
+                    : isNotAcquired
+                      ? 'text-secondary'
+                      : 'text-emerald'
+                }
               >
                 {isLowReliability
                   ? '0.38 mm (High)'
@@ -157,8 +134,8 @@ export default function CaseImagingPage({ params }: { params: Promise<{ caseId: 
                     : '0.12 mm (Nominal)'}
               </strong>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

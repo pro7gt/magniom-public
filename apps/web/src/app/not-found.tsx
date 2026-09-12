@@ -1,83 +1,35 @@
+import { Breadcrumbs, Button, SearchIcon } from '@/components/ui';
 import React from 'react';
-import Link from 'next/link';
 
 export default function NotFound() {
   return (
-    <div
-      className="not-found-page"
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '60vh',
-        padding: '2rem',
-        textAlign: 'center',
-      }}
-    >
-      <div
-        style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.04)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-          borderRadius: '12px',
-          padding: '3rem 2.5rem',
-          maxWidth: '540px',
-          width: '100%',
-        }}
-      >
-        <span
-          style={{
-            fontSize: '3rem',
-            display: 'block',
-            marginBottom: '1rem',
-          }}
-          aria-hidden="true"
-        >
-          🔍
+    <div className="container page-container-col fullpage-center-layout">
+      <Breadcrumbs
+        items={[
+          { label: 'Home', href: '/' },
+          { label: 'Resource Not Found', current: true },
+        ]}
+      />
+
+      <div className="center-card-box">
+        <span className="inline-flex items-center justify-center mb-4 text-cyan" aria-hidden="true">
+          <SearchIcon size={32} />
         </span>
-        <h1
-          style={{
-            fontSize: '1.75rem',
-            fontWeight: 700,
-            margin: '0 0 0.5rem',
-            color: 'var(--text-main)',
-          }}
-        >
-          404 — Destination Not Found
-        </h1>
-        <p
-          style={{
-            color: 'var(--text-secondary)',
-            fontSize: '0.95rem',
-            lineHeight: 1.5,
-            margin: '0 0 1.75rem',
-          }}
-        >
+        <h1 className="page-title mb-2">404 — Destination Not Found</h1>
+        <p className="text-secondary text-base leading-relaxed m-0 mb-6">
           The requested MAGNIOM navigation route does not exist or may belong to an unconfigured
           indication module namespace.
         </p>
-        <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Link
-            href="/"
-            className="btn btn-secondary"
-            style={{ textDecoration: 'none', padding: '8px 16px' }}
-          >
+        <div className="flex gap-3 justify-center flex-wrap">
+          <Button variant="secondary" href="/">
             Return to Home
-          </Link>
-          <Link
-            href="/cases"
-            className="btn btn-primary"
-            style={{ textDecoration: 'none', padding: '8px 16px' }}
-          >
+          </Button>
+          <Button variant="primary" href="/cases">
             View Cases
-          </Link>
-          <Link
-            href="/help"
-            className="btn btn-secondary"
-            style={{ textDecoration: 'none', padding: '8px 16px' }}
-          >
+          </Button>
+          <Button variant="secondary" href="/help">
             Clinical Help
-          </Link>
+          </Button>
         </div>
       </div>
     </div>

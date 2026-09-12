@@ -8,7 +8,8 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     }
   },
   "scripts": {
@@ -16,9 +17,6 @@
     "typecheck": "tsc --noEmit",
     "lint": "echo '@magniom/ui: lint passed'",
     "test": "echo '@magniom/ui: tests passed'"
-  },
-  "dependencies": {
-    "@magniom/presentation": "*"
   },
   "devDependencies": {
     "typescript": "^5.8.2"

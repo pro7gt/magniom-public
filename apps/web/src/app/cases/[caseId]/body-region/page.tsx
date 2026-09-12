@@ -1,7 +1,22 @@
 'use client';
 
 import React, { use, useState, useEffect } from 'react';
-import Link from 'next/link';
+import {
+  CheckIcon,
+  Breadcrumbs,
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CaseNotFoundState,
+  ArrowRightIcon,
+  ArrowLeftIcon,
+  PageHeader,
+  Select,
+  FormGroup,
+  FormLabel,
+} from '@/components/ui';
 import { caseStore } from '../../../../lib/case-store';
 
 export default function BodyRegionPage({ params }: { params: Promise<{ caseId: string }> }) {
@@ -25,12 +40,8 @@ export default function BodyRegionPage({ params }: { params: Promise<{ caseId: s
 
   if (!record) {
     return (
-      <div className="container" style={{ textAlign: 'center', padding: '4rem' }}>
-        <h2>Case Not Found</h2>
-        <p style={{ color: 'var(--text-secondary)' }}>Case ID {caseId} does not exist.</p>
-        <Link href="/cases" className="btn btn-secondary">
-          Return to Cases
-        </Link>
+      <div className="container page-container-col">
+        <CaseNotFoundState caseId={caseId} />
       </div>
     );
   }
@@ -68,225 +79,100 @@ export default function BodyRegionPage({ params }: { params: Promise<{ caseId: s
   };
 
   return (
-    <div className="clinical-context-workspace" style={{ padding: '24px' }}>
-      <nav
-        aria-label="Body Region Breadcrumb"
-        style={{ marginBottom: '16px', fontSize: '0.85rem' }}
-      >
-        <Link
-          href={`/cases/${caseId}`}
-          style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}
-        >
-          {record.clinicalCase.caseCode}
-        </Link>
-        <span style={{ margin: '0 8px', color: 'var(--text-muted)' }}>/</span>
-        <Link
-          href={`/cases/${caseId}/pain-context`}
-          style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}
-        >
-          Pain Context
-        </Link>
-        <span style={{ margin: '0 8px', color: 'var(--text-muted)' }}>/</span>
-        <span style={{ color: 'var(--accent-cyan)', fontWeight: 600 }}>Painful Body Region</span>
-      </nav>
+    <div className="container page-container-col">
+      <Breadcrumbs
+        ariaLabel="Body Region Breadcrumb"
+        items={[
+          { label: record.clinicalCase.caseCode, href: `/cases/${caseId}` },
+          { label: 'Pain Context', href: `/cases/${caseId}/pain-context` },
+          { label: 'Painful Body Region', current: true },
+        ]}
+      />
 
-      <header
-        style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.03)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '8px',
-          padding: '20px',
-          marginBottom: '24px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '16px',
-        }}
-      >
-        <div>
-          <h1 style={{ margin: 0, fontSize: '1.4rem', color: 'var(--text-main)', fontWeight: 700 }}>
-            Painful Body Region & Somatotopic Mapping
-          </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', margin: '6px 0 0' }}>
-            Penfield Homunculus Somatotopic Projection & Contralateral Cortical Hotspot (§53, §106)
-          </p>
-        </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <Link href={`/cases/${caseId}/pain-context`} className="btn btn-secondary">
-            ← Pain Context
-          </Link>
-          <Link href={`/cases/${caseId}/measurements/motor-mapping`} className="btn btn-primary">
-            Motor Mapping →
-          </Link>
-        </div>
-      </header>
+      <PageHeader
+        variant="case-workspace"
+        title="Painful Body Region & Somatotopic Mapping"
+        subtitle="Penfield Homunculus Somatotopic Projection & Contralateral Cortical Hotspot (§53, §106)"
+        actions={
+          <>
+            <Button variant="secondary" href={`/cases/${caseId}/pain-context`}>
+              <ArrowLeftIcon size={14} className="mr-1 inline" /> Pain Context
+            </Button>
+            <Button variant="primary" href={`/cases/${caseId}/measurements/motor-mapping`}>
+              Motor Mapping <ArrowRightIcon size={14} className="ml-1 inline" />
+            </Button>
+          </>
+        }
+      />
 
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-          gap: '20px',
-        }}
-      >
-        <section
-          style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.04)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderRadius: '8px',
-            padding: '20px',
-          }}
-        >
-          <h3
-            style={{
-              margin: '0 0 16px',
-              fontSize: '1.05rem',
-              color: 'var(--accent-cyan)',
-              fontWeight: 600,
-            }}
-          >
-            Select Anatomical Distribution
-          </h3>
-          <form
-            onSubmit={handleSave}
-            style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
-          >
-            <div>
-              <label
-                style={{
-                  display: 'block',
-                  fontSize: '0.85rem',
-                  color: 'var(--text-secondary)',
-                  marginBottom: '6px',
-                }}
-              >
-                Primary Body Region Affected
-              </label>
-              <select
-                value={selectedRegion}
-                onChange={e => handleRegionChange(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '8px 12px',
-                  borderRadius: '6px',
-                  backgroundColor: 'rgba(0,0,0,0.4)',
-                  border: '1px solid var(--border-subtle)',
-                  color: 'var(--text-main)',
-                }}
-              >
-                <option>Right Upper Limb (Hand / Forearm)</option>
-                <option>Left Upper Limb (Hand / Forearm)</option>
-                <option>Right Lower Limb (Leg / Foot)</option>
-                <option>Left Lower Limb (Leg / Foot)</option>
-                <option>Trigeminal V2/V3 Right Hemiface</option>
-                <option>Trigeminal V2/V3 Left Hemiface</option>
-                <option>Generalized / Axial Pain</option>
-              </select>
-            </div>
+      <div className="stat-card-grid">
+        <Card>
+          <CardHeader>
+            <CardTitle as="h2" className="section-subheading m-0">
+              Select Anatomical Distribution
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSave} className="flex flex-col gap-4">
+              <FormGroup>
+                <FormLabel>Primary Body Region Affected</FormLabel>
+                <Select value={selectedRegion} onChange={e => handleRegionChange(e.target.value)}>
+                  <option>Right Upper Limb (Hand / Forearm)</option>
+                  <option>Left Upper Limb (Hand / Forearm)</option>
+                  <option>Right Lower Limb (Leg / Foot)</option>
+                  <option>Left Lower Limb (Leg / Foot)</option>
+                  <option>Trigeminal V2/V3 Right Hemiface</option>
+                  <option>Trigeminal V2/V3 Left Hemiface</option>
+                  <option>Generalized / Axial Pain</option>
+                </Select>
+              </FormGroup>
 
-            <div style={{ padding: '12px', background: 'rgba(0,0,0,0.25)', borderRadius: '6px' }}>
-              <div style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
-                DETERMINED TARGET SOMATOTOPY
+              <div className="panel-dark">
+                <div className="text-xs text-muted">DETERMINED TARGET SOMATOTOPY</div>
+                <div className="text-lg font-bold text-cyan mt-1">{laterality}</div>
+                <div className="text-xs text-secondary mt-1">
+                  Conforms to Gate G6 contralateral motor mapping rules.
+                </div>
               </div>
-              <div
-                style={{
-                  fontSize: '1.1rem',
-                  fontWeight: 700,
-                  color: 'var(--accent-cyan)',
-                  marginTop: '4px',
-                }}
-              >
-                {laterality}
-              </div>
-              <div
-                style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '4px' }}
-              >
-                Conforms to Gate G6 contralateral motor mapping rules.
-              </div>
-            </div>
 
-            <button type="submit" className="btn btn-primary" style={{ alignSelf: 'flex-start' }}>
-              Confirm Somatotopic Target Spec
-            </button>
-            {isSaved && (
-              <span style={{ color: 'var(--accent-green)', fontSize: '0.85rem' }}>
-                ✓ Somatotopy confirmed
-              </span>
-            )}
-          </form>
-        </section>
+              <Button variant="primary" type="submit" className="self-start">
+                Confirm Somatotopic Target Spec
+              </Button>
+              {isSaved && (
+                <span className="text-emerald text-sm">
+                  <CheckIcon size={14} className="text-emerald mr-1 inline" /> Somatotopy confirmed
+                </span>
+              )}
+            </form>
+          </CardContent>
+        </Card>
 
-        <section
-          style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.04)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderRadius: '8px',
-            padding: '20px',
-          }}
-        >
-          <h3
-            style={{
-              margin: '0 0 16px',
-              fontSize: '1.05rem',
-              color: 'var(--accent-cyan)',
-              fontWeight: 600,
-            }}
-          >
-            Anatomical Invariants & Hotspot Rules
-          </h3>
-          <ul
-            style={{
-              listStyle: 'none',
-              padding: 0,
-              margin: 0,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '10px',
-              fontSize: '0.85rem',
-              color: 'var(--text-secondary)',
-            }}
-          >
-            <li
-              style={{
-                padding: '8px 12px',
-                background: 'rgba(255,255,255,0.02)',
-                borderRadius: '4px',
-              }}
-            >
-              <strong style={{ color: 'var(--text-main)', display: 'block' }}>
-                Hand / Upper Limb:
-              </strong>
-              Hand Knob region of the precentral gyrus (omega sign in axial slice). Target
-              coordinates typically around MNI [±37, -21, 58].
-            </li>
-            <li
-              style={{
-                padding: '8px 12px',
-                background: 'rgba(255,255,255,0.02)',
-                borderRadius: '4px',
-              }}
-            >
-              <strong style={{ color: 'var(--text-main)', display: 'block' }}>
-                Foot / Lower Limb:
-              </strong>
-              Medial motor strip along the interhemispheric fissure (paracentral lobule). Angled
-              double-cone or deep coil required.
-            </li>
-            <li
-              style={{
-                padding: '8px 12px',
-                background: 'rgba(255,255,255,0.02)',
-                borderRadius: '4px',
-              }}
-            >
-              <strong style={{ color: 'var(--text-main)', display: 'block' }}>
-                Trigeminal / Face:
-              </strong>
-              Lateral and inferior primary motor cortex adjacent to the sylvian fissure. Facial
-              nerve twitch monitoring required.
-            </li>
-          </ul>
-        </section>
+        <Card>
+          <CardHeader>
+            <CardTitle as="h2" className="section-subheading m-0">
+              Anatomical Invariants &amp; Hotspot Rules
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="list-none p-0 m-0 flex flex-col gap-2.5 text-sm text-secondary">
+              <li className="panel-subtle">
+                <strong className="text-primary block">Hand / Upper Limb:</strong>
+                Hand Knob region of the precentral gyrus (omega sign in axial slice). Target
+                coordinates typically around MNI [±37, -21, 58].
+              </li>
+              <li className="panel-subtle">
+                <strong className="text-primary block">Foot / Lower Limb:</strong>
+                Medial motor strip along the interhemispheric fissure (paracentral lobule). Angled
+                double-cone or deep coil required.
+              </li>
+              <li className="panel-subtle">
+                <strong className="text-primary block">Trigeminal / Face:</strong>
+                Lateral and inferior primary motor cortex adjacent to the sylvian fissure. Facial
+                nerve twitch monitoring required.
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

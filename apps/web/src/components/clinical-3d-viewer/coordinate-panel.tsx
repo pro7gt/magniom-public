@@ -1,5 +1,7 @@
 'use client';
 
+import { Badge, Card, CardContent } from '@/components/ui';
+
 import React from 'react';
 import type { TargetRoiViewModel, ConfidenceRegion3DViewModel } from '@magniom/presentation';
 
@@ -18,129 +20,109 @@ export function CoordinatePanel({ target, confidenceRegion }: CoordinatePanelPro
     >
       <div className="coord-row-header">
         <div>
-          <span className="badge badge-tier1" style={{ fontSize: '0.7rem' }}>
+          <Badge variant="tier1" className="text-xs">
             {target.candidateRole}
-          </span>
-          <h3
-            style={{
-              fontSize: '0.9375rem',
-              fontWeight: 700,
-              color: 'var(--accent-cyan)',
-              marginTop: '0.2rem',
-            }}
-          >
-            {target.targetFamily}
-          </h3>
+          </Badge>
+          <h3 className="text-base font-bold text-cyan mt-1">{target.targetFamily}</h3>
         </div>
-        <div style={{ textAlign: 'right' }}>
-          <span className="badge badge-reliability-high">
+        <div className="text-right">
+          <Badge variant="reliability-high">
             {target.accessibilityRating} Depth ({target.depthMm} mm)
-          </span>
+          </Badge>
         </div>
       </div>
 
       <div className="coord-grid">
         {/* Subject-Space Native Coordinate */}
-        <div className="coord-card">
-          <span className="coord-label">Subject-Space Centre (Native T1w)</span>
-          <div className="coord-val">
-            <span>
-              x{' '}
-              {target.subjectNativeCoordinate.x >= 0
-                ? `+${target.subjectNativeCoordinate.x}`
-                : target.subjectNativeCoordinate.x}
-            </span>
-            <span>
-              y{' '}
-              {target.subjectNativeCoordinate.y >= 0
-                ? `+${target.subjectNativeCoordinate.y}`
-                : target.subjectNativeCoordinate.y}
-            </span>
-            <span>
-              z{' '}
-              {target.subjectNativeCoordinate.z >= 0
-                ? `+${target.subjectNativeCoordinate.z}`
-                : target.subjectNativeCoordinate.z}{' '}
-              mm
-            </span>
-          </div>
-          <span className="coord-meta">Native Coordinate System: RAS</span>
-        </div>
+        <Card className="coord-card">
+          <CardContent className="p-0">
+            <span className="coord-label">Subject-Space Centre (Native T1w)</span>
+            <div className="coord-val">
+              <span>
+                x{' '}
+                {target.subjectNativeCoordinate.x >= 0
+                  ? `+${target.subjectNativeCoordinate.x}`
+                  : target.subjectNativeCoordinate.x}
+              </span>
+              <span>
+                y{' '}
+                {target.subjectNativeCoordinate.y >= 0
+                  ? `+${target.subjectNativeCoordinate.y}`
+                  : target.subjectNativeCoordinate.y}
+              </span>
+              <span>
+                z{' '}
+                {target.subjectNativeCoordinate.z >= 0
+                  ? `+${target.subjectNativeCoordinate.z}`
+                  : target.subjectNativeCoordinate.z}{' '}
+                mm
+              </span>
+            </div>
+            <span className="coord-meta">Native Coordinate System: RAS</span>
+          </CardContent>
+        </Card>
 
         {/* MNI152 Standard Space Reference */}
-        <div className="coord-card">
-          <span className="coord-label">Standard Reference Template</span>
-          <div className="coord-val">
-            <span>
-              x{' '}
-              {target.mniCoordinate.x >= 0 ? `+${target.mniCoordinate.x}` : target.mniCoordinate.x}
+        <Card className="coord-card">
+          <CardContent className="p-0">
+            <span className="coord-label">Standard Reference Template</span>
+            <div className="coord-val">
+              <span>
+                x{' '}
+                {target.mniCoordinate.x >= 0
+                  ? `+${target.mniCoordinate.x}`
+                  : target.mniCoordinate.x}
+              </span>
+              <span>
+                y{' '}
+                {target.mniCoordinate.y >= 0
+                  ? `+${target.mniCoordinate.y}`
+                  : target.mniCoordinate.y}
+              </span>
+              <span>
+                z{' '}
+                {target.mniCoordinate.z >= 0
+                  ? `+${target.mniCoordinate.z}`
+                  : target.mniCoordinate.z}{' '}
+                mm
+              </span>
+            </div>
+            <span className="coord-meta">
+              Template: MNI152NLin2009cAsym ({isLeft ? 'Left' : 'Right'} Hemisphere)
             </span>
-            <span>
-              y{' '}
-              {target.mniCoordinate.y >= 0 ? `+${target.mniCoordinate.y}` : target.mniCoordinate.y}
-            </span>
-            <span>
-              z{' '}
-              {target.mniCoordinate.z >= 0 ? `+${target.mniCoordinate.z}` : target.mniCoordinate.z}{' '}
-              mm
-            </span>
-          </div>
-          <span className="coord-meta">
-            Template: MNI152NLin2009cAsym ({isLeft ? 'Left' : 'Right'} Hemisphere)
-          </span>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* Anatomical Atlas Parcel */}
-        <div className="coord-card">
-          <span className="coord-label">Cortical Parcellation</span>
-          <div
-            style={{
-              fontWeight: 700,
-              fontSize: '0.875rem',
-              color: '#e2e8f0',
-              marginTop: '0.25rem',
-            }}
-          >
-            {target.primaryHcpParcel}
-          </div>
-          <span className="coord-meta">
-            DLPFC Gyral Boundary (Surface Area: {target.surfaceAreaMm2} mm²)
-          </span>
-        </div>
+        <Card className="coord-card">
+          <CardContent className="p-0">
+            <span className="coord-label">Cortical Parcellation</span>
+            <div className="font-bold text-sm text-primary mt-1">{target.primaryHcpParcel}</div>
+            <span className="coord-meta">
+              DLPFC Gyral Boundary (Surface Area: {target.surfaceAreaMm2} mm²)
+            </span>
+          </CardContent>
+        </Card>
 
         {/* Spatial Reliability & Dispersion Envelope */}
-        <div className="coord-card">
-          <span className="coord-label">Spatial Reliability Envelope</span>
-          <div
-            style={{
-              fontWeight: 700,
-              fontSize: '0.875rem',
-              color: '#34d399',
-              marginTop: '0.25rem',
-            }}
-          >
-            ± approx. {confidenceRegion.dispersionRadiusMm} mm region
-          </div>
-          <span className="coord-meta">Coil Spread Context: ~20 mm FWHM figure-8 footprint</span>
-        </div>
+        <Card className="coord-card">
+          <CardContent className="p-0">
+            <span className="coord-label">Spatial Reliability Envelope</span>
+            <div className="font-bold text-sm text-emerald mt-1">
+              ± approx. {confidenceRegion.dispersionRadiusMm} mm region
+            </div>
+            <span className="coord-meta">Coil Spread Context: ~20 mm FWHM figure-8 footprint</span>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Coil Normal Orientation Vector */}
-      <div
-        style={{
-          marginTop: '0.75rem',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          fontSize: '0.75rem',
-          color: 'var(--text-muted)',
-        }}
-      >
+      <div className="mt-3 flex justify-between items-center text-xs text-muted">
         <span>
           Coil Normal Orientation Vector: [nx: {target.coilNormal.x.toFixed(2)}, ny:{' '}
           {target.coilNormal.y.toFixed(2)}, nz: {target.coilNormal.z.toFixed(2)}]
         </span>
-        <span style={{ fontFamily: 'var(--font-mono)' }}>
+        <span className="font-mono">
           {isLeft ? 'Left Hemisphere Invariant Validated' : 'Right Hemisphere'}
         </span>
       </div>

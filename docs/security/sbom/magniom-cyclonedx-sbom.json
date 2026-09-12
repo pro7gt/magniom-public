@@ -1,10 +1,10 @@
 {
   "bomFormat": "CycloneDX",
   "specVersion": "1.5",
-  "serialNumber": "urn:uuid:b061f39e-0271-47a4-8981-8c12bc2c8b84",
+  "serialNumber": "urn:uuid:1d6dff04-83d2-461a-b203-6bd01c0f99b6",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-09-08T13:26:03.098Z",
+    "timestamp": "2026-09-12T05:08:45.619Z",
     "tools": [
       {
         "vendor": "Magniom Systems",
@@ -191,6 +191,19 @@
     },
     {
       "type": "library",
+      "name": "@magniom/ui",
+      "version": "*",
+      "purl": "pkg:npm/@magniom/ui@*",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
       "name": "@magniom/target-engine",
       "version": "*",
       "purl": "pkg:npm/@magniom/target-engine@*",
@@ -220,19 +233,6 @@
       "name": "@magniom/test-fixtures",
       "version": "*",
       "purl": "pkg:npm/@magniom/test-fixtures@*",
-      "licenses": [
-        {
-          "license": {
-            "id": "MIT"
-          }
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "@magniom/ui",
-      "version": "*",
-      "purl": "pkg:npm/@magniom/ui@*",
       "licenses": [
         {
           "license": {

@@ -1,7 +1,23 @@
 'use client';
 
 import React, { use, useState, useEffect } from 'react';
-import Link from 'next/link';
+import {
+  CheckIcon,
+  Breadcrumbs,
+  Button,
+  Badge,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CaseNotFoundState,
+  ArrowRightIcon,
+  PageHeader,
+  Select,
+  RangeSlider,
+  FormGroup,
+  FormLabel,
+} from '@/components/ui';
 import { caseStore } from '../../../../lib/case-store';
 
 export default function PainContextPage({ params }: { params: Promise<{ caseId: string }> }) {
@@ -24,12 +40,8 @@ export default function PainContextPage({ params }: { params: Promise<{ caseId: 
 
   if (!record) {
     return (
-      <div className="container" style={{ textAlign: 'center', padding: '4rem' }}>
-        <h2>Case Not Found</h2>
-        <p style={{ color: 'var(--text-secondary)' }}>Case ID {caseId} does not exist.</p>
-        <Link href="/cases" className="btn btn-secondary">
-          Return to Cases
-        </Link>
+      <div className="container page-container-col">
+        <CaseNotFoundState caseId={caseId} />
       </div>
     );
   }
@@ -47,256 +59,144 @@ export default function PainContextPage({ params }: { params: Promise<{ caseId: 
   };
 
   return (
-    <div className="clinical-context-workspace" style={{ padding: '24px' }}>
+    <div className="container page-container-col">
       {/* Breadcrumbs */}
-      <nav
-        aria-label="Pain Context Breadcrumb"
-        style={{ marginBottom: '16px', fontSize: '0.85rem' }}
-      >
-        <Link
-          href={`/cases/${caseId}`}
-          style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}
-        >
-          {record.clinicalCase.caseCode}
-        </Link>
-        <span style={{ margin: '0 8px', color: 'var(--text-muted)' }}>/</span>
-        <span style={{ color: 'var(--accent-cyan)', fontWeight: 600 }}>
-          Pain Phenotype & Somatotopy
-        </span>
-      </nav>
+      <Breadcrumbs
+        ariaLabel="Pain Context Breadcrumb"
+        items={[
+          { label: record.clinicalCase.caseCode, href: `/cases/${caseId}` },
+          { label: 'Pain Phenotype & Somatotopy', current: true },
+        ]}
+      />
 
       {/* Header */}
-      <header
-        style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.03)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '8px',
-          padding: '20px',
-          marginBottom: '24px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '16px',
-        }}
-      >
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <h1
-              style={{ margin: 0, fontSize: '1.4rem', color: 'var(--text-main)', fontWeight: 700 }}
-            >
-              Pain Phenotype & Somatotopy
-            </h1>
-            <span className="badge badge-tier1">IMR-PAIN-2.0.0</span>
-            <span className="badge badge-tier2">Validation Mode</span>
-          </div>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', margin: '6px 0 0' }}>
-            Intractable Neuropathic Pain Formulation (§53, §93) · Contralateral Motor Cortex
-            Somatotopy Target Rules
-          </p>
-        </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <Link href={`/cases/${caseId}/body-region`} className="btn btn-secondary">
-            Body Region Mapping →
-          </Link>
-          <Link href={`/cases/${caseId}/measurements/motor-mapping`} className="btn btn-primary">
-            TMS Motor Mapping →
-          </Link>
-        </div>
-      </header>
+      <PageHeader
+        variant="case-workspace"
+        title={
+          <span className="flex items-center gap-2 flex-wrap">
+            <span>Pain Phenotype &amp; Somatotopy</span>
+            <Badge variant="tier1">IMR-PAIN-2.0.0</Badge>
+            <Badge variant="tier2">Validation Mode</Badge>
+          </span>
+        }
+        subtitle="Intractable Neuropathic Pain Formulation (§53, §93) · Contralateral Motor Cortex Somatotopy Target Rules"
+        actions={
+          <>
+            <Button variant="secondary" href={`/cases/${caseId}/body-region`}>
+              Body Region Mapping <ArrowRightIcon size={14} className="ml-1 inline" />
+            </Button>
+            <Button variant="primary" href={`/cases/${caseId}/measurements/motor-mapping`}>
+              TMS Motor Mapping <ArrowRightIcon size={14} className="ml-1 inline" />
+            </Button>
+          </>
+        }
+      />
 
       {/* Main Grid */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-          gap: '20px',
-        }}
-      >
+      <div className="stat-card-grid">
         {/* Form Card */}
-        <section
-          style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.04)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderRadius: '8px',
-            padding: '20px',
-          }}
-        >
-          <h3
-            style={{
-              margin: '0 0 16px',
-              fontSize: '1.05rem',
-              color: 'var(--accent-cyan)',
-              fontWeight: 600,
-            }}
-          >
-            Pain Characterisation & Severity
-          </h3>
-          <form
-            onSubmit={handleSave}
-            style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
-          >
-            <div>
-              <label
-                style={{
-                  display: 'block',
-                  fontSize: '0.85rem',
-                  color: 'var(--text-secondary)',
-                  marginBottom: '6px',
-                }}
-              >
-                Primary Neuropathic Pain Etiology
-              </label>
-              <select
-                value={painType}
-                onChange={e => setPainType(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '8px 12px',
-                  borderRadius: '6px',
-                  backgroundColor: 'rgba(0,0,0,0.4)',
-                  border: '1px solid var(--border-subtle)',
-                  color: 'var(--text-main)',
-                }}
-              >
-                <option>Central Post-Stroke Pain (CPSP)</option>
-                <option>Trigeminal Neuropathic Pain</option>
-                <option>Phantom Limb Pain</option>
-                <option>Refractory Radiculopathy</option>
-                <option>Spinal Cord Injury Neuropathic Pain</option>
-              </select>
-            </div>
+        <Card>
+          <CardHeader>
+            <CardTitle as="h2" className="section-subheading">
+              Pain Characterisation & Severity
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSave} className="flex flex-col gap-4">
+              <FormGroup>
+                <FormLabel>Primary Neuropathic Pain Etiology</FormLabel>
+                <Select value={painType} onChange={e => setPainType(e.target.value)}>
+                  <option>Central Post-Stroke Pain (CPSP)</option>
+                  <option>Trigeminal Neuropathic Pain</option>
+                  <option>Phantom Limb Pain</option>
+                  <option>Refractory Radiculopathy</option>
+                  <option>Spinal Cord Injury Neuropathic Pain</option>
+                </Select>
+              </FormGroup>
 
-            <div>
-              <label
-                style={{
-                  display: 'block',
-                  fontSize: '0.85rem',
-                  color: 'var(--text-secondary)',
-                  marginBottom: '6px',
-                }}
-              >
-                Visual Analog Scale (VAS) Baseline: <strong>{vasScore} / 10</strong>
-              </label>
-              <input
-                type="range"
-                min="1"
-                max="10"
-                value={vasScore}
-                onChange={e => setVasScore(Number(e.target.value))}
-                style={{ width: '100%', accentColor: 'var(--accent-cyan)' }}
-              />
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  fontSize: '0.75rem',
-                  color: 'var(--text-muted)',
-                }}
-              >
-                <span>1 (Mild)</span>
-                <span>5 (Moderate)</span>
-                <span>10 (Severe / Disabling)</span>
+              <FormGroup>
+                <FormLabel>
+                  Visual Analog Scale (VAS) Baseline: <strong>{vasScore} / 10</strong>
+                </FormLabel>
+                <RangeSlider
+                  min={1}
+                  max={10}
+                  value={vasScore}
+                  onChange={e => setVasScore(Number(e.target.value))}
+                />
+                <div className="flex justify-between text-xs text-muted">
+                  <span>1 (Mild)</span>
+                  <span>5 (Moderate)</span>
+                  <span>10 (Severe / Disabling)</span>
+                </div>
+              </FormGroup>
+
+              <div className="form-group">
+                <label className="form-label">Refractory Pharmacotherapy Verification</label>
+                <div className="text-sm text-secondary flex flex-col gap-1">
+                  <span>
+                    <CheckIcon size={14} className="text-emerald mr-1 inline" /> Gabapentinoids
+                    (Pregabalin / Gabapentin) failed at therapeutic ceiling
+                  </span>
+                  <span>
+                    <CheckIcon size={14} className="text-emerald mr-1 inline" /> SNRIs (Duloxetine)
+                    or TCAs (Amitriptyline) failed or not tolerated
+                  </span>
+                  <span>
+                    <CheckIcon size={14} className="text-emerald mr-1 inline" /> Verified
+                    Intractable Neuropathic Pain under Gate G1
+                  </span>
+                </div>
               </div>
-            </div>
 
-            <div>
-              <label
-                style={{
-                  display: 'block',
-                  fontSize: '0.85rem',
-                  color: 'var(--text-secondary)',
-                  marginBottom: '6px',
-                }}
-              >
-                Refractory Pharmacotherapy Verification
-              </label>
-              <div
-                style={{
-                  fontSize: '0.85rem',
-                  color: 'var(--text-secondary)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '4px',
-                }}
-              >
-                <span>
-                  ✓ Gabapentinoids (Pregabalin / Gabapentin) failed at therapeutic ceiling
+              <Button variant="primary" type="submit" className="self-start mt-2">
+                Save Phenotype Parameters
+              </Button>
+              {isSaved && (
+                <span className="text-emerald text-sm">
+                  <CheckIcon size={14} className="text-emerald mr-1 inline" /> Phenotype snapshot
+                  updated
                 </span>
-                <span>✓ SNRIs (Duloxetine) or TCAs (Amitriptyline) failed or not tolerated</span>
-                <span>✓ Verified Intractable Neuropathic Pain under Gate G1</span>
+              )}
+            </form>
+          </CardContent>
+        </Card>
+
+        {/* Hotspot Rules */}
+        <Card>
+          <CardHeader>
+            <CardTitle as="h2" className="section-subheading">
+              Targeting Invariants &amp; Somatotopy (§53, §106)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col gap-3 text-sm text-secondary">
+              <p className="m-0">
+                Under the <strong>PAIN Module Release</strong>, high-frequency rTMS (10–20 Hz) is
+                targeted to the <strong>primary motor cortex (M1)</strong> somatotopically
+                corresponding to the painful body territory, or the{' '}
+                <strong>dorsal anterior cingulate cortex (dACC)</strong> for affective pain burden.
+              </p>
+              <div className="panel-dark">
+                <strong className="text-primary block mb-1">
+                  Hard Gate G6: Laterality Preservation
+                </strong>
+                <span>
+                  Stimulation must be delivered <strong>contralateral</strong> to the painful limb
+                  or hemibody. Any laterality inversion is blocked automatically as an unsafe
+                  candidate.
+                </span>
+              </div>
+              <div className="panel-dark">
+                <strong className="text-primary block mb-1">Required Modalities</strong>
+                <span>
+                  TMS Motor Mapping + Motor Evoked Potentials (MEP) are mandatory to qualify the M1
+                  cortical representation prior to Target Slate assembly.
+                </span>
               </div>
             </div>
-
-            <button
-              type="submit"
-              className="btn btn-primary"
-              style={{ alignSelf: 'flex-start', marginTop: '8px' }}
-            >
-              Save Phenotype Parameters
-            </button>
-            {isSaved && (
-              <span style={{ color: 'var(--accent-green)', fontSize: '0.85rem' }}>
-                ✓ Phenotype snapshot updated
-              </span>
-            )}
-          </form>
-        </section>
-
-        {/* Clinical Guidance Card */}
-        <section
-          style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.04)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderRadius: '8px',
-            padding: '20px',
-          }}
-        >
-          <h3
-            style={{
-              margin: '0 0 16px',
-              fontSize: '1.05rem',
-              color: 'var(--accent-cyan)',
-              fontWeight: 600,
-            }}
-          >
-            Targeting Invariants & Somatotopy (§53, §106)
-          </h3>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '12px',
-              fontSize: '0.85rem',
-              color: 'var(--text-secondary)',
-            }}
-          >
-            <p style={{ margin: 0 }}>
-              Under the <strong>PAIN Module Release</strong>, high-frequency rTMS (10–20 Hz) is
-              targeted to the <strong>primary motor cortex (M1)</strong> somatotopically
-              corresponding to the painful body territory, or the{' '}
-              <strong>dorsal anterior cingulate cortex (dACC)</strong> for affective pain burden.
-            </p>
-            <div style={{ padding: '12px', background: 'rgba(0,0,0,0.25)', borderRadius: '6px' }}>
-              <strong style={{ color: 'var(--text-main)', display: 'block', marginBottom: '4px' }}>
-                Hard Gate G6: Laterality Preservation
-              </strong>
-              <span>
-                Stimulation must be delivered <strong>contralateral</strong> to the painful limb or
-                hemibody. Any laterality inversion is blocked automatically as an unsafe candidate.
-              </span>
-            </div>
-            <div style={{ padding: '12px', background: 'rgba(0,0,0,0.25)', borderRadius: '6px' }}>
-              <strong style={{ color: 'var(--text-main)', display: 'block', marginBottom: '4px' }}>
-                Required Modalities
-              </strong>
-              <span>
-                TMS Motor Mapping + Motor Evoked Potentials (MEP) are mandatory to qualify the M1
-                cortical representation prior to Target Slate assembly.
-              </span>
-            </div>
-          </div>
-        </section>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

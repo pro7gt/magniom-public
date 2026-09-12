@@ -1,7 +1,19 @@
 'use client';
 
+import {
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+  Breadcrumbs,
+  CaseNotFoundState,
+  ArrowRightIcon,
+  PageHeader,
+} from '@/components/ui';
+
 import React, { use, useState, useEffect } from 'react';
-import Link from 'next/link';
 import { caseStore } from '../../../lib/case-store';
 import { toPhenotypeViewModel, toTargetSlateViewModel } from '@magniom/presentation';
 
@@ -21,7 +33,11 @@ export default function CaseOverviewPage({ params }: { params: Promise<{ caseId:
   }, [caseId]);
 
   if (!record) {
-    return <div className="container">Case not found.</div>;
+    return (
+      <div className="container page-container-col">
+        <CaseNotFoundState caseId={caseId} />
+      </div>
+    );
   }
 
   const phenotypeVM = toPhenotypeViewModel(record.phenotype);
@@ -31,247 +47,156 @@ export default function CaseOverviewPage({ params }: { params: Promise<{ caseId:
   });
 
   return (
-    <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      {/* 10-Second Orientation Banner */}
-      <div
-        className="card"
-        style={{
-          background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-          borderColor: '#334155',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '1rem',
-          }}
-        >
-          <div>
-            <span
-              style={{
-                fontSize: '0.75rem',
-                fontWeight: 600,
-                color: 'var(--accent-cyan)',
-                textTransform: 'uppercase',
-              }}
-            >
-              CASE ORIENTATION & CLINICAL STATUS
-            </span>
-            <h1
-              style={{ fontSize: '1.5rem', fontWeight: 700, color: '#fff', marginTop: '0.25rem' }}
-            >
-              {phenotypeVM.primaryDiagnosis}
-            </h1>
-            <p style={{ color: '#cbd5e1', fontSize: '0.875rem', marginTop: '0.25rem' }}>
-              Case Code:{' '}
-              <strong style={{ fontFamily: 'var(--font-mono)' }}>
-                {record.clinicalCase.caseCode}
-              </strong>{' '}
-              • Mode: <strong>{record.clinicalCase.mode}</strong>
-            </p>
-          </div>
+    <div className="container page-container-col">
+      <Breadcrumbs
+        ariaLabel="Case Overview Breadcrumb"
+        items={[
+          { label: 'Cases', href: '/cases' },
+          { label: record.clinicalCase.caseCode, current: true },
+        ]}
+      />
 
-          <div style={{ display: 'flex', gap: '0.75rem' }}>
-            <Link href={`/cases/${caseId}/phenotype`} className="btn btn-secondary">
-              Review Phenotype →
-            </Link>
-            <Link
-              href={`/cases/${caseId}/targets`}
-              className="btn btn-primary"
-              id="review-target-slate-overview-btn"
-            >
-              Enter Target Workspace →
-            </Link>
-          </div>
-        </div>
-      </div>
+      {/* 10-Second Orientation Banner */}
+      <Card>
+        <CardContent>
+          <PageHeader
+            eyebrow={
+              <span className="text-xs font-semibold text-cyan uppercase">
+                CASE ORIENTATION & CLINICAL STATUS
+              </span>
+            }
+            title={phenotypeVM.primaryDiagnosis}
+            subtitle={
+              <>
+                Case Code: <strong className="font-mono">{record.clinicalCase.caseCode}</strong> •
+                Mode: <strong>{record.clinicalCase.mode}</strong>
+              </>
+            }
+            actions={
+              <div className="flex gap-3">
+                <Button variant="secondary" href={`/cases/${caseId}/phenotype`}>
+                  Review Phenotype <ArrowRightIcon size={14} className="ml-1 inline" />
+                </Button>
+                <Button
+                  variant="primary"
+                  href={`/cases/${caseId}/targets`}
+                  id="review-target-slate-overview-btn"
+                >
+                  Enter Target Workspace <ArrowRightIcon size={14} className="ml-1 inline" />
+                </Button>
+              </div>
+            }
+          />
+        </CardContent>
+      </Card>
 
       {/* 4-Panel Case Overview Grid (Section 15) */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '1.5rem',
-        }}
-      >
+      <div className="stat-card-grid">
         {/* Panel 1: Clinical Formulation Question */}
-        <div className="card">
-          <span
-            style={{
-              fontSize: '0.75rem',
-              fontWeight: 600,
-              color: 'var(--text-secondary)',
-              textTransform: 'uppercase',
-            }}
-          >
-            CLINICAL QUESTION
-          </span>
-          <h2
-            style={{
-              fontSize: '1.125rem',
-              fontWeight: 700,
-              marginTop: '0.25rem',
-              marginBottom: '0.75rem',
-            }}
-          >
-            What are we trying to improve?
-          </h2>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.5rem',
-              fontSize: '0.875rem',
-            }}
-          >
-            {phenotypeVM.domains.slice(0, 3).map(d => (
-              <div
-                key={d.id}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  background: 'var(--bg-surface-elevated)',
-                  padding: '0.5rem 0.75rem',
-                  borderRadius: '0.375rem',
-                }}
-              >
-                <span>
-                  #{d.clinicalPriority} {d.domainName}
-                </span>
-                <span style={{ fontWeight: 600, color: '#38bdf8' }}>{d.severityLabel}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+        <Card>
+          <CardHeader>
+            <span className="text-xs font-semibold text-secondary uppercase">
+              CLINICAL QUESTION
+            </span>
+            <CardTitle as="h2">What are we trying to improve?</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col gap-2 text-sm">
+              {phenotypeVM.domains.slice(0, 3).map(d => (
+                <div key={d.id} className="flex justify-between p-2 rounded bg-surface-elevated">
+                  <span>
+                    #{d.clinicalPriority} {d.domainName}
+                  </span>
+                  <span className="font-semibold text-cyan">{d.severityLabel}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Panel 2: Connectome Measurement Qualification */}
-        <div className="card">
-          <span
-            style={{
-              fontSize: '0.75rem',
-              fontWeight: 600,
-              color: 'var(--text-secondary)',
-              textTransform: 'uppercase',
-            }}
-          >
-            CONNECTOMIC MEASUREMENT
-          </span>
-          <h2
-            style={{
-              fontSize: '1.125rem',
-              fontWeight: 700,
-              marginTop: '0.25rem',
-              marginBottom: '0.75rem',
-            }}
-          >
-            Functional Connectivity Status
-          </h2>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.5rem',
-              fontSize: '0.875rem',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Qualification:</span>
-              <strong style={{ color: '#34d399' }}>{slateVM.qualificationLabel}</strong>
+        <Card>
+          <CardHeader>
+            <span className="text-xs font-semibold text-secondary uppercase">
+              CONNECTOMIC MEASUREMENT
+            </span>
+            <CardTitle as="h2">Functional Connectivity Status</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col gap-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-secondary">Qualification:</span>
+                <strong className="text-emerald">{slateVM.qualificationLabel}</strong>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-secondary">Retained BOLD Time:</span>
+                <span>
+                  <strong>27.4</strong> usable minutes
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-secondary">Motion Censoring:</span>
+                <span>Pass (&lt; 0.2 mm mean FD)</span>
+              </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Retained BOLD Time:</span>
-              <span>
-                <strong>27.4</strong> usable minutes
-              </span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Motion Censoring:</span>
-              <span>Pass (&lt; 0.2 mm mean FD)</span>
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* Panel 3: Target Slate Readiness (Safeguard 2: NO TARGET PREVIEW) */}
-        <div className="card">
-          <span
-            style={{
-              fontSize: '0.75rem',
-              fontWeight: 600,
-              color: 'var(--text-secondary)',
-              textTransform: 'uppercase',
-            }}
-          >
-            TARGET SLATE STATUS
-          </span>
-          <h2
-            style={{
-              fontSize: '1.125rem',
-              fontWeight: 700,
-              marginTop: '0.25rem',
-              marginBottom: '0.75rem',
-            }}
-          >
-            Target Slate Ready for Review
-          </h2>
-          <p style={{ fontSize: '0.8125rem', color: '#cbd5e1', marginBottom: '0.75rem' }}>
-            Magniom identified{' '}
-            <strong>{slateVM.primaryCandidates.length} primary hypotheses</strong> and{' '}
-            <strong>{slateVM.additionalCandidates.length} alternatives</strong> based on approved
-            phenotype and evidence ceilings.
-          </p>
-          <div
-            style={{
-              background: '#090d16',
-              padding: '0.5rem 0.75rem',
-              borderRadius: '0.375rem',
-              fontSize: '0.75rem',
-              color: 'var(--text-muted)',
-            }}
-          >
-            Inspect candidate hypotheses, counterfactuals, and reliability in the Target Workspace.
-          </div>
-        </div>
+        <Card>
+          <CardHeader>
+            <span className="text-xs font-semibold text-secondary uppercase">
+              TARGET SLATE STATUS
+            </span>
+            <CardTitle as="h2">Target Slate Ready for Review</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-secondary mb-3">
+              Magniom identified{' '}
+              <strong>{slateVM.primaryCandidates.length} primary hypotheses</strong> and{' '}
+              <strong>{slateVM.additionalCandidates.length} alternatives</strong> based on approved
+              phenotype and evidence ceilings.
+            </p>
+            <div className="p-2 rounded text-xs text-muted bg-primary">
+              Inspect candidate hypotheses, counterfactuals, and reliability in the Target
+              Workspace.
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Panel 4: Current Decision Lifecycle State */}
-        <div className="card">
-          <span
-            style={{
-              fontSize: '0.75rem',
-              fontWeight: 600,
-              color: 'var(--text-secondary)',
-              textTransform: 'uppercase',
-            }}
-          >
-            DECISION STATE
-          </span>
-          <h2
-            style={{
-              fontSize: '1.125rem',
-              fontWeight: 700,
-              marginTop: '0.25rem',
-              marginBottom: '0.75rem',
-            }}
-          >
-            {record.decision?.isImmutable ? 'Signed & Immutable' : 'Awaiting Specialist Review'}
-          </h2>
-          <p style={{ fontSize: '0.8125rem', color: '#cbd5e1', marginBottom: '0.75rem' }}>
-            {record.decision?.isImmutable
-              ? `Decision signed by ${record.decision.attestation?.clinicianName || 'Specialist'}. Record locked.`
-              : 'The treating specialist must independently evaluate the Target Slate and provide clinical reasoning before signing.'}
-          </p>
-          <Link
-            href={`/cases/${caseId}/decision`}
-            className="btn btn-secondary"
-            style={{ width: '100%', fontSize: '0.8125rem' }}
-          >
-            {record.decision?.isImmutable
-              ? 'View Signed Decision Record →'
-              : 'Begin Clinical Decision →'}
-          </Link>
-        </div>
+        <Card>
+          <CardHeader>
+            <span className="text-xs font-semibold text-secondary uppercase">DECISION STATE</span>
+            <CardTitle as="h2">
+              {record.decision?.isImmutable ? 'Signed & Immutable' : 'Awaiting Specialist Review'}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-secondary mb-3">
+              {record.decision?.isImmutable
+                ? `Decision signed by ${record.decision.attestation?.clinicianName || 'Specialist'}. Record locked.`
+                : 'The treating specialist must independently evaluate the Target Slate and provide clinical reasoning before signing.'}
+            </p>
+          </CardContent>
+          <CardFooter>
+            <Button
+              variant="secondary"
+              href={`/cases/${caseId}/decision`}
+              className="w-full text-sm"
+            >
+              {record.decision?.isImmutable ? (
+                <>
+                  View Signed Decision Record <ArrowRightIcon size={14} className="ml-1 inline" />
+                </>
+              ) : (
+                <>
+                  Begin Clinical Decision <ArrowRightIcon size={14} className="ml-1 inline" />
+                </>
+              )}
+            </Button>
+          </CardFooter>
+        </Card>
       </div>
     </div>
   );

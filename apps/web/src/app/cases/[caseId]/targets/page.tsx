@@ -1,5 +1,16 @@
 'use client';
 
+import {
+  Badge,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  Breadcrumbs,
+  CaseNotFoundState,
+  LockIcon,
+} from '@/components/ui';
+
 import React, { use, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { caseStore } from '../../../../lib/case-store';
@@ -27,71 +38,53 @@ export default function TargetsPage({ params }: { params: Promise<{ caseId: stri
   }, [caseId]);
 
   if (!record) {
-    return <div className="container">Case not found.</div>;
+    return (
+      <div className="container page-container-col">
+        <CaseNotFoundState caseId={caseId} />
+      </div>
+    );
   }
 
   // Silent prospective UI enforcement (§221–224, §261):
   // Treating clinicians SHALL NOT see concealed MAGNIOM results before protocol-defined unblinding.
   if (record.isBlindedValidation) {
     return (
-      <div className="container" style={{ padding: '2rem 1rem' }}>
-        <div
-          className="card"
-          style={{
-            maxWidth: '720px',
-            margin: '2rem auto',
-            textAlign: 'center',
-            padding: '3rem 2rem',
-            border: '1px solid var(--border-subtle)',
-          }}
-        >
-          <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }} aria-hidden="true">
-            🔒
-          </div>
-          <div style={{ display: 'inline-flex', gap: '0.5rem', marginBottom: '1rem' }}>
-            <span className="badge badge-tier2">VALIDATION PROTOCOL</span>
-            <span className="badge badge-neutral">Silent Prospective</span>
-          </div>
-          <h1
-            style={{
-              fontSize: '1.5rem',
-              fontWeight: 800,
-              color: 'var(--text-primary)',
-              marginBottom: '0.75rem',
-            }}
-          >
-            Target Slate Concealed (Protocol Blinded)
-          </h1>
-          <p
-            style={{
-              color: 'var(--text-secondary)',
-              fontSize: '0.95rem',
-              lineHeight: 1.6,
-              marginBottom: '1.5rem',
-            }}
-          >
-            Under active Silent Prospective study governance (§221–224), the MAGNIOM Target Slate
-            exists and algorithmic processing is complete, but target candidate specifics are
-            concealed from treating clinicians prior to protocol unblinding.
-          </p>
-          <div
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              backgroundColor: 'rgba(255,255,255,0.04)',
-              padding: '0.5rem 1rem',
-              borderRadius: '6px',
-              fontSize: '0.85rem',
-              color: 'var(--text-muted)',
-            }}
-          >
-            <span>Status:</span>
-            <strong style={{ color: 'var(--accent-cyan)' }}>
-              MAGNIOM study processing · Complete
-            </strong>
-          </div>
-        </div>
+      <div className="container page-container-col py-8 px-4">
+        <Breadcrumbs
+          ariaLabel="Target Slate Breadcrumb"
+          items={[
+            { label: record.clinicalCase.caseCode, href: `/cases/${caseId}` },
+            { label: 'Target Slate & Candidates', current: true },
+          ]}
+        />
+        <Card className="max-w-2xl my-8 mx-auto text-center p-8 border-subtle">
+          <CardHeader>
+            <div
+              className="inline-flex items-center justify-center mb-4 text-muted"
+              aria-hidden="true"
+            >
+              <LockIcon size={32} />
+            </div>
+            <div className="inline-flex gap-2 mb-4">
+              <Badge variant="tier2">VALIDATION PROTOCOL</Badge>
+              <Badge variant="neutral">Silent Prospective</Badge>
+            </div>
+            <CardTitle as="h1" className="page-title mb-3">
+              Target Slate Concealed (Protocol Blinded)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-secondary text-base leading-relaxed mb-6">
+              Under active Silent Prospective study governance (§221–224), the MAGNIOM Target Slate
+              exists and algorithmic processing is complete, but target candidate specifics are
+              concealed from treating clinicians prior to protocol unblinding.
+            </p>
+            <div className="inline-flex items-center gap-2 bg-surface-elevated py-2 px-4 rounded-md text-sm text-muted">
+              <span>Status:</span>
+              <strong className="text-cyan">MAGNIOM study processing · Complete</strong>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -109,6 +102,7 @@ export default function TargetsPage({ params }: { params: Promise<{ caseId: stri
   return (
     <TargetSlateWorkspace
       caseId={caseId}
+      caseCode={record.clinicalCase.caseCode}
       phenotypeVM={phenotypeVM}
       slateVM={slateVM}
       slate={record.slate}

@@ -1,7 +1,8 @@
 'use client';
 
+import { Button, Badge, Breadcrumbs, CaseNotFoundState, ArrowRightIcon, PageHeader, Alert, AlertTitle, AlertDescription } from '@/components/ui';
+
 import React, { use, useState, useEffect } from 'react';
-import Link from 'next/link';
 import { caseStore } from '../../../../lib/case-store';
 import { resolveCaseShellContext } from '../../../../lib/shell-authority';
 import type { CaseShellViewModel } from '@magniom/presentation';
@@ -132,11 +133,8 @@ export default function CaseEvidencePage({
 
   if (!record) {
     return (
-      <div className="container" style={{ textAlign: 'center', padding: '4rem' }}>
-        <h2>Case Not Found</h2>
-        <p style={{ color: 'var(--text-secondary)' }}>
-          Case ID {caseId} does not exist in the active case store.
-        </p>
+      <div className="container page-container-col">
+        <CaseNotFoundState caseId={caseId} />
       </div>
     );
   }
@@ -147,140 +145,129 @@ export default function CaseEvidencePage({
   const entries = getIndicationEvidence(indicationCode);
 
   return (
-    <div className="case-evidence-workspace" style={{ padding: '24px' }}>
+    <div className="container page-container-col">
+      <Breadcrumbs
+        ariaLabel="Case Evidence Breadcrumb"
+        items={[
+          { label: record.clinicalCase.caseCode, href: `/cases/${caseId}` },
+          { label: 'Case Evidence', current: true },
+        ]}
+      />
       {/* Section Header (§107) */}
-      <header style={{ marginBottom: '24px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
-          <div>
-            <h2 style={{ margin: 0, color: 'var(--text-main)', fontSize: '1.4rem', fontWeight: 700 }}>
-              Case Evidence
-            </h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '4px' }}>
-              Evidence filtered by{' '}
-              <strong>{indication?.indicationFormatted || indicationCode}</strong>,
-              active module, and clinical objective (§108 — filtered, not altered).
-            </p>
-          </div>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <Link href="/evidence" className="btn btn-secondary" style={{ fontSize: '0.85rem', padding: '6px 12px' }}>
-              Open Global Evidence Library →
-            </Link>
-          </div>
-        </div>
-      </header>
+      <PageHeader
+        title="Case Evidence"
+        subtitle={
+          <>
+            Evidence filtered by{' '}
+            <strong>{indication?.indicationFormatted || indicationCode}</strong>,
+            active module, and clinical objective (§108 — filtered, not altered).
+          </>
+        }
+        actions={
+          <Button variant="secondary" size="sm" href="/evidence">
+            Open Global Evidence Library <ArrowRightIcon size={14} className="ml-1 inline" />
+          </Button>
+        }
+      />
 
       {/* Evidence Workspace Questions (§107) */}
-      <div
-        style={{
-          backgroundColor: 'rgba(56, 189, 248, 0.06)',
-          border: '1px solid rgba(56, 189, 248, 0.15)',
-          borderRadius: '8px',
-          padding: '16px',
-          marginBottom: '24px',
-        }}
-      >
-        <h3 style={{ margin: '0 0 8px', fontSize: '0.9rem', fontWeight: 600, color: 'var(--accent-cyan)' }}>
-          Case Evidence Should Answer
-        </h3>
-        <ul style={{ margin: 0, paddingLeft: '1.25rem', fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <li>Why can this TargetFamily be considered?</li>
-          <li>For which population?</li>
-          <li>For this disease stage?</li>
-          <li>Under which targeting method?</li>
-          <li>With which treatment context?</li>
-          <li>What evidence conflicts?</li>
-        </ul>
-      </div>
+      <Alert variant="info" className="mb-6">
+        <AlertTitle as="h2">Case Evidence Should Answer</AlertTitle>
+        <AlertDescription>
+          <ul className="m-0 pl-5 text-sm text-secondary flex flex-col gap-1">
+            <li>Why can this TargetFamily be considered?</li>
+            <li>For which population?</li>
+            <li>For this disease stage?</li>
+            <li>Under which targeting method?</li>
+            <li>With which treatment context?</li>
+            <li>What evidence conflicts?</li>
+          </ul>
+        </AlertDescription>
+      </Alert>
 
       {/* Evidence Entries (§107–108) */}
       <section>
-        <h3 style={{ margin: '0 0 16px', fontSize: '1.1rem', color: 'var(--text-main)', fontWeight: 600 }}>
+        <h2 className="section-subheading m-0 mb-4">
           Applicable EvidencePaths ({entries.length})
-        </h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        </h2>
+        <div className="flex flex-col gap-4">
           {entries.map(entry => (
             <article
               key={entry.id}
-              style={{
-                backgroundColor: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                borderRadius: '8px',
-                padding: '20px',
-                borderLeft: `3px solid ${entry.hasConflicts ? '#f59e0b' : '#10b981'}`,
-              }}
+              className={`p-5 rounded-lg border bg-surface-card ${entry.hasConflicts ? 'border-warning' : 'border-success'}`}
             >
               {/* Header */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
+              <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
                 <div>
-                  <h4 style={{ margin: 0, color: 'var(--text-main)', fontSize: '1rem', fontWeight: 600 }}>
+                  <h3 className="m-0 text-primary text-base font-semibold">
                     {entry.targetFamily}
-                  </h4>
-                  <span style={{ fontSize: '0.8rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
+                  </h3>
+                  <span className="text-xs font-mono text-muted">
                     {entry.id}
                   </span>
                 </div>
-                <div style={{ display: 'flex', gap: '6px' }}>
-                  <span className={`badge ${entry.tierBadge}`} style={{ fontSize: '0.8rem' }}>
+                <div className="flex gap-1.5">
+                  <Badge className={`${entry.tierBadge} text-xs`}>
                     {entry.tier}
-                  </span>
+                  </Badge>
                   {entry.hasConflicts && (
-                    <span className="badge badge-tier3" style={{ fontSize: '0.75rem' }}>
+                    <Badge variant="tier3" className="text-xs">
                       Material Conflicts
-                    </span>
+                    </Badge>
                   )}
                 </div>
               </div>
 
               {/* Claim */}
-              <div style={{ marginBottom: '12px' }}>
-                <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+              <div className="mb-3">
+                <span className="text-xs font-semibold text-muted uppercase">
                   Clinical Claim
                 </span>
-                <p style={{ margin: '4px 0 0', fontSize: '0.9rem', color: 'var(--text-main)' }}>
+                <p className="mt-1 mb-0 text-sm text-primary">
                   {entry.claim}
                 </p>
               </div>
 
               {/* Structured Fields */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px', marginBottom: '12px' }}>
+              <div className="grid-cards-200 mb-3">
                 <div>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Population</span>
-                  <p style={{ margin: '2px 0 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{entry.population}</p>
+                  <span className="text-xs font-semibold text-muted uppercase">Population</span>
+                  <p className="mt-0.5 mb-0 text-sm text-secondary">{entry.population}</p>
                 </div>
                 <div>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Disease Stage</span>
-                  <p style={{ margin: '2px 0 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{entry.diseaseStage}</p>
+                  <span className="text-xs font-semibold text-muted uppercase">Disease Stage</span>
+                  <p className="mt-0.5 mb-0 text-sm text-secondary">{entry.diseaseStage}</p>
                 </div>
                 <div>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Targeting Method</span>
-                  <p style={{ margin: '2px 0 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{entry.targetingMethod}</p>
+                  <span className="text-xs font-semibold text-muted uppercase">Targeting Method</span>
+                  <p className="mt-0.5 mb-0 text-sm text-secondary">{entry.targetingMethod}</p>
                 </div>
                 <div>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Treatment Context</span>
-                  <p style={{ margin: '2px 0 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{entry.treatmentContext}</p>
+                  <span className="text-xs font-semibold text-muted uppercase">Treatment Context</span>
+                  <p className="mt-0.5 mb-0 text-sm text-secondary">{entry.treatmentContext}</p>
                 </div>
               </div>
 
               {/* Conflicts (§124 — negative evidence at same level) */}
               {entry.hasConflicts && entry.conflicts.length > 0 && (
-                <div style={{ backgroundColor: 'rgba(245, 158, 11, 0.08)', border: '1px solid rgba(245, 158, 11, 0.25)', borderRadius: '6px', padding: '12px', marginBottom: '12px' }}>
-                  <h5 style={{ margin: '0 0 6px', fontSize: '0.8rem', fontWeight: 600, color: '#fbbf24' }}>
-                    Material Conflicts & Limitations
-                  </h5>
-                  <ul style={{ margin: 0, paddingLeft: '1.25rem', fontSize: '0.8rem', color: '#cbd5e1' }}>
-                    {entry.conflicts.map((c, i) => (
-                      <li key={i}>{c}</li>
-                    ))}
-                  </ul>
-                </div>
+                <Alert variant="warning" className="mb-3">
+                  <AlertTitle as="h4">Material Conflicts & Limitations</AlertTitle>
+                  <AlertDescription>
+                    <ul className="m-0 pl-5 text-xs text-secondary">
+                      {entry.conflicts.map((c, i) => (
+                        <li key={i}>{c}</li>
+                      ))}
+                    </ul>
+                  </AlertDescription>
+                </Alert>
               )}
 
               {/* Sources */}
               <div>
-                <h5 style={{ margin: '0 0 6px', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+                <h4 className="m-0 mb-1.5 text-xs font-semibold text-muted uppercase">
                   Sources
-                </h5>
-                <ul style={{ margin: 0, paddingLeft: '1.25rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                </h4>
+                <ul className="m-0 pl-5 text-xs text-secondary">
                   {entry.sources.map((s, i) => (
                     <li key={i}>{s}</li>
                   ))}
@@ -292,22 +279,14 @@ export default function CaseEvidencePage({
       </section>
 
       {/* Scientific Governance Disclosure (§108) */}
-      <div
-        style={{
-          marginTop: '24px',
-          backgroundColor: 'rgba(255,255,255,0.03)',
-          border: '1px solid rgba(255,255,255,0.06)',
-          borderRadius: '8px',
-          padding: '16px',
-          fontSize: '0.85rem',
-          color: 'var(--text-muted)',
-        }}
-      >
-        <strong style={{ color: 'var(--text-secondary)' }}>Scientific Governance:</strong>{' '}
-        This view filters the global Evidence Library by CaseIndication, module, and clinical objective.
-        It does not create patient-specific scientific truth. All evidence governance is managed through
-        the canonical Evidence Knowledge Graph.
-      </div>
+      <Alert variant="neutral" className="mt-6">
+        <AlertDescription>
+          <strong className="text-secondary">Scientific Governance:</strong>{' '}
+          This view filters the global Evidence Library by CaseIndication, module, and clinical objective.
+          It does not create patient-specific scientific truth. All evidence governance is managed through
+          the canonical Evidence Knowledge Graph.
+        </AlertDescription>
+      </Alert>
     </div>
   );
 }

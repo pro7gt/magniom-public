@@ -1,8 +1,8 @@
 # Scientific Differential Report v2.0 (§119)
-**Report Reference:** SDR-1788873960426  
+**Report Reference:** SDR-1789189722749  
 **Standard Reference:** IEC 62304:2006+AMD1:2015 §5.5–§5.7 / ISO 14971:2019  
 **Specification Reference:** `MAGNIOM-Enterprise Verification, Testing CICD Specification v2.0.md` (§50–65, §112–122)  
-**Evaluation Date:** 2026-09-08T13:26:00.426Z  
+**Evaluation Date:** 2026-09-12T05:08:42.749Z  
 **Gate Status:** PASSED_C0_C1  
 **Evaluated Scope:** All 8 Indication Modules (72 Golden Cases)  
 

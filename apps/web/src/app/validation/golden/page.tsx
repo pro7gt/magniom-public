@@ -1,7 +1,20 @@
 'use client';
 
+import {
+  Breadcrumbs,
+  Button,
+  Badge,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  ArrowRightIcon,
+  ArrowLeftIcon,
+  TableEmptyRow,
+  PageHeader,
+} from '@/components/ui';
+
 import React from 'react';
-import Link from 'next/link';
 import { ALL_UX_GOLDEN_CASES_V2 } from '@magniom/test-fixtures';
 
 // ==========================================
@@ -11,63 +24,81 @@ import { ALL_UX_GOLDEN_CASES_V2 } from '@magniom/test-fixtures';
 
 export default function GoldenCasesPage() {
   return (
-    <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.25rem' }}>
-          <span className="badge badge-tier2">VALIDATION ENVIRONMENT</span>
-          <span className="badge badge-neutral">Golden Cases</span>
-        </div>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-          UX Golden Cases
-        </h1>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginTop: '0.25rem' }}>
-          Canonical test fixtures for shell verification, human-factors testing, and safety invariant regression (§250–262).
-        </p>
-      </div>
+    <div className="container page-container-col">
+      <Breadcrumbs
+        items={[
+          { label: 'Validation', href: '/validation' },
+          { label: 'Golden Cases', current: true },
+        ]}
+      />
 
-      <div className="card">
-        <div className="comparison-table-wrapper">
-          <table className="comparison-table" aria-label="Golden Cases">
-            <thead>
-              <tr>
-                <th scope="col">Case Code</th>
-                <th scope="col">Scenario</th>
-                <th scope="col">Indication</th>
-                <th scope="col">Mode</th>
-                <th scope="col">Safety Invariant</th>
-                <th scope="col">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {ALL_UX_GOLDEN_CASES_V2.map(c => (
-                <tr key={c.id}>
-                  <td><strong style={{ fontFamily: 'var(--font-mono)', color: 'var(--accent-cyan)' }}>{c.code}</strong></td>
-                  <td>{c.title}</td>
-                  <td><span className="badge badge-neutral">{c.indicationCode}</span></td>
-                  <td>
-                    <span className={`badge ${c.mode === 'CLINICAL' ? 'badge-tier1' : c.mode === 'RESEARCH' ? 'badge-tierexp' : 'badge-tier2'}`}>
-                      {c.mode}
-                    </span>
-                  </td>
-                  <td style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                    {c.isStale ? 'Blocking Staleness' : c.isContradictory ? 'Fail-Closed' : c.isBlindedValidation ? 'Silent Prospective' : c.mode === 'RESEARCH' ? 'Signing Prohibited' : 'Standard'}
-                  </td>
-                  <td>
-                    <Link href={`/cases/${c.id}`} className="btn btn-secondary" style={{ padding: '0.2rem 0.5rem', fontSize: '0.75rem' }}>
-                      Inspect →
-                    </Link>
-                  </td>
+      <PageHeader
+        eyebrow={
+          <div className="flex items-center gap-2 mb-1">
+            <Badge variant="tier2">VALIDATION ENVIRONMENT</Badge>
+            <Badge variant="neutral">Golden Cases</Badge>
+          </div>
+        }
+        title="UX Golden Cases"
+        subtitle="Canonical test fixtures for shell verification, human-factors testing, and safety invariant regression (§250–262)."
+      />
+
+
+      <Card>
+        <CardHeader>
+          <CardTitle as="h2" className="text-cyan">
+            Golden Case Test Fixtures
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="comparison-table-wrapper">
+            <table className="comparison-table" aria-label="Golden Cases">
+              <thead>
+                <tr>
+                  <th scope="col">Case Code</th>
+                  <th scope="col">Scenario</th>
+                  <th scope="col">Indication</th>
+                  <th scope="col">Mode</th>
+                  <th scope="col">Safety Invariant</th>
+                  <th scope="col">Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+              </thead>
+              <tbody>
+                {ALL_UX_GOLDEN_CASES_V2.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={6}
+                    message="No golden cases found."
+                  />
+                ) : (
+                  ALL_UX_GOLDEN_CASES_V2.map(c => (
+                    <tr key={c.id}>
+                      <td><strong className="font-mono text-cyan">{c.code}</strong></td>
+                      <td>{c.title}</td>
+                      <td><Badge variant="neutral">{c.indicationCode}</Badge></td>
+                      <td>
+                        <Badge className={`${c.mode === 'CLINICAL' ? 'badge-tier1' : c.mode === 'RESEARCH' ? 'badge-tierexp' : 'badge-tier2'}`}>
+                          {c.mode}
+                        </Badge>
+                      </td>
+                      <td className="text-xs text-secondary">
+                        {c.isStale ? 'Blocking Staleness' : c.isContradictory ? 'Fail-Closed' : c.isBlindedValidation ? 'Silent Prospective' : c.mode === 'RESEARCH' ? 'Signing Prohibited' : 'Standard'}
+                      </td>
+                      <td>
+                        <Button variant="secondary" href={`/cases/${c.id}`} className="p-1 text-xs">Inspect <ArrowRightIcon size={14} className="ml-1 inline" /></Button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
 
-      <div style={{ display: 'flex', gap: '0.75rem' }}>
-        <Link href="/validation" className="btn btn-secondary">← Validation Home</Link>
-        <Link href="/validation/studies" className="btn btn-secondary">Studies →</Link>
-        <Link href="/validation/modules" className="btn btn-secondary">Module Qualification →</Link>
+      <div className="flex gap-3">
+        <Button variant="secondary" href="/validation"><ArrowLeftIcon size={14} className="mr-1 inline" /> Validation Home</Button>
+        <Button variant="secondary" href="/validation/studies">Studies <ArrowRightIcon size={14} className="ml-1 inline" /></Button>
+        <Button variant="secondary" href="/validation/modules">Module Qualification <ArrowRightIcon size={14} className="ml-1 inline" /></Button>
       </div>
     </div>
   );

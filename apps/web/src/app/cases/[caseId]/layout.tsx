@@ -2,6 +2,7 @@
 
 import React, { use, useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import { CaseNotFoundState } from '@/components/ui';
 import { caseStore, onMultiTabInvalidation } from '../../../lib/case-store';
 import { resolveCaseShellContext } from '../../../lib/shell-authority';
 import { CaseHeader } from '../../../components/case-header';
@@ -41,11 +42,8 @@ export default function CaseLayout({
 
   if (!record) {
     return (
-      <div className="container" style={{ textAlign: 'center', padding: '4rem' }}>
-        <h2>Case Not Found</h2>
-        <p style={{ color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
-          Case ID {caseId} does not exist in the active case store.
-        </p>
+      <div className="container page-container-col">
+        <CaseNotFoundState caseId={caseId} />
       </div>
     );
   }

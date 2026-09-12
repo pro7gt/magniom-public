@@ -1,7 +1,19 @@
 'use client';
 
 import React, { use, useState, useEffect } from 'react';
-import Link from 'next/link';
+import {
+  Breadcrumbs,
+  Button,
+  Badge,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CaseNotFoundState,
+  ArrowRightIcon,
+  PageHeader,
+} from '@/components/ui';
+import { EnvironmentSafetyStrip } from '@/components/shell';
 import { caseStore } from '../../../../../../lib/case-store';
 
 export default function ResearchCaseIndicationPage({
@@ -20,14 +32,8 @@ export default function ResearchCaseIndicationPage({
 
   if (!record) {
     return (
-      <div className="container" style={{ textAlign: 'center', padding: '4rem' }}>
-        <h2>Research Case Not Found</h2>
-        <p style={{ color: 'var(--text-secondary)' }}>
-          Case ID {caseId} does not exist in the research registry.
-        </p>
-        <Link href="/research/cases" className="btn btn-secondary">
-          Return to Research Cases
-        </Link>
+      <div className="container page-container-col">
+        <CaseNotFoundState caseId={caseId} />
       </div>
     );
   }
@@ -37,146 +43,82 @@ export default function ResearchCaseIndicationPage({
     record.availableIndications[0]!;
 
   return (
-    <div className="research-case-indication-workspace" style={{ padding: '24px' }}>
+    <div className="container page-container-col">
       {/* Research Mode Persistent Safety Banner (§20–25, §57) */}
-      <div
-        className="safety-strip safety-strip-research"
-        style={{
-          backgroundColor: 'rgba(234, 179, 8, 0.12)',
-          border: '1px solid rgba(234, 179, 8, 0.35)',
-          borderRadius: '8px',
-          padding: '12px 16px',
-          marginBottom: '20px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '12px',
-        }}
-      >
-        <span style={{ fontSize: '1.25rem' }}>🔬</span>
-        <div>
-          <strong style={{ color: 'var(--accent-yellow)', fontSize: '0.85rem' }}>
-            RESEARCH ENVIRONMENT: EXPLORATORY NEUROIMAGING WORKSPACE (§195)
-          </strong>
-          <p style={{ margin: '2px 0 0', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-            Clinical decision sign-off and treatment prescription are strictly locked. All targeting
-            outputs represent exploratory computational hypotheses.
-          </p>
-        </div>
-      </div>
+      <EnvironmentSafetyStrip
+        mode="RESEARCH"
+        className="mb-5"
+        title="RESEARCH ENVIRONMENT: EXPLORATORY NEUROIMAGING WORKSPACE (§195)"
+        description="Clinical decision sign-off and treatment prescription are strictly locked. All targeting outputs represent exploratory computational hypotheses."
+      />
 
       {/* Breadcrumbs */}
-      <nav aria-label="Research Breadcrumb" style={{ marginBottom: '16px', fontSize: '0.85rem' }}>
-        <Link href="/research" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>
-          Research
-        </Link>
-        <span style={{ margin: '0 8px', color: 'var(--text-muted)' }}>/</span>
-        <Link
-          href="/research/cases"
-          style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}
-        >
-          Research Cases
-        </Link>
-        <span style={{ margin: '0 8px', color: 'var(--text-muted)' }}>/</span>
-        <span style={{ color: 'var(--accent-cyan)', fontWeight: 600 }}>
-          {record.clinicalCase.caseCode} · {ind.indicationCode}
-        </span>
-      </nav>
+      <Breadcrumbs
+        ariaLabel="Research Breadcrumb"
+        items={[
+          { label: 'Research', href: '/research' },
+          { label: 'Research Cases', href: '/research/cases' },
+          { label: `${record.clinicalCase.caseCode} · ${ind.indicationCode}`, current: true },
+        ]}
+      />
 
       {/* Header */}
-      <header
-        style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.03)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '8px',
-          padding: '20px',
-          marginBottom: '24px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '16px',
-        }}
-      >
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <h1
-              style={{ margin: 0, fontSize: '1.4rem', color: 'var(--text-main)', fontWeight: 700 }}
-            >
-              {ind.label} Research Analysis
-            </h1>
-            <span className="badge badge-tierexp">RESEARCH MODE</span>
-            <span className="badge badge-neutral">{caseIndicationId}</span>
+      <PageHeader
+        variant="case-workspace"
+        eyebrow={
+          <div className="flex items-center gap-2 mb-1">
+            <Badge variant="tierexp">RESEARCH MODE</Badge>
+            <Badge variant="neutral">{caseIndicationId}</Badge>
           </div>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', margin: '6px 0 0' }}>
+        }
+        title={`${ind.label} Research Analysis`}
+        subtitle={
+          <span>
             Subject Token: <strong>SUBJ-{record.clinicalCase.patientId}</strong> · Protocol:
             Retrospective Connectome Mapping
-          </p>
-        </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <Link href={`/cases/${caseId}/targets`} className="btn btn-secondary">
-            View Target Hypotheses →
-          </Link>
-          <Link href="/research/cases" className="btn btn-secondary">
-            All Research Cases
-          </Link>
-        </div>
-      </header>
+          </span>
+        }
+        actions={
+          <>
+            <Button variant="secondary" href={`/cases/${caseId}/targets`}>
+              View Target Hypotheses <ArrowRightIcon size={14} className="ml-1 inline" />
+            </Button>
+            <Button variant="secondary" href="/research/cases">
+              All Research Cases
+            </Button>
+          </>
+        }
+      />
 
       {/* Grid */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '20px',
-        }}
-      >
-        <section
-          style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.04)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderRadius: '8px',
-            padding: '20px',
-          }}
-        >
-          <h3
-            style={{
-              margin: '0 0 12px',
-              fontSize: '1rem',
-              color: 'var(--accent-cyan)',
-              fontWeight: 600,
-            }}
-          >
-            Research Target Invariants
-          </h3>
-          <ul
-            style={{
-              listStyle: 'none',
-              padding: 0,
-              margin: 0,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '8px',
-              fontSize: '0.85rem',
-            }}
-          >
-            <li style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Module Release:</span>
-              <strong style={{ color: 'var(--text-main)' }}>IMR-{ind.indicationCode}-2.0.0</strong>
-            </li>
-            <li style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Qualification Gate:</span>
-              <strong style={{ color: 'var(--accent-yellow)' }}>Q0 (Exploratory / Research)</strong>
-            </li>
-            <li style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Clinical Decision:</span>
-              <strong style={{ color: 'var(--accent-red)' }}>Strictly Suppressed (§57)</strong>
-            </li>
-            <li style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Export Format:</span>
-              <strong style={{ color: 'var(--text-main)' }}>Anonymized NIfTI Hypotheses</strong>
-            </li>
-          </ul>
-        </section>
+      <div className="stat-card-grid">
+        <Card>
+          <CardHeader>
+            <CardTitle as="h2" className="text-cyan">
+              Research Target Invariants
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="flex flex-col gap-2 list-none p-0 m-0 text-sm">
+              <li className="flex justify-between">
+                <span className="text-secondary">Module Release:</span>
+                <strong className="text-primary">IMR-{ind.indicationCode}-2.0.0</strong>
+              </li>
+              <li className="flex justify-between">
+                <span className="text-secondary">Qualification Gate:</span>
+                <strong className="text-amber">Q0 (Exploratory / Research)</strong>
+              </li>
+              <li className="flex justify-between">
+                <span className="text-secondary">Clinical Decision:</span>
+                <strong className="text-rose">Strictly Suppressed (§57)</strong>
+              </li>
+              <li className="flex justify-between">
+                <span className="text-secondary">Export Format:</span>
+                <strong className="text-primary">Anonymized NIfTI Hypotheses</strong>
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

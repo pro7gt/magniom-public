@@ -1,7 +1,20 @@
 'use client';
 
+import {
+  Breadcrumbs,
+  Button,
+  Badge,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  ArrowRightIcon,
+  ArrowLeftIcon,
+  TableEmptyRow,
+  PageHeader,
+} from '@/components/ui';
+
 import React from 'react';
-import Link from 'next/link';
 
 // ==========================================
 // Evidence Sources Browser (§197)
@@ -19,70 +32,90 @@ const CANONICAL_SOURCES = [
 
 export default function EvidenceSourcesPage() {
   return (
-    <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.25rem' }}>
-          <span className="badge badge-tier1">EVIDENCE KNOWLEDGE GRAPH</span>
-          <span className="badge badge-neutral">Sources</span>
-        </div>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-          Evidence Sources
-        </h1>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginTop: '0.25rem' }}>
-          Primary scientific literature supporting MAGNIOM evidence claims and target qualification (§197).
-        </p>
-      </div>
+    <div className="container page-container-col">
+      <Breadcrumbs
+        items={[
+          { label: 'Evidence', href: '/evidence' },
+          { label: 'Evidence Sources', current: true },
+        ]}
+      />
 
-      <div className="card">
-        <div className="comparison-table-wrapper">
-          <table className="comparison-table" aria-label="Evidence Sources Registry">
-            <thead>
-              <tr>
-                <th scope="col">Source ID</th>
-                <th scope="col">Citation</th>
-                <th scope="col">Clinical Question</th>
-                <th scope="col">Journal</th>
-                <th scope="col">Year</th>
-                <th scope="col">Indications</th>
-              </tr>
-            </thead>
-            <tbody>
-              {CANONICAL_SOURCES.map(src => (
-                <tr key={src.id}>
-                  <td><code style={{ color: 'var(--accent-cyan)', fontSize: '0.8rem' }}>{src.id}</code></td>
-                  <td>
-                    <strong style={{ fontSize: '0.85rem' }}>{src.title}</strong>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '2px' }}>
-                      {src.citation}
-                    </div>
-                    {src.doi && (
-                      <div style={{ fontSize: '0.75rem', color: 'var(--accent-cyan)', marginTop: '2px' }}>
-                        DOI: {src.doi}
-                      </div>
-                    )}
-                  </td>
-                  <td style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{src.clinicalQuestion}</td>
-                  <td style={{ fontSize: '0.85rem' }}>{src.journal}</td>
-                  <td style={{ textAlign: 'center' }}>{src.year}</td>
-                  <td>
-                    <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
-                      {src.usedByIndications.map(ind => (
-                        <span key={ind} className="badge badge-neutral" style={{ fontSize: '0.7rem' }}>{ind}</span>
-                      ))}
-                    </div>
-                  </td>
+      <PageHeader
+        eyebrow={
+          <div className="flex items-center gap-2 mb-1">
+            <Badge variant="tier1">EVIDENCE KNOWLEDGE GRAPH</Badge>
+            <Badge variant="neutral">Sources</Badge>
+          </div>
+        }
+        title="Evidence Sources"
+        subtitle="Primary scientific literature supporting MAGNIOM evidence claims and target qualification (§197)."
+      />
+
+
+      <Card>
+        <CardHeader>
+          <CardTitle as="h2" className="text-cyan">
+            Canonical Primary Citations
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="comparison-table-wrapper">
+            <table className="comparison-table" aria-label="Evidence Sources Registry">
+              <thead>
+                <tr>
+                  <th scope="col">Source ID</th>
+                  <th scope="col">Citation</th>
+                  <th scope="col">Clinical Question</th>
+                  <th scope="col">Journal</th>
+                  <th scope="col">Year</th>
+                  <th scope="col">Indications</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+              </thead>
+              <tbody>
+                {CANONICAL_SOURCES.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={6}
+                    message="No canonical evidence sources registered."
+                  />
+                ) : (
+                  CANONICAL_SOURCES.map(src => (
+                    <tr key={src.id}>
+                      <td><code className="text-cyan text-xs">{src.id}</code></td>
+                      <td>
+                        <strong className="text-sm">{src.title}</strong>
+                        <div className="text-xs text-muted mt-0.5">
+                          {src.citation}
+                        </div>
+                        {src.doi && (
+                          <div className="text-xs text-cyan mt-0.5">
+                            DOI: {src.doi}
+                          </div>
+                        )}
+                      </td>
+                      <td className="text-sm text-secondary">{src.clinicalQuestion}</td>
+                      <td className="text-sm">{src.journal}</td>
+                      <td className="text-center">{src.year}</td>
+                      <td>
+                        <div className="flex flex-wrap gap-1">
+                          {src.usedByIndications.map(ind => (
+                            <Badge variant="neutral" key={ind} className="text-xs">{ind}</Badge>
+                          ))}
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
 
-      <div style={{ display: 'flex', gap: '0.75rem' }}>
-        <Link href="/evidence" className="btn btn-secondary">← Evidence Library</Link>
-        <Link href="/evidence/claims" className="btn btn-secondary">Claims →</Link>
-        <Link href="/evidence/paths" className="btn btn-secondary">Evidence Paths →</Link>
-        <Link href="/evidence/target-families" className="btn btn-secondary">Target Families →</Link>
+      <div className="flex gap-3">
+        <Button variant="secondary" href="/evidence"><ArrowLeftIcon size={14} className="mr-1 inline" /> Evidence Library</Button>
+        <Button variant="secondary" href="/evidence/claims">Claims <ArrowRightIcon size={14} className="ml-1 inline" /></Button>
+        <Button variant="secondary" href="/evidence/paths">Evidence Paths <ArrowRightIcon size={14} className="ml-1 inline" /></Button>
+        <Button variant="secondary" href="/evidence/target-families">Target Families <ArrowRightIcon size={14} className="ml-1 inline" /></Button>
       </div>
     </div>
   );

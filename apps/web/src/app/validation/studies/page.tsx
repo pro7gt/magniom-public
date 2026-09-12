@@ -1,7 +1,20 @@
 'use client';
 
+import {
+  Breadcrumbs,
+  Button,
+  Badge,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  ArrowRightIcon,
+  ArrowLeftIcon,
+  TableEmptyRow,
+  PageHeader,
+} from '@/components/ui';
+
 import React from 'react';
-import Link from 'next/link';
 
 // ==========================================
 // Validation Studies (§196)
@@ -17,60 +30,80 @@ const VALIDATION_STUDIES = [
 
 export default function ValidationStudiesPage() {
   return (
-    <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.25rem' }}>
-          <span className="badge badge-tier2">VALIDATION ENVIRONMENT</span>
-          <span className="badge badge-neutral">Study Registry</span>
-        </div>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-          Validation Studies
-        </h1>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginTop: '0.25rem' }}>
-          Controlled validation studies under study protocol governance. Clinical authority restricted by protocol (§196).
-        </p>
-      </div>
+    <div className="container page-container-col">
+      <Breadcrumbs
+        items={[
+          { label: 'Validation', href: '/validation' },
+          { label: 'Validation Studies', current: true },
+        ]}
+      />
 
-      <div className="card">
-        <div className="comparison-table-wrapper">
-          <table className="comparison-table" aria-label="Validation Studies">
-            <thead>
-              <tr>
-                <th scope="col">Study ID</th>
-                <th scope="col">Title</th>
-                <th scope="col">Module</th>
-                <th scope="col">Protocol</th>
-                <th scope="col">Participants</th>
-                <th scope="col">Phase</th>
-                <th scope="col">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {VALIDATION_STUDIES.map(s => (
-                <tr key={s.id}>
-                  <td><code style={{ color: 'var(--accent-cyan)', fontSize: '0.8rem' }}>{s.id}</code></td>
-                  <td><strong style={{ fontSize: '0.85rem' }}>{s.title}</strong></td>
-                  <td style={{ fontSize: '0.85rem' }}>{s.module}</td>
-                  <td><span className="badge badge-tier2" style={{ fontSize: '0.75rem' }}>{s.protocol}</span></td>
-                  <td style={{ textAlign: 'center' }}>{s.participants}</td>
-                  <td style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{s.phase}</td>
-                  <td>
-                    <span className={`badge ${s.status === 'Active' ? 'badge-tier1' : 'badge-neutral'}`}>
-                      {s.status}
-                    </span>
-                  </td>
+      <PageHeader
+        eyebrow={
+          <div className="flex items-center gap-2 mb-1">
+            <Badge variant="tier2">VALIDATION ENVIRONMENT</Badge>
+            <Badge variant="neutral">Study Registry</Badge>
+          </div>
+        }
+        title="Validation Studies"
+        subtitle="Controlled validation studies under study protocol governance. Clinical authority restricted by protocol (§196)."
+      />
+
+
+      <Card>
+        <CardHeader>
+          <CardTitle as="h2" className="text-cyan">
+            Active Validation Studies
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="comparison-table-wrapper">
+            <table className="comparison-table" aria-label="Validation Studies">
+              <thead>
+                <tr>
+                  <th scope="col">Study ID</th>
+                  <th scope="col">Title</th>
+                  <th scope="col">Module</th>
+                  <th scope="col">Protocol</th>
+                  <th scope="col">Participants</th>
+                  <th scope="col">Phase</th>
+                  <th scope="col">Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+              </thead>
+              <tbody>
+                {VALIDATION_STUDIES.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={7}
+                    message="No validation studies found."
+                  />
+                ) : (
+                  VALIDATION_STUDIES.map(s => (
+                    <tr key={s.id}>
+                      <td><code className="text-cyan text-xs">{s.id}</code></td>
+                      <td><strong className="text-sm">{s.title}</strong></td>
+                      <td className="text-sm">{s.module}</td>
+                      <td><Badge variant="tier2" className="text-xs">{s.protocol}</Badge></td>
+                      <td className="text-center">{s.participants}</td>
+                      <td className="text-sm text-secondary">{s.phase}</td>
+                      <td>
+                        <Badge className={`${s.status === 'Active' ? 'badge-tier1' : 'badge-neutral'}`}>
+                          {s.status}
+                        </Badge>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
 
-      <div style={{ display: 'flex', gap: '0.75rem' }}>
-        <Link href="/validation" className="btn btn-secondary">← Validation Home</Link>
-        <Link href="/validation/cases" className="btn btn-secondary">Validation Cases →</Link>
-        <Link href="/validation/modules" className="btn btn-secondary">Module Qualification →</Link>
-        <Link href="/validation/golden" className="btn btn-secondary">Golden Cases →</Link>
+      <div className="flex gap-3">
+        <Button variant="secondary" href="/validation"><ArrowLeftIcon size={14} className="mr-1 inline" /> Validation Home</Button>
+        <Button variant="secondary" href="/validation/cases">Validation Cases <ArrowRightIcon size={14} className="ml-1 inline" /></Button>
+        <Button variant="secondary" href="/validation/modules">Module Qualification <ArrowRightIcon size={14} className="ml-1 inline" /></Button>
+        <Button variant="secondary" href="/validation/golden">Golden Cases <ArrowRightIcon size={14} className="ml-1 inline" /></Button>
       </div>
     </div>
   );

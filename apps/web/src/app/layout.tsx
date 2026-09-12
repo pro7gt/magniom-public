@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import '../styles/globals.css';
-import { MagniomTopBar } from '../components/shell/magniom-top-bar';
-import { EnvironmentSafetyStrip } from '../components/shell/environment-safety-strip';
+import { ReactiveShellHeader } from '../components/shell/reactive-shell-header';
 import { GlobalSidebar } from '../components/shell/global-sidebar';
 import { VersionManifestDisclosure } from '../components/shell/version-manifest-disclosure';
 import { NotificationProvider } from '../components/notification-system';
@@ -30,11 +29,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             Skip to main content
           </a>
 
-          {/* Layer 1: Top Bar (§7–22) */}
-          <MagniomTopBar currentMode="CLINICAL" />
-
-          {/* Layer 2: Safety / CDS Environment Strip (§13, §123) */}
-          <EnvironmentSafetyStrip mode="CLINICAL" />
+          {/* Layer 1: Top Bar (§7–22) via ReactiveShellHeader (MagniomTopBar) */}
+          {/* Layer 2: Safety / CDS Environment Strip (§13, §123) (EnvironmentSafetyStrip) */}
+          <ReactiveShellHeader />
 
           {/* 4-Layer Shell Body: Sidebar + Main Workspace Canvas */}
           <div className="shell-workspace-container">

@@ -52,8 +52,8 @@ jobs:
       - name: Generate SBOM & Verify Supply Chain
         run: npm run sbom:generate && npm run sbom:verify
 
-      - name: Generate Sealed Clinical Release Manifest
-        run: npm run release:manifest
+      - name: Generate Sealed Clinical Release Manifest v2
+        run: npm run release:manifest-v2
 
       - name: Verify Formal Verification Exit Criteria
         run: npm run verify:exit-criteria

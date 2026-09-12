@@ -164,7 +164,8 @@ export function emitOperationalEvent(
 
   // Also log to console in development
   if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
-    const prefix = event.severity === 'critical' || event.severity === 'error' ? '🛑' : '⚠';
+    const prefix =
+      event.severity === 'critical' || event.severity === 'error' ? '[CRITICAL]' : '[WARN]';
     console.warn(`[MAGNIOM-OPS] ${prefix} ${event.eventType}: ${event.message}`, event.metadata);
   }
 }
@@ -214,7 +215,7 @@ export function emitAuditEvent(
 
   // Development logging
   if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
-    console.info(`[MAGNIOM-AUDIT] 📋 ${event.eventType}: ${event.message}`, event.metadata);
+    console.info(`[MAGNIOM-AUDIT] ${event.eventType}: ${event.message}`, event.metadata);
   }
 }
 
@@ -236,6 +237,6 @@ export function emitProductAnalyticsEvent(
 ): void {
   // In production: route to analytics pipeline (Mixpanel, Amplitude, etc.)
   if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
-    console.debug(`[MAGNIOM-ANALYTICS] 📊 ${eventName}`, properties);
+    console.debug(`[MAGNIOM-ANALYTICS] ${eventName}`, properties);
   }
 }

@@ -1,7 +1,32 @@
 'use client';
 
+import {
+  CheckIcon,
+  XIcon,
+  EditIcon,
+  ClockIcon,
+  SmartphoneIcon,
+  Button,
+  Badge,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  Breadcrumbs,
+  ArrowRightIcon,
+  ArrowLeftIcon,
+  RefreshCwIcon,
+  PageHeader,
+  Alert,
+  Input,
+  Textarea,
+  Checkbox,
+  FormGroup,
+  FormLabel,
+} from '@/components/ui';
+
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { TargetSlateViewModel, DecisionReviewViewModel } from '@magniom/presentation';
 import type { CandidateDecisionAction, MagniomInfluence, MniCoordinate } from '@magniom/domain';
 import {
@@ -11,6 +36,7 @@ import {
 
 interface DecisionWorkspaceProps {
   caseId: string;
+  caseCode?: string;
   slateVM: TargetSlateViewModel;
   existingDecisionVM?: DecisionReviewViewModel | null | undefined;
   mode?: import('@magniom/domain').MagniomMode | undefined;
@@ -61,6 +87,7 @@ interface CandidateActionState {
 
 export function DecisionWorkspace({
   caseId,
+  caseCode,
   slateVM,
   existingDecisionVM,
   mode,
@@ -210,154 +237,84 @@ export function DecisionWorkspace({
     candidateActions[slateVM.primaryCandidates[0].id]?.action === 'reject';
 
   return (
-    <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+    <div className="container page-container-col">
+      <Breadcrumbs
+        ariaLabel="Clinical Decision Breadcrumb"
+        items={[
+          { label: caseCode || caseId, href: `/cases/${caseId}` },
+          { label: 'Clinical Decision & Attestation', current: true },
+        ]}
+      />
       {/* Header & Status */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'flex-start',
-          flexWrap: 'wrap',
-          gap: '1rem',
-        }}
-      >
-        <div>
-          <h1
-            style={{
-              fontSize: '1.5rem',
-              fontWeight: 700,
-              color: 'var(--text-primary)',
-              marginBottom: '0.25rem',
-            }}
-          >
-            Final Clinical Target Decision & Attestation
-          </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-            Authoritative clinical decision-making workspace. Final targeting selection requires
-            explicit clinician review and independent rationale.
-          </p>
-        </div>
-
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <Link href={`/cases/${caseId}/targets`} className="btn btn-secondary">
-            ← Return to Target Slate
-          </Link>
-          <Link href={`/cases/${caseId}/audit`} className="btn btn-secondary">
-            View Immutable Audit →
-          </Link>
-        </div>
-      </div>
+      <PageHeader
+        title="Final Clinical Target Decision & Attestation"
+        subtitle="Authoritative clinical decision-making workspace. Final targeting selection requires explicit clinician review and independent rationale."
+        actions={
+          <>
+            <Button variant="secondary" href={`/cases/${caseId}/targets`}>
+              <ArrowLeftIcon size={14} className="mr-1 inline" /> Return to Target Slate
+            </Button>
+            <Button variant="secondary" href={`/cases/${caseId}/audit`}>
+              View Immutable Audit <ArrowRightIcon size={14} className="ml-1 inline" />
+            </Button>
+          </>
+        }
+      />
 
       {/* Signed Confirmation Banner */}
       {isImmutable && (
-        <div
-          style={{
-            background: 'rgba(16, 185, 129, 0.15)',
-            border: '1px solid #059669',
-            borderRadius: '0.5rem',
-            padding: '1rem',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <div>
-            <strong style={{ color: '#34d399', fontSize: '1rem' }}>
-              ✓ CLINICAL TARGET DECISION SIGNED & IMMUTABLE
-            </strong>
-            <p style={{ color: '#e2e8f0', fontSize: '0.8125rem', marginTop: '0.25rem' }}>
-              Signed by <strong>{existingDecisionVM.clinicianName}</strong> (
-              {existingDecisionVM.clinicianLicense}) on {existingDecisionVM.signedAt}
-            </p>
-            <div
-              style={{
-                fontSize: '0.75rem',
-                fontFamily: 'var(--font-mono)',
-                color: 'var(--text-muted)',
-                marginTop: '0.25rem',
-              }}
-            >
-              Digital Signature Hash: {existingDecisionVM.digitalSignatureHash}
-            </div>
-          </div>
-
-          {onCreateRevisedDecision && (
-            <button
-              onClick={onCreateRevisedDecision}
-              className="btn btn-secondary"
-              style={{ borderColor: 'var(--accent-cyan)' }}
-            >
-              Create Revised Target Decision ↺
-            </button>
-          )}
-        </div>
+        <Alert
+          variant="success"
+          title="CLINICAL TARGET DECISION SIGNED & IMMUTABLE"
+          description={
+            <>
+              <p className="text-primary text-sm mt-1">
+                Signed by <strong>{existingDecisionVM.clinicianName}</strong> (
+                {existingDecisionVM.clinicianLicense}) on {existingDecisionVM.signedAt}
+              </p>
+              <div className="text-xs font-mono text-muted mt-1">
+                Digital Signature Hash: {existingDecisionVM.digitalSignatureHash}
+              </div>
+            </>
+          }
+          actions={
+            onCreateRevisedDecision ? (
+              <Button variant="secondary" onClick={onCreateRevisedDecision} className="border-cyan">
+                Create Revised Target Decision <RefreshCwIcon size={14} className="ml-1 inline" />
+              </Button>
+            ) : undefined
+          }
+        />
       )}
 
       {/* Research Mode Warning Banner (§32 Criterion 7) */}
       {isResearchMode && (
-        <div
+        <Alert
           id="research-mode-warning-banner"
-          style={{
-            background: 'rgba(217, 119, 6, 0.15)',
-            border: '1px solid #d97706',
-            borderRadius: '0.5rem',
-            padding: '1rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.75rem',
-          }}
-        >
-          <span style={{ fontSize: '1.5rem' }}>⚠️</span>
-          <div>
-            <strong style={{ color: '#fde047', fontSize: '1rem' }}>
-              RESEARCH MODE ACTIVE — CLINICAL DIGITAL SIGNING PROHIBITED
-            </strong>
-            <p style={{ color: '#fed7aa', fontSize: '0.8125rem', marginTop: '0.25rem' }}>
-              This Target Slate was generated in Research Mode. Per Magniom Governance §32 Criterion
-              7, research candidates cannot be signed as a clinical decision. Output is strictly for
-              investigational review.
-            </p>
-          </div>
-        </div>
+          variant="warning"
+          title="RESEARCH MODE ACTIVE — CLINICAL DIGITAL SIGNING PROHIBITED"
+          description="This Target Slate was generated in Research Mode. Per Magniom Governance §32 Criterion 7, research candidates cannot be signed as a clinical decision. Output is strictly for investigational review."
+        />
       )}
 
       {/* No Target / Withhold Stimulation Action Panel (§32 Criterion 6) */}
       {!isImmutable && (
         <div
           id="withhold-stimulation-panel"
-          style={{
-            background: withholdStimulation ? 'rgba(239, 68, 68, 0.15)' : 'var(--card-bg)',
-            border: `1px solid ${withholdStimulation ? '#ef4444' : 'var(--card-border)'}`,
-            borderRadius: '0.5rem',
-            padding: '1rem',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '0.75rem',
-          }}
+          className={`rounded-lg p-4 flex justify-between items-center flex-wrap gap-3 ${
+            withholdStimulation ? 'bg-rose-500/15 border-danger' : 'bg-surface-card border'
+          }`}
         >
           <div>
-            <strong
-              style={{
-                color: withholdStimulation ? '#fca5a5' : 'var(--text-primary)',
-                fontSize: '0.9375rem',
-              }}
-            >
+            <strong className={`text-base ${withholdStimulation ? 'text-rose' : 'text-primary'}`}>
               Specialist Discretion: Withhold Stimulation / No Target Selected
             </strong>
-            <p
-              style={{
-                color: 'var(--text-secondary)',
-                fontSize: '0.8125rem',
-                marginTop: '0.25rem',
-              }}
-            >
+            <p className="text-secondary text-sm mt-1">
               Per §32 Criterion 6, the treating specialist clinician may determine that no target
               candidate meets clinical risk-benefit threshold.
             </p>
           </div>
-          <button
+          <Button
             type="button"
             onClick={() => {
               const next = !withholdStimulation;
@@ -379,512 +336,390 @@ export function DecisionWorkspace({
                 }
               }
             }}
-            className={`btn ${withholdStimulation ? 'btn-danger' : 'btn-secondary'}`}
+            variant={withholdStimulation ? 'danger' : 'secondary'}
             id="withhold-stimulation-toggle-btn"
           >
             {withholdStimulation
-              ? '✓ Stimulation Withheld (No Target)'
+              ? 'Stimulation Withheld (No Target)'
               : 'Withhold Stimulation (No Target)'}
-          </button>
+          </Button>
         </div>
       )}
 
       <div className="decision-grid">
         {/* Left Column: Candidate-Level Actions & Justifications */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          <div className="card">
-            <h2 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: '0.75rem' }}>
-              Candidate Review & Disposition
-            </h2>
-            <p
-              style={{
-                fontSize: '0.8125rem',
-                color: 'var(--text-secondary)',
-                marginBottom: '1rem',
-              }}
-            >
-              For each candidate on the Target Slate, indicate whether you accept, reject, modify,
-              or defer targeting.
-            </p>
+        <div className="flex flex-col gap-5">
+          <Card>
+            <CardHeader>
+              <CardTitle as="h2" className="text-lg font-semibold mb-2">
+                Candidate Review & Disposition
+              </CardTitle>
+              <CardDescription className="mb-4">
+                For each candidate on the Target Slate, indicate whether you accept, reject, modify,
+                or defer targeting.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col gap-4">
+                {slateVM.primaryCandidates.map(candidate => {
+                  const current = candidateActions[candidate.id] || {
+                    action: 'accept',
+                    reasons: [],
+                  };
+                  const isAccept = current.action === 'accept';
+                  const isReject = current.action === 'reject';
+                  const isModify = current.action === 'modify';
+                  const isDefer = current.action === 'defer';
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {slateVM.primaryCandidates.map(candidate => {
-                const current = candidateActions[candidate.id] || { action: 'accept', reasons: [] };
-                const isAccept = current.action === 'accept';
-                const isReject = current.action === 'reject';
-                const isModify = current.action === 'modify';
-                const isDefer = current.action === 'defer';
-
-                return (
-                  <div
-                    key={candidate.id}
-                    style={{
-                      background: 'var(--bg-surface-elevated)',
-                      border: '1px solid var(--border-color)',
-                      borderRadius: '0.5rem',
-                      padding: '1rem',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '0.75rem',
-                    }}
-                  >
+                  return (
                     <div
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                      }}
+                      key={candidate.id}
+                      className="bg-surface-elevated border rounded-lg p-4 flex flex-col gap-3"
                     >
-                      <div>
-                        <strong style={{ color: 'var(--accent-cyan)' }}>
-                          {candidate.roleTitle}
-                        </strong>
-                        <span
-                          style={{
-                            marginLeft: '0.5rem',
-                            fontSize: '0.8125rem',
-                            color: 'var(--text-secondary)',
-                          }}
-                        >
-                          ({candidate.targetName} • {candidate.coordinateFormatted})
-                        </span>
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <strong className="text-cyan">{candidate.roleTitle}</strong>
+                          <span className="ml-2 text-sm text-secondary">
+                            ({candidate.targetName} • {candidate.coordinateFormatted})
+                          </span>
+                        </div>
+                        <Badge className={`${candidate.evidenceTierBadgeClass}`}>
+                          {candidate.evidenceTierLabel}
+                        </Badge>
                       </div>
-                      <span className={`badge ${candidate.evidenceTierBadgeClass}`}>
-                        {candidate.evidenceTierLabel}
-                      </span>
-                    </div>
 
-                    {/* Action Selector Buttons */}
-                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                      <button
-                        onClick={() => handleActionChange(candidate.id, 'accept')}
-                        className={`decision-action-button ${isAccept ? 'selected-accept' : ''}`}
-                        disabled={isImmutable}
-                        id={`action-accept-${candidate.id}`}
-                      >
-                        ✓ Accept Candidate
-                      </button>
-                      <button
-                        onClick={() => handleActionChange(candidate.id, 'reject')}
-                        className={`decision-action-button ${isReject ? 'selected-reject' : ''}`}
-                        disabled={isImmutable}
-                        id={`action-reject-${candidate.id}`}
-                      >
-                        ✕ Reject Candidate
-                      </button>
-                      <button
-                        onClick={() => handleActionChange(candidate.id, 'modify')}
-                        className={`decision-action-button ${isModify ? 'selected-modify' : ''}`}
-                        disabled={isImmutable}
-                        id={`action-modify-${candidate.id}`}
-                      >
-                        ✎ Modify Coordinate
-                      </button>
-                      <button
-                        onClick={() => handleActionChange(candidate.id, 'defer')}
-                        className={`decision-action-button ${isDefer ? 'selected-defer' : ''}`}
-                        disabled={isImmutable}
-                        id={`action-defer-${candidate.id}`}
-                      >
-                        ⏱ Defer TMS Plan
-                      </button>
-                    </div>
-
-                    {/* Structured Reason Checklist */}
-                    {!isImmutable && (
-                      <div
-                        style={{
-                          background: 'rgba(9, 13, 22, 0.6)',
-                          padding: '0.75rem',
-                          borderRadius: '0.375rem',
-                          fontSize: '0.8125rem',
-                        }}
-                      >
-                        <span
-                          style={{
-                            fontWeight: 600,
-                            color: 'var(--text-secondary)',
-                            display: 'block',
-                            marginBottom: '0.5rem',
-                          }}
+                      {/* Action Selector Buttons */}
+                      <div className="flex gap-2 flex-wrap">
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => handleActionChange(candidate.id, 'accept')}
+                          className={`decision-action-button ${isAccept ? 'selected-accept' : ''}`}
+                          disabled={isImmutable}
+                          id={`action-accept-${candidate.id}`}
                         >
-                          Select Applicable Clinical Reasons (Mandatory):
-                        </span>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
-                          {(isReject ? REJECT_REASONS : ACCEPT_REASONS).map(reason => (
-                            <label
-                              key={reason}
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '0.5rem',
-                                cursor: 'pointer',
-                              }}
-                            >
-                              <input
-                                type="checkbox"
+                          <CheckIcon size={14} className="mr-1.5 inline" /> Accept Candidate
+                        </Button>
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => handleActionChange(candidate.id, 'reject')}
+                          className={`decision-action-button ${isReject ? 'selected-reject' : ''}`}
+                          disabled={isImmutable}
+                          id={`action-reject-${candidate.id}`}
+                        >
+                          <XIcon size={14} className="mr-1.5 inline" /> Reject Candidate
+                        </Button>
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => handleActionChange(candidate.id, 'modify')}
+                          className={`decision-action-button ${isModify ? 'selected-modify' : ''}`}
+                          disabled={isImmutable}
+                          id={`action-modify-${candidate.id}`}
+                        >
+                          <EditIcon size={14} className="mr-1.5 inline" /> Modify Coordinate
+                        </Button>
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => handleActionChange(candidate.id, 'defer')}
+                          className={`decision-action-button ${isDefer ? 'selected-defer' : ''}`}
+                          disabled={isImmutable}
+                          id={`action-defer-${candidate.id}`}
+                        >
+                          <ClockIcon size={14} className="mr-1.5 inline" /> Defer TMS Plan
+                        </Button>
+                      </div>
+
+                      {/* Structured Reason Checklist */}
+                      {!isImmutable && (
+                        <div className="bg-surface-drawer p-3 rounded-md text-sm">
+                          <span className="font-semibold text-secondary block mb-2">
+                            Select Applicable Clinical Reasons (Mandatory):
+                          </span>
+                          <div className="flex flex-col gap-1.5">
+                            {(isReject ? REJECT_REASONS : ACCEPT_REASONS).map(reason => (
+                              <Checkbox
+                                key={reason}
                                 checked={current.reasons.includes(reason)}
                                 onChange={() => handleReasonToggle(candidate.id, reason)}
                                 disabled={isImmutable}
+                                label={reason}
                               />
-                              <span style={{ color: '#cbd5e1' }}>{reason}</span>
-                            </label>
-                          ))}
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
-                    {/* Coordinate Modification Sub-panel */}
-                    {isModify && (
-                      <div
-                        style={{
-                          background: '#0b1622',
-                          border: '1px solid #1e3a5f',
-                          padding: '0.75rem',
-                          borderRadius: '0.375rem',
-                          fontSize: '0.8125rem',
-                        }}
-                      >
-                        <strong style={{ color: '#38bdf8' }}>
-                          Clinician Coordinate Adjustment (MNI152):
-                        </strong>
-                        <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
-                          <input
-                            type="number"
-                            className="form-input"
-                            style={{ width: '80px' }}
-                            placeholder="X"
-                            defaultValue={candidate.mniCoordinate.x}
-                            disabled={isImmutable}
-                          />
-                          <input
-                            type="number"
-                            className="form-input"
-                            style={{ width: '80px' }}
-                            placeholder="Y"
-                            defaultValue={candidate.mniCoordinate.y}
-                            disabled={isImmutable}
-                          />
-                          <input
-                            type="number"
-                            className="form-input"
-                            style={{ width: '80px' }}
-                            placeholder="Z"
-                            defaultValue={candidate.mniCoordinate.z}
-                            disabled={isImmutable}
-                          />
+                      {/* Coordinate Modification Sub-panel */}
+                      {isModify && (
+                        <div className="bg-surface-card border-subtle p-3 rounded-md text-sm">
+                          <strong className="text-cyan">
+                            Clinician Coordinate Adjustment (MNI152):
+                          </strong>
+                          <div className="flex gap-3 mt-2">
+                            <Input
+                              type="number"
+                              className="w-20"
+                              placeholder="X"
+                              defaultValue={candidate.mniCoordinate.x}
+                              disabled={isImmutable}
+                            />
+                            <Input
+                              type="number"
+                              className="w-20"
+                              placeholder="Y"
+                              defaultValue={candidate.mniCoordinate.y}
+                              disabled={isImmutable}
+                            />
+                            <Input
+                              type="number"
+                              className="w-20"
+                              placeholder="Z"
+                              defaultValue={candidate.mniCoordinate.z}
+                              disabled={isImmutable}
+                            />
+                          </div>
+                          <p className="text-secondary text-xs mt-1.5">
+                            Live Euclidean delta from original candidate will be recorded immutably
+                            in the signed record.
+                          </p>
                         </div>
-                        <p
-                          style={{
-                            color: 'var(--text-secondary)',
-                            fontSize: '0.75rem',
-                            marginTop: '0.375rem',
-                          }}
-                        >
-                          Live Euclidean delta from original candidate will be recorded immutably in
-                          the signed record.
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Substantive Human-Authored Rationale (Section 91 & Safeguard 10) */}
-          <div className="card">
-            <h2 style={{ fontSize: '1.125rem', fontWeight: 600, marginBottom: '0.5rem' }}>
-              Substantive Clinical Reasoning (Human-Authored)
-            </h2>
-            <p
-              style={{
-                fontSize: '0.8125rem',
-                color: 'var(--text-secondary)',
-                marginBottom: '0.75rem',
-              }}
-            >
-              Summarise why the selected target(s) best address the current clinical formulation and
-              treatment objectives.
-            </p>
-            <textarea
-              className="form-textarea"
-              value={overallReasoning}
-              onChange={e => setOverallReasoning(e.target.value)}
-              placeholder="Author substantive clinical reasoning here (e.g., patient clinical presentation, previous treatment responses, why selected targets align with current goals)..."
-              disabled={isImmutable}
-              id="clinical-reasoning-textarea"
-            />
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle as="h2" className="text-lg font-semibold mb-2">
+                Substantive Clinical Reasoning (Human-Authored)
+              </CardTitle>
+              <CardDescription className="mb-3">
+                Explicitly document reasoning for selecting, adjusting, or rejecting candidates per
+                IEC 62304 and ISO 14971 standards:
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Textarea
+                value={overallReasoning}
+                onChange={e => setOverallReasoning(e.target.value)}
+                placeholder="Author substantive clinical reasoning here (e.g., patient clinical presentation, previous treatment responses, why selected targets align with current goals)..."
+                disabled={isImmutable}
+                id="clinical-reasoning-textarea"
+              />
+            </CardContent>
+          </Card>
 
           {/* Disagreement prompt if Primary 1 rejected */}
           {isPrimary1Rejected && (
-            <div className="card" style={{ background: '#1c1214', borderColor: '#7f1d1d' }}>
-              <h3
-                style={{
-                  fontSize: '0.9375rem',
-                  fontWeight: 600,
-                  color: '#f87171',
-                  marginBottom: '0.5rem',
-                }}
-              >
-                Scientific Disagreement / Override Formulation
-              </h3>
-              <p style={{ fontSize: '0.8125rem', color: '#fca5a5', marginBottom: '0.5rem' }}>
-                You have rejected Primary Candidate 1. Please document the specific points of
-                divergence from Magniom's algorithmic nomination:
-              </p>
-              <textarea
-                className="form-textarea"
-                value={disagreement}
-                onChange={e => setDisagreement(e.target.value)}
-                placeholder="Detail the scientific, clinical, or patient-specific grounds for departing from Primary 1..."
-                disabled={isImmutable}
-                id="disagreement-reasoning-textarea"
-              />
-            </div>
+            <Card className="bg-surface-card border-rose">
+              <CardHeader>
+                <CardTitle as="h3" className="text-base font-semibold text-rose mb-2">
+                  Scientific Disagreement / Override Formulation
+                </CardTitle>
+                <CardDescription className="text-rose mb-2">
+                  You have rejected Primary Candidate 1. Please document the specific points of
+                  divergence from Magniom's algorithmic nomination:
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Textarea
+                  value={disagreement}
+                  onChange={e => setDisagreement(e.target.value)}
+                  placeholder="Detail the scientific, clinical, or patient-specific grounds for departing from Primary 1..."
+                  disabled={isImmutable}
+                  id="disagreement-reasoning-textarea"
+                />
+              </CardContent>
+            </Card>
           )}
         </div>
 
         {/* Right Column: Pre-Sign Summary, Influence & Attestation */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+        <div className="flex flex-col gap-5">
           {/* Magniom Influence Selector */}
-          <div className="card">
-            <h3 style={{ fontSize: '0.9375rem', fontWeight: 600, marginBottom: '0.5rem' }}>
-              Magniom Influence Assessment
-            </h3>
-            <p
-              style={{
-                fontSize: '0.8125rem',
-                color: 'var(--text-secondary)',
-                marginBottom: '0.75rem',
-              }}
-            >
-              How much did Magniom alter your target decision compared to prior independent
-              reasoning?
-            </p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
-              {(['none', 'minor', 'moderate', 'major'] as MagniomInfluence[]).map(inf => (
-                <button
-                  key={inf}
-                  onClick={() => setMagniomInfluence(inf)}
-                  className={`btn ${magniomInfluence === inf ? 'btn-primary' : 'btn-secondary'}`}
-                  style={{ textTransform: 'capitalize', fontSize: '0.8125rem', padding: '0.4rem' }}
-                  disabled={isImmutable}
-                >
-                  {inf}
-                </button>
-              ))}
-            </div>
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle as="h3" className="text-base font-semibold mb-2">
+                Magniom Influence Assessment
+              </CardTitle>
+              <CardDescription className="mb-3">
+                How much did Magniom alter your target decision compared to prior independent
+                reasoning?
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-2">
+                {(['none', 'minor', 'moderate', 'major'] as MagniomInfluence[]).map(inf => (
+                  <Button
+                    key={inf}
+                    onClick={() => setMagniomInfluence(inf)}
+                    variant={magniomInfluence === inf ? 'primary' : 'secondary'}
+                    size="sm"
+                    className="capitalize text-sm p-1.5"
+                    disabled={isImmutable}
+                  >
+                    {inf}
+                  </Button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Clinician Identity & Pre-Sign Review */}
-          <div className="card">
-            <h3 style={{ fontSize: '0.9375rem', fontWeight: 600, marginBottom: '0.75rem' }}>
-              Treating Clinician Identification
-            </h3>
-            <div className="form-group">
-              <label className="form-label" style={{ fontSize: '0.75rem' }}>
-                Clinician Full Name:
-              </label>
-              <input
-                type="text"
-                className="form-input"
-                value={clinicianName}
-                onChange={e => setClinicianName(e.target.value)}
-                disabled={isImmutable}
-              />
-            </div>
-            <div className="form-group">
-              <label className="form-label" style={{ fontSize: '0.75rem' }}>
-                Professional Registration / License:
-              </label>
-              <input
-                type="text"
-                className="form-input"
-                value={licenseNumber}
-                onChange={e => setLicenseNumber(e.target.value)}
-                disabled={isImmutable}
-              />
-            </div>
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle as="h3" className="text-base font-semibold mb-3">
+                Treating Clinician Identification
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <FormGroup>
+                <FormLabel className="text-xs">Clinician Full Name:</FormLabel>
+                <Input
+                  type="text"
+                  value={clinicianName}
+                  onChange={e => setClinicianName(e.target.value)}
+                  disabled={isImmutable}
+                />
+              </FormGroup>
+              <FormGroup>
+                <FormLabel className="text-xs">Professional Registration / License:</FormLabel>
+                <Input
+                  type="text"
+                  value={licenseNumber}
+                  onChange={e => setLicenseNumber(e.target.value)}
+                  disabled={isImmutable}
+                />
+              </FormGroup>
+            </CardContent>
+          </Card>
 
           {/* Multi-Tab Invalidation Alert (§141) */}
-          {multiTabAlert && (
-            <div
-              role="alert"
-              style={{
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                border: '1px solid #ef4444',
-                borderRadius: '6px',
-                padding: '10px 14px',
-                fontSize: '0.8rem',
-                color: '#fca5a5',
-              }}
-            >
-              ⚠ {multiTabAlert}
-            </div>
-          )}
+          {multiTabAlert && <Alert variant="danger">{multiTabAlert}</Alert>}
 
           {/* Sign-Off Context Restatement Panel (§138) */}
           {!isImmutable && (
-            <div
-              className="card"
-              style={{
-                background: 'rgba(15, 23, 42, 0.8)',
-                border: '1px solid rgba(56, 189, 248, 0.3)',
-              }}
-            >
-              <div
-                style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}
-              >
-                <span className="badge badge-neutral" style={{ fontSize: '0.65rem' }}>
+            <Card className="bg-surface-card border-cyan">
+              <CardHeader className="flex items-center gap-2 mb-2">
+                <Badge variant="neutral" className="text-xs">
                   §138 CONTEXT RESTATEMENT
-                </span>
-                <span style={{ fontSize: '0.825rem', fontWeight: 600, color: 'var(--text-main)' }}>
+                </Badge>
+                <CardTitle as="h3" className="text-sm font-semibold text-primary">
                   Pre-Attestation Dimensions
-                </span>
-              </div>
-              <div
-                style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.8rem' }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-muted)' }}>Case Identifier:</span>
-                  <strong style={{ fontFamily: 'var(--font-mono)', color: 'var(--accent-cyan)' }}>
-                    {caseId}
-                  </strong>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-col gap-1.5 text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-muted">Case Identifier:</span>
+                    <strong className="font-mono text-cyan">{caseId}</strong>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted">Deployment Mode:</span>
+                    <Badge
+                      className={`${mode === 'CLINICAL' ? 'badge-clinical' : mode === 'RESEARCH' ? 'badge-research' : 'badge-validation'} text-xs`}
+                    >
+                      {mode || 'CLINICAL'}
+                    </Badge>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted">Target Slate ID:</span>
+                    <span className="font-mono text-secondary">{slateVM.id}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted">Candidates Evaluated:</span>
+                    <span className="text-secondary">
+                      {slateVM.primaryCandidates.length + slateVM.additionalCandidates.length}{' '}
+                      candidate(s)
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted">Treating Clinician (§28):</span>
+                    <strong className="text-primary">{clinicianName}</strong>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted">Statutory License:</span>
+                    <span className="text-secondary">{licenseNumber}</span>
+                  </div>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-muted)' }}>Deployment Mode:</span>
-                  <span
-                    className={`badge ${mode === 'CLINICAL' ? 'badge-clinical' : mode === 'RESEARCH' ? 'badge-research' : 'badge-validation'}`}
-                    style={{ fontSize: '0.7rem' }}
-                  >
-                    {mode || 'CLINICAL'}
-                  </span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-muted)' }}>Target Slate ID:</span>
-                  <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>
-                    {slateVM.id}
-                  </span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-muted)' }}>Candidates Evaluated:</span>
-                  <span style={{ color: 'var(--text-secondary)' }}>
-                    {slateVM.primaryCandidates.length + slateVM.additionalCandidates.length}{' '}
-                    candidate(s)
-                  </span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-muted)' }}>Treating Clinician (§28):</span>
-                  <strong style={{ color: 'var(--text-main)' }}>{clinicianName}</strong>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-muted)' }}>Statutory License:</span>
-                  <span style={{ color: 'var(--text-secondary)' }}>{licenseNumber}</span>
-                </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           )}
 
           {/* Attestation & Sign Button */}
           {!isImmutable && (
-            <div className="card" style={{ background: '#0a1322', borderColor: '#1e3a5f' }}>
-              <h3
-                style={{
-                  fontSize: '0.9375rem',
-                  fontWeight: 700,
-                  color: 'var(--accent-cyan)',
-                  marginBottom: '0.5rem',
-                }}
-              >
-                Legal & Clinical Attestation
-              </h3>
-              <p
-                style={{
-                  fontSize: '0.8125rem',
-                  color: '#cbd5e1',
-                  marginBottom: '0.75rem',
-                  lineHeight: 1.4,
-                }}
-              >
-                {attestationStatement}
-              </p>
-
-              <label
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  cursor: 'pointer',
-                  marginBottom: '1rem',
-                  fontSize: '0.875rem',
-                }}
-              >
-                <input
-                  type="checkbox"
+            <Card className="bg-surface-card border-subtle">
+              <CardHeader>
+                <CardTitle as="h3" className="text-base font-bold text-cyan mb-2">
+                  Legal &amp; Clinical Attestation
+                </CardTitle>
+                <CardDescription className="mb-3 leading-relaxed">
+                  {attestationStatement}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Checkbox
+                  id="attestation-checkbox"
                   checked={attestationConfirmed}
                   onChange={e => setAttestationConfirmed(e.target.checked)}
-                  id="attestation-checkbox"
+                  label={
+                    <strong className="text-primary">
+                      I independently confirm and sign this decision
+                    </strong>
+                  }
+                  className="mb-4 text-sm"
                 />
-                <strong style={{ color: '#fff' }}>
-                  I independently confirm and sign this decision
-                </strong>
-              </label>
 
-              {isMobileViewport && (
-                <div
-                  className="badge badge-tierexp"
-                  style={{
-                    display: 'block',
-                    padding: '0.75rem',
-                    marginBottom: '0.75rem',
-                    textAlign: 'center',
-                    lineHeight: 1.4,
-                    fontSize: '0.8125rem',
-                  }}
-                  role="alert"
+                {isMobileViewport && (
+                  <Alert
+                    variant="warning"
+                    className="mb-3"
+                    icon={<SmartphoneIcon size={16} className="text-amber flex-shrink-0" />}
+                    title="Mobile Signing Disabled (§183)"
+                    description="Clinical decision signing on small screens (<768px) is disabled until full evidence & spatial geometry review is formally validated for mobile devices. Please review and sign on a clinical desktop display."
+                  />
+                )}
+
+                <Button
+                  variant={withholdStimulation ? 'danger' : 'primary'}
+                  onClick={handleExecuteSign}
+                  disabled={
+                    isResearchMode ||
+                    isMobileViewport ||
+                    !attestationConfirmed ||
+                    !overallReasoning.trim() ||
+                    isSigning ||
+                    slateVM.isStale
+                  }
+                  className="w-full p-3 text-base font-bold"
+                  id="sign-target-decision-btn"
                 >
-                  📱 <strong>Mobile Signing Disabled (§183):</strong> Clinical decision signing on
-                  small screens (&lt;768px) is disabled until full evidence &amp; spatial geometry
-                  review is formally validated for mobile devices. Please review and sign on a
-                  clinical desktop display.
-                </div>
-              )}
-
-              <button
-                onClick={handleExecuteSign}
-                disabled={
-                  isResearchMode ||
-                  isMobileViewport ||
-                  !attestationConfirmed ||
-                  !overallReasoning.trim() ||
-                  isSigning ||
-                  slateVM.isStale
-                }
-                className={`btn ${withholdStimulation ? 'btn-danger' : 'btn-primary'}`}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  fontSize: '0.9375rem',
-                  fontWeight: 700,
-                  opacity: isResearchMode || isMobileViewport ? 0.5 : 1,
-                  cursor: isResearchMode || isMobileViewport ? 'not-allowed' : 'pointer',
-                }}
-                id="sign-target-decision-btn"
-              >
-                {isResearchMode
-                  ? 'Clinical Signing Prohibited (Research Slate)'
-                  : isMobileViewport
-                    ? 'Signing Disabled on Mobile Viewport (§183)'
-                    : isSigning
-                      ? 'Cryptographically Signing...'
-                      : withholdStimulation
-                        ? 'Sign Decision: Withhold Stimulation →'
-                        : 'Sign Target Decision →'}
-              </button>
-            </div>
+                  {isResearchMode ? (
+                    'Clinical Signing Prohibited (Research Slate)'
+                  ) : isMobileViewport ? (
+                    'Signing Disabled on Mobile Viewport (§183)'
+                  ) : isSigning ? (
+                    'Cryptographically Signing...'
+                  ) : withholdStimulation ? (
+                    <>
+                      Sign Decision: Withhold Stimulation{' '}
+                      <ArrowRightIcon size={14} className="ml-1 inline" />
+                    </>
+                  ) : (
+                    <>
+                      Sign Target Decision <ArrowRightIcon size={14} className="ml-1 inline" />
+                    </>
+                  )}
+                </Button>
+              </CardContent>
+            </Card>
           )}
         </div>
       </div>

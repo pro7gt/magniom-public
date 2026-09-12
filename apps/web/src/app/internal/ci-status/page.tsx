@@ -1,7 +1,18 @@
 'use client';
 
+import {
+  Breadcrumbs,
+  Button,
+  Badge,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  ArrowLeftIcon,
+  PageHeader,
+} from '@/components/ui';
+
 import React from 'react';
-import Link from 'next/link';
 
 // ==========================================
 // Internal CI/CD Status Dashboard (§198)
@@ -10,80 +21,63 @@ import Link from 'next/link';
 
 export default function InternalCIStatusPage() {
   return (
-    <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div
-        style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.25rem' }}
-      >
-        <span className="badge badge-neutral" style={{ textTransform: 'uppercase' }}>
-          Internal Engineering
-        </span>
-      </div>
-      <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-        CI/CD Pipeline Status (§198)
-      </h1>
-      <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-        Continuous integration and deployment pipeline monitoring. Safety-relevant UX changes
-        trigger expanded regression and human-factors impact assessment (§269).
-      </p>
+    <div className="container page-container-col">
+      <Breadcrumbs
+        items={[
+          { label: 'Internal', href: '/internal' },
+          { label: 'CI Pipeline Status', current: true },
+        ]}
+      />
 
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '1rem',
-        }}
-      >
-        <div className="card" style={{ padding: '1.25rem' }}>
-          <span
-            style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}
-          >
-            Build Status
-          </span>
-          <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#10b981', marginTop: '4px' }}>
-            PASS
-          </div>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-            All pipelines green
-          </span>
-        </div>
-        <div className="card" style={{ padding: '1.25rem' }}>
-          <span
-            style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}
-          >
-            Test Coverage
-          </span>
-          <div
-            style={{
-              fontSize: '1.8rem',
-              fontWeight: 800,
-              color: 'var(--accent-cyan)',
-              marginTop: '4px',
-            }}
-          >
-            94.2%
-          </div>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-            Shell + Authority + Domain
-          </span>
-        </div>
-        <div className="card" style={{ padding: '1.25rem' }}>
-          <span
-            style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}
-          >
-            Visual Regression
-          </span>
-          <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#10b981', marginTop: '4px' }}>
-            0 Diffs
-          </div>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-            Safety-critical snapshots
-          </span>
-        </div>
+      <PageHeader
+        eyebrow={
+          <Badge variant="neutral" className="uppercase">
+            Internal Engineering
+          </Badge>
+        }
+        title="CI/CD Pipeline Status (§198)"
+        subtitle="Continuous integration and deployment pipeline monitoring. Safety-relevant UX changes trigger expanded regression and human-factors impact assessment (§269)."
+      />
+
+      <div className="grid grid-cols-auto-fit gap-4">
+        <Card className="p-5">
+          <CardHeader className="p-0">
+            <CardTitle as="h2" className="text-xs text-muted uppercase">
+              Build Status
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="text-2xl font-extrabold text-emerald mt-1">PASS</div>
+            <span className="text-xs text-secondary">All pipelines green</span>
+          </CardContent>
+        </Card>
+        <Card className="p-5">
+          <CardHeader className="p-0">
+            <CardTitle as="h2" className="text-xs text-muted uppercase">
+              Test Coverage
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="text-2xl font-extrabold text-cyan mt-1">94.2%</div>
+            <span className="text-xs text-secondary">Shell + Authority + Domain</span>
+          </CardContent>
+        </Card>
+        <Card className="p-5">
+          <CardHeader className="p-0">
+            <CardTitle as="h2" className="text-xs text-muted uppercase">
+              Visual Regression
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="text-2xl font-extrabold text-emerald mt-1">0 Diffs</div>
+            <span className="text-xs text-secondary">Safety-critical snapshots</span>
+          </CardContent>
+        </Card>
       </div>
 
-      <Link href="/internal/verification" className="btn btn-secondary">
-        ← Verification Dashboard
-      </Link>
+      <Button variant="secondary" href="/internal/verification">
+        <ArrowLeftIcon size={14} className="mr-1 inline" /> Verification Dashboard
+      </Button>
     </div>
   );
 }

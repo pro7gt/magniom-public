@@ -1,7 +1,20 @@
 'use client';
 
+import {
+  Button,
+  Badge,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+  ArrowRightIcon,
+  TableEmptyRow,
+  PageHeader,
+} from '@/components/ui';
+
 import React from 'react';
-import Link from 'next/link';
 import { caseStore } from '../lib/case-store';
 import { CANONICAL_CLINICAL_SESSION } from '../lib/release-authority';
 
@@ -14,57 +27,64 @@ export default function ClinicianHomePage() {
   const urgentCase = allCases.find(c => c.id === 'case-ux-g01') || allCases[0];
 
   return (
-    <div className="clinician-home-container">
+    <div className="container page-container-col clinician-home-container">
       {/* 1. Clinician Greeting & Summary Hero (§74, §154) */}
       <section className="home-hero-section" aria-labelledby="home-greeting-heading">
-        <div className="home-hero-header">
-          <div className="greeting-group">
-            <span className="greeting-time-badge">Specialist Clinical Worklist</span>
-            <h1 id="home-greeting-heading" className="greeting-title">
-              Good evening, {session.user.displayName}
-            </h1>
-            <p className="greeting-subtitle">
+        <PageHeader
+          className="home-hero-header"
+          eyebrow={
+            <Badge variant="clinical" className="greeting-time-badge">
+              Specialist Clinical Worklist
+            </Badge>
+          }
+          title={<span id="home-greeting-heading">Good evening, {session.user.displayName}</span>}
+          subtitle={
+            <span>
               <strong>3 clinical cases</strong> require specialist target review and formulation
               approval today.
-            </p>
-          </div>
-
-          <div className="hero-quick-actions">
-            <Link href="/cases" className="btn btn-secondary" id="view-all-cases-hero-btn">
-              View All Cases (9)
-            </Link>
-            <Link href="/awaiting-review" className="btn btn-secondary">
-              Review Queue <span className="badge badge-tier3 badge-tiny">3</span>
-            </Link>
-          </div>
-        </div>
+            </span>
+          }
+          actions={
+            <div className="hero-quick-actions">
+              <Button variant="secondary" href="/cases" id="view-all-cases-hero-btn">
+                View All Cases (9)
+              </Button>
+              <Button variant="secondary" href="/awaiting-review">
+                Review Queue{' '}
+                <Badge variant="tier3" size="sm">
+                  3
+                </Badge>
+              </Button>
+            </div>
+          }
+        />
 
         {/* Hero Action Card: Most Urgent Active Case (§74, §154) */}
         {urgentCase && (
-          <div className="urgent-case-hero-card" aria-label="Prioritized Clinical Case">
-            <div className="urgent-card-header">
+          <Card className="urgent-case-hero-card" aria-label="Prioritized Clinical Case">
+            <CardHeader className="urgent-card-header">
               <div className="urgent-card-tags">
-                <span className="badge badge-tier1">PRIORITY 1 ACTION</span>
-                <span className="badge badge-neutral" style={{ fontFamily: 'var(--font-mono)' }}>
+                <Badge variant="tier1">PRIORITY 1 ACTION</Badge>
+                <Badge variant="neutral" className="font-mono">
                   {urgentCase.code}
-                </span>
-                <span className="badge badge-neutral">{urgentCase.indication}</span>
+                </Badge>
+                <Badge variant="neutral">{urgentCase.indication}</Badge>
               </div>
               <span className="urgent-time-meta">Updated today · Ready for review</span>
-            </div>
+            </CardHeader>
 
-            <div className="urgent-card-body">
-              <h2 className="urgent-card-title">
+            <CardContent className="urgent-card-body">
+              <CardTitle as="h2" className="urgent-card-title">
                 Target Slate Ready for Specialist Clinician Review
-              </h2>
-              <p className="urgent-card-description">
+              </CardTitle>
+              <CardDescription className="urgent-card-description">
                 <strong>{urgentCase.title}:</strong> High-convergence MDD profile with verified
                 sgACC anti-correlation. Evidence baseline and patient-specific connectomic
                 refinement qualified.
-              </p>
-            </div>
+              </CardDescription>
+            </CardContent>
 
-            <div className="urgent-card-footer">
+            <CardFooter className="urgent-card-footer">
               <div className="urgent-card-meta">
                 <span>
                   Phenotype: <strong className="text-emerald">Approved (SHA-256)</strong>
@@ -79,23 +99,23 @@ export default function ClinicianHomePage() {
                 </span>
               </div>
               <div className="urgent-card-actions">
-                <Link
+                <Button
+                  variant="secondary"
                   href={`/cases/${urgentCase.id}`}
-                  className="btn btn-secondary"
                   id="urgent-case-overview-btn"
                 >
                   Case Overview
-                </Link>
-                <Link
+                </Button>
+                <Button
+                  variant="primary"
                   href={`/cases/${urgentCase.id}/targets`}
-                  className="btn btn-primary"
                   id="continue-target-review-btn"
                 >
-                  Continue Target Review →
-                </Link>
+                  Continue Target Review <ArrowRightIcon size={14} className="ml-1 inline" />
+                </Button>
               </div>
-            </div>
-          </div>
+            </CardFooter>
+          </Card>
         )}
       </section>
 
@@ -105,66 +125,80 @@ export default function ClinicianHomePage() {
           <h2 id="worklist-heading" className="section-title">
             Needs Your Attention
           </h2>
-          <span className="section-count-badge">3 Actionable Queues</span>
+          <Badge variant="neutral" className="section-count-badge">
+            3 Actionable Queues
+          </Badge>
         </div>
 
         <div className="worklist-cards-grid">
           {/* Action Card 1: Phenotype Formulation */}
-          <div className="worklist-action-card">
-            <div className="card-top-meta">
-              <span className="badge badge-tier3">PHENOTYPE CONFIRMATION</span>
+          <Card className="worklist-action-card">
+            <CardHeader className="card-top-meta">
+              <Badge variant="tier3">PHENOTYPE CONFIRMATION</Badge>
               <span className="card-case-code">MGN-26-0002</span>
-            </div>
-            <h3 className="card-action-title">Phenotype Formulation Awaiting Clinician Gating</h3>
-            <p className="card-action-text">
-              Anxious Depression dual-circuit profile requires specialist priority sign-off prior to
-              Target Slate generation.
-            </p>
-            <div className="card-action-footer">
+            </CardHeader>
+            <CardContent>
+              <CardTitle as="h3" className="card-action-title">
+                Phenotype Formulation Awaiting Clinician Gating
+              </CardTitle>
+              <CardDescription className="card-action-text">
+                Anxious Depression dual-circuit profile requires specialist priority sign-off prior
+                to Target Slate generation.
+              </CardDescription>
+            </CardContent>
+            <CardFooter className="card-action-footer">
               <span className="card-status-label">Anxious Distress • GAD-7: 16</span>
-              <Link href="/cases/case-ux-g02/phenotype" className="btn btn-secondary btn-sm">
-                Review Phenotype →
-              </Link>
-            </div>
-          </div>
+              <Button variant="secondary" size="sm" href="/cases/case-ux-g02/phenotype">
+                Review Phenotype <ArrowRightIcon size={14} className="ml-1 inline" />
+              </Button>
+            </CardFooter>
+          </Card>
 
           {/* Action Card 2: Low Reliability Connectome */}
-          <div className="worklist-action-card">
-            <div className="card-top-meta">
-              <span className="badge badge-tier3">CONNECTOME QUALIFICATION</span>
+          <Card className="worklist-action-card">
+            <CardHeader className="card-top-meta">
+              <Badge variant="tier3">CONNECTOME QUALIFICATION</Badge>
               <span className="card-case-code">MGN-26-0003</span>
-            </div>
-            <h3 className="card-action-title">Low Reliability Connectome Warning Review</h3>
-            <p className="card-action-text">
-              Elevated motion artifacts flagged during resting-state scan. Requires specialist
-              review of evidence-only fallback.
-            </p>
-            <div className="card-action-footer">
+            </CardHeader>
+            <CardContent>
+              <CardTitle as="h3" className="card-action-title">
+                Low Reliability Connectome Warning Review
+              </CardTitle>
+              <CardDescription className="card-action-text">
+                Elevated motion artifacts flagged during resting-state scan. Requires specialist
+                review of evidence-only fallback.
+              </CardDescription>
+            </CardContent>
+            <CardFooter className="card-action-footer">
               <span className="card-status-label">Low Reliability • Fallback Active</span>
-              <Link href="/cases/case-ux-g03/connectome" className="btn btn-secondary btn-sm">
-                Inspect Connectome →
-              </Link>
-            </div>
-          </div>
+              <Button variant="secondary" size="sm" href="/cases/case-ux-g03/connectome">
+                Inspect Connectome <ArrowRightIcon size={14} className="ml-1 inline" />
+              </Button>
+            </CardFooter>
+          </Card>
 
           {/* Action Card 3: Stale Target Slate */}
-          <div className="worklist-action-card stale-card">
-            <div className="card-top-meta">
-              <span className="badge badge-tier3">STALE TARGET SLATE</span>
+          <Card className="worklist-action-card stale-card">
+            <CardHeader className="card-top-meta">
+              <Badge variant="tier3">STALE TARGET SLATE</Badge>
               <span className="card-case-code">MGN-26-0006</span>
-            </div>
-            <h3 className="card-action-title">Target Slate Predates Phenotype Update</h3>
-            <p className="card-action-text">
-              Clinical phenotype was re-approved with updated severity weights. Slate must be
-              regenerated before signing.
-            </p>
-            <div className="card-action-footer">
+            </CardHeader>
+            <CardContent>
+              <CardTitle as="h3" className="card-action-title">
+                Target Slate Predates Phenotype Update
+              </CardTitle>
+              <CardDescription className="card-action-text">
+                Clinical phenotype was re-approved with updated severity weights. Slate must be
+                regenerated before signing.
+              </CardDescription>
+            </CardContent>
+            <CardFooter className="card-action-footer">
               <span className="card-status-label text-amber">Sign Lockout Active</span>
-              <Link href="/cases/case-ux-g06/targets" className="btn btn-primary btn-sm">
-                Regenerate Slate →
-              </Link>
-            </div>
-          </div>
+              <Button variant="primary" size="sm" href="/cases/case-ux-g06/targets">
+                Regenerate Slate <ArrowRightIcon size={14} className="ml-1 inline" />
+              </Button>
+            </CardFooter>
+          </Card>
         </div>
       </section>
 
@@ -180,12 +214,12 @@ export default function ClinicianHomePage() {
               records.
             </p>
           </div>
-          <Link href="/cases" className="btn btn-secondary btn-sm">
-            View All Cases Registry →
-          </Link>
+          <Button variant="secondary" size="sm" href="/cases">
+            View All Cases Registry <ArrowRightIcon size={14} className="ml-1 inline" />
+          </Button>
         </div>
 
-        <div className="card cases-table-card">
+        <Card className="cases-table-card">
           <div className="comparison-table-wrapper">
             <table className="comparison-table" aria-label="Recent Clinical Cases Table">
               <thead>
@@ -199,53 +233,57 @@ export default function ClinicianHomePage() {
                 </tr>
               </thead>
               <tbody>
-                {activeCases.map(c => (
-                  <tr key={c.id}>
-                    <td>
-                      <strong
-                        style={{ fontFamily: 'var(--font-mono)', color: 'var(--accent-cyan)' }}
-                      >
-                        {c.code}
-                      </strong>
-                    </td>
-                    <td>{c.title}</td>
-                    <td>
-                      <span className="badge badge-neutral">{c.indication}</span>
-                    </td>
-                    <td>
-                      <span className="badge badge-tier1">{c.state}</span>
-                    </td>
-                    <td>
-                      {c.isStale ? (
-                        <span className="badge badge-tier3">STALE SLATE</span>
-                      ) : (
-                        <span className="badge badge-tier1">CURRENT</span>
-                      )}
-                    </td>
-                    <td>
-                      <div style={{ display: 'flex', gap: '0.5rem' }}>
-                        <Link
-                          href={`/cases/${c.id}`}
-                          className="btn btn-secondary"
-                          style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}
-                        >
-                          Overview
-                        </Link>
-                        <Link
-                          href={`/cases/${c.id}/targets`}
-                          className="btn btn-primary"
-                          style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}
-                        >
-                          Target Slate →
-                        </Link>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {activeCases.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={6}
+                    message="No active clinical cases found."
+                    subMessage="Initialize new patient cases from the New Patient Intake workspace."
+                  />
+                ) : (
+                  activeCases.map(c => (
+                    <tr key={c.id}>
+                      <td>
+                        <strong className="font-mono text-cyan">{c.code}</strong>
+                      </td>
+                      <td>{c.title}</td>
+                      <td>
+                        <Badge variant="neutral">{c.indication}</Badge>
+                      </td>
+                      <td>
+                        <Badge variant="tier1">{c.state}</Badge>
+                      </td>
+                      <td>
+                        {c.isStale ? (
+                          <Badge variant="tier3">STALE SLATE</Badge>
+                        ) : (
+                          <Badge variant="tier1">CURRENT</Badge>
+                        )}
+                      </td>
+                      <td>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="secondary"
+                            href={`/cases/${c.id}`}
+                            className="p-1 text-xs"
+                          >
+                            Overview
+                          </Button>
+                          <Button
+                            variant="primary"
+                            href={`/cases/${c.id}/targets`}
+                            className="p-1 text-xs"
+                          >
+                            Target Slate <ArrowRightIcon size={14} className="ml-1 inline" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
-        </div>
+        </Card>
       </section>
     </div>
   );

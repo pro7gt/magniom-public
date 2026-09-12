@@ -1,7 +1,17 @@
 'use client';
 
+import {
+  Button,
+  Badge,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  ArrowRightIcon,
+} from '@/components/ui';
+
 import React, { useState } from 'react';
-import Link from 'next/link';
 import { ALL_UX_GOLDEN_CASES } from '@magniom/test-fixtures';
 
 interface TaskResult {
@@ -98,185 +108,112 @@ export function FormativeReviewHarness() {
     };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+    <div className="page-container-col">
       {/* Golden Cases Selector Grid */}
-      <div className="card">
-        <h2
-          style={{
-            fontSize: '1.125rem',
-            fontWeight: 700,
-            marginBottom: '0.75rem',
-            color: 'var(--accent-cyan)',
-          }}
-        >
-          UX Golden Cases Suite (G01–G09)
-        </h2>
-        <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>
-          Select a synthetic case scenario to test specific clinician workflow states, safety
-          mitigations, and formative human-factors tasks.
-        </p>
+      <Card>
+        <CardHeader>
+          <CardTitle as="h2" className="text-lg font-bold text-cyan mb-2">
+            UX Golden Cases Suite (G01–G09)
+          </CardTitle>
+          <CardDescription className="mb-4">
+            Select a synthetic case scenario to test specific clinician workflow states, safety
+            mitigations, and formative human-factors tasks.
+          </CardDescription>
+        </CardHeader>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-            gap: '0.75rem',
-          }}
-        >
-          {ALL_UX_GOLDEN_CASES.map(bundle => {
-            const isSelected = bundle.id === selectedCaseId;
-            return (
-              <div
-                key={bundle.id}
-                onClick={() => setSelectedCaseId(bundle.id)}
-                style={{
-                  background: isSelected ? '#172554' : 'var(--bg-surface-elevated)',
-                  border: isSelected ? '1px solid #38bdf8' : '1px solid var(--border-color)',
-                  borderRadius: '0.5rem',
-                  padding: '0.75rem',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0.25rem',
-                  transition: 'all 0.15s ease',
-                }}
-              >
+        <CardContent>
+          <div className="grid grid-cols-auto-280 gap-3">
+            {ALL_UX_GOLDEN_CASES.map(bundle => {
+              const isSelected = bundle.id === selectedCaseId;
+              return (
                 <div
-                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                  key={bundle.id}
+                  onClick={() => setSelectedCaseId(bundle.id)}
+                  className={`rounded-lg p-3 cursor-pointer flex flex-col gap-1 transition-all ${isSelected ? 'bg-surface-card border-cyan' : 'bg-surface-elevated border'}`}
                 >
-                  <span
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: '0.75rem',
-                      color: isSelected ? '#38bdf8' : 'var(--text-secondary)',
-                    }}
-                  >
-                    {bundle.code}
-                  </span>
-                  {bundle.isStale && <span className="badge badge-tier3">STALE</span>}
-                  {bundle.clinicalCase.mode === 'RESEARCH' && (
-                    <span className="badge badge-tierexp">RESEARCH</span>
-                  )}
+                  <div className="flex justify-between items-center">
+                    <span
+                      className={`font-mono text-xs ${isSelected ? 'text-cyan' : 'text-secondary'}`}
+                    >
+                      {bundle.code}
+                    </span>
+                    {bundle.isStale && <Badge variant="tier3">STALE</Badge>}
+                    {bundle.clinicalCase.mode === 'RESEARCH' && (
+                      <Badge variant="tierexp">RESEARCH</Badge>
+                    )}
+                  </div>
+                  <strong className="text-sm text-primary">{bundle.title}</strong>
                 </div>
-                <strong style={{ fontSize: '0.875rem', color: 'var(--text-primary)' }}>
-                  {bundle.title}
-                </strong>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
 
-        {/* Active Case Summary Banner */}
-        <div
-          style={{
-            marginTop: '1rem',
-            background: '#090d16',
-            border: '1px solid var(--border-color)',
-            borderRadius: '0.5rem',
-            padding: '1rem',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '1rem',
-          }}
-        >
-          <div>
-            <strong style={{ color: 'var(--accent-cyan)' }}>
-              Active Case: {activeBundle.title}
-            </strong>
-            <p
-              style={{
-                fontSize: '0.8125rem',
-                color: '#cbd5e1',
-                marginTop: '0.25rem',
-                maxWidth: '800px',
-              }}
-            >
-              {activeBundle.expectedPattern}
-            </p>
+          {/* Active Case Summary Banner */}
+          <div className="mt-4 bg-canvas border rounded-lg p-4 flex justify-between items-center flex-wrap gap-4">
+            <div>
+              <strong className="text-cyan">Active Case: {activeBundle.title}</strong>
+              <p className="text-sm text-secondary mt-1 max-w-3xl">
+                {activeBundle.expectedPattern}
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="secondary"
+                href={`/cases/${activeBundle.id}`}
+
+                className="text-sm"
+              >
+                Open Case Shell <ArrowRightIcon size={14} className="ml-1 inline" />
+              </Button>
+              <Button
+                variant="primary"
+                href={`/cases/${activeBundle.id}/targets`}
+
+                className="text-sm"
+              >
+                Launch Target Slate <ArrowRightIcon size={14} className="ml-1 inline" />
+              </Button>
+            </div>
           </div>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <Link
-              href={`/cases/${activeBundle.id}`}
-              className="btn btn-secondary"
-              style={{ fontSize: '0.8125rem' }}
-            >
-              Open Case Shell →
-            </Link>
-            <Link
-              href={`/cases/${activeBundle.id}/targets`}
-              className="btn btn-primary"
-              style={{ fontSize: '0.8125rem' }}
-            >
-              Launch Target Slate →
-            </Link>
-          </div>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* 12 Critical User Tasks Test Suite */}
-      <div className="card">
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '0.75rem',
-          }}
-        >
+      <Card>
+        <CardHeader className="flex justify-between items-center mb-3">
           <div>
-            <h2 style={{ fontSize: '1.125rem', fontWeight: 700 }}>
+            <CardTitle as="h2" className="text-lg font-bold">
               Formative Human-Factors Round 1: 12 Critical User Tasks
-            </h2>
-            <p style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)' }}>
+            </CardTitle>
+            <CardDescription>
               Usability protocol verifying prevention of critical use errors (IEC 62366-1 / FDA
               Human Factors Guidance).
-            </p>
+            </CardDescription>
           </div>
-          <span
-            className="badge badge-tier1"
-            style={{ fontSize: '0.8125rem', padding: '0.35rem 0.75rem' }}
-          >
+          <Badge variant="tier1" className="text-sm py-1.5 px-3">
             12 / 12 TASK FLOWS IMPLEMENTED (FORMATIVE TESTING READY)
-          </span>
-        </div>
+          </Badge>
+        </CardHeader>
 
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
-            gap: '0.75rem',
-          }}
-        >
-          {Object.values(taskResults).map(task => (
-            <div
-              key={task.id}
-              style={{
-                background: 'var(--bg-surface-elevated)',
-                border: '1px solid var(--border-color)',
-                borderRadius: '0.5rem',
-                padding: '0.75rem',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.25rem',
-              }}
-            >
+        <CardContent>
+          <div className="grid grid-cols-auto-360 gap-3">
+            {Object.values(taskResults).map(task => (
               <div
-                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                key={task.id}
+                className="bg-surface-elevated border rounded-lg p-3 flex flex-col gap-1"
               >
-                <strong style={{ fontSize: '0.8125rem', color: 'var(--text-primary)' }}>
-                  {task.title}
-                </strong>
-                <span className="badge badge-tier1" style={{ fontSize: '0.7rem' }}>
-                  PASSED
-                </span>
+                <div className="flex justify-between items-center">
+                  <strong className="text-sm text-primary">{task.title}</strong>
+                  <Badge variant="tier1" className="text-xs">
+                    PASSED
+                  </Badge>
+                </div>
+                <p className="text-xs text-secondary">{task.feedback}</p>
               </div>
-              <p style={{ fontSize: '0.75rem', color: '#9ca3af' }}>{task.feedback}</p>
-            </div>
-          ))}
-        </div>
-      </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

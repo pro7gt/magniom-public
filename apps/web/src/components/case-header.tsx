@@ -1,5 +1,16 @@
 'use client';
 
+import {
+  Button,
+  Badge,
+  Modal,
+  ChevronDownIcon,
+  CheckIcon,
+  AlertTriangleIcon,
+  AlertOctagonIcon,
+  RefreshCwIcon,
+} from '@/components/ui';
+
 import React, { useState } from 'react';
 import type {
   CaseShellViewModel,
@@ -126,112 +137,57 @@ export function CaseHeader({
       {/* 1. Main Persistent Header Bar (§58–60) */}
       <div className="case-status-header">
         <div className="case-header-primary">
-          <div
-            className="case-code-title-group"
-            style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
-          >
-            <span
-              className="case-header-code"
-              style={{ fontFamily: 'var(--font-mono)', fontSize: '1.1rem', fontWeight: 700 }}
-            >
-              {caseCode}
-            </span>
-            <span
-              className="case-header-separator"
-              aria-hidden="true"
-              style={{ color: 'var(--text-muted)' }}
-            >
+          <div className="case-code-title-group flex items-center gap-2">
+            <span className="case-header-code font-mono text-lg font-bold">{caseCode}</span>
+            <span className="case-header-separator text-muted" aria-hidden="true">
               •
             </span>
 
             {/* Principal CaseIndication & Switcher Dropdown (§63–66) */}
-            <div
-              className="case-indication-container"
-              style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}
-            >
-              <h1 className="case-header-indication" style={{ margin: 0, fontSize: '1.25rem' }}>
+            <div className="case-indication-container relative inline-flex items-center">
+              <span className="case-header-indication m-0 text-xl font-bold">
                 {activeIndicationFormatted}
-              </h1>
+              </span>
 
               {indicationsList.length > 1 && (
-                <div style={{ position: 'relative', marginLeft: '8px' }}>
-                  <button
-                    className="indication-switcher-btn"
+                <div className="relative ml-2">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="indication-switcher-btn inline-flex items-center gap-1 text-xs px-2 py-0.5"
                     onClick={() => setIsSwitcherOpen(!isSwitcherOpen)}
                     aria-expanded={isSwitcherOpen}
                     aria-label="Switch targeting indication"
-                    style={{
-                      background: 'rgba(255,255,255,0.08)',
-                      border: '1px solid rgba(255,255,255,0.2)',
-                      color: 'var(--text-main)',
-                      padding: '2px 8px',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      fontSize: '0.8rem',
-                    }}
                   >
-                    Switch Indication ▾
-                  </button>
+                    Switch Indication <ChevronDownIcon size={12} />
+                  </Button>
 
                   {isSwitcherOpen && (
-                    <div
-                      className="indication-dropdown-menu"
-                      style={{
-                        position: 'absolute',
-                        top: '100%',
-                        left: 0,
-                        zIndex: 100,
-                        backgroundColor: '#1f2937',
-                        border: '1px solid #374151',
-                        borderRadius: '6px',
-                        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)',
-                        minWidth: '280px',
-                        marginTop: '4px',
-                        padding: '6px 0',
-                      }}
-                    >
-                      <div
-                        style={{
-                          padding: '4px 12px',
-                          fontSize: '0.75rem',
-                          color: '#9ca3af',
-                          textTransform: 'uppercase',
-                        }}
-                      >
+                    <div className="indication-dropdown-menu">
+                      <div className="px-3 py-1 text-xs text-secondary uppercase">
                         Patient Case Indications
                       </div>
                       {indicationsList.map(ind => (
-                        <button
+                        <Button
                           key={ind.caseIndicationId}
+                          variant="ghost"
                           onClick={() => {
                             setIsSwitcherOpen(false);
                             if (ind.indicationCode !== activeIndicationCode) {
                               setPendingSwitchIndication(ind);
                             }
                           }}
-                          style={{
-                            width: '100%',
-                            textAlign: 'left',
-                            padding: '8px 12px',
-                            background:
-                              ind.indicationCode === activeIndicationCode
-                                ? '#374151'
-                                : 'transparent',
-                            color: '#fff',
-                            border: 'none',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                          }}
+                          className={`w-full text-left px-3 py-2 flex justify-between items-center text-sm ${
+                            ind.indicationCode === activeIndicationCode ? 'bg-surface-elevated' : ''
+                          }`}
                         >
                           <span>{ind.label}</span>
                           {ind.isPrimary && (
-                            <span className="badge badge-neutral" style={{ fontSize: '0.7rem' }}>
+                            <Badge variant="neutral" className="text-xs">
                               Primary
-                            </span>
+                            </Badge>
                           )}
-                        </button>
+                        </Button>
                       ))}
                     </div>
                   )}
@@ -241,25 +197,14 @@ export function CaseHeader({
           </div>
 
           {/* Submeta: Patient display label + Task status + Indication Module Disclosure (§68–69) */}
-          <div
-            className="case-header-submeta"
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: '8px',
-              alignItems: 'center',
-              marginTop: '4px',
-            }}
-          >
+          <div className="case-header-submeta flex flex-wrap gap-2 items-center mt-1">
             <span>
               Subject: <strong>{patientDisplayLabel}</strong>
             </span>
             <span>•</span>
             <span>
               Active Task:{' '}
-              <strong style={{ color: 'var(--accent-cyan)' }}>
-                {stateLabels[caseState] || caseState}
-              </strong>
+              <strong className="text-cyan">{stateLabels[caseState] || caseState}</strong>
             </span>
 
             {/* Governing Indication Module Release Disclosure (§68–69) */}
@@ -268,13 +213,7 @@ export function CaseHeader({
                 <span>•</span>
                 <span title={`Release ID: ${effectiveAuthority.moduleReleaseId}`}>
                   Module: <strong>{effectiveAuthority.humanReadableName}</strong>{' '}
-                  <span
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: '0.8rem',
-                      color: 'var(--text-muted)',
-                    }}
-                  >
+                  <span className="font-mono text-xs text-muted">
                     ({effectiveAuthority.moduleVersion})
                   </span>
                 </span>
@@ -284,14 +223,11 @@ export function CaseHeader({
         </div>
 
         {/* Status Pills and Module Qualification (§24, §71, §97–99) */}
-        <div
-          className="case-header-status-pills"
-          style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', alignItems: 'center' }}
-        >
+        <div className="case-header-status-pills flex flex-wrap gap-1.5 items-center">
           {/* Module Qualification Badge (§24, §70–71) */}
           {effectiveAuthority && (
-            <span
-              className={`badge ${
+            <Badge
+              className={`${
                 effectiveAuthority.isClinicalAuthorised
                   ? 'badge-tier1'
                   : effectiveAuthority.isValidationOnly
@@ -301,32 +237,37 @@ export function CaseHeader({
               title={`Module Qualification: ${effectiveAuthority.qualificationLevel}`}
             >
               {effectiveAuthority.permissionLabel}
-            </span>
+            </Badge>
           )}
 
           {/* Dynamic Modality Pills (§97–99) */}
           {effectiveMeasurements && effectiveMeasurements.length > 0 ? (
             effectiveMeasurements.slice(0, 3).map(m => (
-              <span
+              <Badge
+                className={`${m.badgeClass}`}
                 key={m.modality}
-                className={`badge ${m.badgeClass}`}
+
                 title={m.reliabilitySummary || m.modalityLabel}
               >
                 {m.modalityLabel.split(' ')[0]}:{' '}
-                {m.qualification === 'qualified' ? '✓' : m.qualification}
-              </span>
+                {m.qualification === 'qualified' ? (
+                  <CheckIcon size={12} className="inline-block" />
+                ) : (
+                  m.qualification
+                )}
+              </Badge>
             ))
           ) : (
             <>
               {/* Backward compatibility default pills */}
-              <span
-                className={`badge ${isPhenotypeApproved ? 'badge-tier1' : 'badge-tier3'}`}
+              <Badge
+                className={`${isPhenotypeApproved ? 'badge-tier1' : 'badge-tier3'}`}
                 title="Clinician-approved symptom domain formulation"
               >
                 Phenotype: {isPhenotypeApproved ? 'Approved' : 'Pending Approval'}
-              </span>
-              <span
-                className={`badge ${
+              </Badge>
+              <Badge
+                className={`${
                   connectomeQualification === 'qualified' || isConnectomeQualified
                     ? 'badge-tier1'
                     : connectomeQualification === 'limited'
@@ -345,91 +286,83 @@ export function CaseHeader({
                     : connectomeQualification === 'ineligible'
                       ? 'Low Reliability'
                       : 'Not Acquired'}
-              </span>
+              </Badge>
             </>
           )}
 
           {/* Target Slate Status Pill (§222: Silent study header shows only processing status without candidate info) */}
           {effectiveAuthority?.silentProspectiveBlinded ? (
-            <span
-              className="badge badge-neutral"
+            <Badge
+              variant="neutral"
               title="Silent prospective study protocol — results blinded to treating clinician (§221–222)"
             >
               MAGNIOM study processing · Complete
-            </span>
+            </Badge>
           ) : (
-            <span
-              className={`badge ${effectiveIsStale ? (isBlockingStale ? 'badge-tier3' : 'badge-tierexp') : isSlateReady ? 'badge-tier1' : 'badge-neutral'}`}
+            <Badge
+              className={`${effectiveIsStale ? (isBlockingStale ? 'badge-tier3' : 'badge-tierexp') : isSlateReady ? 'badge-tier1' : 'badge-neutral'}`}
               title="Candidate Target Slate readiness"
             >
               Target Slate:{' '}
               {effectiveIsStale ? 'Stale' : isSlateReady ? 'Ready for Review' : 'Pending'}
-            </span>
+            </Badge>
           )}
 
           {/* Decision Status Pill */}
-          <span
-            className={`badge ${isDecisionSigned ? 'badge-tier1' : 'badge-neutral'}`}
+          <Badge
+            className={`${isDecisionSigned ? 'badge-tier1' : 'badge-neutral'}`}
             title="Clinical decision attestation status"
           >
             Decision: {isDecisionSigned ? 'Signed & Locked' : 'Pending Review'}
-          </span>
+          </Badge>
         </div>
       </div>
 
       {/* 2. Clinical Context Strip: Objective, Stage, Lesion, Treatment (§72–75) */}
       {(effectiveObjective || effectiveStage || effectiveLesion || effectiveTreatment) && (
-        <div
-          className="case-header-context-strip"
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '12px',
-            backgroundColor: 'rgba(255,255,255,0.03)',
-            borderTop: '1px solid rgba(255,255,255,0.06)',
-            padding: '6px 16px',
-            fontSize: '0.85rem',
-            alignItems: 'center',
-          }}
-        >
+        <div className="case-header-context-strip">
           {/* Clinical Objective (§72) */}
           {effectiveObjective && (
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ color: 'var(--text-muted)', fontWeight: 600 }}>Objective:</span>
-              <span style={{ color: 'var(--text-main)' }}>{effectiveObjective.title}</span>
+            <div className="inline-flex items-center gap-1.5">
+              <span className="text-muted font-semibold">Objective:</span>
+              <span className="text-primary">{effectiveObjective.title}</span>
             </div>
           )}
 
           {/* Disease Stage (§73) */}
           {effectiveStage && (
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ color: 'var(--text-muted)', fontWeight: 600 }}>Stage:</span>
-              <span className="badge badge-neutral" style={{ fontSize: '0.75rem' }}>
+            <div className="inline-flex items-center gap-1.5">
+              <span className="text-muted font-semibold">Stage:</span>
+              <Badge variant="neutral" className="text-xs">
                 {effectiveStage.stageLabel}
-              </span>
+              </Badge>
             </div>
           )}
 
           {/* Lesion Context (§74) */}
           {effectiveLesion && effectiveLesion.hasLesion && (
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ color: 'var(--text-muted)', fontWeight: 600 }}>Lesion:</span>
-              <span
-                className={`badge ${effectiveLesion.hasTargetOverlapWarning ? 'badge-tier3' : 'badge-neutral'}`}
-                style={{ fontSize: '0.75rem' }}
+            <div className="inline-flex items-center gap-1.5">
+              <span className="text-muted font-semibold">Lesion:</span>
+              <Badge
+                className={`${effectiveLesion.hasTargetOverlapWarning ? 'badge-tier3' : 'badge-neutral'} text-xs`}
               >
                 {effectiveLesion.laterality ? `${effectiveLesion.laterality.toUpperCase()} ` : ''}
                 {effectiveLesion.lesionType || 'Reviewed'}
-                {effectiveLesion.hasTargetOverlapWarning && ' ⚠ Overlap Warning'}
-              </span>
+                {effectiveLesion.hasTargetOverlapWarning && (
+                  <>
+                    {' '}
+                    <AlertTriangleIcon size={12} className="inline-block" /> Overlap Warning
+                  </>
+                )}
+              </Badge>
             </div>
           )}
 
           {/* Treatment Context (§75) */}
           {effectiveTreatment && (
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ color: 'var(--text-muted)', fontWeight: 600 }}>Treatment:</span>
-              <span style={{ color: 'var(--text-main)' }}>{effectiveTreatment.statusLabel}</span>
+            <div className="inline-flex items-center gap-1.5">
+              <span className="text-muted font-semibold">Treatment:</span>
+              <span className="text-primary">{effectiveTreatment.statusLabel}</span>
             </div>
           )}
         </div>
@@ -441,43 +374,25 @@ export function CaseHeader({
           className={`case-staleness-banner ${isBlockingStale ? 'blocking-staleness' : 'important-staleness'}`}
           role="alert"
           aria-label="Stale Target Slate Warning"
-          style={{
-            backgroundColor: isBlockingStale ? '#4a1114' : '#3d2800',
-            borderBottom: `2px solid ${isBlockingStale ? '#e53e3e' : '#d69e2e'}`,
-            padding: '10px 16px',
-            color: isBlockingStale ? '#ffdddd' : '#fefcbf',
-          }}
         >
-          <div
-            className="staleness-content"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              width: '100%',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span className="staleness-icon" aria-hidden="true" style={{ fontSize: '1.2rem' }}>
-                {isBlockingStale ? '🛑' : '⚠'}
+          <div className="staleness-content flex items-center justify-between w-full">
+            <div className="flex items-center gap-2">
+              <span className="staleness-icon" aria-hidden="true">
+                {isBlockingStale ? (
+                  <AlertOctagonIcon size={20} className="text-rose" />
+                ) : (
+                  <AlertTriangleIcon size={20} className="text-amber" />
+                )}
               </span>
               <div>
                 <strong
-                  className="staleness-title"
-                  style={{ color: isBlockingStale ? '#fc8181' : '#faf089' }}
+                  className={`staleness-title ${isBlockingStale ? 'text-rose' : 'text-amber'}`}
                 >
                   {isBlockingStale ? 'BLOCKING STALENESS DETECTED:' : 'IMPORTANT NOTICE:'}
                 </strong>{' '}
                 <span className="staleness-message">{effectiveStaleReason}</span>
                 {isBlockingStale && (
-                  <span
-                    style={{
-                      display: 'block',
-                      fontSize: '0.8rem',
-                      color: '#fc8181',
-                      marginTop: '2px',
-                    }}
-                  >
+                  <span className="block text-xs text-rose mt-0.5">
                     Clinical decision signing is locked until the Target Slate is regenerated with
                     current parameters.
                   </span>
@@ -485,23 +400,14 @@ export function CaseHeader({
               </div>
             </div>
             {onRefreshSlate && (
-              <button
+              <Button
+                variant={isBlockingStale ? 'danger' : 'secondary'}
+                className="btn-regenerate-slate inline-flex items-center gap-1.5 font-semibold text-sm px-3.5 py-1.5 rounded"
                 onClick={onRefreshSlate}
-                className="btn btn-regenerate-slate"
                 id="regenerate-stale-slate-btn"
-                style={{
-                  backgroundColor: isBlockingStale ? '#e53e3e' : '#d69e2e',
-                  color: '#fff',
-                  border: 'none',
-                  padding: '6px 14px',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontWeight: 600,
-                  fontSize: '0.85rem',
-                }}
               >
-                Regenerate Slate ↺
-              </button>
+                <RefreshCwIcon size={14} /> Regenerate Slate
+              </Button>
             )}
           </div>
         </aside>
@@ -509,97 +415,42 @@ export function CaseHeader({
 
       {/* 4. Research Mode Notice (§22, §139) */}
       {isResearch && (
-        <aside
-          className="case-research-notice"
-          role="alert"
-          style={{ padding: '6px 16px', fontSize: '0.85rem' }}
-        >
+        <aside className="case-research-notice px-4 py-1.5 text-sm" role="alert">
           <strong>RESEARCH PROTOTYPE CONTEXT:</strong> All candidate targets in this case are
           hypothesis-generating. Clinical decision sign-off is disabled.
         </aside>
       )}
 
       {/* 5. Indication Switch Confirmation Dialog (§66) */}
-      {pendingSwitchIndication && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="switch-indication-dialog-title"
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0,0,0,0.7)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: '#1f2937',
-              border: '1px solid #4b5563',
-              borderRadius: '8px',
-              padding: '24px',
-              maxWidth: '480px',
-              width: '90%',
-              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5)',
+      <Modal
+        isOpen={Boolean(pendingSwitchIndication)}
+        onClose={() => setPendingSwitchIndication(null)}
+        title="Switch Clinical Indication Context?"
+        maxWidth="480px"
+      >
+        <p className="text-secondary text-sm leading-normal">
+          Switching from <strong>{activeIndicationFormatted}</strong> to{' '}
+          <strong>{pendingSwitchIndication?.label}</strong> will load an independent targeting
+          workflow, re-evaluate evidence boundaries, and isolate any existing Target Slate (§66–67).
+        </p>
+        <div className="flex justify-end gap-2.5 mt-5">
+          <Button variant="secondary" onClick={() => setPendingSwitchIndication(null)}>
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={() => {
+              const targetInd = pendingSwitchIndication;
+              setPendingSwitchIndication(null);
+              if (onSwitchIndication && targetInd) {
+                onSwitchIndication(targetInd.caseIndicationId);
+              }
             }}
           >
-            <h3 id="switch-indication-dialog-title" style={{ marginTop: 0, color: '#fff' }}>
-              Switch Clinical Indication Context?
-            </h3>
-            <p style={{ color: '#d1d5db', fontSize: '0.9rem', lineHeight: '1.5' }}>
-              Switching from <strong>{activeIndicationFormatted}</strong> to{' '}
-              <strong>{pendingSwitchIndication.label}</strong> will load an independent targeting
-              workflow, re-evaluate evidence boundaries, and isolate any existing Target Slate
-              (§66–67).
-            </p>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'flex-end',
-                gap: '10px',
-                marginTop: '20px',
-              }}
-            >
-              <button
-                onClick={() => setPendingSwitchIndication(null)}
-                style={{
-                  padding: '8px 16px',
-                  backgroundColor: '#374151',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  const targetInd = pendingSwitchIndication;
-                  setPendingSwitchIndication(null);
-                  if (onSwitchIndication) {
-                    onSwitchIndication(targetInd.caseIndicationId);
-                  }
-                }}
-                style={{
-                  padding: '8px 16px',
-                  backgroundColor: '#2563eb',
-                  color: '#fff',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontWeight: 600,
-                }}
-              >
-                Confirm & Switch
-              </button>
-            </div>
-          </div>
+            Confirm & Switch
+          </Button>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }

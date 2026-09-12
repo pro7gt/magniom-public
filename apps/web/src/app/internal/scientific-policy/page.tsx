@@ -1,7 +1,16 @@
 'use client';
 
+import {
+  Breadcrumbs,
+  Button,
+  Badge,
+  Card,
+  CardContent,
+  ArrowLeftIcon,
+  PageHeader,
+} from '@/components/ui';
+
 import React from 'react';
-import Link from 'next/link';
 
 // ==========================================
 // Internal Scientific Policy Dashboard (§198)
@@ -10,36 +19,40 @@ import Link from 'next/link';
 
 export default function InternalScientificPolicyPage() {
   return (
-    <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div
-        style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.25rem' }}
-      >
-        <span className="badge badge-neutral" style={{ textTransform: 'uppercase' }}>
-          Internal Engineering
-        </span>
-      </div>
-      <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-        Scientific Policy Configuration (§198)
-      </h1>
-      <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-        Active scientific policies governing module behaviour, evidence eligibility, and target
-        ranking parameters. Never include in ordinary clinician navigation.
-      </p>
+    <div className="container page-container-col">
+      <Breadcrumbs
+        items={[
+          { label: 'Internal', href: '/internal' },
+          { label: 'Scientific Policy', current: true },
+        ]}
+      />
 
-      <div className="card" style={{ padding: '3rem', textAlign: 'center' }}>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '1rem' }}>
-          Scientific policy administration is managed through the controlled governance workflow.
-        </p>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '8px' }}>
-          Active policies are resolved server-side and cannot be modified through the frontend
-          interface. Policy changes require requirements impact review, risk review, and regression
-          testing (§3).
-        </p>
-      </div>
+      <PageHeader
+        eyebrow={
+          <Badge variant="neutral" className="uppercase">
+            Internal Engineering
+          </Badge>
+        }
+        title="Scientific Policy Configuration (§198)"
+        subtitle="Active scientific policies governing module behaviour, evidence eligibility, and target ranking parameters. Never include in ordinary clinician navigation."
+      />
 
-      <Link href="/internal/verification" className="btn btn-secondary">
-        ← Verification Dashboard
-      </Link>
+      <Card className="p-12 text-center">
+        <CardContent>
+          <p className="text-secondary text-base m-0">
+            Scientific policy administration is managed through the controlled governance workflow.
+          </p>
+          <p className="text-muted text-sm mt-2 mb-0">
+            Active policies are resolved server-side and cannot be modified through the frontend
+            interface. Policy changes require requirements impact review, risk review, and
+            regression testing (§3).
+          </p>
+        </CardContent>
+      </Card>
+
+      <Button variant="secondary" href="/internal/verification">
+        <ArrowLeftIcon size={14} className="mr-1 inline" /> Verification Dashboard
+      </Button>
     </div>
   );
 }

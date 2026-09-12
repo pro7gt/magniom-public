@@ -1,7 +1,23 @@
 'use client';
 
 import React, { use, useState, useEffect } from 'react';
-import Link from 'next/link';
+import {
+  CheckIcon,
+  Breadcrumbs,
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CaseNotFoundState,
+  ArrowRightIcon,
+  PageHeader,
+  Alert,
+  Select,
+  Input,
+  FormGroup,
+  FormLabel,
+} from '@/components/ui';
 import { caseStore } from '../../../../lib/case-store';
 
 export default function DiseaseStagePage({ params }: { params: Promise<{ caseId: string }> }) {
@@ -33,12 +49,8 @@ export default function DiseaseStagePage({ params }: { params: Promise<{ caseId:
 
   if (!record) {
     return (
-      <div className="container" style={{ textAlign: 'center', padding: '4rem' }}>
-        <h2>Case Not Found</h2>
-        <p style={{ color: 'var(--text-secondary)' }}>Case ID {caseId} does not exist.</p>
-        <Link href="/cases" className="btn btn-secondary">
-          Return to Cases
-        </Link>
+      <div className="container page-container-col">
+        <CaseNotFoundState caseId={caseId} />
       </div>
     );
   }
@@ -64,250 +76,115 @@ export default function DiseaseStagePage({ params }: { params: Promise<{ caseId:
   };
 
   return (
-    <div className="clinical-context-workspace" style={{ padding: '24px' }}>
-      <nav
-        aria-label="Disease Stage Breadcrumb"
-        style={{ marginBottom: '16px', fontSize: '0.85rem' }}
-      >
-        <Link
-          href={`/cases/${caseId}`}
-          style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}
-        >
-          {record.clinicalCase.caseCode}
-        </Link>
-        <span style={{ margin: '0 8px', color: 'var(--text-muted)' }}>/</span>
-        <span style={{ color: 'var(--accent-cyan)', fontWeight: 600 }}>
-          Disease Chronicity & Stage
-        </span>
-      </nav>
+    <div className="container page-container-col">
+      <Breadcrumbs
+        ariaLabel="Disease Stage Breadcrumb"
+        items={[
+          { label: record.clinicalCase.caseCode, href: `/cases/${caseId}` },
+          { label: 'Disease Chronicity & Stage', current: true },
+        ]}
+      />
 
-      <header
-        style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.03)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '8px',
-          padding: '20px',
-          marginBottom: '24px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '16px',
-        }}
-      >
-        <div>
-          <h1 style={{ margin: 0, fontSize: '1.4rem', color: 'var(--text-main)', fontWeight: 700 }}>
-            Disease Chronicity & Stage Qualification
-          </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', margin: '6px 0 0' }}>
-            Hard Gate G2 Temporal Qualification & Stage Eligibility (§54, §93)
-          </p>
-        </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <Link href={`/cases/${caseId}/lesion`} className="btn btn-secondary">
-            Lesion Mapping →
-          </Link>
-          <Link href={`/cases/${caseId}/targets`} className="btn btn-primary">
-            Target Slate →
-          </Link>
-        </div>
-      </header>
+      <PageHeader
+        variant="case-workspace"
+        title="Disease Chronicity & Stage Qualification"
+        subtitle="Hard Gate G2 Temporal Qualification & Stage Eligibility (§54, §93)"
+        actions={
+          <>
+            <Button variant="secondary" href={`/cases/${caseId}/lesion`}>
+              Lesion Mapping <ArrowRightIcon size={14} className="ml-1 inline" />
+            </Button>
+            <Button variant="primary" href={`/cases/${caseId}/targets`}>
+              Target Slate <ArrowRightIcon size={14} className="ml-1 inline" />
+            </Button>
+          </>
+        }
+      />
 
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-          gap: '20px',
-        }}
-      >
-        <section
-          style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.04)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderRadius: '8px',
-            padding: '20px',
-          }}
-        >
-          <h3
-            style={{
-              margin: '0 0 16px',
-              fontSize: '1.05rem',
-              color: 'var(--accent-cyan)',
-              fontWeight: 600,
-            }}
-          >
-            Configure Disease Stage
-          </h3>
-          <form
-            onSubmit={handleSave}
-            style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
-          >
-            <div>
-              <label
-                style={{
-                  display: 'block',
-                  fontSize: '0.85rem',
-                  color: 'var(--text-secondary)',
-                  marginBottom: '6px',
-                }}
-              >
-                Chronicity Classification
-              </label>
-              <select
-                value={stageCode}
-                onChange={e => setStageCode(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '8px 12px',
-                  borderRadius: '6px',
-                  backgroundColor: 'rgba(0,0,0,0.4)',
-                  border: '1px solid var(--border-subtle)',
-                  color: 'var(--text-main)',
-                }}
-              >
-                <option value="CHRONIC">Chronic Post-Stroke (&gt; 6 Months Post-Onset)</option>
-                <option value="SUBACUTE">Subacute Phase (14 Days – 6 Months Post-Onset)</option>
-                <option value="ACUTE">Acute Phase (&lt; 14 Days Post-Onset) — PROHIBITED</option>
-              </select>
-            </div>
+      <div className="stat-card-grid">
+        <Card>
+          <CardHeader>
+            <CardTitle as="h2" className="text-cyan">
+              Configure Disease Stage
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSave} className="flex flex-col gap-4">
+              <FormGroup>
+                <FormLabel>Chronicity Classification</FormLabel>
+                <Select value={stageCode} onChange={e => setStageCode(e.target.value)}>
+                  <option value="CHRONIC">Chronic Post-Stroke (&gt; 6 Months Post-Onset)</option>
+                  <option value="SUBACUTE">Subacute Phase (14 Days – 6 Months Post-Onset)</option>
+                  <option value="ACUTE">Acute Phase (&lt; 14 Days Post-Onset) — PROHIBITED</option>
+                </Select>
+              </FormGroup>
 
-            <div>
-              <label
-                style={{
-                  display: 'block',
-                  fontSize: '0.85rem',
-                  color: 'var(--text-secondary)',
-                  marginBottom: '6px',
-                }}
-              >
-                Days Since Index Vascular Event: <strong>{daysSinceEvent} days</strong>
-              </label>
-              <input
-                type="number"
-                min="1"
-                max="3650"
-                value={daysSinceEvent}
-                onChange={e => setDaysSinceEvent(Number(e.target.value))}
-                style={{
-                  width: '100%',
-                  padding: '8px 12px',
-                  borderRadius: '6px',
-                  backgroundColor: 'rgba(0,0,0,0.4)',
-                  border: '1px solid var(--border-subtle)',
-                  color: 'var(--text-main)',
-                }}
+              <FormGroup>
+                <FormLabel>
+                  Days Since Index Vascular Event: <strong>{daysSinceEvent} days</strong>
+                </FormLabel>
+                <Input
+                  type="number"
+                  min="1"
+                  max="3650"
+                  value={daysSinceEvent}
+                  onChange={e => setDaysSinceEvent(Number(e.target.value))}
+                />
+              </FormGroup>
+
+              <Alert
+                variant={isEligible ? 'success' : 'danger'}
+                title={
+                  isEligible
+                    ? 'Gate G2 Passed: Protocol Eligible'
+                    : 'Gate G2 Rejection: Acute Stage Prohibited'
+                }
+                description={
+                  isEligible
+                    ? 'Chronic or subacute post-stroke status qualifies for outpatient rTMS neuromodulation protocol.'
+                    : 'Acute post-stroke TMS (<14 days) is strictly prohibited due to seizure risk and penumbral hemodynamic instability.'
+                }
               />
-            </div>
 
-            <div
-              style={{
-                padding: '12px',
-                borderRadius: '6px',
-                backgroundColor: isEligible ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.15)',
-                border: `1px solid ${isEligible ? 'var(--accent-green)' : 'var(--accent-red)'}`,
-              }}
-            >
-              <div
-                style={{
-                  fontWeight: 600,
-                  color: isEligible ? 'var(--accent-green)' : 'var(--accent-red)',
-                  fontSize: '0.85rem',
-                }}
-              >
-                {isEligible
-                  ? '✓ Gate G2 Passed: Protocol Eligible'
-                  : '✗ Gate G2 Rejection: Acute Stage Prohibited'}
-              </div>
-              <p style={{ margin: '4px 0 0', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                {isEligible
-                  ? 'Chronic or subacute post-stroke status qualifies for outpatient rTMS neuromodulation protocol.'
-                  : 'Acute post-stroke TMS (&lt;14 days) is strictly prohibited due to seizure risk and penumbral hemodynamic instability.'}
-              </p>
-            </div>
+              <Button variant="primary" type="submit" className="self-start">
+                Save Stage Certification
+              </Button>
+              {isSaved && (
+                <span className="text-emerald text-sm">
+                  <CheckIcon size={14} className="text-emerald mr-1 inline" /> Disease stage updated
+                </span>
+              )}
+            </form>
+          </CardContent>
+        </Card>
 
-            <button type="submit" className="btn btn-primary" style={{ alignSelf: 'flex-start' }}>
-              Save Stage Certification
-            </button>
-            {isSaved && (
-              <span style={{ color: 'var(--accent-green)', fontSize: '0.85rem' }}>
-                ✓ Disease stage updated
-              </span>
-            )}
-          </form>
-        </section>
-
-        <section
-          style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.04)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderRadius: '8px',
-            padding: '20px',
-          }}
-        >
-          <h3
-            style={{
-              margin: '0 0 16px',
-              fontSize: '1.05rem',
-              color: 'var(--accent-cyan)',
-              fontWeight: 600,
-            }}
-          >
-            Scientific Rationale & Stage Policy
-          </h3>
-          <ul
-            style={{
-              listStyle: 'none',
-              padding: 0,
-              margin: 0,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '10px',
-              fontSize: '0.85rem',
-              color: 'var(--text-secondary)',
-            }}
-          >
-            <li
-              style={{
-                padding: '8px 12px',
-                background: 'rgba(255,255,255,0.02)',
-                borderRadius: '4px',
-              }}
-            >
-              <strong style={{ color: 'var(--text-main)', display: 'block' }}>
-                Chronic (&gt; 6 months):
-              </strong>
-              Spontaneous recovery plateau reached. Interhemispheric transcallosal inhibition is
-              established and maladaptive; targeted rTMS promotes late-stage cortical
-              reorganization.
-            </li>
-            <li
-              style={{
-                padding: '8px 12px',
-                background: 'rgba(255,255,255,0.02)',
-                borderRadius: '4px',
-              }}
-            >
-              <strong style={{ color: 'var(--text-main)', display: 'block' }}>
-                Subacute (2 wks – 6 mos):
-              </strong>
-              Heightened neuroplastic window. Facilitatory stimulation to ipsilesional motor
-              networks must be paired with daily physical/occupational therapy within 60 minutes.
-            </li>
-            <li
-              style={{
-                padding: '8px 12px',
-                background: 'rgba(255,255,255,0.02)',
-                borderRadius: '4px',
-              }}
-            >
-              <strong style={{ color: 'var(--text-main)', display: 'block' }}>
-                Acute (&lt; 2 weeks):
-              </strong>
-              Precluded by ISO 14971 Risk Control RC-STR-002 to avoid disruption of ischemic
-              penumbra revascularization.
-            </li>
-          </ul>
-        </section>
+        <Card>
+          <CardHeader>
+            <CardTitle as="h2" className="text-cyan">
+              Scientific Rationale & Stage Policy
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="rule-list">
+              <li className="panel-subtle">
+                <strong className="text-primary block">Chronic (&gt; 6 months):</strong>
+                Spontaneous recovery plateau reached. Interhemispheric transcallosal inhibition is
+                established and maladaptive; targeted rTMS promotes late-stage cortical
+                reorganization.
+              </li>
+              <li className="panel-subtle">
+                <strong className="text-primary block">Subacute (2 wks – 6 mos):</strong>
+                Heightened neuroplastic window. Facilitatory stimulation to ipsilesional motor
+                networks must be paired with daily physical/occupational therapy within 60 minutes.
+              </li>
+              <li className="panel-subtle">
+                <strong className="text-primary block">Acute (&lt; 2 weeks):</strong>
+                Precluded by ISO 14971 Risk Control RC-STR-002 to avoid disruption of ischemic
+                penumbra revascularization.
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

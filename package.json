@@ -16,6 +16,8 @@
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
     "ci:full": "tsx scripts/ci/run-full-local-ci.ts",
+    "tokens:sync": "tsx scripts/sync-design-tokens.ts",
+    "tokens:check": "tsx scripts/sync-design-tokens.ts --check",
     "verify": "npm run verify:requirements && npm run verify:srs-spec && npm run verify:canonical-data-spec && npm run verify:target-engine-spec && npm run verify:app-shell-spec && npm run verify:policy-spec && npm run verify:measurement-spec && npm run verify:evidence-spec && npm run verify:arch-spec && npm run verify:cicd-spec && npm run verify:boundaries && npm run verify:static-rules",
     "verify:all": "tsx scripts/ci/run-full-local-ci.ts",
     "verify:stage0": "tsx scripts/ci/classify-change.ts",

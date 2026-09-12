@@ -1,7 +1,23 @@
 'use client';
 
 import React, { use, useState, useEffect } from 'react';
-import Link from 'next/link';
+import {
+  CheckIcon,
+  Breadcrumbs,
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CaseNotFoundState,
+  ArrowRightIcon,
+  ArrowLeftIcon,
+  PageHeader,
+  Select,
+  RangeSlider,
+  FormGroup,
+  FormLabel,
+} from '@/components/ui';
 import { caseStore } from '../../../../lib/case-store';
 
 export default function CueContextPage({ params }: { params: Promise<{ caseId: string }> }) {
@@ -15,22 +31,17 @@ export default function CueContextPage({ params }: { params: Promise<{ caseId: s
 
   useEffect(() => {
     setRecord(caseStore.getCaseRecord(caseId));
-    const unsubscribe = caseStore.subscribe(updatedCaseId => {
+    return caseStore.subscribe(updatedCaseId => {
       if (updatedCaseId === caseId) {
         setRecord(caseStore.getCaseRecord(caseId));
       }
     });
-    return () => unsubscribe();
   }, [caseId]);
 
   if (!record) {
     return (
-      <div className="container" style={{ textAlign: 'center', padding: '4rem' }}>
-        <h2>Case Not Found</h2>
-        <p style={{ color: 'var(--text-secondary)' }}>Case ID {caseId} does not exist.</p>
-        <Link href="/cases" className="btn btn-secondary">
-          Return to Cases
-        </Link>
+      <div className="container page-container-col">
+        <CaseNotFoundState caseId={caseId} />
       </div>
     );
   }
@@ -57,197 +68,95 @@ export default function CueContextPage({ params }: { params: Promise<{ caseId: s
   };
 
   return (
-    <div className="clinical-context-workspace" style={{ padding: '24px' }}>
-      <nav
-        aria-label="Cue Context Breadcrumb"
-        style={{ marginBottom: '16px', fontSize: '0.85rem' }}
-      >
-        <Link
-          href={`/cases/${caseId}`}
-          style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}
-        >
-          {record.clinicalCase.caseCode}
-        </Link>
-        <span style={{ margin: '0 8px', color: 'var(--text-muted)' }}>/</span>
-        <Link
-          href={`/cases/${caseId}/substance-context`}
-          style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}
-        >
-          SUD Context
-        </Link>
-        <span style={{ margin: '0 8px', color: 'var(--text-muted)' }}>/</span>
-        <span style={{ color: 'var(--accent-cyan)', fontWeight: 600 }}>
-          Cue-Reactivity Protocol
-        </span>
-      </nav>
+    <div className="container page-container-col">
+      <Breadcrumbs
+        ariaLabel="Cue Context Breadcrumb"
+        items={[
+          { label: record.clinicalCase.caseCode, href: `/cases/${caseId}` },
+          { label: 'SUD Context', href: `/cases/${caseId}/substance-context` },
+          { label: 'Cue-Reactivity Protocol', current: true },
+        ]}
+      />
 
-      <header
-        style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.03)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '8px',
-          padding: '20px',
-          marginBottom: '24px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '16px',
-        }}
-      >
-        <div>
-          <h1 style={{ margin: 0, fontSize: '1.4rem', color: 'var(--text-main)', fontWeight: 700 }}>
-            Cue-Reactivity Protocol & State Engagement
-          </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', margin: '6px 0 0' }}>
-            Sensory Exposure Timing & Mesolimbic Dopaminergic Loop Modulation (§55, §93)
-          </p>
-        </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <Link href={`/cases/${caseId}/substance-context`} className="btn btn-secondary">
-            ← SUD Context
-          </Link>
-          <Link href={`/cases/${caseId}/targets`} className="btn btn-primary">
-            Target Slate →
-          </Link>
-        </div>
-      </header>
+      <PageHeader
+        variant="case-workspace"
+        title="Cue-Reactivity Protocol & State Engagement"
+        subtitle="Sensory Exposure Timing & Mesolimbic Dopaminergic Loop Modulation (§55, §93)"
+        actions={
+          <>
+            <Button variant="secondary" href={`/cases/${caseId}/substance-context`}>
+              <ArrowLeftIcon size={14} className="mr-1 inline" /> SUD Context
+            </Button>
+            <Button variant="primary" href={`/cases/${caseId}/targets`}>
+              Target Slate <ArrowRightIcon size={14} className="ml-1 inline" />
+            </Button>
+          </>
+        }
+      />
 
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-          gap: '20px',
-        }}
-      >
-        <section
-          style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.04)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderRadius: '8px',
-            padding: '20px',
-          }}
-        >
-          <h3
-            style={{
-              margin: '0 0 16px',
-              fontSize: '1.05rem',
-              color: 'var(--accent-cyan)',
-              fontWeight: 600,
-            }}
-          >
-            Exposure Stimuli Configuration
-          </h3>
-          <form
-            onSubmit={handleSave}
-            style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
-          >
-            <div>
-              <label
-                style={{
-                  display: 'block',
-                  fontSize: '0.85rem',
-                  color: 'var(--text-secondary)',
-                  marginBottom: '6px',
-                }}
-              >
-                Cue Modality & Paradigm
-              </label>
-              <select
-                value={cueType}
-                onChange={e => setCueType(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '8px 12px',
-                  borderRadius: '6px',
-                  backgroundColor: 'rgba(0,0,0,0.4)',
-                  border: '1px solid var(--border-subtle)',
-                  color: 'var(--text-main)',
-                }}
-              >
-                <option>Personalized Photographic & Olfactory Cues</option>
-                <option>Standardized Video Consumption Clips (3 minutes)</option>
-                <option>Virtual Reality Paraphernalia Simulation</option>
-                <option>Auditory Social Pressure Scenario</option>
-              </select>
-            </div>
+      <div className="stat-card-grid">
+        <Card>
+          <CardHeader>
+            <CardTitle as="h2" className="section-subheading m-0">
+              Exposure Stimuli Configuration
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSave} className="flex flex-col gap-4">
+              <FormGroup>
+                <FormLabel>Cue Modality & Paradigm</FormLabel>
+                <Select value={cueType} onChange={e => setCueType(e.target.value)}>
+                  <option>Personalized Photographic & Olfactory Cues</option>
+                  <option>Standardized Video Consumption Clips (3 minutes)</option>
+                  <option>Virtual Reality Paraphernalia Simulation</option>
+                  <option>Auditory Social Pressure Scenario</option>
+                </Select>
+              </FormGroup>
 
-            <div>
-              <label
-                style={{
-                  display: 'block',
-                  fontSize: '0.85rem',
-                  color: 'var(--text-secondary)',
-                  marginBottom: '6px',
-                }}
-              >
-                Provoked Craving Surge (VAS): <strong>{cravingSurge} / 10</strong>
-              </label>
-              <input
-                type="range"
-                min="1"
-                max="10"
-                step="0.5"
-                value={cravingSurge}
-                onChange={e => setCravingSurge(Number(e.target.value))}
-                style={{ width: '100%', accentColor: 'var(--accent-cyan)' }}
-              />
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  fontSize: '0.75rem',
-                  color: 'var(--text-muted)',
-                }}
-              >
-                <span>1 (No surge)</span>
-                <span>5 (Moderate craving)</span>
-                <span>10 (Maximum urge)</span>
-              </div>
-            </div>
+              <FormGroup>
+                <FormLabel>
+                  Provoked Craving Surge (VAS): <strong>{cravingSurge} / 10</strong>
+                </FormLabel>
+                <RangeSlider
+                  min={1}
+                  max={10}
+                  step={0.5}
+                  value={cravingSurge}
+                  onChange={e => setCravingSurge(Number(e.target.value))}
+                />
+                <div className="flex justify-between text-xs text-muted">
+                  <span>1 (No surge)</span>
+                  <span>5 (Moderate craving)</span>
+                  <span>10 (Maximum urge)</span>
+                </div>
+              </FormGroup>
 
-            <button type="submit" className="btn btn-primary" style={{ alignSelf: 'flex-start' }}>
-              Confirm Cue Protocol
-            </button>
-            {isSaved && (
-              <span style={{ color: 'var(--accent-green)', fontSize: '0.85rem' }}>
-                ✓ Cue exposure verified
-              </span>
-            )}
-          </form>
-        </section>
+              <Button variant="primary" type="submit" className="self-start">
+                Confirm Cue Protocol
+              </Button>
+              {isSaved && (
+                <span className="text-emerald text-sm">
+                  <CheckIcon size={14} className="text-emerald mr-1 inline" /> Cue exposure verified
+                </span>
+              )}
+            </form>
+          </CardContent>
+        </Card>
 
-        <section
-          style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.04)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderRadius: '8px',
-            padding: '20px',
-          }}
-        >
-          <h3
-            style={{
-              margin: '0 0 16px',
-              fontSize: '1.05rem',
-              color: 'var(--accent-cyan)',
-              fontWeight: 600,
-            }}
-          >
-            State-Dependent Addiction Neurocircuitry
-          </h3>
-          <p
-            style={{
-              fontSize: '0.85rem',
-              color: 'var(--text-secondary)',
-              lineHeight: 1.5,
-              margin: 0,
-            }}
-          >
-            Pre-stimulating the ventral striatal reward network via sensory cue exposure opens an
-            active reconsolidation window. Immediate high-frequency DLPFC stimulation strengthens
-            executive cognitive control over automatic drug-seeking habits.
-          </p>
-        </section>
+        <Card>
+          <CardHeader>
+            <CardTitle as="h2" className="section-subheading m-0">
+              State-Dependent Addiction Neurocircuitry
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-secondary leading-relaxed m-0">
+              Pre-stimulating the ventral striatal reward network via sensory cue exposure opens an
+              active reconsolidation window. Immediate high-frequency DLPFC stimulation strengthens
+              executive cognitive control over automatic drug-seeking habits.
+            </p>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

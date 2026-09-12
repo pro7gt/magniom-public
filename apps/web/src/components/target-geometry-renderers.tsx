@@ -1,5 +1,7 @@
 'use client';
 
+import { Badge, Card, CardHeader, CardDescription, CardContent } from '@/components/ui';
+
 import React from 'react';
 import type { TargetGeometryType } from '@magniom/domain';
 
@@ -16,30 +18,17 @@ interface BaseGeometryRendererProps {
 
 function GeometryCard({ label, description, children }: BaseGeometryRendererProps) {
   return (
-    <div
-      className="target-geometry-card"
-      style={{
-        backgroundColor: 'rgba(255,255,255,0.04)',
-        border: '1px solid rgba(255,255,255,0.08)',
-        borderRadius: '8px',
-        padding: '16px',
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-        <span
-          className="badge badge-neutral"
-          style={{ fontSize: '0.75rem', textTransform: 'uppercase' }}
-        >
+    <Card className="target-geometry-card">
+      <CardHeader className="p-0 mb-2">
+        <Badge variant="neutral" className="text-xs uppercase self-start">
           {label}
-        </span>
-      </div>
-      {description && (
-        <p style={{ margin: '0 0 12px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-          {description}
-        </p>
-      )}
-      {children}
-    </div>
+        </Badge>
+        {description && (
+          <CardDescription className="mt-2 text-sm text-secondary">{description}</CardDescription>
+        )}
+      </CardHeader>
+      <CardContent className="p-0">{children}</CardContent>
+    </Card>
   );
 }
 
@@ -67,42 +56,37 @@ export function PointTargetRenderer({
       label="Point Target"
       description="Focal cortical stimulation point defined by a single MNI coordinate."
     >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.85rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span style={{ color: 'var(--text-muted)' }}>MNI Coordinate</span>
-          <strong style={{ color: 'var(--text-main)', fontFamily: 'var(--font-mono)' }}>
-            {mniFormatted}
-          </strong>
+      <div className="flex flex-col gap-2 text-sm">
+        <div className="flex justify-between">
+          <span className="text-muted">MNI Coordinate</span>
+          <strong className="text-primary font-mono">{mniFormatted}</strong>
         </div>
         {subjectNativeFormatted && (
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: 'var(--text-muted)' }}>Subject Native</span>
-            <strong style={{ color: 'var(--text-main)', fontFamily: 'var(--font-mono)' }}>
-              {subjectNativeFormatted}
-            </strong>
+          <div className="flex justify-between">
+            <span className="text-muted">Subject Native</span>
+            <strong className="text-primary font-mono">{subjectNativeFormatted}</strong>
           </div>
         )}
         {hcpParcel && (
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: 'var(--text-muted)' }}>HCP Parcel</span>
-            <span style={{ color: 'var(--text-secondary)' }}>{hcpParcel}</span>
+          <div className="flex justify-between">
+            <span className="text-muted">HCP Parcel</span>
+            <span className="text-secondary">{hcpParcel}</span>
           </div>
         )}
         {depthMm !== undefined && (
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: 'var(--text-muted)' }}>Cortical Depth</span>
-            <span style={{ color: 'var(--text-secondary)' }}>{depthMm} mm</span>
+          <div className="flex justify-between">
+            <span className="text-muted">Cortical Depth</span>
+            <span className="text-secondary">{depthMm} mm</span>
           </div>
         )}
         {accessibilityRating && (
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: 'var(--text-muted)' }}>Accessibility</span>
-            <span
-              className={`badge ${accessibilityRating === 'Optimal' ? 'badge-tier1' : accessibilityRating === 'Acceptable' ? 'badge-tier2' : 'badge-tier3'}`}
-              style={{ fontSize: '0.75rem' }}
+          <div className="flex justify-between">
+            <span className="text-muted">Accessibility</span>
+            <Badge
+              className={`${accessibilityRating === 'Optimal' ? 'badge-tier1' : accessibilityRating === 'Acceptable' ? 'badge-tier2' : 'badge-tier3'} text-xs`}
             >
               {accessibilityRating}
-            </span>
+            </Badge>
           </div>
         )}
       </div>
@@ -132,33 +116,29 @@ export function RoiTargetRenderer({
       label="Surface ROI"
       description="Cortical region of interest defined by centroid, surface extent, and reliability dispersion."
     >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.85rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span style={{ color: 'var(--text-muted)' }}>Centroid</span>
-          <strong style={{ color: 'var(--text-main)', fontFamily: 'var(--font-mono)' }}>
-            {centroidFormatted}
-          </strong>
+      <div className="flex flex-col gap-2 text-sm">
+        <div className="flex justify-between">
+          <span className="text-muted">Centroid</span>
+          <strong className="text-primary font-mono">{centroidFormatted}</strong>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span style={{ color: 'var(--text-muted)' }}>Surface Area</span>
-          <span style={{ color: 'var(--text-secondary)' }}>{surfaceAreaMm2} mm²</span>
+        <div className="flex justify-between">
+          <span className="text-muted">Surface Area</span>
+          <span className="text-secondary">{surfaceAreaMm2} mm²</span>
         </div>
         {reliabilityRegionMm !== undefined && (
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: 'var(--text-muted)' }}>Reliability Region</span>
-            <span style={{ color: 'var(--text-secondary)' }}>± {reliabilityRegionMm} mm</span>
+          <div className="flex justify-between">
+            <span className="text-muted">Reliability Region</span>
+            <span className="text-secondary">± {reliabilityRegionMm} mm</span>
           </div>
         )}
         {parcels && parcels.length > 0 && (
-          <div style={{ marginTop: '4px' }}>
-            <span style={{ color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>
-              Parcels
-            </span>
-            <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+          <div className="mt-1">
+            <span className="text-muted block mb-1">Parcels</span>
+            <div className="flex gap-1 flex-wrap">
               {parcels.map(p => (
-                <span key={p} className="badge badge-neutral" style={{ fontSize: '0.75rem' }}>
+                <Badge variant="neutral" key={p} className="text-xs">
                   {p}
-                </span>
+                </Badge>
               ))}
             </div>
           </div>
@@ -192,29 +172,27 @@ export function SomatotopicTargetRenderer({
       label="Somatotopic"
       description="Motor cortex target localised via somatotopic mapping of the affected body region."
     >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.85rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span style={{ color: 'var(--text-muted)' }}>Body Region</span>
-          <strong style={{ color: 'var(--text-main)' }}>{bodyRegion}</strong>
+      <div className="flex flex-col gap-2 text-sm">
+        <div className="flex justify-between">
+          <span className="text-muted">Body Region</span>
+          <strong className="text-primary">{bodyRegion}</strong>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span style={{ color: 'var(--text-muted)' }}>Laterality</span>
-          <span style={{ color: 'var(--text-secondary)' }}>{laterality}</span>
+        <div className="flex justify-between">
+          <span className="text-muted">Laterality</span>
+          <span className="text-secondary">{laterality}</span>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span style={{ color: 'var(--text-muted)' }}>Motor Cortex Zone</span>
-          <span style={{ color: 'var(--text-secondary)' }}>{motorCortexZone}</span>
+        <div className="flex justify-between">
+          <span className="text-muted">Motor Cortex Zone</span>
+          <span className="text-secondary">{motorCortexZone}</span>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span style={{ color: 'var(--text-muted)' }}>Somatotopic Map</span>
-          <span style={{ color: 'var(--text-secondary)' }}>{somatotopicMapSource}</span>
+        <div className="flex justify-between">
+          <span className="text-muted">Somatotopic Map</span>
+          <span className="text-secondary">{somatotopicMapSource}</span>
         </div>
         {hotspotFormatted && (
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: 'var(--text-muted)' }}>Motor Hotspot</span>
-            <strong style={{ color: 'var(--text-main)', fontFamily: 'var(--font-mono)' }}>
-              {hotspotFormatted}
-            </strong>
+          <div className="flex justify-between">
+            <span className="text-muted">Motor Hotspot</span>
+            <strong className="text-primary font-mono">{hotspotFormatted}</strong>
           </div>
         )}
       </div>
@@ -246,29 +224,29 @@ export function CoilFieldTargetRenderer({
       label="Coil Field"
       description="Deep TMS coil-field placement targeting a volumetric cortical or subcortical region."
     >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.85rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span style={{ color: 'var(--text-muted)' }}>Coil Type</span>
-          <strong style={{ color: 'var(--text-main)' }}>{coilType}</strong>
+      <div className="flex flex-col gap-2 text-sm">
+        <div className="flex justify-between">
+          <span className="text-muted">Coil Type</span>
+          <strong className="text-primary">{coilType}</strong>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span style={{ color: 'var(--text-muted)' }}>Placement</span>
-          <span style={{ color: 'var(--text-secondary)' }}>{placementDescription}</span>
+        <div className="flex justify-between">
+          <span className="text-muted">Placement</span>
+          <span className="text-secondary">{placementDescription}</span>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span style={{ color: 'var(--text-muted)' }}>Max Field Depth</span>
-          <span style={{ color: 'var(--text-secondary)' }}>{maxFieldDepthMm} mm</span>
+        <div className="flex justify-between">
+          <span className="text-muted">Max Field Depth</span>
+          <span className="text-secondary">{maxFieldDepthMm} mm</span>
         </div>
         {coverageAreaLabel && (
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: 'var(--text-muted)' }}>Coverage Area</span>
-            <span style={{ color: 'var(--text-secondary)' }}>{coverageAreaLabel}</span>
+          <div className="flex justify-between">
+            <span className="text-muted">Coverage Area</span>
+            <span className="text-secondary">{coverageAreaLabel}</span>
           </div>
         )}
         {protocolFamily && (
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: 'var(--text-muted)' }}>Protocol</span>
-            <span style={{ color: 'var(--text-secondary)' }}>{protocolFamily}</span>
+          <div className="flex justify-between">
+            <span className="text-muted">Protocol</span>
+            <span className="text-secondary">{protocolFamily}</span>
           </div>
         )}
       </div>
@@ -300,42 +278,29 @@ export function NetworkTargetRenderer({
       label="Network"
       description="Distributed cortical network target defined by multi-node functional connectivity architecture."
     >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.85rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span style={{ color: 'var(--text-muted)' }}>Network</span>
-          <strong style={{ color: 'var(--text-main)' }}>{networkName}</strong>
+      <div className="flex flex-col gap-2 text-sm">
+        <div className="flex justify-between">
+          <span className="text-muted">Network</span>
+          <strong className="text-primary">{networkName}</strong>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span style={{ color: 'var(--text-muted)' }}>Node Count</span>
-          <span style={{ color: 'var(--text-secondary)' }}>{nodeCount} nodes</span>
+        <div className="flex justify-between">
+          <span className="text-muted">Node Count</span>
+          <span className="text-secondary">{nodeCount} nodes</span>
         </div>
         {primaryNodeFormatted && (
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: 'var(--text-muted)' }}>Primary Stimulation Node</span>
-            <strong style={{ color: 'var(--text-main)', fontFamily: 'var(--font-mono)' }}>
-              {primaryNodeFormatted}
-            </strong>
+          <div className="flex justify-between">
+            <span className="text-muted">Primary Stimulation Node</span>
+            <strong className="text-primary font-mono">{primaryNodeFormatted}</strong>
           </div>
         )}
-        <div style={{ marginTop: '4px' }}>
-          <span style={{ color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>
-            Circuit Description
-          </span>
-          <p
-            style={{
-              margin: 0,
-              color: 'var(--text-secondary)',
-              fontSize: '0.85rem',
-              lineHeight: 1.4,
-            }}
-          >
-            {circuitDescription}
-          </p>
+        <div className="mt-1">
+          <span className="text-muted block mb-1">Circuit Description</span>
+          <p className="m-0 text-sm text-secondary leading-normal">{circuitDescription}</p>
         </div>
         {connectivityMetric && (
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '4px' }}>
-            <span style={{ color: 'var(--text-muted)' }}>Connectivity Metric</span>
-            <span style={{ color: 'var(--text-secondary)' }}>{connectivityMetric}</span>
+          <div className="flex justify-between mt-1">
+            <span className="text-muted">Connectivity Metric</span>
+            <span className="text-secondary">{connectivityMetric}</span>
           </div>
         )}
       </div>

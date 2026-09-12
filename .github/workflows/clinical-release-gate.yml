@@ -43,7 +43,7 @@ jobs:
           test -n "${{ github.event.inputs.leadClinicianApproval }}"
           test -n "${{ github.event.inputs.scientificOfficerApproval }}"
           test -n "${{ github.event.inputs.qualityOfficerApproval }}"
-          
+
           # Enforce distinct approver identities (No Self-Approval)
           if [ "${{ github.event.inputs.leadClinicianApproval }}" = "${{ github.event.inputs.scientificOfficerApproval }}" ] || \
              [ "${{ github.event.inputs.scientificOfficerApproval }}" = "${{ github.event.inputs.qualityOfficerApproval }}" ] || \
@@ -55,7 +55,7 @@ jobs:
 
       - name: Verify Manifest Digest Consistency
         run: |
-          npx tsx scripts/release/generate-release-manifest.ts --verify-only
+          npx tsx scripts/release/generate-release-manifest-v2.ts --verify-only
 
       - name: Generate Case Recall & Affected Cases Index
         run: |

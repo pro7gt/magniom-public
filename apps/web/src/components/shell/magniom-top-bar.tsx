@@ -1,5 +1,21 @@
 'use client';
 
+import {
+  Button,
+  Badge,
+  Input,
+  SearchIcon,
+  XIcon,
+  Building2Icon,
+  ChevronDownIcon,
+  CheckIcon,
+  FlaskConicalIcon,
+  BookOpenIcon,
+  FileTextIcon,
+  LockIcon,
+} from '@/components/ui';
+import { getModeBadgeColor } from '@magniom/ui';
+
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -145,10 +161,10 @@ export function MagniomTopBar({
       {/* 2. Center: Global Case Search */}
       <div className="top-bar-center" ref={searchContainerRef}>
         <div className="global-search-wrapper">
-          <span className="search-icon" aria-hidden="true">
-            🔍
+          <span className="search-icon inline-flex items-center" aria-hidden="true">
+            <SearchIcon size={16} />
           </span>
-          <input
+          <Input
             type="search"
             className="global-search-input"
             placeholder="Search cases, indications, or IDs... (Press '/' to focus)"
@@ -162,7 +178,9 @@ export function MagniomTopBar({
             aria-expanded={isSearchOpen && matchingCases.length > 0}
           />
           {searchQuery && (
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               className="search-clear-btn"
               onClick={() => {
                 setSearchQuery('');
@@ -170,8 +188,8 @@ export function MagniomTopBar({
               }}
               aria-label="Clear search query"
             >
-              ✕
-            </button>
+              <XIcon size={14} />
+            </Button>
           )}
 
           {isSearchOpen && searchQuery.trim().length > 0 && (
@@ -198,8 +216,8 @@ export function MagniomTopBar({
                   >
                     <div className="search-result-header">
                       <strong className="search-case-code">{c.code}</strong>
-                      <span className="badge badge-neutral">{c.indication}</span>
-                      {c.isStale && <span className="badge badge-tier3">STALE</span>}
+                      <Badge variant="neutral">{c.indication}</Badge>
+                      {c.isStale && <Badge variant="tier3">STALE</Badge>}
                     </div>
                     <div className="search-case-title">{c.title}</div>
                   </div>
@@ -216,114 +234,81 @@ export function MagniomTopBar({
 
       {/* 3. Right: Mode Badge, Organisation/Site Context, User Profile */}
       <div className="top-bar-right">
-        {/* Mode Indicator with Explicit Text (§20–25) */}
-        <div className="mode-badge-container">
+        {/* Center: Environment Mode Badge & Safety Lock Indicators (§25, §32) */}
+        <div className="mode-badge-container" data-mode-color={getModeBadgeColor(currentMode)}>
           {failClosed ? (
-            <span
-              className="badge badge-danger mode-badge"
+            <Badge
+              variant="danger"
+              className="mode-badge"
               title={failClosedReason || 'Contradictory state detected; clinical targeting locked.'}
             >
               <span className="mode-dot">●</span> FAIL CLOSED
-            </span>
+            </Badge>
           ) : currentMode === 'RESEARCH' ? (
-            <span
-              className="badge badge-tierexp mode-badge"
+            <Badge
+              variant="tierexp"
+              className="mode-badge"
               title="Experimental neuroimaging analysis only — Not for clinical decisions"
             >
-              <span className="mode-dot">●</span> RESEARCH MODE
-            </span>
+              <span className="mode-dot text-amber">●</span> RESEARCH MODE
+            </Badge>
           ) : currentMode === 'VALIDATION' ? (
-            <span
-              className="badge badge-tier2 mode-badge"
+            <Badge
+              variant="tier2"
+              className="mode-badge"
               title="Controlled study evaluation — Clinical authority restricted by protocol"
             >
-              <span className="mode-dot">●</span> VALIDATION MODE
-            </span>
+              <span className="mode-dot text-cyan">●</span> VALIDATION MODE
+            </Badge>
           ) : (
-            <span
-              className="badge badge-tier1 mode-badge"
+            <Badge
+              variant="tier1"
+              className="mode-badge"
               title="Authorised specialist clinical decision support"
             >
-              <span className="mode-dot">●</span> CLINICAL MODE
-            </span>
+              <span className="mode-dot text-emerald">●</span> CLINICAL MODE
+            </Badge>
           )}
         </div>
 
         {/* Organisation / Site Context & Switcher (§26–27) */}
-        <div className="site-context-container" ref={orgMenuRef} style={{ position: 'relative' }}>
-          <button
+        <div className="site-context-container relative" ref={orgMenuRef}>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="site-indicator-btn flex items-center gap-1.5 px-1.5 py-1"
             onClick={() => setIsOrgMenuOpen(!isOrgMenuOpen)}
             title={`Active Site: ${activeOrg.displayLabel}. Click to switch organisation (§27).`}
             aria-expanded={isOrgMenuOpen}
             aria-haspopup="true"
-            style={{
-              background: 'none',
-              border: 'none',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              cursor: 'pointer',
-              color: 'inherit',
-              padding: '4px 6px',
-              borderRadius: '4px',
-            }}
           >
-            <span className="site-icon" aria-hidden="true">
-              🏥
+            <span className="site-icon inline-flex items-center" aria-hidden="true">
+              <Building2Icon size={16} />
             </span>
             <span className="site-label">{activeOrg.displayLabel}</span>
-            <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>▾</span>
-          </button>
+            <ChevronDownIcon size={12} className="text-muted" />
+          </Button>
 
           {isOrgMenuOpen && (
-            <div
-              role="menu"
-              style={{
-                position: 'absolute',
-                top: 'calc(100% + 6px)',
-                right: 0,
-                backgroundColor: 'var(--bg-card)',
-                border: '1px solid var(--border-subtle)',
-                borderRadius: '6px',
-                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
-                zIndex: 1000,
-                minWidth: '260px',
-                overflow: 'hidden',
-              }}
-            >
-              <div
-                style={{
-                  padding: '8px 12px',
-                  borderBottom: '1px solid var(--border-subtle)',
-                  fontSize: '0.75rem',
-                  color: 'var(--text-muted)',
-                  fontWeight: 600,
-                }}
-              >
+            <div role="menu" className="site-dropdown-menu">
+              <div className="px-3 py-2 border-b-subtle text-xs text-muted font-semibold">
                 SWITCH CLINICAL SITE (§27)
               </div>
               {AVAILABLE_ORGANISATIONS.map(org => (
-                <button
+                <Button
                   key={org.id}
+                  variant="ghost"
+                  size="sm"
                   onClick={() => handleSwitchOrg(org.id)}
-                  style={{
-                    display: 'block',
-                    width: '100%',
-                    textAlign: 'left',
-                    padding: '8px 12px',
-                    border: 'none',
-                    background:
-                      org.id === selectedOrgId ? 'rgba(56, 189, 248, 0.1)' : 'transparent',
-                    color: org.id === selectedOrgId ? 'var(--accent-cyan)' : 'var(--text-main)',
-                    fontSize: '0.8rem',
-                    cursor: 'pointer',
-                  }}
+                  className={`block w-full text-left px-3 py-2 border-0 text-xs ${
+                    org.id === selectedOrgId
+                      ? 'bg-surface-elevated text-cyan font-semibold'
+                      : 'text-primary'
+                  }`}
                 >
-                  <div style={{ fontWeight: 600 }}>{org.name}</div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                    {org.siteName}
-                  </div>
-                </button>
+                  <div className="font-semibold">{org.name}</div>
+                  <div className="text-xs text-secondary">{org.siteName}</div>
+                </Button>
               ))}
             </div>
           )}
@@ -334,7 +319,8 @@ export function MagniomTopBar({
 
         {/* Authenticated User Menu (§28) */}
         <div className="user-menu-container" ref={userMenuRef}>
-          <button
+          <Button
+            variant="ghost"
             className="user-menu-button"
             onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
             aria-expanded={isUserMenuOpen}
@@ -349,7 +335,7 @@ export function MagniomTopBar({
             <span className="user-caret" aria-hidden="true">
               ▾
             </span>
-          </button>
+          </Button>
 
           {isUserMenuOpen && (
             <div className="user-dropdown-menu" role="menu">
@@ -357,11 +343,18 @@ export function MagniomTopBar({
                 <strong>{session.user.displayName}</strong>
                 <div className="user-dropdown-sub">{session.user.roleTitle}</div>
                 <div className="authority-status">
-                  <span className="authority-badge">
-                    {session.user.hasSigningAuthority
-                      ? '✓ Signing Authority: Active'
-                      : '○ Signing Authority: Not Delegated'}
-                  </span>
+                  <Badge
+                    variant={session.user.hasSigningAuthority ? 'tier1' : 'neutral'}
+                    className="authority-badge"
+                  >
+                    {session.user.hasSigningAuthority ? (
+                      <>
+                        <CheckIcon size={12} className="inline-block" /> Signing Authority: Active
+                      </>
+                    ) : (
+                      '○ Signing Authority: Not Delegated'
+                    )}
+                  </Badge>
                   <div className="authority-detail">{session.user.signingAuthorityLevel}</div>
                 </div>
               </div>
@@ -371,11 +364,10 @@ export function MagniomTopBar({
               {/* Operational Mode Switcher (§9, §20) */}
               <div className="user-dropdown-section">
                 <span className="dropdown-section-title">Operational Mode</span>
-                <div
-                  className="mode-switch-group"
-                  style={{ display: 'flex', gap: '4px', marginTop: '6px' }}
-                >
-                  <button
+                <div className="mode-switch-group flex gap-1 mt-1.5">
+                  <Button
+                    variant="secondary"
+                    size="sm"
                     className={`mode-toggle-btn ${currentMode === 'CLINICAL' && !failClosed ? 'active' : ''}`}
                     onClick={() => {
                       if (onModeChange) onModeChange('CLINICAL');
@@ -383,8 +375,10 @@ export function MagniomTopBar({
                     }}
                   >
                     Clinical
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
                     className={`mode-toggle-btn ${currentMode === 'VALIDATION' && !failClosed ? 'active' : ''}`}
                     onClick={() => {
                       if (onModeChange) onModeChange('VALIDATION');
@@ -392,8 +386,10 @@ export function MagniomTopBar({
                     }}
                   >
                     Validation
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
                     className={`mode-toggle-btn ${currentMode === 'RESEARCH' && !failClosed ? 'active' : ''}`}
                     onClick={() => {
                       if (onModeChange) onModeChange('RESEARCH');
@@ -401,7 +397,7 @@ export function MagniomTopBar({
                     }}
                   >
                     Research
-                  </button>
+                  </Button>
                 </div>
               </div>
 
@@ -410,24 +406,24 @@ export function MagniomTopBar({
               <div className="user-dropdown-links">
                 <Link
                   href="/validation"
-                  className="dropdown-link"
+                  className="dropdown-link flex items-center gap-2"
                   onClick={() => setIsUserMenuOpen(false)}
                 >
-                  🧪 Validation Studies & Golden Cases
+                  <FlaskConicalIcon size={14} /> Validation Studies & Golden Cases
                 </Link>
                 <Link
                   href="/evidence"
-                  className="dropdown-link"
+                  className="dropdown-link flex items-center gap-2"
                   onClick={() => setIsUserMenuOpen(false)}
                 >
-                  📚 Evidence Knowledge Graph
+                  <BookOpenIcon size={14} /> Evidence Knowledge Graph
                 </Link>
                 <Link
                   href="/help"
-                  className="dropdown-link"
+                  className="dropdown-link flex items-center gap-2"
                   onClick={() => setIsUserMenuOpen(false)}
                 >
-                  📖 Clinical Guidance & Glossary
+                  <FileTextIcon size={14} /> Clinical Guidance & Glossary
                 </Link>
               </div>
 
@@ -435,7 +431,9 @@ export function MagniomTopBar({
 
               <div className="user-dropdown-footer">
                 <span>Release: MAGNIOM v2.0</span>
-                <span className="session-secure">🔒 Encrypted TLS</span>
+                <span className="session-secure inline-flex items-center gap-1">
+                  <LockIcon size={12} /> Encrypted TLS
+                </span>
               </div>
             </div>
           )}

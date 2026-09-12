@@ -1,6 +1,7 @@
 'use client';
 
 import React, { use, useState, useEffect } from 'react';
+import { CaseNotFoundState } from '@/components/ui';
 import { caseStore } from '../../../../lib/case-store';
 import {
   toComparisonTableViewModel,
@@ -25,7 +26,11 @@ export default function ComparePage({ params }: { params: Promise<{ caseId: stri
   }, [caseId]);
 
   if (!record) {
-    return <div className="container">Case not found.</div>;
+    return (
+      <div className="container page-container-col">
+        <CaseNotFoundState caseId={caseId} />
+      </div>
+    );
   }
 
   const allCandidates = [...record.slate.primaryCandidates, ...record.slate.additionalCandidates];
@@ -36,6 +41,7 @@ export default function ComparePage({ params }: { params: Promise<{ caseId: stri
   return (
     <TargetComparison
       caseId={caseId}
+      caseCode={record.clinicalCase.caseCode}
       tableViewModel={tableVM}
       convergenceViewModel={convergenceVM}
       comparison3D={clinical3dVM.comparison3D}

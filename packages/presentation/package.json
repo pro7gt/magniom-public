@@ -20,7 +20,8 @@
   },
   "dependencies": {
     "@magniom/domain": "*",
-    "@magniom/evidence": "*"
+    "@magniom/evidence": "*",
+    "@magniom/ui": "*"
   },
   "devDependencies": {
     "@magniom/test-fixtures": "*",

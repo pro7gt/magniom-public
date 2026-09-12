@@ -1,5 +1,27 @@
 'use client';
 
+import {
+  Button,
+  Badge,
+  Icon,
+  ChevronRightIcon,
+  ChevronLeftIcon,
+  FileTextIcon,
+  DnaIcon,
+  ActivityIcon,
+  AlertTriangleIcon,
+  ClockIcon,
+  BarChart3Icon,
+  MicroscopeIcon,
+  BrainIcon,
+  BookOpenIcon,
+  TargetIcon,
+  ScaleIcon,
+  LockIcon,
+  FlaskConicalIcon,
+  SettingsIcon,
+} from '@/components/ui';
+
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -14,8 +36,8 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(initialCollapsed);
 
-  // Extract caseId if inside /cases/[caseId] route
-  const caseMatch = pathname.match(/^\/cases\/([^/]+)/);
+  // Extract caseId if inside /cases/[caseId], /research/cases/[caseId], or /validation/cases/[caseId] route
+  const caseMatch = pathname.match(/^(?:\/research|\/validation)?\/cases\/([^/]+)/);
   const activeCaseId = caseMatch ? caseMatch[1] : undefined;
   const isCaseWorkspace = Boolean(activeCaseId && activeCaseId !== 'new');
 
@@ -53,14 +75,16 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
     >
       {/* Sidebar Collapse/Expand Toggle Button */}
       <div className="sidebar-header-toggle">
-        <button
+        <Button
+          variant="ghost"
+          size="sm"
           className="sidebar-toggle-btn"
           onClick={toggleCollapse}
           aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           title={isCollapsed ? 'Expand navigation' : 'Collapse navigation'}
         >
-          {isCollapsed ? '▶' : '◀'}
-        </button>
+          {isCollapsed ? <ChevronRightIcon size={14} /> : <ChevronLeftIcon size={14} />}
+        </Button>
       </div>
 
       {isCaseWorkspace ? (
@@ -75,16 +99,16 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
             title="Return to Clinical Case Registry"
           >
             <span className="back-icon" aria-hidden="true">
-              ←
+              <Icon name="arrow-left" size={14} />
             </span>
             {!isCollapsed && <span className="back-text">All Cases</span>}
           </Link>
 
           {/* Active Case Context Chip */}
           <div className="sidebar-case-identity">
-            <span className="case-badge-pill" style={{ fontFamily: 'var(--font-mono)' }}>
+            <Badge variant="neutral" mono className="case-badge-pill">
               {isCollapsed ? activeCaseCode?.slice(-4) : activeCaseCode}
-            </span>
+            </Badge>
             {!isCollapsed && (
               <span className="case-indication-sub" title={descriptor.indication_name}>
                 {descriptor.indication_code}
@@ -105,7 +129,7 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                 title="Case Overview"
               >
                 <span className="nav-icon" aria-hidden="true">
-                  📋
+                  <FileTextIcon size={16} />
                 </span>
                 {!isCollapsed && <span className="nav-label">Overview</span>}
               </Link>
@@ -120,7 +144,7 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                 title="Clinical Context Formulation"
               >
                 <span className="nav-icon" aria-hidden="true">
-                  🧬
+                  <DnaIcon size={16} />
                 </span>
                 {!isCollapsed && <span className="nav-label">Context</span>}
               </Link>
@@ -135,7 +159,7 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                 title="Clinical Assessment & Baselines"
               >
                 <span className="nav-icon" aria-hidden="true">
-                  🩺
+                  <ActivityIcon size={16} />
                 </span>
                 {!isCollapsed && <span className="nav-label">Assessment</span>}
               </Link>
@@ -154,13 +178,15 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                     title={cs.label}
                   >
                     <span className="nav-icon" aria-hidden="true">
-                      {cs.id.includes('lesion')
-                        ? '🩹'
-                        : cs.id.includes('stage')
-                          ? '⏱️'
-                          : cs.id.includes('pain')
-                            ? '⚡'
-                            : '🧬'}
+                      {cs.id.includes('lesion') ? (
+                        <AlertTriangleIcon size={16} />
+                      ) : cs.id.includes('stage') ? (
+                        <ClockIcon size={16} />
+                      ) : cs.id.includes('pain') ? (
+                        <ActivityIcon size={16} />
+                      ) : (
+                        <DnaIcon size={16} />
+                      )}
                     </span>
                     {!isCollapsed && <span className="nav-label">{cs.label.split(' ')[0]}</span>}
                   </Link>
@@ -177,7 +203,7 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                 title="Measurement Summary & Modality Qualifications"
               >
                 <span className="nav-icon" aria-hidden="true">
-                  📊
+                  <BarChart3Icon size={16} />
                 </span>
                 {!isCollapsed && <span className="nav-label">Measurements</span>}
               </Link>
@@ -196,20 +222,24 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                     title={ms.label}
                   >
                     <span className="nav-icon" aria-hidden="true">
-                      {ms.modality === 'audiology'
-                        ? '👂'
-                        : ms.modality === 'motor_mapping' ||
-                            ms.modality === 'motor_evoked_potential'
-                          ? '✋'
-                          : ms.modality === 'efield'
-                            ? '🧲'
-                            : ms.modality === 'lesion_mapping'
-                              ? '🔬'
-                              : '🧠'}
+                      {ms.modality === 'audiology' ? (
+                        <Icon name="ear" size={16} />
+                      ) : ms.modality === 'motor_mapping' ||
+                        ms.modality === 'motor_evoked_potential' ? (
+                        <Icon name="hand" size={16} />
+                      ) : ms.modality === 'efield' ? (
+                        <Icon name="magnet" size={16} />
+                      ) : ms.modality === 'lesion_mapping' ? (
+                        <MicroscopeIcon size={16} />
+                      ) : (
+                        <BrainIcon size={16} />
+                      )}
                     </span>
                     {!isCollapsed && <span className="nav-label">{ms.label.split(' ')[0]}</span>}
                     {!isCollapsed && !ms.required && (
-                      <span className="badge badge-tierexp badge-tiny">Research</span>
+                      <Badge variant="tierexp" size="sm">
+                        Research
+                      </Badge>
                     )}
                   </Link>
                 </li>
@@ -225,7 +255,7 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                 title="Therapeutic Evidence & Circuit Library"
               >
                 <span className="nav-icon" aria-hidden="true">
-                  📚
+                  <BookOpenIcon size={16} />
                 </span>
                 {!isCollapsed && <span className="nav-label">Evidence</span>}
               </Link>
@@ -240,7 +270,7 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                 title={isResearchMode ? 'Research Target Hypotheses' : 'Target Slate Workspace'}
               >
                 <span className="nav-icon" aria-hidden="true">
-                  🎯
+                  <TargetIcon size={16} />
                 </span>
                 {!isCollapsed && (
                   <span className="nav-label">
@@ -248,7 +278,9 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                   </span>
                 )}
                 {!isCollapsed && activeRecord?.isStale && (
-                  <span className="badge badge-tier3 badge-tiny">Stale</span>
+                  <Badge variant="tier3" size="sm">
+                    Stale
+                  </Badge>
                 )}
               </Link>
             </li>
@@ -262,7 +294,7 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                 title="Target Comparison Matrix"
               >
                 <span className="nav-icon" aria-hidden="true">
-                  ⚖️
+                  <ScaleIcon size={16} />
                 </span>
                 {!isCollapsed && <span className="nav-label">Compare</span>}
               </Link>
@@ -278,11 +310,13 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                   title="Clinical Decision & Sign-Off"
                 >
                   <span className="nav-icon" aria-hidden="true">
-                    ✍️
+                    <FileTextIcon size={16} />
                   </span>
                   {!isCollapsed && <span className="nav-label">Decision</span>}
                   {!isCollapsed && activeRecord?.decision?.isImmutable && (
-                    <span className="badge badge-tier1 badge-tiny">Signed</span>
+                    <Badge variant="tier1" size="sm">
+                      Signed
+                    </Badge>
                   )}
                 </Link>
               </li>
@@ -298,7 +332,7 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                   title="TMS Treatment Prescription"
                 >
                   <span className="nav-icon" aria-hidden="true">
-                    ⚡
+                    <ActivityIcon size={16} />
                   </span>
                   {!isCollapsed && <span className="nav-label">Treatment</span>}
                 </Link>
@@ -314,7 +348,7 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                 title="Clinical Outcomes & Response"
               >
                 <span className="nav-icon" aria-hidden="true">
-                  📈
+                  <BarChart3Icon size={16} />
                 </span>
                 {!isCollapsed && <span className="nav-label">Outcomes</span>}
               </Link>
@@ -329,7 +363,7 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                 title="Cryptographic Audit History"
               >
                 <span className="nav-icon" aria-hidden="true">
-                  🔒
+                  <LockIcon size={16} />
                 </span>
                 {!isCollapsed && <span className="nav-label">Audit</span>}
               </Link>
@@ -353,7 +387,7 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                   title="Clinician Home Worklist"
                 >
                   <span className="nav-icon" aria-hidden="true">
-                    🏠
+                    <Icon name="home" size={16} />
                   </span>
                   {!isCollapsed && <span className="nav-label">Home</span>}
                 </Link>
@@ -367,7 +401,7 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                   title="Clinical Cases Registry"
                 >
                   <span className="nav-icon" aria-hidden="true">
-                    📁
+                    <Icon name="folder" size={16} />
                   </span>
                   {!isCollapsed && <span className="nav-label">Cases</span>}
                 </Link>
@@ -381,12 +415,16 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                   title="Cases Awaiting Clinician Review"
                 >
                   <span className="nav-icon" aria-hidden="true">
-                    ⏳
+                    <ClockIcon size={16} />
                   </span>
                   {!isCollapsed && <span className="nav-label">Awaiting Review</span>}
-                  <span className="badge badge-queue-count" title="Cases require review">
+                  <Badge
+                    variant="neutral"
+                    className="badge-queue-count"
+                    title="Cases require review"
+                  >
                     3
-                  </span>
+                  </Badge>
                 </Link>
               </li>
 
@@ -398,7 +436,7 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                   title="Signed & Pending Clinical Decisions"
                 >
                   <span className="nav-icon" aria-hidden="true">
-                    📜
+                    <FileTextIcon size={16} />
                   </span>
                   {!isCollapsed && <span className="nav-label">Decisions</span>}
                 </Link>
@@ -412,7 +450,7 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                   title="Evidence Claims & Therapeutic Circuits Library"
                 >
                   <span className="nav-icon" aria-hidden="true">
-                    📚
+                    <BookOpenIcon size={16} />
                   </span>
                   {!isCollapsed && <span className="nav-label">Evidence</span>}
                 </Link>
@@ -434,7 +472,7 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                   title="Research Exploratory Neuroimaging Workspace"
                 >
                   <span className="nav-icon" aria-hidden="true">
-                    🔬
+                    <MicroscopeIcon size={16} />
                   </span>
                   {!isCollapsed && <span className="nav-label">Research</span>}
                 </Link>
@@ -456,7 +494,7 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                   title="Validation Suite (Golden Cases & Human Factors)"
                 >
                   <span className="nav-icon" aria-hidden="true">
-                    🧪
+                    <FlaskConicalIcon size={16} />
                   </span>
                   {!isCollapsed && <span className="nav-label">Validation Suite</span>}
                 </Link>
@@ -470,7 +508,7 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                   title="Formal Shell Verification & Q-Level Matrix (§45–46)"
                 >
                   <span className="nav-icon" aria-hidden="true">
-                    🔬
+                    <MicroscopeIcon size={16} />
                   </span>
                   {!isCollapsed && <span className="nav-label">Verification</span>}
                 </Link>
@@ -484,7 +522,7 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                   title="System Administration & Policies (§44)"
                 >
                   <span className="nav-icon" aria-hidden="true">
-                    ⚙️
+                    <SettingsIcon size={16} />
                   </span>
                   {!isCollapsed && <span className="nav-label">Admin</span>}
                 </Link>
@@ -498,7 +536,7 @@ export function GlobalSidebar({ initialCollapsed = false }: GlobalSidebarProps) 
                   title="Clinical & Scientific Guidance"
                 >
                   <span className="nav-icon" aria-hidden="true">
-                    📖
+                    <BookOpenIcon size={16} />
                   </span>
                   {!isCollapsed && <span className="nav-label">Help</span>}
                 </Link>

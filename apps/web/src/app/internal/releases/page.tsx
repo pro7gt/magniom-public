@@ -1,7 +1,20 @@
 'use client';
 
+import {
+  LockIcon,
+  Breadcrumbs,
+  Button,
+  Badge,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  ArrowLeftIcon,
+  TableEmptyRow,
+  PageHeader,
+} from '@/components/ui';
+
 import React from 'react';
-import Link from 'next/link';
 import { getAuthoritativeReleaseContext } from '../../../lib/release-authority';
 
 // ==========================================
@@ -13,48 +26,63 @@ export default function InternalReleasesPage() {
   const releaseContext = getAuthoritativeReleaseContext();
 
   return (
-    <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.25rem' }}>
-        <span className="badge badge-neutral" style={{ textTransform: 'uppercase' }}>Internal Engineering</span>
-      </div>
-      <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)' }}>
-        Release Manifests (§198)
-      </h1>
-      <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
-        Authoritative subsystem releases with integrity digests. Never include in ordinary clinician navigation.
-      </p>
+    <div className="container page-container-col">
+      <Breadcrumbs
+        items={[
+          { label: 'Internal', href: '/internal' },
+          { label: 'Releases & Provenance', current: true },
+        ]}
+      />
 
-      <div className="card">
-        <h2 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--accent-cyan)', marginBottom: '0.75rem' }}>
-          Build: {releaseContext.buildId}
-        </h2>
-        <div className="comparison-table-wrapper">
-          <table className="comparison-table">
-            <thead>
-              <tr>
-                <th>Subsystem</th>
-                <th>Version</th>
-                <th>SHA-256</th>
-                <th>Status</th>
-                <th>Change Control</th>
-              </tr>
-            </thead>
-            <tbody>
-              {releaseContext.subsystems.map(sub => (
-                <tr key={sub.subsystemName}>
-                  <td><strong>{sub.subsystemName}</strong></td>
-                  <td><span className="badge badge-neutral">{sub.version}</span></td>
-                  <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: '#38bdf8' }}>{sub.sha256DigestFull}</td>
-                  <td><span className="badge badge-tier1">{sub.status}</span></td>
-                  <td>{sub.isChangeControlLocked ? '🔒 Locked' : 'Unlocked'}</td>
+      <PageHeader
+        eyebrow={<Badge variant="neutral" className="uppercase">Internal Engineering</Badge>}
+        title="Release Manifests (§198)"
+        subtitle="Authoritative subsystem releases with integrity digests. Never include in ordinary clinician navigation."
+      />
+
+
+      <Card>
+        <CardHeader>
+          <CardTitle as="h2" className="text-cyan">
+            Build: {releaseContext.buildId}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="comparison-table-wrapper">
+            <table className="comparison-table" aria-label="Releases and Subsystem Integrity Digests">
+              <thead>
+                <tr>
+                  <th>Subsystem</th>
+                  <th>Version</th>
+                  <th>SHA-256</th>
+                  <th>Status</th>
+                  <th>Change Control</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+              </thead>
+              <tbody>
+                {releaseContext.subsystems.length === 0 ? (
+                  <TableEmptyRow
+                    colSpan={5}
+                    message="No subsystem release manifests found."
+                  />
+                ) : (
+                  releaseContext.subsystems.map(sub => (
+                    <tr key={sub.subsystemName}>
+                      <td><strong>{sub.subsystemName}</strong></td>
+                      <td><Badge variant="neutral">{sub.version}</Badge></td>
+                      <td><span className="font-mono text-xs text-cyan">{sub.sha256DigestFull}</span></td>
+                      <td><Badge variant="tier1">{sub.status}</Badge></td>
+                      <td>{sub.isChangeControlLocked ? <Badge variant="neutral"><LockIcon size={12} className="mr-1 inline" /> Locked</Badge> : 'Unlocked'}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
 
-      <Link href="/internal/verification" className="btn btn-secondary">← Verification Dashboard</Link>
+      <Button variant="secondary" href="/internal/verification"><ArrowLeftIcon size={14} className="mr-1 inline" /> Verification Dashboard</Button>
     </div>
   );
 }

@@ -1,7 +1,21 @@
 'use client';
 
 import React, { use, useState, useEffect } from 'react';
-import Link from 'next/link';
+import {
+  Breadcrumbs,
+  Button,
+  Badge,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CaseNotFoundState,
+  ArrowRightIcon,
+  PageHeader,
+  Alert,
+  AlertTitle,
+  AlertDescription,
+} from '@/components/ui';
 import { caseStore } from '../../../../lib/case-store';
 
 export default function PtsdContextPage({ params }: { params: Promise<{ caseId: string }> }) {
@@ -23,14 +37,8 @@ export default function PtsdContextPage({ params }: { params: Promise<{ caseId: 
 
   if (!record) {
     return (
-      <div className="container" style={{ textAlign: 'center', padding: '4rem' }}>
-        <h2>Case Not Found</h2>
-        <p style={{ color: 'var(--text-secondary)' }}>
-          Case ID {caseId} does not exist in the active case store.
-        </p>
-        <Link href="/cases" className="btn btn-secondary">
-          Return to Cases
-        </Link>
+      <div className="container page-container-col">
+        <CaseNotFoundState caseId={caseId} />
       </div>
     );
   }
@@ -47,236 +55,131 @@ export default function PtsdContextPage({ params }: { params: Promise<{ caseId: 
   };
 
   return (
-    <div className="ptsd-context-workspace" style={{ padding: '24px' }}>
+    <div className="container page-container-col">
       {/* Breadcrumb Navigation */}
-      <nav
-        aria-label="PTSD Context Breadcrumb"
-        style={{ marginBottom: '16px', fontSize: '0.85rem' }}
-      >
-        <Link href="/cases" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>
-          Cases
-        </Link>
-        <span style={{ margin: '0 8px', color: 'var(--text-muted)' }}>/</span>
-        <Link
-          href={`/cases/${caseId}`}
-          style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}
-        >
-          {record.clinicalCase.caseCode}
-        </Link>
-        <span style={{ margin: '0 8px', color: 'var(--text-muted)' }}>/</span>
-        <span style={{ color: 'var(--accent-cyan)', fontWeight: 600 }}>
-          PTSD Clinical Formulation
-        </span>
-      </nav>
+      <Breadcrumbs
+        ariaLabel="PTSD Context Breadcrumb"
+        items={[
+          { label: 'Cases', href: '/cases' },
+          { label: record.clinicalCase.caseCode, href: `/cases/${caseId}` },
+          { label: 'PTSD Clinical Formulation', current: true },
+        ]}
+      />
 
       {/* Header */}
-      <header
-        style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.03)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '8px',
-          padding: '20px',
-          marginBottom: '24px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '16px',
-        }}
-      >
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <h1
-              style={{ margin: 0, fontSize: '1.4rem', color: 'var(--text-main)', fontWeight: 700 }}
+      <PageHeader
+        variant="case-workspace"
+        title={
+          <span className="flex items-center gap-2 flex-wrap">
+            <span>PTSD Symptom Formulation &amp; Battery (§70–§72)</span>
+            <Badge variant="tier1">CLINICIAN CERTIFIED</Badge>
+            <Badge variant="neutral">IMR-PTSD-2.0.0</Badge>
+          </span>
+        }
+        subtitle="Structured diagnostic evaluation: Clinician-Administered PTSD Scale (CAPS-5) & PCL-5 baseline severity."
+        actions={
+          <div className="flex items-center gap-2 flex-wrap">
+            <Button
+              variant="primary"
+              onClick={handleConfirmFormulation}
+              id="confirm-ptsd-phenotype-btn"
             >
-              PTSD Symptom Formulation &amp; Battery (§70–§72)
-            </h1>
-            <span className="badge badge-tier1">CLINICIAN CERTIFIED</span>
-            <span className="badge badge-neutral">IMR-PTSD-2.0.0</span>
+              {isSaved ? 'Formulation Sealed' : 'Confirm & Seal Formulation'}
+            </Button>
+            <Button variant="secondary" href={`/cases/${caseId}/trauma-context`}>
+              Trauma Screening <ArrowRightIcon size={14} className="ml-1 inline" />
+            </Button>
+            <Button variant="secondary" href={`/cases/${caseId}/targets`}>
+              Target Slate <ArrowRightIcon size={14} className="ml-1 inline" />
+            </Button>
           </div>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', margin: '6px 0 0' }}>
-            Structured diagnostic evaluation: Clinician-Administered PTSD Scale (CAPS-5) &amp; PCL-5
-            baseline severity.
-          </p>
-        </div>
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-          <button
-            onClick={handleConfirmFormulation}
-            className="btn btn-primary"
-            id="confirm-ptsd-phenotype-btn"
-          >
-            {isSaved ? '✓ Formulation Sealed' : 'Confirm & Seal Formulation →'}
-          </button>
-          <Link href={`/cases/${caseId}/trauma-context`} className="btn btn-secondary">
-            Trauma Screening →
-          </Link>
-          <Link href={`/cases/${caseId}/targets`} className="btn btn-secondary">
-            Target Slate →
-          </Link>
-        </div>
-      </header>
+        }
+      />
 
       {/* 3-Column Diagnostic Card Grid */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '20px',
-          marginBottom: '24px',
-        }}
-      >
+      <div className="grid-cards-320 mb-6">
         {/* Card 1: Baseline Severity */}
-        <section
-          style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.04)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderRadius: '8px',
-            padding: '20px',
-          }}
-        >
-          <h2
-            style={{
-              margin: '0 0 12px',
-              fontSize: '1.05rem',
-              color: 'var(--accent-cyan)',
-              fontWeight: 600,
-            }}
-          >
-            CAPS-5 Diagnostic Total
-          </h2>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '8px' }}>
-            <span
-              style={{
-                fontSize: '2.5rem',
-                fontWeight: 800,
-                color: 'var(--text-main)',
-                fontFamily: 'var(--font-mono)',
-              }}
-            >
-              48
-            </span>
-            <span style={{ fontSize: '1rem', color: 'var(--text-secondary)' }}>
-              / 80 (Severe PTSD)
-            </span>
-          </div>
-          <div
-            style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.85rem' }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Criterion B (Intrusions):</span>
-              <strong style={{ color: 'var(--text-main)' }}>14 / 20</strong>
+        <Card>
+          <CardHeader>
+            <CardTitle as="h2" className="section-subheading">
+              CAPS-5 Diagnostic Total
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-baseline gap-2 mb-2">
+              <span className="text-2xl font-extrabold text-primary font-mono">48</span>
+              <span className="text-base text-secondary">/ 80 (Severe PTSD)</span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Criterion C (Avoidance):</span>
-              <strong style={{ color: 'var(--text-main)' }}>7 / 8</strong>
+            <div className="flex flex-col gap-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-secondary">Criterion B (Intrusions):</span>
+                <strong className="text-primary">14 / 20</strong>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-secondary">Criterion C (Avoidance):</span>
+                <strong className="text-primary">7 / 8</strong>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-secondary">Criterion D (Cognition/Mood):</span>
+                <strong className="text-primary">15 / 28</strong>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-secondary">Criterion E (Hyperarousal):</span>
+                <strong className="text-warning">12 / 24</strong>
+              </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Criterion D (Cognition/Mood):</span>
-              <strong style={{ color: 'var(--text-main)' }}>15 / 28</strong>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Criterion E (Hyperarousal):</span>
-              <strong style={{ color: 'var(--accent-yellow)' }}>12 / 24</strong>
-            </div>
-          </div>
-        </section>
+          </CardContent>
+        </Card>
 
         {/* Card 2: Scientific Targeting Invariant (§72) */}
-        <section
-          style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.04)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderRadius: '8px',
-            padding: '20px',
-          }}
-        >
-          <h2
-            style={{
-              margin: '0 0 12px',
-              fontSize: '1.05rem',
-              color: 'var(--accent-cyan)',
-              fontWeight: 600,
-            }}
-          >
-            Target Strategy &amp; Laterality Invariant
-          </h2>
-          <p
-            style={{
-              fontSize: '0.85rem',
-              color: 'var(--text-secondary)',
-              lineHeight: 1.5,
-              margin: '0 0 12px',
-            }}
-          >
-            Conforms to §72: Primary PTSD targeting hypothesis utilizes{' '}
-            <strong>Right DLPFC (BA46/9)</strong> inhibitory / high-frequency fronto-limbic
-            regulation, distinct from MDD Left DLPFC anti-correlation targeting.
-          </p>
-          <div
-            style={{
-              backgroundColor: 'rgba(56, 189, 248, 0.08)',
-              padding: '10px',
-              borderRadius: '6px',
-              fontSize: '0.8rem',
-            }}
-          >
-            <strong style={{ color: 'var(--accent-cyan)' }}>Governing Evidence Path:</strong>
-            <div
-              style={{
-                fontFamily: 'var(--font-mono)',
-                color: 'var(--text-main)',
-                marginTop: '2px',
-              }}
-            >
-              EP-PTSD-RDLPFC-CIVILIAN-001
-            </div>
-            <span className="badge badge-tier1" style={{ marginTop: '6px', fontSize: '0.7rem' }}>
-              Level B Clinical Consensus
-            </span>
-          </div>
-        </section>
+        <Card>
+          <CardHeader>
+            <CardTitle as="h2" className="section-subheading">
+              Target Strategy &amp; Laterality Invariant
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-secondary leading-relaxed m-0 mb-3">
+              Conforms to §72: Primary PTSD targeting hypothesis utilizes{' '}
+              <strong>Right DLPFC (BA46/9)</strong> inhibitory / high-frequency fronto-limbic
+              regulation, distinct from MDD Left DLPFC anti-correlation targeting.
+            </p>
+            <Alert variant="info" className="text-xs">
+              <AlertTitle>Governing Evidence Path</AlertTitle>
+              <AlertDescription>
+                <div className="font-mono text-primary mt-0.5">EP-PTSD-RDLPFC-CIVILIAN-001</div>
+                <Badge variant="tier1" className="mt-1.5 text-xs">
+                  Level B Clinical Consensus
+                </Badge>
+              </AlertDescription>
+            </Alert>
+          </CardContent>
+        </Card>
 
         {/* Card 3: Comorbidity & MDD Independence (§70) */}
-        <section
-          style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.04)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderRadius: '8px',
-            padding: '20px',
-          }}
-        >
-          <h2
-            style={{
-              margin: '0 0 12px',
-              fontSize: '1.05rem',
-              color: 'var(--accent-cyan)',
-              fontWeight: 600,
-            }}
-          >
-            Comorbidity Isolation Protocol
-          </h2>
-          <p
-            style={{
-              fontSize: '0.85rem',
-              color: 'var(--text-secondary)',
-              lineHeight: 1.5,
-              margin: '0 0 12px',
-            }}
-          >
-            In accordance with §70, comorbid depressive symptoms remain isolated in independent
-            CaseIndication records. Target Slates are never commingled.
-          </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.8rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Comorbid MDD Status:</span>
-              <span className="badge badge-neutral">Independent CaseIndication</span>
+        <Card>
+          <CardHeader>
+            <CardTitle as="h2" className="section-subheading">
+              Comorbidity Isolation Protocol
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-secondary leading-relaxed m-0 mb-3">
+              In accordance with §70, comorbid depressive symptoms remain isolated in independent
+              CaseIndication records. Target Slates are never commingled.
+            </p>
+            <div className="flex flex-col gap-1.5 text-xs">
+              <div className="flex justify-between">
+                <span className="text-secondary">Comorbid MDD Status:</span>
+                <Badge variant="neutral">Independent CaseIndication</Badge>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-secondary">Left-DLPFC Alternative:</span>
+                <Badge variant="tier2">Secondary Slot (Depressive Focus)</Badge>
+              </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>Left-DLPFC Alternative:</span>
-              <span className="badge badge-tier2">Secondary Slot (Depressive Focus)</span>
-            </div>
-          </div>
-        </section>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

@@ -1,5 +1,18 @@
 'use client';
 
+import {
+  AlertTriangleIcon,
+  CheckIcon,
+  ArrowLeftRightIcon,
+  Button,
+  Badge,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from '@/components/ui';
+
 import React from 'react';
 import type { Comparison3DViewModel } from '@magniom/presentation';
 
@@ -15,117 +28,105 @@ export function Comparison3DMatrix({
   onSelectCandidate,
 }: Comparison3DMatrixProps) {
   return (
-    <div
-      className="card"
-      style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
-      aria-label="3D Multi-Target Spatial Matrix"
-    >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <Card className="flex flex-col gap-4" aria-label="3D Multi-Target Spatial Matrix">
+      <CardHeader className="flex justify-between items-center p-0">
         <div>
-          <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+          <CardTitle as="h3" className="text-base font-bold text-primary">
             3D Multi-Target Spatial Localization & Redundancy Matrix
-          </h3>
-          <p
-            style={{ fontSize: '0.8125rem', color: 'var(--text-secondary)', marginTop: '0.15rem' }}
-          >
+          </CardTitle>
+          <CardDescription className="text-sm text-secondary mt-0.5">
             Systematic spatial separation and redundancy assessment across candidate hypotheses.
-          </p>
+          </CardDescription>
         </div>
 
         {comparison.redundantPairsCount > 0 ? (
-          <span className="badge badge-warning" style={{ fontSize: '0.75rem' }}>
-            ⚠ {comparison.redundantPairsCount} Redundant Pair(s) Detected (&lt; 15 mm)
-          </span>
+          <Badge variant="warning" className="text-xs">
+            <AlertTriangleIcon size={12} className="mr-1 inline text-amber" />{' '}
+            {comparison.redundantPairsCount} Redundant Pair(s) Detected (&lt; 15 mm)
+          </Badge>
         ) : (
-          <span className="badge badge-tier1" style={{ fontSize: '0.75rem' }}>
-            ✓ All Targets Distinct (&gt; 15 mm)
-          </span>
+          <Badge variant="tier1" className="text-xs">
+            <CheckIcon size={12} className="mr-1 inline text-emerald" /> All Targets Distinct (&gt;
+            15 mm)
+          </Badge>
         )}
-      </div>
+      </CardHeader>
 
-      {/* Candidate Selector Chips */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-        {comparison.candidates.map(c => {
-          const isSelected = c.id === selectedCandidateId;
-          return (
-            <button
-              key={c.id}
-              type="button"
-              className={`btn btn-sm ${isSelected ? 'btn-primary' : 'btn-secondary'}`}
-              style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem' }}
-              onClick={() => onSelectCandidate(c.id)}
-            >
-              <span
-                style={{
-                  width: '8px',
-                  height: '8px',
-                  borderRadius: '50%',
-                  background: c.markerColor,
-                }}
-              />
-              <strong>{c.roleTitle}:</strong>
-              <span>{c.mniFormatted}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Pairwise Distance Matrix Table */}
-      <div className="table-responsive">
-        <table
-          className="table table-sm"
-          style={{ width: '100%', fontSize: '0.75rem', borderCollapse: 'collapse' }}
-        >
-          <thead>
-            <tr style={{ borderBottom: '1px solid var(--border-color)', textAlign: 'left' }}>
-              <th style={{ padding: '0.4rem' }}>Candidate Pair</th>
-              <th style={{ padding: '0.4rem' }}>Spatial Distance</th>
-              <th style={{ padding: '0.4rem' }}>Target Family</th>
-              <th style={{ padding: '0.4rem' }}>Redundancy Classification</th>
-            </tr>
-          </thead>
-          <tbody>
-            {comparison.pairwiseDistances.map((pair, idx) => (
-              <tr
-                key={idx}
-                style={{
-                  borderBottom: '1px solid var(--border-subtle)',
-                  background: pair.isRedundant ? 'rgba(239, 68, 68, 0.08)' : 'transparent',
-                }}
+      <CardContent className="p-0 flex flex-col gap-4">
+        {/* Candidate Selector Chips */}
+        <div className="flex flex-wrap gap-2">
+          {comparison.candidates.map(c => {
+            const isSelected = c.id === selectedCandidateId;
+            return (
+              <Button
+                className={`btn-sm ${isSelected ? 'btn-primary' : 'btn-secondary'} flex items-center gap-1.5 text-xs`}
+                key={c.id}
+                type="button"
+                onClick={() => onSelectCandidate(c.id)}
               >
-                <td style={{ padding: '0.4rem', fontWeight: 600, color: '#f1f5f9' }}>
-                  {pair.candidateAName} <span style={{ color: 'var(--text-muted)' }}>↔</span>{' '}
-                  {pair.candidateBName}
-                </td>
-                <td
-                  style={{
-                    padding: '0.4rem',
-                    fontFamily: 'var(--font-mono)',
-                    fontWeight: 700,
-                    color: pair.distanceMm < 15 ? '#f59e0b' : '#38bdf8',
-                  }}
-                >
-                  {pair.distanceMm.toFixed(1)} mm
-                </td>
-                <td style={{ padding: '0.4rem', color: 'var(--text-secondary)' }}>
-                  {pair.isRedundant ? 'Identical Target Family' : 'Distinct / Alternative Family'}
-                </td>
-                <td style={{ padding: '0.4rem' }}>
-                  {pair.isRedundant ? (
-                    <span className="badge badge-warning" style={{ fontSize: '0.65rem' }}>
-                      Redundant (&lt; 15 mm)
-                    </span>
-                  ) : (
-                    <span className="badge badge-neutral" style={{ fontSize: '0.65rem' }}>
-                      Spatially Differentiated
-                    </span>
-                  )}
-                </td>
+                <span
+                  className="w-2 h-2 rounded-full inline-block shrink-0"
+                  style={{ background: c.markerColor }}
+                />
+                <strong>{c.roleTitle}:</strong>
+                <span>{c.mniFormatted}</span>
+              </Button>
+            );
+          })}
+        </div>
+
+        {/* Pairwise Distance Matrix Table */}
+        <div className="comparison-table-wrapper">
+          <table
+            className="comparison-table table-sm w-full text-xs"
+            aria-label="Pairwise Candidate Separation Distance Matrix"
+          >
+            <thead>
+              <tr className="border-b text-left">
+                <th className="p-1.5">Candidate Pair</th>
+                <th className="p-1.5">Spatial Distance</th>
+                <th className="p-1.5">Target Family</th>
+                <th className="p-1.5">Redundancy Classification</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+            </thead>
+            <tbody>
+              {comparison.pairwiseDistances.map((pair, idx) => (
+                <tr
+                  key={idx}
+                  className={`border-b border-subtle ${pair.isRedundant ? 'bg-rose-500/10' : ''}`}
+                >
+                  <td className="p-1.5 font-semibold text-primary">
+                    {pair.candidateAName}{' '}
+                    <ArrowLeftRightIcon size={12} className="text-muted inline mx-1.5" />{' '}
+                    {pair.candidateBName}
+                  </td>
+                  <td
+                    className={`p-1.5 font-mono font-bold ${
+                      pair.distanceMm < 15 ? 'text-amber' : 'text-cyan'
+                    }`}
+                  >
+                    {pair.distanceMm.toFixed(1)} mm
+                  </td>
+                  <td className="p-1.5 text-secondary">
+                    {pair.isRedundant ? 'Identical Target Family' : 'Distinct / Alternative Family'}
+                  </td>
+                  <td className="p-1.5">
+                    {pair.isRedundant ? (
+                      <Badge variant="warning" className="text-xs">
+                        Redundant (&lt; 15 mm)
+                      </Badge>
+                    ) : (
+                      <Badge variant="neutral" className="text-xs">
+                        Spatially Differentiated
+                      </Badge>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

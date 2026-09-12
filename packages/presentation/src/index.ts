@@ -28,6 +28,7 @@ import type {
   TargetReliabilityProfile,
   TargetGeometryType,
 } from '@magniom/domain';
+import { CLINICAL_THEME_TOKENS } from '@magniom/ui';
 
 // ==========================================
 // 1. Core Formatters & Geometry Helpers
@@ -1023,6 +1024,13 @@ export interface TargetRoiViewModel {
   readonly markerColor: string;
 }
 
+/** Canonical candidate role colors for 3D WebGL marker rendering (§102, §158) */
+export const CANDIDATE_MARKER_COLORS = {
+  primary1: CLINICAL_THEME_TOKENS.colors.tier2Badge, // Tier 2 / P1 accent
+  primary2: CLINICAL_THEME_TOKENS.colors.tier4Badge, // Tier 4 / P2 accent
+  additional: CLINICAL_THEME_TOKENS.colors.workflowLocked, // Locked / fallback
+} as const;
+
 export interface Counterfactual3DViewModel {
   readonly hasCounterfactual: boolean;
   readonly baselineName: string;
@@ -1122,7 +1130,11 @@ export function toTargetRoiViewModel(
 
   const isP1 = candidate.role === 'PRIMARY_1';
   const isP2 = candidate.role === 'PRIMARY_2';
-  const markerColor = isP1 ? '#0284c7' : isP2 ? '#7c3aed' : '#4b5563';
+  const markerColor = isP1
+    ? CANDIDATE_MARKER_COLORS.primary1
+    : isP2
+      ? CANDIDATE_MARKER_COLORS.primary2
+      : CANDIDATE_MARKER_COLORS.additional;
 
   // HCP-MMP1.0 parcel heuristics based on coordinate territory
   const parcelName =
