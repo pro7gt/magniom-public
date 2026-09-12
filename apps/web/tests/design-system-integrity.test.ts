@@ -529,32 +529,33 @@ describe('MAGNIOM Design System & Token Integrity Suite', () => {
     const hexRegex = /#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})\b/g;
     const lines = cssContent.split('\n');
 
-    let inRoot = false;
-    let rootEndLine = -1;
+    let inTokenBlock = false;
+    let tokensEndLine = -1;
     let depth = 0;
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i]!;
-      if (line.includes(':root')) inRoot = true;
-      if (inRoot) {
+      if (line.includes(':root') || line.includes('[data-theme="dark"]')) {
+        inTokenBlock = true;
+      }
+      if (inTokenBlock) {
         for (const ch of line) {
           if (ch === '{') depth++;
           else if (ch === '}') {
             depth--;
             if (depth === 0) {
-              rootEndLine = i + 1;
-              inRoot = false;
-              break;
+              tokensEndLine = i + 1;
+              inTokenBlock = false;
             }
           }
         }
       }
     }
 
-    expect(rootEndLine).toBeGreaterThan(0);
+    expect(tokensEndLine).toBeGreaterThan(0);
 
     const outsideRootHexes: { lineNum: number; line: string; hex: string }[] = [];
-    for (let i = rootEndLine; i < lines.length; i++) {
+    for (let i = tokensEndLine; i < lines.length; i++) {
       const line = lines[i]!;
       const matches = line.match(hexRegex);
       if (matches) {
@@ -566,7 +567,7 @@ describe('MAGNIOM Design System & Token Integrity Suite', () => {
 
     expect(
       outsideRootHexes,
-      `Found hardcoded hex colors in globals.css outside :root:\n${JSON.stringify(outsideRootHexes, null, 2)}`,
+      `Found hardcoded hex colors in globals.css outside token blocks:\n${JSON.stringify(outsideRootHexes, null, 2)}`,
     ).toEqual([]);
   });
 

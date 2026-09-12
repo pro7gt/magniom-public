@@ -13,6 +13,7 @@ import {
   BookOpenIcon,
   FileTextIcon,
   LockIcon,
+  ThemeToggle,
 } from '@/components/ui';
 import { getModeBadgeColor } from '@magniom/ui';
 
@@ -150,7 +151,9 @@ export function MagniomTopBar({
       {/* 1. Left: Brand & Clinical Descriptor */}
       <div className="top-bar-left">
         <Link href="/" className="top-bar-brand" aria-label="MAGNIOM Home">
-          <span className="brand-title">MAGNIOM</span>
+          <span className="brand-title">
+            MAGNIOM<span className="brand-dot">.</span>
+          </span>
           <span className="brand-separator" aria-hidden="true">
             |
           </span>
@@ -399,6 +402,14 @@ export function MagniomTopBar({
                     Research
                   </Button>
                 </div>
+              </div>
+
+              <div className="user-dropdown-divider" />
+
+              {/* Appearance: Theme Toggle */}
+              <div className="user-dropdown-section">
+                <span className="dropdown-section-title">Appearance</span>
+                <ThemeToggle />
               </div>
 
               <div className="user-dropdown-divider" />

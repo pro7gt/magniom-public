@@ -51,7 +51,9 @@ export type IconName =
   | 'circle'
   | 'sparkles'
   | 'home'
-  | 'folder';
+  | 'folder'
+  | 'sun'
+  | 'moon';
 
 export interface IconProps extends React.SVGProps<SVGSVGElement> {
   name: IconName;
@@ -423,6 +425,22 @@ function renderIconPaths(name: IconName) {
       return (
         <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z" />
       );
+    case 'sun':
+      return (
+        <>
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2" />
+          <path d="M12 20v2" />
+          <path d="m4.93 4.93 1.41 1.41" />
+          <path d="m17.66 17.66 1.41 1.41" />
+          <path d="M2 12h2" />
+          <path d="M20 12h2" />
+          <path d="m6.34 17.66-1.41 1.41" />
+          <path d="m19.07 4.93-1.41 1.41" />
+        </>
+      );
+    case 'moon':
+      return <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />;
     default:
       return <circle cx="12" cy="12" r="8" />;
   }
@@ -548,4 +566,10 @@ export function ArrowLeftRightIcon(props: Omit<IconProps, 'name'>) {
 }
 export function ExternalLinkIcon(props: Omit<IconProps, 'name'>) {
   return <Icon name="external-link" {...props} />;
+}
+export function SunIcon(props: Omit<IconProps, 'name'>) {
+  return <Icon name="sun" {...props} />;
+}
+export function MoonIcon(props: Omit<IconProps, 'name'>) {
+  return <Icon name="moon" {...props} />;
 }
