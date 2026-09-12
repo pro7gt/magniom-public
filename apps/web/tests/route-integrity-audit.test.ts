@@ -302,6 +302,7 @@ describe('MAGNIOM v2.0 Route Integrity & 404 Elimination Audit', () => {
       '/internal/ci-status',
       '/admin',
       '/help',
+      '/login',
     ];
 
     for (const gr of globalRoutes) {

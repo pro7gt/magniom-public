@@ -746,7 +746,7 @@ describe('MAGNIOM Design System & Token Integrity Suite', () => {
     }
 
     scanAppPages(appPagesDir);
-    expect(contentPageCount).toBe(65);
+    expect(contentPageCount).toBe(66);
     expect(
       missingH1Pages,
       `Found content pages lacking authoritative <h1>:\n${JSON.stringify(missingH1Pages, null, 2)}`,
@@ -1383,14 +1383,14 @@ describe('MAGNIOM Design System & Token Integrity Suite', () => {
     }
 
     scan(appDir);
-    expect(cardPageCount).toBe(59);
+    expect(cardPageCount).toBe(60);
     expect(
       unmigratedPages,
       `Found application pages using bare <Card> without compound primitives:\n${JSON.stringify(unmigratedPages, null, 2)}`,
     ).toEqual([]);
   });
 
-  it('guarantees 100% adoption of Card compound primitives across ALL 73 card-using files in apps/web/src', () => {
+  it('guarantees 100% adoption of Card compound primitives across ALL 74 card-using files in apps/web/src', () => {
     const unmigratedFiles: string[] = [];
     let cardFileCount = 0;
 
@@ -1413,7 +1413,7 @@ describe('MAGNIOM Design System & Token Integrity Suite', () => {
     }
 
     scanAll(webSrcRoot);
-    expect(cardFileCount).toBe(73);
+    expect(cardFileCount).toBe(74);
     expect(
       unmigratedFiles,
       `Found source files using bare <Card> without compound primitives:\n${JSON.stringify(unmigratedFiles, null, 2)}`,

@@ -1,9 +1,7 @@
 import type { Metadata } from 'next';
 import { CLINICAL_THEME_TOKENS } from '@magniom/ui';
 import '../styles/globals.css';
-import { ReactiveShellHeader } from '../components/shell/reactive-shell-header';
-import { GlobalSidebar } from '../components/shell/global-sidebar';
-import { VersionManifestDisclosure } from '../components/shell/version-manifest-disclosure';
+import { ShellLayout } from '../components/shell/shell-layout';
 import { NotificationProvider } from '../components/notification-system';
 
 export const metadata: Metadata = {
@@ -49,23 +47,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             Skip to main content
           </a>
 
-          {/* Layer 1: Top Bar (§7–22) via ReactiveShellHeader (MagniomTopBar) */}
-          {/* Layer 2: Safety / CDS Environment Strip (§13, §123) (EnvironmentSafetyStrip) */}
-          <ReactiveShellHeader />
-
-          {/* 4-Layer Shell Body: Sidebar + Main Workspace Canvas */}
-          <div className="shell-workspace-container">
-            {/* Layer 3: Global / Case Sidebar (§23–39, §51–53) */}
-            <GlobalSidebar />
-
-            {/* Layer 4: Main Canvas (§57, §58) */}
-            <main role="main" className="shell-main-canvas" id="main-content">
-              {children}
-            </main>
-          </div>
-
-          {/* Provenance Footer (§78, §124, §153) */}
-          <VersionManifestDisclosure />
+          {/* Route-adaptive Shell: Full 4-Layer Workspace or Dedicated Login Canvas */}
+          <ShellLayout>{children}</ShellLayout>
         </NotificationProvider>
       </body>
     </html>

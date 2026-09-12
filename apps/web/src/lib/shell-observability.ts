@@ -77,7 +77,10 @@ export type ShellAuditEventType =
   | 'FAIL_CLOSED_TRIGGERED'
   | 'FAIL_CLOSED_RESOLVED'
   | 'MODE_CHANGED'
-  | 'ORGANISATION_SWITCHED';
+  | 'ORGANISATION_SWITCHED'
+  | 'CLINICIAN_AUTHENTICATED'
+  | 'CLINICIAN_AUTH_FAILED'
+  | 'CLINICIAN_LOGGED_OUT';
 
 export interface ShellAuditEvent {
   readonly eventType: ShellAuditEventType;

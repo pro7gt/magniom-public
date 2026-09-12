@@ -25,6 +25,7 @@ import { CANONICAL_CLINICAL_SESSION } from '../../lib/release-authority';
 import type { EnvironmentMode } from '@magniom/presentation';
 import { NotificationBell } from '../notification-system';
 import { emitAuditEvent } from '../../lib/shell-observability';
+import { authStore } from '../../lib/auth-store';
 
 const AVAILABLE_ORGANISATIONS = [
   {
@@ -436,6 +437,25 @@ export function MagniomTopBar({
                 >
                   <FileTextIcon size={14} /> Clinical Guidance & Glossary
                 </Link>
+              </div>
+
+              <div className="user-dropdown-divider" />
+
+              {/* Session Control / Sign Out */}
+              <div className="user-dropdown-section">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  id="top-bar-sign-out-btn"
+                  className="w-full justify-start text-xs text-danger flex items-center gap-2"
+                  onClick={() => {
+                    setIsUserMenuOpen(false);
+                    authStore.logoutClinician();
+                    router.push('/login');
+                  }}
+                >
+                  <LockIcon size={13} /> Sign Out / Lock Workstation
+                </Button>
               </div>
 
               <div className="user-dropdown-divider" />
