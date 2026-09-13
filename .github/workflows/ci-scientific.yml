@@ -24,6 +24,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ci-scientific-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 jobs:
   scientific-differential-evaluation:
     name: Multi-Indication 72 Golden Cases & Spatial Differentials (§50–65, §119–121)

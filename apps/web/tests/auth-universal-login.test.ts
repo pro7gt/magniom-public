@@ -2,7 +2,7 @@
  * @magniom/web - Universal Clinician Authentication Test Suite
  *
  * Verifies:
- * 1. Universal credentials (user_name=magniom, password=cingulum) authenticate successfully.
+ * 1. Universal credentials (user_name=magniom, password=amygdala) authenticate successfully.
  * 2. Case-insensitivity and whitespace trimming on username.
  * 3. Rejection of invalid credentials with calibrated error feedback.
  * 4. Authoritative clinician profile matching CANONICAL_CLINICAL_SESSION.
@@ -19,8 +19,8 @@ describe('Universal Clinician Authentication & Session Authority', () => {
     authStore.logoutClinician();
   });
 
-  it('MAG-AUTH-01: authenticates successfully with universal credentials (magniom / cingulum)', () => {
-    const result = authStore.authenticateClinician('magniom', 'cingulum');
+  it('MAG-AUTH-01: authenticates successfully with universal credentials (magniom / amygdala)', () => {
+    const result = authStore.authenticateClinician('magniom', 'amygdala');
 
     expect(result.success).toBe(true);
     expect(result.session).toBeDefined();
@@ -34,13 +34,13 @@ describe('Universal Clinician Authentication & Session Authority', () => {
   });
 
   it('MAG-AUTH-02: handles case-insensitivity and leading/trailing whitespace on username', () => {
-    const upperResult = authStore.authenticateClinician('MAGNIOM', 'cingulum');
+    const upperResult = authStore.authenticateClinician('MAGNIOM', 'amygdala');
     expect(upperResult.success).toBe(true);
     expect(authStore.isAuthenticated()).toBe(true);
 
     authStore.logoutClinician();
 
-    const paddedResult = authStore.authenticateClinician('  magniom  ', 'cingulum');
+    const paddedResult = authStore.authenticateClinician('  magniom  ', 'amygdala');
     expect(paddedResult.success).toBe(true);
   });
 
@@ -59,10 +59,14 @@ describe('Universal Clinician Authentication & Session Authority', () => {
     const failEvent = auditLogs.find(e => e.eventType === 'CLINICIAN_AUTH_FAILED');
     expect(failEvent).toBeDefined();
     expect(failEvent?.message).toContain('failed');
+
+    // Also verify legacy password 'cingulum' is rejected
+    const legacyResult = authStore.authenticateClinician('magniom', 'cingulum');
+    expect(legacyResult.success).toBe(false);
   });
 
   it('MAG-AUTH-04: rejects unknown username', () => {
-    const result = authStore.authenticateClinician('invalid_user', 'cingulum');
+    const result = authStore.authenticateClinician('invalid_user', 'amygdala');
 
     expect(result.success).toBe(false);
     expect(result.error).toBeDefined();
@@ -70,7 +74,7 @@ describe('Universal Clinician Authentication & Session Authority', () => {
   });
 
   it('MAG-AUTH-05: terminates active clinician session upon logout and emits CLINICIAN_LOGGED_OUT', () => {
-    authStore.authenticateClinician('magniom', 'cingulum');
+    authStore.authenticateClinician('magniom', 'amygdala');
     expect(authStore.isAuthenticated()).toBe(true);
 
     const auditLogs: ShellAuditEvent[] = [];
@@ -99,5 +103,19 @@ describe('Universal Clinician Authentication & Session Authority', () => {
     expect(authEvent).toBeDefined();
     expect(authEvent?.userId).toBe('usr-spec-001');
     expect(authEvent?.sessionId).toMatch(/^mgn-sess-/);
+  });
+
+  it('MAG-AUTH-07: issues a cryptographically signed HMAC-SHA256 session token', async () => {
+    const { verifySessionToken } = await import('../src/lib/security/session-crypto');
+    const result = authStore.authenticateClinician(UNIVERSAL_USER_NAME, UNIVERSAL_PASSWORD);
+    expect(result.success).toBe(true);
+    expect(result.session?.sessionToken).toBeDefined();
+
+    const parts = result.session!.sessionToken.split('.');
+    expect(parts.length).toBe(2);
+    expect(parts[1]?.length).toBe(64); // 64-char SHA256 hex signature
+
+    const isValid = await verifySessionToken(result.session!.sessionToken);
+    expect(isValid).toBe(true);
   });
 });

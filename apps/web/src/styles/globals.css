@@ -5859,3 +5859,29 @@ html[data-theme-transitioning] canvas {
   display: inline-block;
 }
 
+.auth-guard-lock-screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  padding: var(--space-6);
+}
+
+.auth-guard-title {
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  margin: 0 0 var(--space-1) 0;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.auth-guard-desc {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  margin: 0;
+}
+

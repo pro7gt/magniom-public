@@ -284,7 +284,7 @@ function LoginContent() {
 
         <CardFooter>
           <div className="login-security-notice">
-            <span>Site 1 — Parkville Clinical Neurosciences · Node: Melb-01</span>
+            <span>Site 1 — Surrey Hills Clinic · Node: Melb-01</span>
           </div>
         </CardFooter>
       </Card>

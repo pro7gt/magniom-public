@@ -14,13 +14,26 @@ import {
   PageHeader,
 } from '@/components/ui';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { caseStore } from '../lib/case-store';
 import { CANONICAL_CLINICAL_SESSION } from '../lib/release-authority';
+import { authStore, type ClinicianAuthSession } from '../lib/auth-store';
 
 export default function ClinicianHomePage() {
   const allCases = caseStore.getAllCases();
-  const session = CANONICAL_CLINICAL_SESSION;
+  const [activeSession, setActiveSession] = useState<ClinicianAuthSession | null>(() =>
+    authStore.getAuthSession(),
+  );
+
+  useEffect(() => {
+    setActiveSession(authStore.getAuthSession());
+    const unsubscribe = authStore.subscribe(updated => {
+      setActiveSession(updated);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const session = activeSession || CANONICAL_CLINICAL_SESSION;
 
   // Filter urgent / actionable cases
   const activeCases = allCases.slice(0, 5);

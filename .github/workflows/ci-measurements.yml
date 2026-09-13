@@ -18,6 +18,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ci-measurements-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 jobs:
   measurement-providers-typescript:
     name: Modalities, Measurement Core & Testkit Verification (§66–79)

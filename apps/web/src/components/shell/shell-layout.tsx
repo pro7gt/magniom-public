@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { ReactiveShellHeader } from './reactive-shell-header';
 import { GlobalSidebar } from './global-sidebar';
 import { VersionManifestDisclosure } from './version-manifest-disclosure';
+import { AuthGuard } from './auth-guard';
 
 export interface ShellLayoutProps {
   children: React.ReactNode;
@@ -14,6 +15,7 @@ export interface ShellLayoutProps {
  * Authoritative Shell Layout Adapter
  * Dynamically switches between the authenticated 4-layer clinical workspace
  * and the dedicated, distraction-free clinician login portal (/login).
+ * Non-login routes are gated by AuthGuard to prevent unauthenticated access.
  */
 export function ShellLayout({ children }: ShellLayoutProps) {
   const pathname = usePathname();
@@ -28,7 +30,7 @@ export function ShellLayout({ children }: ShellLayoutProps) {
   }
 
   return (
-    <>
+    <AuthGuard>
       {/* Layer 1: Top Bar (§7–22) via ReactiveShellHeader (MagniomTopBar) */}
       {/* Layer 2: Safety / CDS Environment Strip (§13, §123) (EnvironmentSafetyStrip) */}
       <ReactiveShellHeader />
@@ -46,6 +48,6 @@ export function ShellLayout({ children }: ShellLayoutProps) {
 
       {/* Provenance Footer (§78, §124, §153) */}
       <VersionManifestDisclosure />
-    </>
+    </AuthGuard>
   );
 }

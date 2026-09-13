@@ -14,10 +14,14 @@
     },
     "test": {
       "dependsOn": ["^build"],
-      "outputs": ["coverage/**"]
+      "outputs": []
     },
     "@magniom/target-engine#test": {
       "dependsOn": ["@magniom/test-fixtures#build", "@magniom/measurement-testkit#build", "^build"],
+      "outputs": []
+    },
+    "test:coverage": {
+      "dependsOn": ["^build"],
       "outputs": ["coverage/**"]
     },
     "dev": {

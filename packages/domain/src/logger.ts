@@ -14,18 +14,6 @@ function generateUuid(): string {
   ) {
     return globalThis.crypto.randomUUID();
   }
-  if (
-    typeof globalThis !== 'undefined' &&
-    globalThis.crypto &&
-    typeof globalThis.crypto.getRandomValues === 'function'
-  ) {
-    const bytes = new Uint8Array(16);
-    globalThis.crypto.getRandomValues(bytes);
-    bytes[6] = (bytes[6]! & 0x0f) | 0x40;
-    bytes[8] = (bytes[8]! & 0x3f) | 0x80;
-    const hex = Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
-    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20, 32)}`;
-  }
   uuidCounter = (uuidCounter + 1) & 0xffffffff;
   const hex = uuidCounter.toString(16).padStart(8, '0');
   return `00000000-0000-4000-8000-${hex.padStart(12, '0')}`;

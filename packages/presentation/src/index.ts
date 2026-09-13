@@ -1651,7 +1651,7 @@ export function toTopBarViewModel(options?: {
       options?.user?.signingAuthorityLevel || 'Full Specialist Target Attestation',
     organizationId: options?.organization?.organizationId || 'org-melb-tms',
     organizationName: options?.organization?.organizationName || 'Melbourne TMS Centre',
-    siteName: options?.organization?.siteName || 'Site 1 — Parkville',
+    siteName: options?.organization?.siteName || 'Site 1 — Surrey Hills Clinic',
     initials: options?.user?.initials || 'AS',
   };
 

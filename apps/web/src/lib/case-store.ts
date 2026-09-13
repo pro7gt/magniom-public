@@ -22,6 +22,7 @@ import {
   G01_PHENOTYPE,
   GOLDEN_CASE_01_SLATE,
 } from '@magniom/test-fixtures';
+import { authStore } from './auth-store';
 
 /**
  * Deterministic browser/universal 64-hex-character hash function
@@ -769,6 +770,7 @@ class CaseStore {
     overallReasoning: string;
     magniomInfluence: MagniomInfluence;
     disagreementWithMagniom?: string | undefined;
+    clinicianId?: string | undefined;
     clinicianName: string;
     licenseNumber?: string | undefined;
     attestationStatement: string;
@@ -816,6 +818,9 @@ class CaseStore {
       decisionType = 'MANUAL_OVERRIDE';
     }
 
+    const activeClinicianId =
+      params.clinicianId || authStore.getAuthSession()?.user.id || 'usr-spec-001';
+
     const payloadToHash = JSON.stringify({
       caseId: params.caseId,
       slateId: record.slate.id,
@@ -831,7 +836,7 @@ class CaseStore {
       id: record.decision?.id || `dec-${params.caseId}-${Date.now()}`,
       caseId: params.caseId,
       slateId: record.slate.id,
-      clinicianId: 'clin-specialist-001',
+      clinicianId: activeClinicianId,
       decisionType,
       selectedCandidateIds: candidateDecisions
         .filter(d => d.action === 'accept' || d.action === 'modify')
@@ -847,7 +852,7 @@ class CaseStore {
       reviewedConflictingEvidence: true,
       decidedAt,
       attestation: {
-        clinicianId: 'clin-specialist-001',
+        clinicianId: activeClinicianId,
         clinicianName: params.clinicianName,
         licenseNumber: params.licenseNumber || 'MED-SYNTH-992',
         statement: params.attestationStatement,

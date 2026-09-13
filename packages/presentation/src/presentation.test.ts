@@ -195,7 +195,10 @@ describe('@magniom/presentation Unit Tests', () => {
           roleTitle: 'TMS Specialist',
           hasSigningAuthority: true,
         },
-        organization: { organizationName: 'Melbourne TMS Centre', siteName: 'Site 1 — Parkville' },
+        organization: {
+          organizationName: 'Melbourne TMS Centre',
+          siteName: 'Site 1 — Surrey Hills Clinic',
+        },
       });
 
       expect(topBarVM.brandName).toBe('MAGNIOM');

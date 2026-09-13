@@ -133,7 +133,7 @@ export default function AdminPage() {
                     <code className="text-cyan">org-melb-tms</code>
                   </td>
                   <td>Melbourne TMS Centre</td>
-                  <td>Parkville Clinical Neurosciences (Site 1)</td>
+                  <td>Surrey Hills Clinic (Site 1)</td>
                   <td>
                     <Badge variant="clinical">CLINICAL</Badge>
                   </td>

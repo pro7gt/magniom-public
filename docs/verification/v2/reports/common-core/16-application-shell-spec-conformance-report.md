@@ -2,7 +2,7 @@
 
 **Document Under Audit:** `public/guides/MAGNIOM-Application Shell, Navigation & Clinical Context Specification v2.0.md`  
 **Specification Version:** 2.0 (3 September 2026)  
-**Verification Date:** 2026-09-12  
+**Verification Date:** 2026-09-13  
 **Conformance Result:** ✅ 100% CONFORMANT (23/23 Clusters Passed)  
 **Normative Sections Evaluated:** 302/302 (§1 through §302)  
 **Total Verification Clusters:** 23  

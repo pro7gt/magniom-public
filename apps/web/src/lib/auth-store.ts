@@ -4,7 +4,7 @@
  *
  * Universal Credentials:
  *   user_name = 'magniom'
- *   password  = 'cingulum'
+ *   password  = 'amygdala'
  *
  * Provides authoritative specialist session state, storage persistence,
  * cookie synchronization, and regulatory audit logging.
@@ -12,6 +12,7 @@
 
 import { CANONICAL_CLINICAL_SESSION } from './release-authority';
 import { emitAuditEvent } from './shell-observability';
+import { createSignedSessionToken } from './security/session-crypto';
 import type {
   UserIdentityViewModel,
   OrganisationContextViewModel,
@@ -19,7 +20,7 @@ import type {
 } from '@magniom/presentation';
 
 export const UNIVERSAL_USER_NAME = 'magniom';
-export const UNIVERSAL_PASSWORD = 'cingulum';
+export const UNIVERSAL_PASSWORD = 'amygdala';
 
 export const AUTH_STORAGE_KEY = 'magniom_clinician_session';
 export const AUTH_COOKIE_NAME = 'magniom_session';
@@ -96,7 +97,7 @@ class ClinicianAuthStore {
    * Authenticates clinician using universal credentials.
    * Universal credentials:
    *   username: 'magniom' (case-insensitive, trimmed)
-   *   password: 'cingulum' (exact match)
+   *   password: 'amygdala' (exact match)
    */
   public authenticateClinician(
     usernameInput: string,
@@ -125,7 +126,7 @@ class ClinicianAuthStore {
     }
 
     const timestamp = new Date().toISOString();
-    const sessionToken = `mgn-sess-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    const sessionToken = createSignedSessionToken(CANONICAL_CLINICAL_SESSION.user.id);
 
     const newSession: ClinicianAuthSession = {
       isAuthenticated: true,
@@ -163,13 +164,12 @@ class ClinicianAuthStore {
 
     emitAuditEvent('CLINICIAN_AUTHENTICATED', {
       userId: newSession.user.id,
-      sessionId: sessionToken,
+      sessionId: sessionToken.split('.')[0] || 'mgn-sess',
       message: `Specialist clinician ${newSession.user.displayName} authenticated via universal credentials.`,
       metadata: {
         userId: newSession.user.id,
         roleTitle: newSession.user.roleTitle,
         rememberMe: newSession.rememberMe,
-        sessionToken,
       },
     });
 

@@ -312,4 +312,180 @@ describe('Worker Unit & Lifecycle Invariants', () => {
     expect(dbClient.artifacts.length).toBeGreaterThan(0);
     expect(dbClient.progress.some(p => p.stage === 'SURFACE_RECONSTRUCTION')).toBe(true);
   });
+
+  describe('Spec v2.0 §47: Queue Resilience, Idempotency & Failure Simulation', () => {
+    it('prevents duplicate processing when duplicate queue message is delivered (idempotency)', async () => {
+      const dbClient = new MockWorkflowDatabaseClient();
+      const worker = new WorkflowWorker(dbClient, { workerId: 'worker-idempotency-test' });
+
+      const jobId = 'job-idem-dup-01';
+      dbClient.jobs.set(jobId, {
+        id: jobId,
+        organisationId: 'org-01',
+        jobType: 'target_generation',
+        status: 'queued',
+        idempotencyKey: 'idem-key-duplicate-01',
+        inputReference: {},
+        attemptCount: 0,
+        maxAttempts: 3,
+        createdAt: new Date().toISOString(),
+      });
+
+      let executionCount = 0;
+      const handler: JobHandler = {
+        jobType: 'target_generation',
+        execute: async () => {
+          executionCount++;
+          return {
+            success: true,
+            resultReference: { slateId: 'slate-single-001' },
+          };
+        },
+      };
+      worker.registerHandler(handler);
+
+      // Enqueue first delivery
+      await dbClient.enqueueQueueMessage('target_generation', {
+        schemaVersion: '1.0',
+        jobId,
+        organisationId: 'org-01',
+        caseId: 'case-01',
+        correlationId: 'corr-idem-1',
+        requestedOperation: 'target_generation',
+        createdAt: new Date().toISOString(),
+        payload: {},
+      });
+
+      // Run once -> succeeds
+      const result1 = await worker.runOnce(['target_generation']);
+      expect(result1.processedJobs).toBe(1);
+      expect(executionCount).toBe(1);
+      expect(dbClient.jobs.get(jobId)?.status).toBe('succeeded');
+
+      // Now simulate duplicate message delivery in the queue
+      await dbClient.enqueueQueueMessage('target_generation', {
+        schemaVersion: '1.0',
+        jobId,
+        organisationId: 'org-01',
+        caseId: 'case-01',
+        correlationId: 'corr-idem-dup',
+        requestedOperation: 'target_generation',
+        createdAt: new Date().toISOString(),
+        payload: {},
+      });
+
+      // Claiming an already succeeded job must fail (status !== queued)
+      const canReclaim = await dbClient.claimJob(jobId, 'worker-idempotency-test', 300);
+      expect(canReclaim).toBe(false);
+
+      // Job status remains succeeded, executionCount remains 1
+      expect(executionCount).toBe(1);
+      expect(dbClient.jobs.get(jobId)?.status).toBe('succeeded');
+    });
+
+    it('transitions to failed_terminal when attempt count reaches maxAttempts', async () => {
+      const dbClient = new MockWorkflowDatabaseClient();
+      const worker = new WorkflowWorker(dbClient, { workerId: 'worker-terminal-test' });
+
+      const jobId = 'job-max-attempts-01';
+      dbClient.jobs.set(jobId, {
+        id: jobId,
+        organisationId: 'org-01',
+        jobType: 'target_generation',
+        status: 'queued',
+        idempotencyKey: 'idem-max-01',
+        inputReference: {},
+        attemptCount: 2, // Already attempted twice, max is 3
+        maxAttempts: 3,
+        createdAt: new Date().toISOString(),
+      });
+
+      await dbClient.enqueueQueueMessage('target_generation', {
+        schemaVersion: '1.0',
+        jobId,
+        organisationId: 'org-01',
+        caseId: 'case-01',
+        correlationId: 'corr-max-01',
+        requestedOperation: 'target_generation',
+        createdAt: new Date().toISOString(),
+        payload: {},
+      });
+
+      const failingHandler: JobHandler = {
+        jobType: 'target_generation',
+        execute: async () => {
+          return {
+            success: false,
+            error: {
+              code: 'TRANSIENT_RESOURCE_BUSY',
+              message: 'Temporary lock conflict',
+              retryable: true,
+            },
+          };
+        },
+      };
+
+      worker.registerHandler(failingHandler);
+      const result = await worker.runOnce(['target_generation']);
+      expect(result.processedJobs).toBe(1);
+
+      // Since attemptCount reached maxAttempts (3), status transitions to failed_terminal
+      const job = dbClient.jobs.get(jobId);
+      expect(job?.status).toBe('failed_terminal');
+      expect(job?.attemptCount).toBe(3);
+    });
+
+    it('transitions immediately to failed_terminal on non-retryable poison message', async () => {
+      const dbClient = new MockWorkflowDatabaseClient();
+      const worker = new WorkflowWorker(dbClient, { workerId: 'worker-poison-test' });
+
+      const jobId = 'job-poison-01';
+      dbClient.jobs.set(jobId, {
+        id: jobId,
+        organisationId: 'org-01',
+        jobType: 'target_generation',
+        status: 'queued',
+        idempotencyKey: 'idem-poison-01',
+        inputReference: {},
+        attemptCount: 0,
+        maxAttempts: 5,
+        createdAt: new Date().toISOString(),
+      });
+
+      await dbClient.enqueueQueueMessage('target_generation', {
+        schemaVersion: '1.0',
+        jobId,
+        organisationId: 'org-01',
+        caseId: 'case-01',
+        correlationId: 'corr-poison-01',
+        requestedOperation: 'target_generation',
+        createdAt: new Date().toISOString(),
+        payload: { malformedPayload: true },
+      });
+
+      const poisonHandler: JobHandler = {
+        jobType: 'target_generation',
+        execute: async () => {
+          return {
+            success: false,
+            error: {
+              code: 'FATAL_CORRUPT_PAYLOAD',
+              message: 'Payload fails canonical schema validation and cannot be parsed',
+              retryable: false, // Non-retryable poison message
+            },
+          };
+        },
+      };
+
+      worker.registerHandler(poisonHandler);
+      const result = await worker.runOnce(['target_generation']);
+      expect(result.processedJobs).toBe(1);
+
+      // Fails terminally on attempt 1 without retry
+      const job = dbClient.jobs.get(jobId);
+      expect(job?.status).toBe('failed_terminal');
+      expect(job?.attemptCount).toBe(1);
+      expect(job?.errorCode).toBe('FATAL_CORRUPT_PAYLOAD');
+    });
+  });
 });

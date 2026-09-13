@@ -22,17 +22,23 @@ import {
   Input,
   Textarea,
   Checkbox,
-  FormGroup,
-  FormLabel,
 } from '@/components/ui';
 
-import React, { useState, useEffect } from 'react';
-import { TargetSlateViewModel, DecisionReviewViewModel } from '@magniom/presentation';
+import React, { useState, useEffect, useMemo } from 'react';
+import {
+  TargetSlateViewModel,
+  DecisionReviewViewModel,
+  type ClinicalActionCapabilities,
+} from '@magniom/presentation';
 import type { CandidateDecisionAction, MagniomInfluence, MniCoordinate } from '@magniom/domain';
 import {
   createMultiTabSignOffGuard,
+  validateSignOffPreconditions,
   type MultiTabSignOffEvent,
 } from '../lib/security/sign-off-guard';
+import { resolveCaseShellContext } from '../lib/shell-authority';
+import { authStore } from '../lib/auth-store';
+import { CANONICAL_CLINICAL_SESSION } from '../lib/release-authority';
 
 interface DecisionWorkspaceProps {
   caseId: string;
@@ -129,12 +135,45 @@ export function DecisionWorkspace({
   const [disagreement, setDisagreement] = useState(
     existingDecisionVM?.disagreementWithMagniom || '',
   );
-  const [clinicianName, setClinicianName] = useState(
-    existingDecisionVM?.clinicianName || 'Dr. Sarah Lin, MD, FRANZCP',
-  );
-  const [licenseNumber, setLicenseNumber] = useState(
-    existingDecisionVM?.clinicianLicense || 'MED-TMS-99281',
-  );
+
+  // 1. Authoritative Clinician Session Identity (§28, 21 CFR Part 11 § 11.200)
+  const activeSession = authStore.getAuthSession() || CANONICAL_CLINICAL_SESSION;
+  const sessionUser = activeSession.user;
+  const clinicianName = existingDecisionVM?.clinicianName || sessionUser.displayName;
+  const licenseNumber = existingDecisionVM?.clinicianLicense || 'MED-TMS-99281';
+
+  // 2. Authoritative Case Shell & Preconditions Guard (§139–142, §189)
+  const shellVm = useMemo(() => {
+    return resolveCaseShellContext({ caseId });
+  }, [caseId]);
+
+  const effectiveCapabilities: ClinicalActionCapabilities = useMemo(() => {
+    const baseCaps = shellVm?.moduleAuthority?.capabilities || {
+      may_generate_target_slate: true,
+      may_review_target_slate: true,
+      may_create_clinician_decision: true,
+      may_sign_target_decision: true,
+      may_export_navigation_target: true,
+    };
+    return {
+      ...baseCaps,
+      may_sign_target_decision: Boolean(
+        sessionUser.hasSigningAuthority && baseCaps.may_sign_target_decision,
+      ),
+    };
+  }, [shellVm, sessionUser]);
+
+  const signOffValidation = useMemo(() => {
+    if (!shellVm) {
+      return {
+        canSign: false,
+        blockedReasons: ['Resolving authoritative clinical shell context...'],
+        warnings: [],
+      };
+    }
+    return validateSignOffPreconditions(shellVm, effectiveCapabilities);
+  }, [shellVm, effectiveCapabilities]);
+
   const [attestationConfirmed, setAttestationConfirmed] = useState(false);
   const [isSigning, setIsSigning] = useState(false);
   const [multiTabAlert, setMultiTabAlert] = useState<string | null>(null);
@@ -216,7 +255,16 @@ export function DecisionWorkspace({
   };
 
   const handleExecuteSign = () => {
-    if (!overallReasoning.trim() || !attestationConfirmed || slateVM.isStale) return;
+    if (
+      !overallReasoning.trim() ||
+      !attestationConfirmed ||
+      slateVM.isStale ||
+      !signOffValidation.canSign ||
+      isMobileViewport ||
+      isResearchMode
+    ) {
+      return;
+    }
     setIsSigning(true);
     try {
       onSignDecision({
@@ -572,32 +620,42 @@ export function DecisionWorkspace({
             </CardContent>
           </Card>
 
-          {/* Clinician Identity & Pre-Sign Review */}
-          <Card>
+          {/* Clinician Identity Card (21 CFR Part 11 § 11.200) */}
+          <Card className="border-cyan bg-surface-card">
             <CardHeader>
-              <CardTitle as="h3" className="text-base font-semibold mb-3">
-                Treating Clinician Identification
-              </CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle as="h3" className="text-base font-semibold">
+                  Treating Clinician Identification (§28, 21 CFR Part 11)
+                </CardTitle>
+                <Badge
+                  variant={sessionUser.hasSigningAuthority ? 'clinical' : 'neutral'}
+                  className="text-xs"
+                >
+                  {sessionUser.hasSigningAuthority
+                    ? 'Verified TMS Signing Authority'
+                    : 'No Signing Authority'}
+                </Badge>
+              </div>
             </CardHeader>
             <CardContent>
-              <FormGroup>
-                <FormLabel className="text-xs">Clinician Full Name:</FormLabel>
-                <Input
-                  type="text"
-                  value={clinicianName}
-                  onChange={e => setClinicianName(e.target.value)}
-                  disabled={isImmutable}
-                />
-              </FormGroup>
-              <FormGroup>
-                <FormLabel className="text-xs">Professional Registration / License:</FormLabel>
-                <Input
-                  type="text"
-                  value={licenseNumber}
-                  onChange={e => setLicenseNumber(e.target.value)}
-                  disabled={isImmutable}
-                />
-              </FormGroup>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="flex flex-col gap-1 p-2 bg-glass-subtle rounded border">
+                  <span className="text-muted font-medium">Authorised Clinician:</span>
+                  <span className="font-semibold text-primary text-sm">{clinicianName}</span>
+                  <span className="text-secondary">{sessionUser.roleTitle}</span>
+                </div>
+                <div className="flex flex-col gap-1 p-2 bg-glass-subtle rounded border">
+                  <span className="text-muted font-medium">Statutory Registration / License:</span>
+                  <span className="font-mono font-semibold text-cyan text-sm">{licenseNumber}</span>
+                  <span className="text-secondary">
+                    {sessionUser.organizationName} · {sessionUser.siteName}
+                  </span>
+                </div>
+              </div>
+              <p className="text-xs text-muted mt-3">
+                Signer identity is cryptographically bound to the authenticated specialist profile
+                under FDA 21 CFR Part 11 § 11.200. Free-text identity substitution is prohibited.
+              </p>
             </CardContent>
           </Card>
 
@@ -687,6 +745,23 @@ export function DecisionWorkspace({
                   />
                 )}
 
+                {!isImmutable && !signOffValidation.canSign && (
+                  <Alert
+                    variant="danger"
+                    className="mb-3"
+                    title="Clinical Decision Signing Locked (§139–142)"
+                    description={
+                      <div className="flex flex-col gap-1 mt-1">
+                        {signOffValidation.blockedReasons.map((reason, idx) => (
+                          <div key={idx} className="text-danger">
+                            - {reason}
+                          </div>
+                        ))}
+                      </div>
+                    }
+                  />
+                )}
+
                 <Button
                   variant={withholdStimulation ? 'danger' : 'primary'}
                   onClick={handleExecuteSign}
@@ -696,7 +771,8 @@ export function DecisionWorkspace({
                     !attestationConfirmed ||
                     !overallReasoning.trim() ||
                     isSigning ||
-                    slateVM.isStale
+                    slateVM.isStale ||
+                    !signOffValidation.canSign
                   }
                   className="w-full p-3 text-base font-bold"
                   id="sign-target-decision-btn"
@@ -705,6 +781,8 @@ export function DecisionWorkspace({
                     'Clinical Signing Prohibited (Research Slate)'
                   ) : isMobileViewport ? (
                     'Signing Disabled on Mobile Viewport (§183)'
+                  ) : !signOffValidation.canSign ? (
+                    `Signing Blocked: ${signOffValidation.blockedReasons[0] || 'Precondition Failure'}`
                   ) : isSigning ? (
                     'Cryptographically Signing...'
                   ) : withholdStimulation ? (

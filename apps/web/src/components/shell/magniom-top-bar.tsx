@@ -26,14 +26,14 @@ import { CANONICAL_CLINICAL_SESSION } from '../../lib/release-authority';
 import type { EnvironmentMode } from '@magniom/presentation';
 import { NotificationBell } from '../notification-system';
 import { emitAuditEvent } from '../../lib/shell-observability';
-import { authStore } from '../../lib/auth-store';
+import { authStore, type ClinicianAuthSession } from '../../lib/auth-store';
 
 const AVAILABLE_ORGANISATIONS = [
   {
     id: 'org-melb-tms',
     name: 'Melbourne TMS Centre',
-    siteId: 'site-parkville-01',
-    siteName: 'Parkville Clinical Neurosciences',
+    siteId: 'site-surrey-hills-01',
+    siteName: 'Surrey Hills Clinic',
     displayLabel: 'Melbourne TMS Centre · Site 1',
   },
   {
@@ -97,7 +97,19 @@ export function MagniomTopBar({
   };
 
   const allCases = caseStore.getAllCases();
-  const session = CANONICAL_CLINICAL_SESSION;
+  const [activeSession, setActiveSession] = useState<ClinicianAuthSession | null>(() =>
+    authStore.getAuthSession(),
+  );
+
+  useEffect(() => {
+    setActiveSession(authStore.getAuthSession());
+    const unsubscribe = authStore.subscribe(updated => {
+      setActiveSession(updated);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const session = activeSession || CANONICAL_CLINICAL_SESSION;
 
   // Filter cases matching query
   const matchingCases =

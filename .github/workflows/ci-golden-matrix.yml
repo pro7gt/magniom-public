@@ -18,6 +18,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ci-golden-matrix-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 jobs:
   multi-indication-golden-matrix:
     name: Multi-Indication 72 Golden Cases & Spatial Differentials (§55–65, §119)

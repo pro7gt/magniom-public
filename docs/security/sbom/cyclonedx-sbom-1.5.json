@@ -1,10 +1,10 @@
 {
   "bomFormat": "CycloneDX",
   "specVersion": "1.5",
-  "serialNumber": "urn:uuid:ee6dcfc0-2015-4c3c-90c4-7a0116a7ca08",
+  "serialNumber": "urn:uuid:37cf8e2b-ae9c-4a58-9896-2075b8c0d8ec",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-09-12T23:19:37.999Z",
+    "timestamp": "2026-09-13T08:27:34.139Z",
     "tools": [
       {
         "vendor": "Magniom Systems",

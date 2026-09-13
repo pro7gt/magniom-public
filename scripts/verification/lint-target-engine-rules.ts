@@ -39,13 +39,14 @@ function scanFile(filePath: string): Violation[] {
       return;
     }
 
-    // Rule 1: No Math.random()
-    if (lineText.includes('Math.random(')) {
+    // Rule 1: No Math.random() or crypto.getRandomValues()
+    if (lineText.includes('Math.random(') || lineText.includes('crypto.getRandomValues(')) {
       violations.push({
         file: filePath,
         line: lineNum,
         rule: 'RULE_1_NO_MATH_RANDOM',
-        message: 'Math.random() is prohibited in deterministic Clinical Target Engine.',
+        message:
+          'Math.random() and crypto.getRandomValues() are prohibited in deterministic Clinical Target Engine.',
       });
     }
 

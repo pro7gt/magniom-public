@@ -151,7 +151,7 @@ export class LocalContinuousIntegrationRunner {
     const totalDurationSec = ((Date.now() - totalStart) / 1000).toFixed(2);
     console.log('\n' + '='.repeat(90));
     console.log(
-      `🎉 ALL ${passedCount}/10 LOCAL CI STAGES PASSED SUCCESSFULLY (${totalDurationSec}s)`,
+      `🎉 ALL ${passedCount}/${STAGES.length} LOCAL CI STAGES (STAGES 0–10) PASSED SUCCESSFULLY (${totalDurationSec}s)`,
     );
     console.log(
       '100% CONFORMANCE WITH ENTERPRISE VERIFICATION, TESTING & CI/CD SPECIFICATION v2.0',

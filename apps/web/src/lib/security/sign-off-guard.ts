@@ -11,6 +11,7 @@
  */
 
 import type { CaseShellViewModel, ClinicalActionCapabilities } from '@magniom/presentation';
+import { authStore } from '../auth-store';
 
 // ==========================================
 // 1. Sign-Off Context Restatement Data (§137–138)
@@ -214,13 +215,11 @@ export function createMultiTabSignOffGuard(onInvalidation: (event: MultiTabSignO
 // ==========================================
 
 /**
- * Checks if the current session has expired during a sign-off flow (§142).
- * In a production system, this would validate against the authentication token.
- * For the current implementation, this is a stub that always returns valid.
+ * Checks if the current clinician session is active and valid (§142).
+ * Verifies that the clinician has an unexpired authenticated workstation session.
  */
 export function isSessionValid(): boolean {
-  // Stub: In production, validate JWT/session token expiry against auth server
-  return true;
+  return authStore.isAuthenticated();
 }
 
 // ==========================================
