@@ -154,12 +154,42 @@ export class MDDConnectomeRefinementGenerator implements CandidateGenerator {
       };
     }
 
+    const rsMeasurement = context.measurementBundle.measurements.find(
+      m => m.modality === 'resting_state_fmri',
+    );
+    const isSynthetic =
+      context.measurementBundle.dataOrigin === 'synthetic' ||
+      rsMeasurement?.dataOrigin === 'synthetic' ||
+      !rsMeasurement;
+
+    // Strict P0 Fail-Closed check: in CLINICAL mode, synthetic connectomics cannot refine targets
+    if (context.request.mode.toLowerCase() === 'clinical' && isSynthetic) {
+      return {
+        generatorId: this.descriptor.id,
+        generatorVersion: this.descriptor.semanticVersion,
+        status: 'no_candidate',
+        candidates: [],
+        diagnostics: [
+          {
+            level: 'warning',
+            code: 'FC_SYNTHETIC_PROHIBITED_IN_CLINICAL_MODE',
+            message:
+              'Simulated or synthetic rs-fMRI connectomics strictly prohibited from clinical target refinement (§40, Revision 01). Falling back to anatomical baseline.',
+          },
+        ],
+      };
+    }
+
+    const candidateDataOrigin = isSynthetic ? 'synthetic' : 'patient_measured';
+    const limitations = isSynthetic ? ['SYNTHETIC_DEMONSTRATOR', 'RESEARCH_ONLY'] : [];
+
     // Shift coordinate slightly (e.g. 11.2 mm displacement from BA46 -44, 40, 28)
     const refinedDraft: CandidateDraft = {
       draftId: 'draft-mdd-ba46-fc-refined',
       generatorId: this.descriptor.id,
       targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
       proposedRole: 'connectome_refinement',
+      dataOrigin: candidateDataOrigin,
       targetGeometry: createCanonicalPointGeometry(-42, 44, 30, 'left', 'mdd-fc-generator'),
       evidencePathIds: context.permittedEvidencePaths
         .filter(p => p.targetFamilyId === 'TF-MDD-LDLPFC-EST-001')
@@ -178,8 +208,10 @@ export class MDDConnectomeRefinementGenerator implements CandidateGenerator {
         { code: 'incremental_gain', value: 0.12, isApplicable: true },
         { code: 'cortical_depth_mm', value: 14.8, isApplicable: true },
       ],
-      generatorLimitations: [],
-      nominationRationale: 'Individual rs-fMRI connectome refined target in Left DLPFC BA46.',
+      generatorLimitations: limitations,
+      nominationRationale: isSynthetic
+        ? 'Simulated rs-fMRI connectome refined demonstration target in Left DLPFC BA46 (Research/Validation only).'
+        : 'Cash-Zalesky personalized rs-fMRI connectome refined target in Left DLPFC BA46.',
       generatorTrace: {
         algorithmCode: this.descriptor.code,
         algorithmVersion: this.descriptor.semanticVersion,
@@ -191,6 +223,160 @@ export class MDDConnectomeRefinementGenerator implements CandidateGenerator {
       generatorVersion: this.descriptor.semanticVersion,
       status: 'generated',
       candidates: [refinedDraft],
+      diagnostics: [],
+    };
+  }
+}
+
+export class MDDStructuralConnectivityGenerator implements CandidateGenerator {
+  public readonly descriptor: CandidateGeneratorDescriptor = {
+    id: 'GEN-MDD-SC-001',
+    code: 'MDD_SC_TRACTOGRAPHY_GENERATOR',
+    semanticVersion: '2.0.0',
+    indicationModuleReleaseIds: [MDD_MODULE_RELEASE_ID],
+    candidateRoles: ['connectome_refinement', 'clinical_alternative'],
+    targetFamilyScopeIds: ['TF-MDD-LDLPFC-EST-001'],
+    evidencePathStatusScope: ['validation_permitted', 'research_permitted'],
+    permittedModes: ['validation', 'research'],
+    requiredCapabilities: ['individual_sc_refinement'],
+    optionalCapabilities: [],
+    permittedGeometryTypes: ['point'],
+    baselineRelationship: 'refines_baseline',
+    deterministic: true,
+    generatorFailurePolicy: 'omit_generator_with_warning',
+    configurationSha256: computeSha256('GEN-MDD-SC-001-v2.0.0'),
+  };
+
+  public generate(context: ResolvedTargetEngineContextV2): CandidateGeneratorResult {
+    if (context.request.mode.toLowerCase() === 'clinical') {
+      return {
+        generatorId: this.descriptor.id,
+        generatorVersion: this.descriptor.semanticVersion,
+        status: 'no_candidate',
+        candidates: [],
+        diagnostics: [
+          {
+            level: 'info',
+            code: 'SC_GENERATOR_VALIDATION_ONLY',
+            message:
+              'SC tractography targeting (Li et al. 2026) is permitted in validation and research modes only.',
+          },
+        ],
+      };
+    }
+
+    const scDraft: CandidateDraft = {
+      draftId: 'draft-mdd-ba46-sc-refined',
+      generatorId: this.descriptor.id,
+      targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
+      proposedRole: 'connectome_refinement',
+      dataOrigin: 'synthetic',
+      targetGeometry: createCanonicalPointGeometry(-40, 42, 32, 'left', 'mdd-sc-generator'),
+      evidencePathIds: context.permittedEvidencePaths
+        .filter(p => p.targetFamilyId === 'TF-MDD-LDLPFC-EST-001')
+        .map(p => p.id),
+      clinicalObjectiveIds: context.request.clinicalObjectiveIds,
+      reliedOnMeasurementIds: context.measurementBundle.measurements.map(m => m.measurementId),
+      reliedOnReliabilityIds: context.reliabilityBundle ? [context.reliabilityBundle.id] : [],
+      lineage: {
+        lineageType: 'measurement_refinement',
+        refinementKind: 'structural_connectivity',
+        baselineCandidateDraftId: 'draft-mdd-ba46-evidence',
+      },
+      rawScientificFeatures: [
+        { code: 'phenotype_concordance', value: 0.85, isApplicable: true },
+        { code: 'circuit_concordance', value: 0.94, isApplicable: true },
+        { code: 'incremental_gain', value: 0.14, isApplicable: true },
+        { code: 'cortical_depth_mm', value: 15.2, isApplicable: true },
+      ],
+      generatorLimitations: ['SC_VALIDATION_ONLY'],
+      nominationRationale:
+        'Individual sgACC (A32sg) probabilistic tractography refined target in Left DLPFC (Li et al. 2026).',
+      generatorTrace: {
+        algorithmCode: this.descriptor.code,
+        algorithmVersion: this.descriptor.semanticVersion,
+      },
+    };
+
+    return {
+      generatorId: this.descriptor.id,
+      generatorVersion: this.descriptor.semanticVersion,
+      status: 'generated',
+      candidates: [scDraft],
+      diagnostics: [],
+    };
+  }
+}
+
+export class MDDPathwayCommunicationGenerator implements CandidateGenerator {
+  public readonly descriptor: CandidateGeneratorDescriptor = {
+    id: 'GEN-MDD-PATHWAY-001',
+    code: 'MDD_NORMATIVE_PATHWAY_GENERATOR',
+    semanticVersion: '2.0.0',
+    indicationModuleReleaseIds: [MDD_MODULE_RELEASE_ID],
+    candidateRoles: ['research_hypothesis'],
+    targetFamilyScopeIds: ['TF-MDD-LDLPFC-EST-001'],
+    evidencePathStatusScope: ['research_permitted'],
+    permittedModes: ['research'],
+    requiredCapabilities: [],
+    optionalCapabilities: [],
+    permittedGeometryTypes: ['point'],
+    baselineRelationship: 'alternative_to_baseline',
+    deterministic: true,
+    generatorFailurePolicy: 'omit_generator_with_warning',
+    configurationSha256: computeSha256('GEN-MDD-PATHWAY-001-v2.0.0'),
+  };
+
+  public generate(context: ResolvedTargetEngineContextV2): CandidateGeneratorResult {
+    if (context.request.mode.toLowerCase() !== 'research') {
+      return {
+        generatorId: this.descriptor.id,
+        generatorVersion: this.descriptor.semanticVersion,
+        status: 'no_candidate',
+        candidates: [],
+        diagnostics: [
+          {
+            level: 'info',
+            code: 'PATHWAY_GENERATOR_RESEARCH_ONLY',
+            message:
+              'Normative polysynaptic pathway communication modeling (Seguin 2026) is strictly research-only.',
+          },
+        ],
+      };
+    }
+
+    const pathwayDraft: CandidateDraft = {
+      draftId: 'draft-mdd-pathway-hypothesis',
+      generatorId: this.descriptor.id,
+      targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
+      proposedRole: 'research_hypothesis',
+      dataOrigin: 'normative',
+      targetGeometry: createCanonicalPointGeometry(-38, 44, 34, 'left', 'mdd-pathway-generator'),
+      evidencePathIds: context.permittedEvidencePaths
+        .filter(p => p.targetFamilyId === 'TF-MDD-LDLPFC-EST-001')
+        .map(p => p.id),
+      clinicalObjectiveIds: context.request.clinicalObjectiveIds,
+      reliedOnMeasurementIds: [],
+      reliedOnReliabilityIds: [],
+      rawScientificFeatures: [
+        { code: 'phenotype_concordance', value: 0.82, isApplicable: true },
+        { code: 'circuit_concordance', value: 0.91, isApplicable: true },
+        { code: 'cortical_depth_mm', value: 14.5, isApplicable: true },
+      ],
+      generatorLimitations: ['NORMATIVE_PATHWAY_RESEARCH_ONLY', 'NORMATIVE_CONNECTOME_PROVENANCE'],
+      nominationRationale:
+        'Polysynaptic shortest-path communication route from Left DLPFC to Right SGC (Seguin & Zalesky 2026).',
+      generatorTrace: {
+        algorithmCode: this.descriptor.code,
+        algorithmVersion: this.descriptor.semanticVersion,
+      },
+    };
+
+    return {
+      generatorId: this.descriptor.id,
+      generatorVersion: this.descriptor.semanticVersion,
+      status: 'generated',
+      candidates: [pathwayDraft],
       diagnostics: [],
     };
   }
@@ -366,6 +552,8 @@ export class MDDPlugin implements IndicationTargetingPlugin {
       new MDDEvidenceBaselineGenerator(),
       new MDDConnectomeRefinementGenerator(),
       new MDDPhenotypeCircuitGenerator(),
+      new MDDStructuralConnectivityGenerator(),
+      new MDDPathwayCommunicationGenerator(),
       new MDDResearchNetworkGenerator(),
     ];
   }

@@ -195,6 +195,7 @@ class TestTargetReliabilityIntegration(unittest.TestCase):
             bold_results=self.bold_results,
             output_directory=self.test_dir,
             mode="CLINICAL",
+            allow_synthetic=True,
         )
 
         self.assertIsNotNone(output)

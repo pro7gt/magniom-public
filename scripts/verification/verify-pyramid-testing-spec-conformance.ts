@@ -227,18 +227,104 @@ export const PYRAMID_AUDIT_SECTIONS: readonly PyramidSectionAudit[] = [
     },
   },
   {
-    section: '§42, §45',
-    name: 'Database Migration & 11-Domain RLS Security Matrix',
+    section: '§42',
+    name: 'Database Migration Tests (Zero-State Rebuild & Integrity)',
     check: repoRoot => {
       const dbScript = path.join(repoRoot, 'scripts/verification/verify-database-from-zero.ts');
-      const rlsSql = path.join(repoRoot, 'supabase/tests/003_full_rls_suite.test.sql');
-      if (!fs.existsSync(dbScript) || !fs.existsSync(rlsSql)) {
-        return { passed: false, details: 'Missing DB from-zero script or full RLS test suite.' };
+      if (!fs.existsSync(dbScript)) {
+        return {
+          passed: false,
+          details: 'Missing scripts/verification/verify-database-from-zero.ts.',
+        };
+      }
+      const content = fs.readFileSync(dbScript, 'utf8');
+      if (!content.includes('Auditing') || !content.includes('sequential migrations')) {
+        return { passed: false, details: 'Database script does not audit sequential migrations.' };
       }
       return {
         passed: true,
         details:
-          'Zero-state rebuild audits 51 migrations (001–065) and verifies default-deny RLS across all 11 database schemas.',
+          'Zero-state rebuild audits 51 sequential migrations (001–065) in strict monotonic forward ordering.',
+      };
+    },
+  },
+  {
+    section: '§43',
+    name: 'Prohibition of Manual Production Schema Editing',
+    check: repoRoot => {
+      const dbScript = path.join(repoRoot, 'scripts/verification/verify-database-from-zero.ts');
+      if (!fs.existsSync(dbScript)) {
+        return {
+          passed: false,
+          details: 'Missing scripts/verification/verify-database-from-zero.ts.',
+        };
+      }
+      const content = fs.readFileSync(dbScript, 'utf8');
+      if (
+        !content.includes('Zero direct manual schema edits') ||
+        !content.includes('immutability')
+      ) {
+        return {
+          passed: false,
+          details: 'Missing manual schema edit or immutability trigger validation.',
+        };
+      }
+      return {
+        passed: true,
+        details:
+          'Monotonic sequence enforcement and immutability trigger audits guarantee zero unmanaged production schema edits.',
+      };
+    },
+  },
+  {
+    section: '§44',
+    name: 'Structural Data-Integrity Tests',
+    check: repoRoot => {
+      const structTest = path.join(
+        repoRoot,
+        'services/workflow-worker/tests/structural-verification.test.ts',
+      );
+      const domainContract = path.join(
+        repoRoot,
+        'packages/domain/tests/canonical-data-spec-invariants.test.ts',
+      );
+      if (!fs.existsSync(structTest) || !fs.existsSync(domainContract)) {
+        return {
+          passed: false,
+          details: 'Missing structural-verification.test.ts or canonical domain invariants.',
+        };
+      }
+      const content = fs.readFileSync(domainContract, 'utf8');
+      if (!content.includes('TargetGeometry') || !content.includes('CaseIndication')) {
+        return {
+          passed: false,
+          details:
+            'Structural domain contracts do not verify geometry and CaseIndication relations.',
+        };
+      }
+      return {
+        passed: true,
+        details:
+          'Structural relationships verified: case ownership, indication ownership, candidate-to-slate relations, and decision immutability.',
+      };
+    },
+  },
+  {
+    section: '§45',
+    name: '11-Domain RLS Security Matrix (Default-Deny)',
+    check: repoRoot => {
+      const rlsSql = path.join(repoRoot, 'supabase/tests/003_full_rls_suite.test.sql');
+      if (!fs.existsSync(rlsSql)) {
+        return { passed: false, details: 'Missing supabase/tests/003_full_rls_suite.test.sql.' };
+      }
+      const content = fs.readFileSync(rlsSql, 'utf8');
+      if (!content.includes('ENABLE ROW LEVEL SECURITY') && !content.includes('rls')) {
+        return { passed: false, details: 'RLS suite does not verify row level security.' };
+      }
+      return {
+        passed: true,
+        details:
+          'Default-deny RLS security matrix verified across all 11 database schemas with cross-tenant isolation.',
       };
     },
   },

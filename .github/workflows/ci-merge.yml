@@ -6,6 +6,8 @@ name: Magniom Merge Pipeline (ci-merge)
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
@@ -30,7 +32,7 @@ jobs:
       - name: Stage 4 — Database Zero-State Rebuild & 11-Domain RLS Suite (§42, §45)
         run: npm run verify:db:from-zero
 
-      - name: Stage 2 — Full 332 SRS Requirements Traceability (§126–127)
+      - name: Stage 2 — Full 375 SRS Requirements Traceability (§126–127)
         run: npm run verify:requirements
 
       - name: Stage 8A — Generate & Verify CycloneDX 1.5 SBOM (§103)

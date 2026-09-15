@@ -1,8 +1,8 @@
 {
-  "recallQueryId": "RECALL-QUERY-1789288037884",
+  "recallQueryId": "RECALL-QUERY-1789461741169",
   "targetEntityId": "ALL",
   "queryFilterType": "RELEASE_ID",
-  "generatedAt": "2026-09-13T08:27:17.884Z",
+  "generatedAt": "2026-09-15T08:42:21.169Z",
   "totalAffectedCases": 8,
   "signedDecisionsCount": 4,
   "affectedIndications": [

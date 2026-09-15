@@ -33,6 +33,7 @@ export interface MeasurementRef {
   readonly modality: MeasurementModality;
   readonly version: string;
   readonly status: MeasurementStatus;
+  readonly dataOrigin?: import('./enums.js').DataOrigin | undefined;
   readonly acquisitionTime?: string;
   readonly pipelineVersionIds?: readonly string[];
   readonly artifactIds?: readonly string[];
@@ -58,6 +59,7 @@ export interface MeasurementBundle {
   readonly measurements: readonly MeasurementRef[];
   readonly qualificationStatus: MeasurementBundleQualificationStatus;
   readonly requirementEvaluations: readonly MeasurementRequirementEvaluation[];
+  readonly dataOrigin?: import('./enums.js').DataOrigin | undefined;
   readonly limitingFactors: readonly string[];
   readonly createdAt: string;
   readonly payloadSha256: string;

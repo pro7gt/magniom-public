@@ -68,6 +68,7 @@ export interface TargetCandidateV2 {
   readonly structuralConnectivityFit?: StructuralConnectivityFitProfile | undefined;
   readonly treatmentContextEvaluation?: TargetTreatmentContextEvaluation | undefined;
   readonly researchExtension?: ResearchTargetExtension | undefined;
+  readonly dataOrigin?: import('./enums.js').DataOrigin | undefined;
 }
 
 // ---------------------------------------------------------------------------
@@ -345,6 +346,7 @@ export interface CandidateDraft {
   readonly generatorLimitations: readonly string[];
   readonly nominationRationale: string;
   readonly generatorTrace: GeneratorTrace;
+  readonly dataOrigin?: import('./enums.js').DataOrigin | undefined;
 }
 
 export interface CandidateGeneratorDescriptor {

@@ -1,7 +1,9 @@
 # MAGNIOM
 
 > **Connectome-Informed Multi-Indication TMS Target Decision Support System**
-> **Class IIb / Class B Software as a Medical Device (SaMD)**
+> **Design-Controlled Multi-Indication TMS Target Decision Support System — Pre-Clinical Research Architecture & Prototype**
+>
+> _Notice: Regulatory submission (e.g., FDA 510(k)/De Novo, EU MDR Class IIa/IIb, or TGA Class IIb) has NOT occurred. This software is not approved or cleared for commercial clinical use. Synthetic neuroimaging pipelines and research targets fail closed in clinical mode._
 
 ---
 
@@ -76,18 +78,19 @@ MAGNIOM addresses the gap between research-demonstrated connectome-informed targ
 
 MAGNIOM v2.0 establishes an indication-neutral core architecture governing eight dedicated clinical indication modules, each implemented as a `IndicationTargetingPlugin` with its own therapeutic circuits, target geometries, measurement requirements, and governance qualification status:
 
-| Indication | Module Code | Primary Therapeutic Circuits | Target Regions |
-| :--- | :--- | :--- | :--- |
-| **Major Depressive Disorder (MDD)** | `MAGNIOM-PLUGIN-MDD` | sgACC functional connectivity anti-correlation, L-DLPFC BA46, convergent DLPFC, anxiosomatic DMPFC | Left DLPFC (BA46/BA9), DMPFC (BA9/32), L8AV |
-| **Obsessive-Compulsive Disorder (OCD)** | `MAGNIOM-PLUGIN-OCD` | Cortico-Striatal-Thalamic-Cortical (CSTC) loop | Right/Bilateral dACC, SMA |
-| **Chronic Neuropathic Pain** | `MAGNIOM-PLUGIN-PAIN-NP` | Somatotopic M₁ body-region mapping | Primary motor cortex hand/face representations, precentral gyrus |
-| **Stroke Motor Rehabilitation** | `MAGNIOM-PLUGIN-STROKE-MOTOR` | Lesion-aware corticospinal tract integrity | Ipsilesional/contralesional M₁, premotor cortex |
-| **Post-Stroke Aphasia** | `MAGNIOM-PLUGIN-STROKE-APHASIA` | Language network compensation | Lesion-spared Broca's/Wernicke's areas, right-hemisphere homologues |
-| **Traumatic Brain Injury (TBI)** | `MAGNIOM-PLUGIN-TBI` | Executive and default mode network targeting | Pathology-constrained PFC, DMN nodes |
-| **Post-Traumatic Stress Disorder (PTSD)** | `MAGNIOM-PLUGIN-PTSD` | Affective regulation circuits | Right DLPFC, vmPFC |
-| **Tinnitus** | `MAGNIOM-PLUGIN-TINNITUS` | Auditory cortex overactivation | Left temporoparietal cortex (Heschl's gyrus), audiology-informed targets |
+| Indication                                | Module Code                     | Primary Therapeutic Circuits                                                                       | Target Regions                                                           |
+| :---------------------------------------- | :------------------------------ | :------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------- |
+| **Major Depressive Disorder (MDD)**       | `MAGNIOM-PLUGIN-MDD`            | sgACC functional connectivity anti-correlation, L-DLPFC BA46, convergent DLPFC, anxiosomatic DMPFC | Left DLPFC (BA46/BA9), DMPFC (BA9/32), L8AV                              |
+| **Obsessive-Compulsive Disorder (OCD)**   | `MAGNIOM-PLUGIN-OCD`            | Cortico-Striatal-Thalamic-Cortical (CSTC) loop                                                     | Right/Bilateral dACC, SMA                                                |
+| **Chronic Neuropathic Pain**              | `MAGNIOM-PLUGIN-PAIN-NP`        | Somatotopic M₁ body-region mapping                                                                 | Primary motor cortex hand/face representations, precentral gyrus         |
+| **Stroke Motor Rehabilitation**           | `MAGNIOM-PLUGIN-STROKE-MOTOR`   | Lesion-aware corticospinal tract integrity                                                         | Ipsilesional/contralesional M₁, premotor cortex                          |
+| **Post-Stroke Aphasia**                   | `MAGNIOM-PLUGIN-STROKE-APHASIA` | Language network compensation                                                                      | Lesion-spared Broca's/Wernicke's areas, right-hemisphere homologues      |
+| **Traumatic Brain Injury (TBI)**          | `MAGNIOM-PLUGIN-TBI`            | Executive and default mode network targeting                                                       | Pathology-constrained PFC, DMN nodes                                     |
+| **Post-Traumatic Stress Disorder (PTSD)** | `MAGNIOM-PLUGIN-PTSD`           | Affective regulation circuits                                                                      | Right DLPFC, vmPFC                                                       |
+| **Tinnitus**                              | `MAGNIOM-PLUGIN-TINNITUS`       | Auditory cortex overactivation                                                                     | Left temporoparietal cortex (Heschl's gyrus), audiology-informed targets |
 
 Each module declares:
+
 - **Intended population** with age ranges, diagnostic criteria, and exclusions.
 - **Measurement requirements** specifying which imaging modalities are required, optional, or research-only, and what happens when data is missing (`block_target_generation`, `disable_personalisation`, `fallback`, or `allow_with_limitation`).
 - **Permitted target family IDs** and candidate generation methods.
@@ -99,15 +102,15 @@ Each module declares:
 
 ## Technical Stack Overview
 
-| Architectural Layer | Technologies | Role & Purpose |
-| :--- | :--- | :--- |
-| **Clinician Web Application** | Next.js 15.1 (App Router, Server Components), React 19.0, Three.js 0.185 | High-performance clinical workspace, interactive 3D cortical rendering, and strict presentation/calculation separation. |
-| **Language & Monorepo Tooling** | TypeScript 5.8, Turborepo 2.4, Prettier 3.5 | End-to-end type safety, strict monorepo boundary enforcement, and cached task orchestration. |
-| **Edge & Cloud Deployment** | Cloudflare Workers / OpenNext 1.20, Wrangler 4.128 | Serverless, globally distributed low-latency clinical edge delivery with zero-trust isolation. |
-| **Scientific Compute Plane** | Python 3.10+, NiBabel 5.2, Nilearn 0.10, SciPy 1.12, NumPy 1.26, Pandas 2.2, Pydantic 2.6 | Containerized POSIX neuroimaging pipeline executing BIDS structural MRI, fMRI motion QC, non-linear coordinate warps, and connectome matrix generation. |
-| **Testing & Formal Verification** | Vitest 3.0, Fast-Check 4.9 | Deterministic unit testing, metamorphic property-based invariant testing, and automated specification conformance auditing. |
-| **Database & Identity Plane** | PostgreSQL 15+ / Supabase, PL/pgSQL Triggers, `pgcrypto` | Database-level Row-Level Security (RLS) across 51 controlled migrations (001–065), default-deny multi-tenancy, and SHA-256 tamper-evident clinical audit chaining. |
-| **Runtime Validation** | Zod 3.24 | Runtime schema validation contracts for all API boundaries and inter-package data exchange. |
+| Architectural Layer               | Technologies                                                                              | Role & Purpose                                                                                                                                                     |
+| :-------------------------------- | :---------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Clinician Web Application**     | Next.js 15.1 (App Router, Server Components), React 19.0, Three.js 0.185                  | High-performance clinical workspace, interactive 3D cortical rendering, and strict presentation/calculation separation.                                            |
+| **Language & Monorepo Tooling**   | TypeScript 5.8, Turborepo 2.4, Prettier 3.5                                               | End-to-end type safety, strict monorepo boundary enforcement, and cached task orchestration.                                                                       |
+| **Edge & Cloud Deployment**       | Cloudflare Workers / OpenNext 1.20, Wrangler 4.128                                        | Serverless, globally distributed low-latency clinical edge delivery with zero-trust isolation.                                                                     |
+| **Scientific Compute Plane**      | Python 3.10+, NiBabel 5.2, Nilearn 0.10, SciPy 1.12, NumPy 1.26, Pandas 2.2, Pydantic 2.6 | Containerized POSIX neuroimaging pipeline executing BIDS structural MRI, fMRI motion QC, non-linear coordinate warps, and connectome matrix generation.            |
+| **Testing & Formal Verification** | Vitest 3.0, Fast-Check 4.9                                                                | Deterministic unit testing, metamorphic property-based invariant testing, and automated specification conformance auditing.                                        |
+| **Database & Identity Plane**     | PostgreSQL 15+ / Supabase, PL/pgSQL Triggers, `pgcrypto`                                  | Database-level Row-Level Security (RLS) across 51 controlled migrations (001–065), default-deny multi-tenancy, and SHA-256 tamper-evident clinical audit chaining. |
+| **Runtime Validation**            | Zod 3.24                                                                                  | Runtime schema validation contracts for all API boundaries and inter-package data exchange.                                                                        |
 
 ---
 
@@ -200,6 +203,7 @@ Verification:                 @magniom/test-fixtures, @magniom/measurement-testk
 The foundational package containing all canonical domain types, enumerations, and interfaces. Has **zero runtime dependencies** — it is pure TypeScript type definitions.
 
 **Key files:**
+
 - `enums.ts` (551 lines): 80+ canonical enumerations including `MagniomMode` (`RESEARCH`|`CLINICAL`|`VALIDATION`), `EvidenceTier` (`T1`–`T4`, `T_EXP`), `CandidateRole` (`PRIMARY_1`–`PRIMARY_3`, `ADDITIONAL_A`–`ADDITIONAL_B`, `RESERVE`), `TargetMethod` (`EVIDENCE_ONLY_PRIOR`, `STRUCTURAL_ANATOMICAL`, `CONNECTOME_REFINED`, `ELECTRIC_FIELD_OPTIMIZED`), `CaseState` (15 states from `draft` through `decision_signed`), `GateCode` (G0–G14, the 15-gate v2 qualification system), 19 `SuppressionReasonV2` codes, and 14 `ClaimTypeV2` categories.
 - `types.ts` (1,500 lines): All v1 canonical domain types including `Organisation`, `Site`, `Clinician`, `Patient`, `ClinicalCase`, `PhenotypeSnapshot`, `TargetSlate`, `TargetCandidate`, `ClinicianDecision`, `ImagingStudy`, `ConnectomeResult`, `WorkflowJob`.
 - `target-v2.ts` (672 lines): v2 canonical `TargetCandidateV2` and `TargetSlateV2` types with full evidence profiles, lesion-target relationships, motor mapping fit, structural connectivity fit, treatment context evaluation, and research extensions.
@@ -220,11 +224,12 @@ Zod-based runtime validation schemas that enforce data contracts at package boun
 
 The core deterministic calculation engine. Produces `TargetSlate` from `TargetEngineInput`. Contains 16 sub-modules, 8 indication plugins, and a multi-stage pipeline.
 
-*See [Target Engine — Algorithm Deep Dive](#target-engine--algorithm-deep-dive) for full detail.*
+_See [Target Engine — Algorithm Deep Dive](#target-engine--algorithm-deep-dive) for full detail._
 
 ### `@magniom/scientific-policy`
 
 Immutable, SHA-256-sealed scientific policy releases governing target calculation behaviour. Each release includes:
+
 - **Indication scope** (DSM-5/ICD-11 codes).
 - **Evidence tier permissions** defining which tiers (T1–T_EXP) can serve in which candidate roles and generation methods.
 - **Reliability thresholds**: `minReliabilityForPersonalisation: 0.7`, `minIncrementalGainThreshold: 0.1`.
@@ -238,7 +243,7 @@ Every policy object is triple-hashed: `policyPayloadSha256`, `compatibilityManif
 
 Implements the Evidence Knowledge Graph — a structured representation of the scientific literature supporting TMS targeting. Contains both v1 (simple library) and v2 (full claim-centric graph) implementations.
 
-*See [Evidence Knowledge Graph](#evidence-knowledge-graph) for full detail.*
+_See [Evidence Knowledge Graph](#evidence-knowledge-graph) for full detail._
 
 ### `@magniom/phenotype`
 
@@ -247,6 +252,7 @@ DSM-5 phenotype ontologies, disease staging logic, and symptom mapping. Maps cli
 ### `@magniom/measurement-core`
 
 Core measurement framework providing:
+
 - `MeasurementBundle` assembly from heterogeneous modality inputs.
 - Measurement requirement evaluation against indication module requirements.
 - Qualification status computation (`qualified`, `qualified_with_limits`, `insufficient`, `invalid`).
@@ -257,27 +263,28 @@ Core measurement framework providing:
 
 Nine modality-specific measurement providers, each implementing acquisition, quality control, and data extraction for their domain:
 
-| Provider | Module | Purpose |
-| :--- | :--- | :--- |
-| `structural-mri` | sMRI | T1w brain extraction, cortical surface reconstruction, parcellation |
-| `resting-state` | rs-fMRI | BOLD preprocessing, motion QC (FD), functional connectivity matrices |
-| `lesion-mapping` | Lesion | Lesion segmentation, volume, laterality, overlap with target regions |
-| `diffusion` | dMRI | Tractography, structural connectivity, white matter integrity |
-| `motor-mapping` | Motor | TMS motor mapping, motor hotspot localisation, somatotopic mapping |
-| `mep` | MEP | Motor evoked potential recording, resting/active motor thresholds |
-| `audiology` | Audiology | Pure-tone audiometry, tinnitus pitch/loudness matching |
-| `efield` | E-field | Finite-element electric field modelling, cortical field strength |
-| `task-fmri` | Task fMRI | Task-based functional activation mapping |
+| Provider         | Module    | Purpose                                                              |
+| :--------------- | :-------- | :------------------------------------------------------------------- |
+| `structural-mri` | sMRI      | T1w brain extraction, cortical surface reconstruction, parcellation  |
+| `resting-state`  | rs-fMRI   | BOLD preprocessing, motion QC (FD), functional connectivity matrices |
+| `lesion-mapping` | Lesion    | Lesion segmentation, volume, laterality, overlap with target regions |
+| `diffusion`      | dMRI      | Tractography, structural connectivity, white matter integrity        |
+| `motor-mapping`  | Motor     | TMS motor mapping, motor hotspot localisation, somatotopic mapping   |
+| `mep`            | MEP       | Motor evoked potential recording, resting/active motor thresholds    |
+| `audiology`      | Audiology | Pure-tone audiometry, tinnitus pitch/loudness matching               |
+| `efield`         | E-field   | Finite-element electric field modelling, cortical field strength     |
+| `task-fmri`      | Task fMRI | Task-based functional activation mapping                             |
 
 ### `@magniom/networks`
 
 Triple-Network Systems Layer implementing the Menon (2011) three-network model (CEN, DMN, SN) for cross-indication circuit understanding.
 
-*See [Triple-Network Systems Layer](#triple-network-systems-layer) for full detail.*
+_See [Triple-Network Systems Layer](#triple-network-systems-layer) for full detail._
 
 ### `@magniom/presentation`
 
 Clinical view model layer enforcing strict separation between calculation and presentation. Key responsibilities:
+
 - Transforms `TargetSlate` domain objects into clinician-facing view models.
 - Enforces **non-preselection rules**: no candidate is ever marked as "selected" in the initial presentation.
 - Formats evidence summaries, convergence profiles, and suppression explanations in clinical language.
@@ -288,6 +295,7 @@ Clinical view model layer enforcing strict separation between calculation and pr
 ### `@magniom/ui`
 
 Shared clinical design system providing:
+
 - Design tokens synchronised via `scripts/sync-design-tokens.ts`.
 - WCAG 2.1 AA accessible components.
 - Clinical colour palettes, typography, spacing, and elevation tokens.
@@ -295,6 +303,7 @@ Shared clinical design system providing:
 ### `@magniom/test-fixtures`
 
 72+ canonical synthetic Golden Cases (zero PHI) spanning all 8 indications. Organised as:
+
 - `g01-evidence-only.ts`: Evidence-only MDD baseline (no imaging).
 - `g02-convergent.ts`: Convergent connectome-refined MDD case.
 - `g03-low-gain.ts`: Low incremental gain suppression case.
@@ -322,6 +331,7 @@ A containerized Python (3.10+) neuroimaging compute service implementing the BID
 **Python package:** `magniom-neuro` (v1.0.0)
 
 **Sub-modules:**
+
 - `bids/` — BIDS directory structure creation and validation.
 - `dicom/` — DICOM ingestion and NIfTI conversion.
 - `structural/` — T1w bias correction, brain extraction, tissue segmentation, spatial normalisation to MNI152NLin2009cAsym.
@@ -352,6 +362,7 @@ Finite-element electric-field (E-field) simulation for TMS coil placement optimi
 ### `services/workflow-worker` — Durable Queue Worker
 
 Orchestrates multimodal processing pipelines through a durable job queue system:
+
 - Consumes jobs from PostgreSQL-backed queues (`imaging_ingest`, `neurocompute`, `target_reliability`, `efield`, `target_generation`, `report_generation`, `outbox_dispatch`).
 - Implements at-least-once delivery with idempotent handlers.
 - Tracks job progress through states: `queued` → `claimed` → `running` → `succeeded`/`failed_retryable`/`failed_terminal`.
@@ -370,22 +381,22 @@ Deterministic clinical consultation PDF generator and audit exporter. Currently 
 
 ### Routes
 
-| Route | Purpose |
-| :--- | :--- |
-| `/` | Dashboard — clinical workspace home |
-| `/login` | Authentication gateway |
-| `/cases/*` | Case management — create, view, progress through case states |
-| `/decisions/*` | Clinician decision signing workspace |
-| `/awaiting-review` | Cases awaiting clinician review queue |
-| `/reviews/*` | In-progress review sessions |
-| `/evidence/*` | Evidence library browser |
-| `/research/*` | Research-mode workspace |
-| `/validation/*` | Validation-mode workspace |
-| `/release/*` | Release management |
-| `/admin/*` | Organisation administration |
-| `/internal/*` | Internal tools |
-| `/help/*` | Documentation and help |
-| `/api/*` | API routes |
+| Route              | Purpose                                                      |
+| :----------------- | :----------------------------------------------------------- |
+| `/`                | Dashboard — clinical workspace home                          |
+| `/login`           | Authentication gateway                                       |
+| `/cases/*`         | Case management — create, view, progress through case states |
+| `/decisions/*`     | Clinician decision signing workspace                         |
+| `/awaiting-review` | Cases awaiting clinician review queue                        |
+| `/reviews/*`       | In-progress review sessions                                  |
+| `/evidence/*`      | Evidence library browser                                     |
+| `/research/*`      | Research-mode workspace                                      |
+| `/validation/*`    | Validation-mode workspace                                    |
+| `/release/*`       | Release management                                           |
+| `/admin/*`         | Organisation administration                                  |
+| `/internal/*`      | Internal tools                                               |
+| `/help/*`          | Documentation and help                                       |
+| `/api/*`           | API routes                                                   |
 
 ### Key Components
 
@@ -426,40 +437,40 @@ The target engine (`@magniom/target-engine`) implements two parallel pipeline ar
 
 Used for MDD-focused targeting with the original 5-gate system:
 
-| Stage | Operation | Key Logic |
-| :--- | :--- | :--- |
-| 1 | **Input Validation & Gate 1 (Clinical Scope)** | Validates phenotype, checks indication is supported by policy. Abstains with `INVALID_INDICATION` on failure. |
-| 2 | **Gate 5 (Mode Compatibility)** | Verifies execution mode (CLINICAL/RESEARCH/VALIDATION) is compatible with the policy release. |
-| 3 | **Gate 3 (Imaging/Reliability)** | Evaluates connectome data quality: motion metrics (FD), scan duration, temporal SNR, retained frames. Classifies as `qualified`, `limited`, `not_available`, or `ineligible`. |
-| 4 | **Candidate Generation** | Generates candidate pool from: (a) Evidence baseline candidates via Evidence Knowledge Graph, (b) ConnectomeTargetInput candidate regions from NeuroCompute, (c) Legacy synthetic fixtures. For each connectome candidate: computes 3D Euclidean distance to evidence baseline, evaluates incremental concordance gain, checks accessibility and laterality. |
-| 5 | **Evidence Gate, Accessibility Gate & Feature Attachment** | Attaches phenotype concordance scores, applies evidence ceiling checks, evaluates anatomical accessibility and laterality constraints. |
-| 6 | **Scoring & Utility Calculation** | Computes `overallScore` from evidence, phenotype concordance, and connectome refinement scores. |
-| 7 | **Redundancy Suppression** | Removes anatomically redundant candidates (same cortical region, different methods). |
-| 8 | **Role Allocation & Graph Enrichment** | Assigns `PRIMARY_1/2/3` and `ADDITIONAL_A/B` roles. Enriches candidates with graph evidence context. |
-| 9 | **Slate Assembly** | Constructs final `TargetSlate` with primary, additional, and suppressed candidate arrays. |
-| 10 | **Invariant Validation** | Validates slate invariants (max candidates, role uniqueness, evidence tier constraints). Throws on violation. |
+| Stage | Operation                                                  | Key Logic                                                                                                                                                                                                                                                                                                                                                    |
+| :---- | :--------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1     | **Input Validation & Gate 1 (Clinical Scope)**             | Validates phenotype, checks indication is supported by policy. Abstains with `INVALID_INDICATION` on failure.                                                                                                                                                                                                                                                |
+| 2     | **Gate 5 (Mode Compatibility)**                            | Verifies execution mode (CLINICAL/RESEARCH/VALIDATION) is compatible with the policy release.                                                                                                                                                                                                                                                                |
+| 3     | **Gate 3 (Imaging/Reliability)**                           | Evaluates connectome data quality: motion metrics (FD), scan duration, temporal SNR, retained frames. Classifies as `qualified`, `limited`, `not_available`, or `ineligible`.                                                                                                                                                                                |
+| 4     | **Candidate Generation**                                   | Generates candidate pool from: (a) Evidence baseline candidates via Evidence Knowledge Graph, (b) ConnectomeTargetInput candidate regions from NeuroCompute, (c) Legacy synthetic fixtures. For each connectome candidate: computes 3D Euclidean distance to evidence baseline, evaluates incremental concordance gain, checks accessibility and laterality. |
+| 5     | **Evidence Gate, Accessibility Gate & Feature Attachment** | Attaches phenotype concordance scores, applies evidence ceiling checks, evaluates anatomical accessibility and laterality constraints.                                                                                                                                                                                                                       |
+| 6     | **Scoring & Utility Calculation**                          | Computes `overallScore` from evidence, phenotype concordance, and connectome refinement scores.                                                                                                                                                                                                                                                              |
+| 7     | **Redundancy Suppression**                                 | Removes anatomically redundant candidates (same cortical region, different methods).                                                                                                                                                                                                                                                                         |
+| 8     | **Role Allocation & Graph Enrichment**                     | Assigns `PRIMARY_1/2/3` and `ADDITIONAL_A/B` roles. Enriches candidates with graph evidence context.                                                                                                                                                                                                                                                         |
+| 9     | **Slate Assembly**                                         | Constructs final `TargetSlate` with primary, additional, and suppressed candidate arrays.                                                                                                                                                                                                                                                                    |
+| 10    | **Invariant Validation**                                   | Validates slate invariants (max candidates, role uniqueness, evidence tier constraints). Throws on violation.                                                                                                                                                                                                                                                |
 
 ### v2 Pipeline (15-Gate System)
 
 The v2 architecture introduces a universal 15-gate qualification system (G0–G14) for multi-indication support:
 
-| Gate | Code | Purpose |
-| :--- | :--- | :--- |
-| G0 | `G0_INPUT_INTEGRITY` | Schema validation, SHA-256 hash verification |
-| G1 | `G1_MODE_MODULE` | Mode/module compatibility |
-| G2 | `G2_EVIDENCE_PATH` | Evidence path permission check |
-| G3 | `G3_CLINICAL_CONTEXT` | Clinical context validation |
-| G4 | `G4_MEASUREMENT_CAPABILITY` | Measurement availability and qualification |
-| G5 | `G5_RELIABILITY` | Imaging reliability thresholds |
-| G6 | `G6_ANATOMY_LESION` | Anatomical and lesion constraint validation |
-| G7 | `G7_GEOMETRY_DEVICE` | Target geometry and device compatibility |
-| G8 | `G8_TREATMENT_CONTEXT` | Treatment context requirement validation |
-| G9 | `G9_GENERATOR_CONSTRAINTS` | Generator-specific constraint enforcement |
-| G10 | `G10_DEVICE_ACCESSIBILITY` | TMS coil accessibility and depth checks |
-| G11 | `G11_TREATMENT_CONTEXT` | Adjunctive treatment context |
-| G12 | `G12_PERSONALISATION_AUTHORITY` | Personalisation qualification authority |
-| G13 | `G13_SYSTEMS_CONTEXT_AUTHORITY` | System-level context authority |
-| G14 | `G14_RESEARCH_LEAKAGE_PREVENTION` | Prevents research-only targets from reaching clinical mode |
+| Gate | Code                              | Purpose                                                    |
+| :--- | :-------------------------------- | :--------------------------------------------------------- |
+| G0   | `G0_INPUT_INTEGRITY`              | Schema validation, SHA-256 hash verification               |
+| G1   | `G1_MODE_MODULE`                  | Mode/module compatibility                                  |
+| G2   | `G2_EVIDENCE_PATH`                | Evidence path permission check                             |
+| G3   | `G3_CLINICAL_CONTEXT`             | Clinical context validation                                |
+| G4   | `G4_MEASUREMENT_CAPABILITY`       | Measurement availability and qualification                 |
+| G5   | `G5_RELIABILITY`                  | Imaging reliability thresholds                             |
+| G6   | `G6_ANATOMY_LESION`               | Anatomical and lesion constraint validation                |
+| G7   | `G7_GEOMETRY_DEVICE`              | Target geometry and device compatibility                   |
+| G8   | `G8_TREATMENT_CONTEXT`            | Treatment context requirement validation                   |
+| G9   | `G9_GENERATOR_CONSTRAINTS`        | Generator-specific constraint enforcement                  |
+| G10  | `G10_DEVICE_ACCESSIBILITY`        | TMS coil accessibility and depth checks                    |
+| G11  | `G11_TREATMENT_CONTEXT`           | Adjunctive treatment context                               |
+| G12  | `G12_PERSONALISATION_AUTHORITY`   | Personalisation qualification authority                    |
+| G13  | `G13_SYSTEMS_CONTEXT_AUTHORITY`   | System-level context authority                             |
+| G14  | `G14_RESEARCH_LEAKAGE_PREVENTION` | Prevents research-only targets from reaching clinical mode |
 
 Each gate returns `pass`, `fail`, or `conditional` with explicit failure reasons.
 
@@ -480,6 +491,7 @@ interface IndicationTargetingPlugin {
 ```
 
 **Generators** produce `CandidateDraft` objects with:
+
 - Target geometry (point MNI coordinates, surface vertices, ROIs).
 - Evidence path bindings.
 - Clinical objective linkages.
@@ -497,6 +509,7 @@ Every suppression is recorded with full audit trail and clinician-facing explana
 ### Convergence Profile
 
 For connectome-refined candidates, the engine computes:
+
 - **`distanceToEvidenceBaselineMm`**: 3D Euclidean distance from patient-specific target to group-average evidence baseline.
 - **`convergenceClassification`**: `high` (≤12mm), `moderate` (≤30mm), `divergent` (>30mm). Divergent targets are suppressed with `MAJOR_DIVERGENCE`.
 - **`incrementalGainOverBaseline`**: Difference between patient-specific circuit concordance and baseline concordance. Must exceed `minIncrementalGainThreshold` (default 0.1) or candidate is suppressed with `LOW_INCREMENTAL_VALUE`.
@@ -512,6 +525,7 @@ When the engine cannot produce valid candidates, it returns an `AbstentionSlate`
 ### v1 Architecture
 
 The original `EvidenceKnowledgeGraph` class provides:
+
 - Evidence library releases with target family → evidence tier mappings.
 - Evidence ceiling enforcement (clinical-mode targets cannot exceed their tier's permitted roles).
 - Mode-based target family filtering (research targets blocked in clinical mode).
@@ -526,6 +540,7 @@ Source → Finding → Claim → Synthesis → Governance → Evidence Path
 ```
 
 **Entity types:**
+
 1. **Source** (`CanonicalSourceEntry`): Published papers, meta-analyses, guidelines. Includes DOI, PMID, study design, sample size, independence classification.
 2. **Finding** (`SourceFinding`): Individual extractable results from sources. Typed as `primary_outcome`, `secondary_outcome`, `subgroup`, `target_comparison`, `safety`, `durability`, `guideline_recommendation`, `meta_analytic_estimate`, `null_result`, `limitation`. Each finding has extraction status (`single_curator`, `double_checked`, `adjudicated`).
 3. **Claim** (`EvidenceClaimV2`): Synthesised assertions about TMS targeting. 14 claim types covering `clinical_efficacy`, `circuit_validity`, `target_specificity`, `symptom_specificity`, `safety`, `durability`, and more. Each claim has lifecycle status, direction (`supports`, `does_not_support`, `mixed`, `context_dependent`), and confidence level.
@@ -534,6 +549,7 @@ Source → Finding → Claim → Synthesis → Governance → Evidence Path
 6. **Evidence Path** (`EvidencePath`): Defines which target families are permitted in which modes for which indications, based on accumulated evidence.
 
 **Graph features:**
+
 - 33-edge explicit ontology with strict prohibition of "PROVES" edge type.
 - 6 first-class graph queries: "Why This Target?", "Clinically Permitted?", "Evidence Without Tier?", "Staging Targets?", "Null Evidence?", "Evidence Release Diff".
 - Source overlap accounting and independence classification.
@@ -543,6 +559,7 @@ Source → Finding → Claim → Synthesis → Governance → Evidence Path
 - Graph validation rules.
 
 **Canonical data:**
+
 - Sources, findings, claims, syntheses, governance classifications, conflict sets, evidence paths, therapeutic circuits, target families, claim-target bindings, and evidence questions are all seeded from `src/seeds/`.
 
 ---
@@ -555,19 +572,20 @@ The scientific policy system (`@magniom/scientific-policy`) governs all configur
 
 Each evidence tier has strict role and method permissions:
 
-| Tier | Standalone Primary? | Standalone Additional? | May Refine | Permitted Roles | Permitted Methods |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **T1** | ✅ | ✅ | — | P1, P2, P3, A_A, A_B | EVIDENCE_ONLY, CONNECTOME_REFINED |
-| **T2** | ✅ | ✅ | T1 | P2, P3, A_A, A_B | EVIDENCE_ONLY, CONNECTOME_REFINED |
-| **T3** | ❌ | ✅ | T1, T2 | A_A, A_B | EVIDENCE_ONLY |
-| **T4** | ❌ | ❌ | — | — | — |
-| **T_EXP** | ❌ | ❌ | — | — | — |
+| Tier      | Standalone Primary? | Standalone Additional? | May Refine | Permitted Roles      | Permitted Methods                 |
+| :-------- | :------------------ | :--------------------- | :--------- | :------------------- | :-------------------------------- |
+| **T1**    | ✅                  | ✅                     | —          | P1, P2, P3, A_A, A_B | EVIDENCE_ONLY, CONNECTOME_REFINED |
+| **T2**    | ✅                  | ✅                     | T1         | P2, P3, A_A, A_B     | EVIDENCE_ONLY, CONNECTOME_REFINED |
+| **T3**    | ❌                  | ✅                     | T1, T2     | A_A, A_B             | EVIDENCE_ONLY                     |
+| **T4**    | ❌                  | ❌                     | —          | —                    | —                                 |
+| **T_EXP** | ❌                  | ❌                     | —          | —                    | —                                 |
 
 T4 and T_EXP tiers are context-only and research-only respectively — they cannot generate clinical candidates.
 
 ### Compatibility Profiles
 
 Each policy release includes compatibility profiles specifying exact version requirements for:
+
 - Evidence library release ID.
 - Target engine version ID.
 - Neuroimaging pipeline version IDs (e.g., `pipe-fmriprep-23.2.0`).
@@ -590,6 +608,7 @@ All policy objects are SHA-256 hashed using the `computeSha256()` function from 
 ### Architecture
 
 The measurement system is split across three packages:
+
 1. **`@magniom/measurement-core`**: Core framework — bundle assembly, qualification logic, transform graph, processing run management.
 2. **`@magniom/modalities`**: 9 modality-specific providers.
 3. **`@magniom/measurement-testkit`**: Verification harness.
@@ -614,14 +633,14 @@ Transforms are typed as `AFFINE`, `NONLINEAR_WARP`, `SPHERICAL_REGISTRATION`, or
 
 ### Quality Control Parameters
 
-| Parameter | Threshold | Purpose |
-| :--- | :--- | :--- |
-| Mean Framewise Displacement | ≤ 0.25 mm | fMRI motion quality |
-| Minimum Scan Duration | ≥ 8 minutes | Sufficient functional data |
-| Retained Frames | ≥ 80% | Post-scrubbing data sufficiency |
-| Temporal SNR | ≥ 30 | Signal quality |
-| Split-Half Distance | ≤ 12 mm | Reliability of connectivity estimates |
-| Max Allowable Displacement | ≤ 15 mm | Maximum target-to-baseline deviation |
+| Parameter                   | Threshold   | Purpose                               |
+| :-------------------------- | :---------- | :------------------------------------ |
+| Mean Framewise Displacement | ≤ 0.25 mm   | fMRI motion quality                   |
+| Minimum Scan Duration       | ≥ 8 minutes | Sufficient functional data            |
+| Retained Frames             | ≥ 80%       | Post-scrubbing data sufficiency       |
+| Temporal SNR                | ≥ 30        | Signal quality                        |
+| Split-Half Distance         | ≤ 12 mm     | Reliability of connectivity estimates |
+| Max Allowable Displacement  | ≤ 15 mm     | Maximum target-to-baseline deviation  |
 
 ---
 
@@ -629,23 +648,24 @@ Transforms are typed as `AFFINE`, `NONLINEAR_WARP`, `SPHERICAL_REGISTRATION`, or
 
 The Triple-Network Systems Layer (`@magniom/networks`) implements the Menon (2011) model of three core neurocognitive networks:
 
-| Network | Code | Core Function | Key Nodes |
-| :--- | :--- | :--- | :--- |
-| **Central Executive Network** | `CEN` | Working memory, goal-directed attention, cognitive control | Dorsolateral PFC, posterior parietal cortex |
-| **Default Mode Network** | `DMN` | Self-referential processing, rumination, mind-wandering | Medial PFC, posterior cingulate, angular gyrus |
-| **Salience Network** | `SN` | Threat detection, interoception, network switching | Anterior insula, dorsal ACC |
+| Network                       | Code  | Core Function                                              | Key Nodes                                      |
+| :---------------------------- | :---- | :--------------------------------------------------------- | :--------------------------------------------- |
+| **Central Executive Network** | `CEN` | Working memory, goal-directed attention, cognitive control | Dorsolateral PFC, posterior parietal cortex    |
+| **Default Mode Network**      | `DMN` | Self-referential processing, rumination, mind-wandering    | Medial PFC, posterior cingulate, angular gyrus |
+| **Salience Network**          | `SN`  | Threat detection, interoception, network switching         | Anterior insula, dorsal ACC                    |
 
 ### Cross-Indication Relevance
 
-| Indication | Network Disruption Pattern |
-| :--- | :--- |
-| MDD | DMN hyperactivity, CEN hypoactivity, SN switching failure |
-| OCD | SN-mediated CSTC loop overactivation |
-| PTSD | SN hypervigilance, DMN fragmentation |
-| TBI | CEN disconnection, DMN disruption |
-| Tinnitus | SN-mediated auditory phantom percept |
+| Indication | Network Disruption Pattern                                |
+| :--------- | :-------------------------------------------------------- |
+| MDD        | DMN hyperactivity, CEN hypoactivity, SN switching failure |
+| OCD        | SN-mediated CSTC loop overactivation                      |
+| PTSD       | SN hypervigilance, DMN fragmentation                      |
+| TBI        | CEN disconnection, DMN disruption                         |
+| Tinnitus   | SN-mediated auditory phantom percept                      |
 
 The network layer provides:
+
 - Network definitions with atlas-based parcel memberships.
 - Network node coordinates and functional weights.
 - Inter-network relationship metrics (CEN-DMN, SN-CEN, SN-DMN).
@@ -664,6 +684,7 @@ The database layer includes a dedicated `triple_network_systems_layer` migration
 The PostgreSQL database (Supabase-managed) spans 51 controlled migration files (001–065) covering:
 
 **Identity & Multi-Tenancy (001–006):**
+
 - Extensions (`pgcrypto`, `uuid-ossp`).
 - Schema namespacing.
 - System-wide enumerated types.
@@ -672,22 +693,26 @@ The PostgreSQL database (Supabase-managed) spans 51 controlled migration files (
 - Security helper functions.
 
 **Clinical Domain (007–010):**
+
 - Clinical cases with 15-state lifecycle.
 - Clinical assessments.
 - Phenotype ontology tables.
 - Phenotype snapshots (13KB migration) with extensive DSM-5/ICD-11 coding.
 
 **Evidence Domain (018–023):**
+
 - Evidence sources, claims, circuits, target families.
 - Full evidence graph relational schema.
 - Evidence releases with version management.
 
 **Targeting Domain (024–026):**
+
 - Target candidates with geometric data, evidence profiles, suppression records.
 - Target slates (15KB migration) with comprehensive provenance.
 - Clinician decisions (21KB migration) — the largest single migration — implementing the complete decision signing workflow with `targeting.guard_signed_decision` trigger preventing post-signature mutation.
 
 **Infrastructure (029–030, 036–042):**
+
 - Workflow job queue with at-least-once delivery semantics.
 - Transactional outbox for event-driven architecture.
 - Storage bucket policies.
@@ -699,6 +724,7 @@ The PostgreSQL database (Supabase-managed) spans 51 controlled migration files (
 - SHA-256 audit hash verification chains.
 
 **Multi-Indication Extension (043–065):**
+
 - Indication modules and governance.
 - Case-indication bindings.
 - Disease stage context.
@@ -726,6 +752,7 @@ The PostgreSQL database (Supabase-managed) spans 51 controlled migration files (
 ### Row-Level Security Model
 
 RLS is enforced at the database engine level (not via ORM-based client-side filtering) providing:
+
 - **Default-deny multi-tenancy**: Users can only access data within their organisation.
 - **Role-based access**: Each app role has specific read/write permissions per table.
 - **Decision immutability**: Signed clinical decisions cannot be modified via `guard_signed_decision` trigger.
@@ -744,46 +771,46 @@ All clinical decisions are chained using SHA-256 tamper-evident hashing (migrati
 
 The CI system implements an 11-stage verification pipeline, each stage independently runnable:
 
-| Stage | Name | What It Verifies |
-| :--- | :--- | :--- |
-| **0** | PR Policy & Change Classification | Automated PR classification, CODEOWNERS enforcement |
-| **1** | Static Verification | Package boundaries, target engine determinism rules, TypeScript strict typecheck, Prettier format |
-| **2** | Unit Tests & Traceability | Monorepo unit tests (Vitest), 375 SRS requirements traceability |
-| **3** | Property-Based Invariants | Fast-check metamorphic testing, mathematical invariant verification |
-| **4** | Database & RLS | Zero-state DB rebuild from migration 001, 11-domain RLS matrix verification |
-| **5** | Golden Cases & Scientific Impact | G01–G30+ golden case suite, scientific impact evaluation (S0–S4) |
-| **6** | Laterality & Adversarial | Release-blocking laterality tests, adversarial boundary tests, module kill switch |
-| **7** | Presentation & Workflow | Presentation model tests, synthetic E2E workflow worker tests |
-| **8** | Security & Supply Chain | CycloneDX 1.5 SBOM generation/verification, CVE scanning, secret hygiene, pen-test readiness probes |
-| **9** | Reproducible Build | Full monorepo build, release manifest v2 generation |
-| **10** | Post-Deploy Smoke | Golden case smoke tests, affected case index |
+| Stage  | Name                              | What It Verifies                                                                                    |
+| :----- | :-------------------------------- | :-------------------------------------------------------------------------------------------------- |
+| **0**  | PR Policy & Change Classification | Automated PR classification, CODEOWNERS enforcement                                                 |
+| **1**  | Static Verification               | Package boundaries, target engine determinism rules, TypeScript strict typecheck, Prettier format   |
+| **2**  | Unit Tests & Traceability         | Monorepo unit tests (Vitest), 375 SRS requirements traceability                                     |
+| **3**  | Property-Based Invariants         | Fast-check metamorphic testing, mathematical invariant verification                                 |
+| **4**  | Database & RLS                    | Zero-state DB rebuild from migration 001, 11-domain RLS matrix verification                         |
+| **5**  | Golden Cases & Scientific Impact  | G01–G30+ golden case suite, scientific impact evaluation (S0–S4)                                    |
+| **6**  | Laterality & Adversarial          | Release-blocking laterality tests, adversarial boundary tests, module kill switch                   |
+| **7**  | Presentation & Workflow           | Presentation model tests, synthetic E2E workflow worker tests                                       |
+| **8**  | Security & Supply Chain           | CycloneDX 1.5 SBOM generation/verification, CVE scanning, secret hygiene, pen-test readiness probes |
+| **9**  | Reproducible Build                | Full monorepo build, release manifest v2 generation                                                 |
+| **10** | Post-Deploy Smoke                 | Golden case smoke tests, affected case index                                                        |
 
 ### GitHub Actions Workflows
 
 20 workflow files orchestrate CI/CD:
 
-| Workflow | Trigger | Purpose |
-| :--- | :--- | :--- |
-| `ci.yml` | Push to main, PRs | Master 11-stage pipeline |
-| `ci-pr.yml` | PRs | Fast PR verification (Stages 0–3) |
-| `ci-main.yml` | Push to main | Extended main-branch verification |
-| `ci-merge.yml` | Merge events | Post-merge validation |
-| `ci-scientific.yml` | Manual/scheduled | Laterality, adversarial, kill switch, scientific impact |
-| `ci-nightly.yml` | Scheduled (nightly) | Full nightly sweep: scientific + DB + v2 baseline + exit criteria |
-| `ci-security.yml` | Scheduled | SBOM, CVE, secrets, pen-test, backup drill |
-| `ci-measurements.yml` | Manual/scheduled | Multimodal measurement spec + modality tests |
-| `ci-golden-matrix.yml` | Manual | Full golden case matrix across 8 indications |
-| `ci-release-candidate.yml` | Manual | Release candidate qualification |
-| `clinical-release-gate.yml` | Manual | Clinical release gating workflow |
-| `release-candidate-build.yml` | Manual | Release candidate build |
-| `release-validation.yml` | Manual | Full validation suite |
-| `release-clinical.yml` | Manual | Clinical release workflow |
-| `deploy-staging.yml` | Manual | Staging deployment + verification |
-| `deploy-production.yml` | Manual | Production deployment + verification |
-| `postdeploy-verify.yml` | Post-deploy | Post-deployment smoke tests |
-| `security-audit.yml` | Scheduled | Security audit |
-| `design-control-check.yml` | PRs | Design control documentation check |
-| `pr-policy-and-classification.yml` | PRs | PR policy enforcement |
+| Workflow                           | Trigger             | Purpose                                                           |
+| :--------------------------------- | :------------------ | :---------------------------------------------------------------- |
+| `ci.yml`                           | Push to main, PRs   | Master 11-stage pipeline                                          |
+| `ci-pr.yml`                        | PRs                 | Fast PR verification (Stages 0–3)                                 |
+| `ci-main.yml`                      | Push to main        | Extended main-branch verification                                 |
+| `ci-merge.yml`                     | Merge events        | Post-merge validation                                             |
+| `ci-scientific.yml`                | Manual/scheduled    | Laterality, adversarial, kill switch, scientific impact           |
+| `ci-nightly.yml`                   | Scheduled (nightly) | Full nightly sweep: scientific + DB + v2 baseline + exit criteria |
+| `ci-security.yml`                  | Scheduled           | SBOM, CVE, secrets, pen-test, backup drill                        |
+| `ci-measurements.yml`              | Manual/scheduled    | Multimodal measurement spec + modality tests                      |
+| `ci-golden-matrix.yml`             | Manual              | Full golden case matrix across 8 indications                      |
+| `ci-release-candidate.yml`         | Manual              | Release candidate qualification                                   |
+| `clinical-release-gate.yml`        | Manual              | Clinical release gating workflow                                  |
+| `release-candidate-build.yml`      | Manual              | Release candidate build                                           |
+| `release-validation.yml`           | Manual              | Full validation suite                                             |
+| `release-clinical.yml`             | Manual              | Clinical release workflow                                         |
+| `deploy-staging.yml`               | Manual              | Staging deployment + verification                                 |
+| `deploy-production.yml`            | Manual              | Production deployment + verification                              |
+| `postdeploy-verify.yml`            | Post-deploy         | Post-deployment smoke tests                                       |
+| `security-audit.yml`               | Scheduled           | Security audit                                                    |
+| `design-control-check.yml`         | PRs                 | Design control documentation check                                |
+| `pr-policy-and-classification.yml` | PRs                 | PR policy enforcement                                             |
 
 ### Specification Conformance Auditors
 
@@ -812,18 +839,19 @@ Each auditor scans source files, test files, and database migrations for structu
 
 The test pyramid is structured in 6 tiers:
 
-| Tier | Type | Tools | Coverage |
-| :--- | :--- | :--- | :--- |
-| **T1** | Unit Tests | Vitest | Individual functions, pure calculations, gate logic |
-| **T2** | Integration Tests | Vitest | Cross-package interactions, engine → evidence → policy |
-| **T3** | Golden Case Tests | Vitest + Fixtures | 72+ canonical cases with known-correct outputs per indication |
-| **T4** | Property-Based Tests | Fast-Check | Metamorphic invariants: determinism, monotonicity, boundary behaviour |
-| **T5** | Security & RLS Tests | SQL + Vitest | 11-domain database security matrix, cross-tenant isolation |
-| **T6** | Specification Conformance | Custom TSX auditors | Structural verification against 11+ canonical specifications |
+| Tier   | Type                      | Tools               | Coverage                                                              |
+| :----- | :------------------------ | :------------------ | :-------------------------------------------------------------------- |
+| **T1** | Unit Tests                | Vitest              | Individual functions, pure calculations, gate logic                   |
+| **T2** | Integration Tests         | Vitest              | Cross-package interactions, engine → evidence → policy                |
+| **T3** | Golden Case Tests         | Vitest + Fixtures   | 72+ canonical cases with known-correct outputs per indication         |
+| **T4** | Property-Based Tests      | Fast-Check          | Metamorphic invariants: determinism, monotonicity, boundary behaviour |
+| **T5** | Security & RLS Tests      | SQL + Vitest        | 11-domain database security matrix, cross-tenant isolation            |
+| **T6** | Specification Conformance | Custom TSX auditors | Structural verification against 11+ canonical specifications          |
 
 ### Key Test Suites
 
 **Target Engine (36+ test files):**
+
 - `target-engine.test.ts`: Core engine unit tests.
 - `determinism-and-invariants.test.ts`: Verifies deterministic output for identical inputs.
 - `property-based-invariants.test.ts`: Fast-check metamorphic testing — same patient, same policy, same evidence → always same slate.
@@ -836,6 +864,7 @@ The test pyramid is structured in 6 tiers:
 - **Golden Suites by Indication (8 files):** `mdd-golden-suite`, `ocd-golden-suite`, `pain-golden-suite`, `stroke-motor-golden-suite`, `stroke-aphasia-golden-suite`, `tbi-golden-suite`, `ptsd-golden-suite`, `tinnitus-golden-suite` + `shared-acceptance`.
 
 **Database Security:**
+
 - `001_database_foundation.test.sql`: Foundation schema verification.
 - `002_evidence_graph.test.sql`: Evidence graph integrity.
 - `003_full_rls_suite.test.sql`: Comprehensive RLS policy testing.
@@ -844,6 +873,7 @@ The test pyramid is structured in 6 tiers:
 ### Scientific Impact Evaluation
 
 The `scripts/scientific/evaluate-scientific-impact.ts` script classifies changes across 5 impact levels (S0–S4):
+
 - **S0**: No scientific impact (documentation, formatting).
 - **S1**: Minor scientific impact (test additions).
 - **S2**: Moderate impact (parameter changes within policy bounds).
@@ -920,6 +950,7 @@ npm run ci:postdeploy
 ### Release Qualification
 
 Each release produces a **Release Qualification Package** containing:
+
 - `verification-build-m3-manifest.json`: Build manifest with SHA hashes.
 - `release-manifest-v2.json`: Sealed release manifest.
 - `traceability-matrix.md` / `traceability-matrix-v2.md`: Requirement-to-test traceability.
@@ -961,16 +992,27 @@ Per CODEOWNERS policy, no single person can approve a PR touching protected scie
 
 ## Design Control & Regulatory Standards
 
-| Standard | Edition | Application |
-| :--- | :--- | :--- |
-| **IEC 62304** | 2006 + AMD1:2015 | Software lifecycle for Class B/C SaMD |
-| **ISO 14971** | 2019 | Risk management, critical hazard register |
-| **IEC 62366-1** | 2015 | Usability engineering, formative evaluation |
-| **IEC 81001-5-1** | 2021 | Health software security |
-| **ISO 13485** | 2016 | Quality management system |
-| **HIPAA** | §164.312 | Technical safeguards for ePHI |
-| **GDPR** | Art. 32 | Security of processing |
-| **FDA 21 CFR Part 11** | — | Electronic records and signatures |
+| Standard               | Edition          | Application                                 |
+| :--------------------- | :--------------- | :------------------------------------------ |
+| **IEC 62304**          | 2006 + AMD1:2015 | Software lifecycle for Class B/C SaMD       |
+| **ISO 14971**          | 2019             | Risk management, critical hazard register   |
+| **IEC 62366-1**        | 2015             | Usability engineering, formative evaluation |
+| **IEC 81001-5-1**      | 2021             | Health software security                    |
+| **ISO 13485**          | 2016             | Quality management system                   |
+| **HIPAA**              | §164.312         | Technical safeguards for ePHI               |
+| **GDPR**               | Art. 32          | Security of processing                      |
+| **FDA 21 CFR Part 11** | —                | Electronic records and signatures           |
+
+### Regulatory Classification & Research-to-Clinical Boundary
+
+> [!CAUTION]
+> **Pre-Market Research Status**: MAGNIOM is developed to design-controlled specifications adhering to IEC 62304 Class B/C architecture and ISO 14971 risk management principles. However, **formal regulatory clearance (FDA 510(k)/De Novo, CE mark under EU MDR 2017/745 Class IIa/IIb, or TGA Class IIb) has NOT been granted**.
+>
+> The system enforces a strict boundary between research demonstrators and clinical decision workflows:
+>
+> 1. **Fail-Closed Synthetic Boundary (Gate G14)**: Any pipeline data marked with `dataOrigin: 'synthetic'` is strictly prohibited from generating clinical candidate targets in `clinical` execution mode. The target engine yields an explicit abstention (`no_candidate`) with audit logs.
+> 2. **Algorithmic Validation Staging**: Advanced connectomic algorithms (such as Cash-Zalesky 2021 functional connectivity clustering, Seguin-Zalesky 2026 polysynaptic pathway routing, and Li et al. 2026 structural tractography) are classified under `RESEARCH` or `VALIDATION` gating until prospective multi-center qualification is completed.
+> 3. **Non-Preselection & Clinician Primacy**: MAGNIOM functions solely as clinical decision support. The software does not pre-select targets or deliver automated stimulation.
 
 ### Design Control Artifacts
 
@@ -1135,25 +1177,25 @@ npm run test:pyramid                  # Run pyramid testing strategy
 
 The `.github/CODEOWNERS` file enforces safety-domain code ownership with dual-approval requirements. No single-person clinical scientific release is permitted.
 
-| Path | Owners | Purpose |
-| :--- | :--- | :--- |
-| `packages/target-engine/` | @target-engine @clinical-science @quality | Target calculation engine |
-| `packages/evidence/` | @evidence-governance @clinical-science @quality | Evidence knowledge graph |
-| `packages/scientific-policy/` | @clinical-science @quality | Scientific policy releases |
-| `packages/modalities/` | @neuroimaging @clinical-science | Imaging modality providers |
-| `packages/measurement-core/` | @neuroimaging @quality | Measurement framework |
-| `packages/test-fixtures/` | @clinical-science @quality | Golden case fixtures |
-| `packages/networks/` | @platform-architecture @clinical-science @quality | Triple-network layer |
-| `services/neurocompute/` | @neuroimaging @clinical-science | Python neuroimaging pipeline |
-| `packages/domain/` | @platform-architecture @clinical-science | Core domain types |
-| `packages/schemas/` | @platform-architecture @quality | Schema contracts |
-| `supabase/migrations/` | @backend @database-security @quality | Database schema |
-| `apps/web/` | @frontend @clinical-human-factors | Clinician workspace |
-| `packages/presentation/` | @frontend @clinical-human-factors | Clinical view models |
-| `.github/workflows/` | @platform-security @quality | CI/CD pipelines |
-| `scripts/verification/` | @quality @clinical-science | Verification scripts |
-| `scripts/release/` | @platform-security @quality @clinical-science | Release tooling |
-| `scripts/security/` | @platform-security @quality | Security tooling |
+| Path                          | Owners                                            | Purpose                      |
+| :---------------------------- | :------------------------------------------------ | :--------------------------- |
+| `packages/target-engine/`     | @target-engine @clinical-science @quality         | Target calculation engine    |
+| `packages/evidence/`          | @evidence-governance @clinical-science @quality   | Evidence knowledge graph     |
+| `packages/scientific-policy/` | @clinical-science @quality                        | Scientific policy releases   |
+| `packages/modalities/`        | @neuroimaging @clinical-science                   | Imaging modality providers   |
+| `packages/measurement-core/`  | @neuroimaging @quality                            | Measurement framework        |
+| `packages/test-fixtures/`     | @clinical-science @quality                        | Golden case fixtures         |
+| `packages/networks/`          | @platform-architecture @clinical-science @quality | Triple-network layer         |
+| `services/neurocompute/`      | @neuroimaging @clinical-science                   | Python neuroimaging pipeline |
+| `packages/domain/`            | @platform-architecture @clinical-science          | Core domain types            |
+| `packages/schemas/`           | @platform-architecture @quality                   | Schema contracts             |
+| `supabase/migrations/`        | @backend @database-security @quality              | Database schema              |
+| `apps/web/`                   | @frontend @clinical-human-factors                 | Clinician workspace          |
+| `packages/presentation/`      | @frontend @clinical-human-factors                 | Clinical view models         |
+| `.github/workflows/`          | @platform-security @quality                       | CI/CD pipelines              |
+| `scripts/verification/`       | @quality @clinical-science                        | Verification scripts         |
+| `scripts/release/`            | @platform-security @quality @clinical-science     | Release tooling              |
+| `scripts/security/`           | @platform-security @quality                       | Security tooling             |
 
 ---
 

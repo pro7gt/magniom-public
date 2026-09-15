@@ -16,6 +16,7 @@ import {
   type IndicationTargetingPlugin,
   MDDPlugin,
 } from '../../src/index.js';
+import { evaluateGateG14 } from '../../src/gates/v2/g14-research-leakage.js';
 
 describe('Target Engine Core Exit Criterion 4: Research Candidate Isolation', () => {
   const researchGenerator: CandidateGenerator = {
@@ -122,5 +123,106 @@ describe('Target Engine Core Exit Criterion 4: Research Candidate Isolation', ()
     // In research mode, the generator executed and was not blocked by mode gate
     const executedHashes = result.reproducibilityManifest.executedGeneratorManifestHashes;
     expect(executedHashes.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('Gate G14 directly rejects candidate draft with synthetic dataOrigin in clinical mode', () => {
+    const context = createCanonicalResolvedContextV2({
+      request: { mode: 'clinical' } as any,
+    });
+
+    const draft: CandidateDraft = {
+      draftId: 'draft-synthetic-candidate',
+      generatorId: 'GEN-MDD-CONNECTOME-REFINED-001',
+      targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
+      proposedRole: 'primary',
+      dataOrigin: 'synthetic', // Synthetic candidate!
+      targetGeometry: createCanonicalPointGeometry(-42, 44, 30, 'left', 'pipeline'),
+      evidencePathIds: ['PATH-MDD-BA46'],
+      clinicalObjectiveIds: ['00000000-0000-0000-0000-000000000040'],
+      reliedOnMeasurementIds: [],
+      reliedOnReliabilityIds: [],
+      lineage: { lineageType: 'connectomic_refinement' },
+      rawScientificFeatures: [],
+      generatorLimitations: [],
+      nominationRationale: 'Synthetic target test',
+      generatorTrace: { algorithmCode: 'CASH_ZALESKY_FC_CENTROID', algorithmVersion: '1.0.0' },
+    };
+
+    const evalResult = evaluateGateG14(draft, context);
+    expect(evalResult.result).toBe('fail');
+    expect(evalResult.reasonCodes).toContain(
+      'TN-014:SYNTHETIC_CANDIDATE_PROHIBITED_IN_CLINICAL_MODE',
+    );
+  });
+
+  it('Gate G14 directly rejects candidate relying on synthetic measurement bundle in clinical mode', () => {
+    const context = createCanonicalResolvedContextV2({
+      request: { mode: 'clinical' } as any,
+      measurementBundle: {
+        bundleId: 'bundle-synth-01',
+        patientId: 'patient-01',
+        createdAt: new Date().toISOString(),
+        dataOrigin: 'synthetic', // Synthetic bundle!
+        measurements: [],
+      } as any,
+    });
+
+    const draft: CandidateDraft = {
+      draftId: 'draft-patient-measured',
+      generatorId: 'GEN-MDD-CONNECTOME-REFINED-001',
+      targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
+      proposedRole: 'primary',
+      dataOrigin: 'patient_measured',
+      targetGeometry: createCanonicalPointGeometry(-42, 44, 30, 'left', 'pipeline'),
+      evidencePathIds: ['PATH-MDD-BA46'],
+      clinicalObjectiveIds: ['00000000-0000-0000-0000-000000000040'],
+      reliedOnMeasurementIds: [],
+      reliedOnReliabilityIds: [],
+      lineage: { lineageType: 'connectomic_refinement' },
+      rawScientificFeatures: [],
+      generatorLimitations: [],
+      nominationRationale: 'Target test',
+      generatorTrace: { algorithmCode: 'CASH_ZALESKY_FC_CENTROID', algorithmVersion: '1.0.0' },
+    };
+
+    const evalResult = evaluateGateG14(draft, context);
+    expect(evalResult.result).toBe('fail');
+    expect(evalResult.reasonCodes).toContain(
+      'TN-014:SYNTHETIC_MEASUREMENT_LEAKAGE_IN_CLINICAL_MODE',
+    );
+  });
+
+  it('Gate G14 allows synthetic dataOrigin in research mode', () => {
+    const context = createCanonicalResolvedContextV2({
+      request: { mode: 'research' } as any,
+      measurementBundle: {
+        bundleId: 'bundle-synth-01',
+        patientId: 'patient-01',
+        createdAt: new Date().toISOString(),
+        dataOrigin: 'synthetic',
+        measurements: [],
+      } as any,
+    });
+
+    const draft: CandidateDraft = {
+      draftId: 'draft-synthetic-candidate',
+      generatorId: 'GEN-MDD-CONNECTOME-REFINED-001',
+      targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
+      proposedRole: 'research_hypothesis',
+      dataOrigin: 'synthetic',
+      targetGeometry: createCanonicalPointGeometry(-42, 44, 30, 'left', 'pipeline'),
+      evidencePathIds: ['PATH-MDD-BA46'],
+      clinicalObjectiveIds: ['00000000-0000-0000-0000-000000000040'],
+      reliedOnMeasurementIds: [],
+      reliedOnReliabilityIds: [],
+      lineage: { lineageType: 'experimental_protocol' },
+      rawScientificFeatures: [],
+      generatorLimitations: ['SYNTHETIC_DEMONSTRATOR'],
+      nominationRationale: 'Synthetic target test',
+      generatorTrace: { algorithmCode: 'CASH_ZALESKY_FC_CENTROID', algorithmVersion: '1.0.0' },
+    };
+
+    const evalResult = evaluateGateG14(draft, context);
+    expect(evalResult.result).toBe('pass');
   });
 });

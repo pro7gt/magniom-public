@@ -137,6 +137,7 @@ class ImagingCandidateRegion:
     accessibility: str  # good, acceptable, difficult, inaccessible
     reliability_score: float
     fit_interpretation: str
+    data_origin: str = "synthetic"  # patient_measured, normative, synthetic
 
 
 @dataclass
@@ -173,4 +174,5 @@ class ConnectomePipelineOutput:
     reliability_profiles: List[Any] = field(default_factory=list)  # TargetReliabilityProfile
     reliability_manifest_path: Optional[str] = None
     reliability_manifest_sha256: Optional[str] = None
+    data_origin: str = "synthetic"  # patient_measured, normative, synthetic
 

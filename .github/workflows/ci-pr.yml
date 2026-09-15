@@ -36,17 +36,8 @@ jobs:
       - name: Stage 0 — Scientific Change Classifier (C0–C4) (§112–118)
         run: npx tsx scripts/ci/classify-change.ts
 
-      - name: Stage 1A — Architectural Boundary & Forbidden Import Verification (§34–35)
-        run: npm run verify:boundaries
-
-      - name: Stage 1B — Target Engine Static Rules & Purity Check (§34)
-        run: npm run verify:static-rules
-
-      - name: Stage 1C — TypeScript Strict Typecheck
-        run: npm run typecheck
-
-      - name: Stage 1D — Code Formatting Verification (Prettier)
-        run: npm run format:check
+      - name: Stage 1 — Static Architecture, 15 Specification Conformance & Target Engine Rules (§34–35)
+        run: npm run verify:stage1
 
       - name: Stage 2 — Monorepo Unit Tests (Vitest) (§36)
         run: npm test

@@ -6,7 +6,7 @@ Conforms to GIFTI Surface Standard (*.surf.gii, *.shape.gii)
 import os
 import hashlib
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List, Optional, Any
 from ..models.surface import SurfaceMesh, CorticalThicknessMap
 
 

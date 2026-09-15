@@ -37,6 +37,88 @@ export const CANONICAL_CIRCUITS_V2: readonly TherapeuticCircuitV2[] = [
       softwareVersion: '2.0.0',
     },
   },
+  {
+    id: 'c0000000-0000-0000-0001-000000000011',
+    code: 'TC-MDD-CASH-FC-001',
+    version: '2.0.0',
+    name: 'Cash-Zalesky Cluster-Based DLPFC-sgACC Functional Anticorrelation Circuit',
+    indicationScopeIds: ['ind-mdd-001'],
+    clinicalObjectiveDefinitionIds: ['obj-mdd-core-001'],
+    circuitKind: 'therapeutic_network',
+    scientificStatus: 'treatment_effect_linked',
+    circuitDefinition: {
+      sourceNodes: ['L_DLPFC_Cluster_Centroid'],
+      targetNode: 'SGC_Group_Seedmap_or_A32sg',
+      interactionType: 'negative_correlation',
+      normativeBasis: 'Cash et al. 2021 Hum Brain Mapp; 26-neighborhood clustering; top 10% (seed) / 0.5% (seedmap)',
+    },
+    circuitArtifactIds: ['art-mdd-cash-dlpfc-mask-001'],
+    supportingEvidenceClaimIds: ['c0000000-0000-0000-0000-000000000001'],
+    conflictingEvidenceClaimIds: [],
+    limitations: [
+      'Requires >=15-20 min usable resting-state fMRI for high intraindividual reproducibility (R=0.94, variation 2.2mm).',
+    ],
+    provenance: {
+      createdBy: 'magniom_scientific_curation',
+      createdAt: '2026-09-15T00:00:00Z',
+      softwareVersion: '2.0.0',
+    },
+  },
+  {
+    id: 'c0000000-0000-0000-0001-000000000012',
+    code: 'TC-MDD-LI-SC-001',
+    version: '2.0.0',
+    name: 'Li-Zalesky Subgenual A32sg-DLPFC Structural Connectivity Tractography Circuit',
+    indicationScopeIds: ['ind-mdd-001'],
+    clinicalObjectiveDefinitionIds: ['obj-mdd-core-001'],
+    circuitKind: 'therapeutic_network',
+    scientificStatus: 'treatment_effect_linked',
+    circuitDefinition: {
+      sourceNodes: ['L_DLPFC_A8dl_A9l_A46_A946d'],
+      targetNode: 'L_sgACC_A32sg',
+      interactionType: 'structural_probabilistic_tractography',
+      normativeBasis: 'Li et al. 2026 Am J Psychiatry; MRtrix3 probabilistic tractography + SIFT2; top 5% cluster centroid',
+    },
+    circuitArtifactIds: ['art-mdd-bn-a32sg-mask-001'],
+    supportingEvidenceClaimIds: ['c0000000-0000-0000-0000-000000000001'],
+    conflictingEvidenceClaimIds: [],
+    limitations: [
+      'Pivotal RCT evidence demonstrates week 2 and week 6 superiority; staged initially under validation mode.',
+    ],
+    provenance: {
+      createdBy: 'magniom_scientific_curation',
+      createdAt: '2026-09-15T00:00:00Z',
+      softwareVersion: '2.0.0',
+    },
+  },
+  {
+    id: 'c0000000-0000-0000-0001-000000000013',
+    code: 'TC-MDD-SEGUIN-PATHWAY-001',
+    version: '2.0.0',
+    name: 'Seguin-Zalesky Polysynaptic White Matter Pathway Communication Model',
+    indicationScopeIds: ['ind-mdd-001'],
+    clinicalObjectiveDefinitionIds: ['obj-mdd-core-001'],
+    circuitKind: 'therapeutic_network',
+    scientificStatus: 'treatment_effect_linked',
+    circuitDefinition: {
+      sourceNodes: ['L_DLPFC_TMS_Site'],
+      targetNode: 'R_SGC_Sphere_MNI_6_16_-10',
+      intermediateNodes: ['SFG', 'Thalamus', 'ACC'],
+      interactionType: 'polysynaptic_shortest_path_routing',
+      normativeBasis: 'Seguin & Zalesky 2026 Nat Neurosci; Edge cost L=-log(W); hop count H(a,b); 3-hop cortical and 4-hop fronto-thalamic routes',
+    },
+    circuitArtifactIds: ['art-mdd-seguin-pathway-routes-001'],
+    supportingEvidenceClaimIds: ['c0000000-0000-0000-0000-000000000001'],
+    conflictingEvidenceClaimIds: [],
+    limitations: [
+      'Normative connectome communication model; strictly research-only and prohibited from unverified clinical substitution.',
+    ],
+    provenance: {
+      createdBy: 'magniom_scientific_curation',
+      createdAt: '2026-09-15T00:00:00Z',
+      softwareVersion: '2.0.0',
+    },
+  },
 
   // ----------------------------------------------------
   // OCD: Cortico-Striato-Thalamo-Cortical System (§24, §17)
@@ -250,3 +332,61 @@ export const CANONICAL_CIRCUITS_V2: readonly TherapeuticCircuitV2[] = [
     },
   },
 ];
+
+export interface SgaccSeedMetadata {
+  readonly seedId: string;
+  readonly code: string;
+  readonly name: string;
+  readonly coordinateSpace: string;
+  readonly seedType: 'SPHERICAL_ROI' | 'GRAY_MATTER_WEIGHTED_SEEDMAP' | 'ATLAS_PARCEL_MASK';
+  readonly coordinatesMni: readonly { readonly x: number; readonly y: number; readonly z: number }[];
+  readonly radiusMm?: number;
+  readonly citationCode: string;
+  readonly clinicalRole: 'functional_connectivity' | 'structural_connectivity' | 'polysynaptic_pathway';
+}
+
+export const CANONICAL_SGACC_SEEDS: readonly SgaccSeedMetadata[] = [
+  {
+    seedId: 'SEED-SGACC-SPHERE-FOX2012',
+    code: 'FOX_WEIGAND_SPHERE',
+    name: 'Fox 2012 / Weigand 2018 sgACC Bilateral Spherical Seed',
+    coordinateSpace: 'MNI152NLin2009cAsym',
+    seedType: 'SPHERICAL_ROI',
+    coordinatesMni: [{ x: -6, y: 16, z: -10 }, { x: 6, y: 16, z: -10 }],
+    radiusMm: 10.0,
+    citationCode: 'SRC-MDD-FOX-2012',
+    clinicalRole: 'functional_connectivity',
+  },
+  {
+    seedId: 'SEED-SGACC-SEEDMAP-CASH2021',
+    code: 'CASH_GROUP_SEEDMAP',
+    name: 'Cash 2021 Whole-Brain Gray Matter SGC Weighted Seedmap',
+    coordinateSpace: 'MNI152NLin2009cAsym',
+    seedType: 'GRAY_MATTER_WEIGHTED_SEEDMAP',
+    coordinatesMni: [{ x: 6, y: 16, z: -10 }],
+    citationCode: 'SRC-MDD-CASH-2021',
+    clinicalRole: 'functional_connectivity',
+  },
+  {
+    seedId: 'SEED-SGACC-BN-A32SG-LI2026',
+    code: 'BRAINNETOME_A32SG',
+    name: 'Li 2026 Brainnetome Atlas Left A32sg Seed (SC & FC)',
+    coordinateSpace: 'MNI152NLin2009cAsym',
+    seedType: 'ATLAS_PARCEL_MASK',
+    coordinatesMni: [{ x: -4, y: 22, z: -8 }],
+    citationCode: 'SRC-MDD-LI-2026',
+    clinicalRole: 'structural_connectivity',
+  },
+  {
+    seedId: 'SEED-SGC-SEGUIN2026',
+    code: 'SEGUIN_RIGHT_SGC_SPHERE',
+    name: 'Seguin 2026 Right SGC Polysynaptic Pathway Target Sphere',
+    coordinateSpace: 'MNI152NLin2009cAsym',
+    seedType: 'SPHERICAL_ROI',
+    coordinatesMni: [{ x: 6, y: 16, z: -10 }],
+    radiusMm: 10.0,
+    citationCode: 'SRC-MDD-SEGUIN-2026',
+    clinicalRole: 'polysynaptic_pathway',
+  },
+];
+

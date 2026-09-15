@@ -1,6 +1,6 @@
 # Formal Conformance Report: Evidence Knowledge Graph & Therapeutic Circuit Library Specification v2.0
 
-**Audit Date:** 2026-09-13T08:26:04.749Z
+**Audit Date:** 2026-09-15T08:41:07.062Z
 **Evaluated Document:** `public/guides/MAGNIOM-Evidence Knowledge Graph & Therapeutic Circuit Library v2.0.md`
 **Overall Status:** ✅ 100% CONFORMANT (ALL 15 CLUSTERS PASSED)
 **Clusters Verified:** 15 / 15
@@ -24,13 +24,13 @@ The **MAGNIOM Evidence Knowledge Graph & Therapeutic Circuit Library v2.0** defi
 | **Cluster 1** | `§1–§5` | Purpose, Paradigm Shift & Fundamental Evidence Principle | ✅ PASS | Decoupled claim-tier architecture verified across 34 claims; zero embedded tiers detected (§1–§5). |
 | **Cluster 2** | `§6–§12` | Core Data Models, Governance Classification & Claim Synthesis | ✅ PASS | All 30 emerging claims comply with §8 unassigned seeding and 8-dimensional synthesis (§6–§12). |
 | **Cluster 3** | `§13–§15` | Graph Topology, 33-Edge Ontology & Prohibition of PROVES | ✅ PASS | 33-edge ontology active (341 indexed edges); strict prohibition of PROVES verified (§13–§15). |
-| **Cluster 4** | `§16–§21` | Therapeutic Circuits, Nomenclature Safety & Target Families | ✅ PASS | 8 therapeutic circuits conform to nomenclature safety; 24 target families verified (§16–§21). |
+| **Cluster 4** | `§16–§21` | Therapeutic Circuits, Nomenclature Safety & Target Families | ✅ PASS | 11 therapeutic circuits conform to nomenclature safety; 24 target families verified (§16–§21). |
 | **Cluster 5** | `§22–§71` | Multi-Indication Seed Libraries & Pivotal Claims across 8 Indications | ✅ PASS | All 8 clinical indications seeded with 34 total canonical claims (§22–§71). |
-| **Cluster 6** | `§72–§77` | Source Manifest, Primary Extraction & Outcome Domains | ✅ PASS | 36 sources indexed with primary RCT extraction priority; 8 PICO EvidenceQuestions verified (§72–§77). |
+| **Cluster 6** | `§72–§77` | Source Manifest, Primary Extraction & Outcome Domains | ✅ PASS | 45 sources indexed with primary RCT extraction priority; 8 PICO EvidenceQuestions verified (§72–§77). |
 | **Cluster 7** | `§78–§89` | Anatomical Independence & Indication Evidence Rules | ✅ PASS | All indication-specific geometry, somatotopy, lesion, and research-only rules verified (§78–§89). |
 | **Cluster 8** | `§90–§94` | Conflict Accounting & Governance Workflow | ✅ PASS | 7 conflict sets modeled (§90–§91); prohibition of clinical eligibility on sources enforced (§90–§94). |
 | **Cluster 9** | `§95–§102` | Evidence Paths & Six First-Class Graph Queries | ✅ PASS | All 6 first-class graph queries execute deterministically and return compliant structures (§95–§102). |
-| **Cluster 10** | `§103–§109` | Release Governance, Cryptographic Hashing & MDD v1 Migration | ✅ PASS | Release v2.0.0 sealed with SHA-256 (cf3571b6c0dce470...); MDD baseline migrated (§103–§109). |
+| **Cluster 10** | `§103–§109` | Release Governance, Cryptographic Hashing & MDD v1 Migration | ✅ PASS | Release v2.0.0 sealed with SHA-256 (e9cbb810b22185a6...); MDD baseline migrated (§103–§109). |
 | **Cluster 11** | `§110–§116` | Multi-Indication Golden Graph Tests across 7 Emerging Indications | ✅ PASS | All 7 Golden Graph cases (OCD, Pain, Stroke, Aphasia, TBI, PTSD, Tinnitus) verified (§110–§116). |
 | **Cluster 12** | `§117–§123` | Seven Graph Validation Rules | ✅ PASS | All 7 graph validation rules (§117–§123) active, verified, and operational. |
 | **Cluster 13** | `§124–§130` | System Integration, UI Contracts & Living Monitoring | ✅ PASS | UI view model adapters (§126, §127) and Target Engine Gate G2 fail-closed integration verified (§124–§130). |

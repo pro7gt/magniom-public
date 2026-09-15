@@ -7,12 +7,15 @@ import type {
   IndicationPolicyBinding,
   ScientificCompatibilityConfiguration,
 } from '@magniom/domain';
+import { computeSha256 } from '../policy-hasher.js';
 
 export const MDD_MODULE_RELEASE_ID = '00000000-0000-0000-0000-000000000001';
 export const MDD_EVIDENCE_LIBRARY_RELEASE_ID = '00000000-0000-0000-0000-000000000101';
 export const MDD_TARGET_ENGINE_RELEASE_ID = '00000000-0000-0000-0000-000000000201';
 export const MDD_CONNECTOME_CONFIG_ID = '00000000-0000-0000-0000-000000000301';
 export const MDD_EVIDENCE_BASELINE_CONFIG_ID = '00000000-0000-0000-0000-000000000302';
+export const MDD_SC_CONFIG_ID = '00000000-0000-0000-0000-000000000311';
+export const MDD_PATHWAY_CONFIG_ID = '00000000-0000-0000-0000-000000000312';
 
 export const MDD_COMPATIBILITY_CONFIGURATIONS: readonly ScientificCompatibilityConfiguration[] = [
   {
@@ -28,17 +31,17 @@ export const MDD_COMPATIBILITY_CONFIGURATIONS: readonly ScientificCompatibilityC
       componentType: 'TARGETING_PLUGIN',
       componentId: 'plugin-mdd',
       componentVersion: '2.0.0',
-      manifestSha256: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+      manifestSha256: computeSha256('MAGNIOM-PLUGIN-MDD-MANIFEST-2.0.0'),
     },
     candidateGenerators: [
       {
         componentType: 'CANDIDATE_GENERATOR',
-        componentId: 'gen-mdd-evidence-prior',
+        componentId: 'gen-mdd-fc-refinement',
         componentVersion: '2.0.0',
       },
       {
         componentType: 'CANDIDATE_GENERATOR',
-        componentId: 'gen-mdd-fc-refinement',
+        componentId: 'gen-mdd-evidence-prior',
         componentVersion: '2.0.0',
       },
     ],
@@ -48,14 +51,13 @@ export const MDD_COMPATIBILITY_CONFIGURATIONS: readonly ScientificCompatibilityC
     ],
     reliabilityMethods: [{ componentType: 'split_half_fc', requirement: 'required' }],
     phenotypeOntologyReleaseId: '00000000-0000-0000-0000-000000000401',
-    atlasReleases: [{ componentType: 'hcp_mmp1', requirement: 'required' }],
-    normativeModels: [{ componentType: 'hcp_young_adult', requirement: 'optional' }],
-    efieldEngine: { componentType: 'simnibs', requirement: 'optional' },
+    atlasReleases: [{ componentType: 'schaefer_200_17', requirement: 'required' }],
+    normativeModels: [],
     deviceCapabilityProfiles: [{ componentType: 'figure8_standard', requirement: 'optional' }],
     acquisitionProfiles: [{ componentType: 'mdd_clinical_mri_v1', requirement: 'required' }],
     compatibilityStatus: 'approved',
-    validationEvidenceIds: ['VAL-MDD-001', 'VAL-MDD-002'],
-    configurationSha256: '9999999999999999999999999999999999999999999999999999999999999901',
+    validationEvidenceIds: ['VAL-MDD-001'],
+    configurationSha256: computeSha256('MDD-CONNECTOME-CLINICAL-2.0-CONFIG'),
   },
   {
     id: MDD_EVIDENCE_BASELINE_CONFIG_ID,
@@ -70,7 +72,7 @@ export const MDD_COMPATIBILITY_CONFIGURATIONS: readonly ScientificCompatibilityC
       componentType: 'TARGETING_PLUGIN',
       componentId: 'plugin-mdd',
       componentVersion: '2.0.0',
-      manifestSha256: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+      manifestSha256: computeSha256('MAGNIOM-PLUGIN-MDD-MANIFEST-2.0.0'),
     },
     candidateGenerators: [
       {
@@ -79,21 +81,103 @@ export const MDD_COMPATIBILITY_CONFIGURATIONS: readonly ScientificCompatibilityC
         componentVersion: '2.0.0',
       },
     ],
-    measurementProviders: [
-      { componentType: 'structural_mri', requirement: 'required' },
-      { componentType: 'resting_state_fmri', requirement: 'disabled' },
-    ],
+    measurementProviders: [{ componentType: 'structural_mri', requirement: 'required' }],
     reliabilityMethods: [],
     phenotypeOntologyReleaseId: '00000000-0000-0000-0000-000000000401',
-    atlasReleases: [{ componentType: 'hcp_mmp1', requirement: 'required' }],
+    atlasReleases: [],
     normativeModels: [],
-    deviceCapabilityProfiles: [],
+    deviceCapabilityProfiles: [{ componentType: 'figure8_standard', requirement: 'optional' }],
     acquisitionProfiles: [{ componentType: 'mdd_clinical_mri_v1', requirement: 'required' }],
     compatibilityStatus: 'approved',
-    validationEvidenceIds: ['VAL-MDD-001'],
-    configurationSha256: '9999999999999999999999999999999999999999999999999999999999999902',
+    validationEvidenceIds: ['VAL-MDD-002'],
+    configurationSha256: computeSha256('MDD-EVIDENCE-BASELINE-2.0-CONFIG'),
   },
 ];
+
+export const MDD_RESEARCH_COMPATIBILITY_CONFIGURATIONS: readonly ScientificCompatibilityConfiguration[] =
+  [
+    {
+      id: MDD_SC_CONFIG_ID,
+      code: 'MDD-SC-TRACTOGRAPHY-VALIDATION-2.0',
+      version: '2.0.0',
+      scientificPolicyReleaseId: '00000000-0000-0000-0000-000000000099',
+      indicationModuleReleaseId: MDD_MODULE_RELEASE_ID,
+      mode: 'validation',
+      evidenceLibraryReleaseId: MDD_EVIDENCE_LIBRARY_RELEASE_ID,
+      targetEngineReleaseId: MDD_TARGET_ENGINE_RELEASE_ID,
+      targetingPlugin: {
+        componentType: 'TARGETING_PLUGIN',
+        componentId: 'plugin-mdd',
+        componentVersion: '2.0.0',
+        manifestSha256: computeSha256('MAGNIOM-PLUGIN-MDD-MANIFEST-2.0.0'),
+      },
+      candidateGenerators: [
+        {
+          componentType: 'CANDIDATE_GENERATOR',
+          componentId: 'gen-mdd-evidence-prior',
+          componentVersion: '2.0.0',
+        },
+        {
+          componentType: 'CANDIDATE_GENERATOR',
+          componentId: 'gen-mdd-sc-tractography',
+          componentVersion: '2.0.0',
+        },
+      ],
+      measurementProviders: [
+        { componentType: 'structural_mri', requirement: 'required' },
+        { componentType: 'diffusion_mri', requirement: 'required' },
+      ],
+      reliabilityMethods: [],
+      phenotypeOntologyReleaseId: '00000000-0000-0000-0000-000000000401',
+      atlasReleases: [{ componentType: 'brainnetome_atlas', requirement: 'required' }],
+      normativeModels: [],
+      deviceCapabilityProfiles: [{ componentType: 'figure8_standard', requirement: 'optional' }],
+      acquisitionProfiles: [{ componentType: 'mdd_clinical_mri_v1', requirement: 'required' }],
+      compatibilityStatus: 'approved',
+      validationEvidenceIds: ['VAL-MDD-SC-001'],
+      configurationSha256: computeSha256('MDD-SC-TRACTOGRAPHY-VALIDATION-2.0-CONFIG'),
+    },
+    {
+      id: MDD_PATHWAY_CONFIG_ID,
+      code: 'MDD-PATHWAY-COMMUNICATION-RESEARCH-2.0',
+      version: '2.0.0',
+      scientificPolicyReleaseId: '00000000-0000-0000-0000-000000000099',
+      indicationModuleReleaseId: MDD_MODULE_RELEASE_ID,
+      mode: 'research',
+      evidenceLibraryReleaseId: MDD_EVIDENCE_LIBRARY_RELEASE_ID,
+      targetEngineReleaseId: MDD_TARGET_ENGINE_RELEASE_ID,
+      targetingPlugin: {
+        componentType: 'TARGETING_PLUGIN',
+        componentId: 'plugin-mdd',
+        componentVersion: '2.0.0',
+        manifestSha256: computeSha256('MAGNIOM-PLUGIN-MDD-MANIFEST-2.0.0'),
+      },
+      candidateGenerators: [
+        {
+          componentType: 'CANDIDATE_GENERATOR',
+          componentId: 'gen-mdd-evidence-prior',
+          componentVersion: '2.0.0',
+        },
+        {
+          componentType: 'CANDIDATE_GENERATOR',
+          componentId: 'gen-mdd-normative-pathway',
+          componentVersion: '2.0.0',
+        },
+      ],
+      measurementProviders: [{ componentType: 'structural_mri', requirement: 'required' }],
+      reliabilityMethods: [],
+      phenotypeOntologyReleaseId: '00000000-0000-0000-0000-000000000401',
+      atlasReleases: [{ componentType: 'lausanne_schaefer_normative', requirement: 'required' }],
+      normativeModels: [
+        { componentType: 'normative_structural_connectome', requirement: 'required' },
+      ],
+      deviceCapabilityProfiles: [],
+      acquisitionProfiles: [{ componentType: 'mdd_clinical_mri_v1', requirement: 'required' }],
+      compatibilityStatus: 'approved',
+      validationEvidenceIds: ['VAL-MDD-PATHWAY-001'],
+      configurationSha256: computeSha256('MDD-PATHWAY-COMMUNICATION-RESEARCH-2.0-CONFIG'),
+    },
+  ];
 
 export const MDD_INDICATION_POLICY_BINDING: IndicationPolicyBinding = {
   id: '00000000-0000-0000-0000-000000000501',

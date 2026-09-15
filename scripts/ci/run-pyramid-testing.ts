@@ -59,10 +59,10 @@ export const PYRAMID_LAYERS: readonly PyramidLayer[] = [
     level: 4,
     name: 'Level 4: Metamorphic Relations & Domain/API Contracts',
     command:
-      'npx vitest run packages/target-engine/tests/v2/metamorphic-and-boundary.test.ts packages/domain/tests/canonical-data-spec-invariants.test.ts packages/target-engine/tests/v2/plugin-contracts.test.ts packages/domain/src/rls-isolation.test.ts',
+      'npx vitest run packages/target-engine/tests/v2/metamorphic-and-boundary.test.ts packages/domain/tests/canonical-data-spec-invariants.test.ts packages/target-engine/tests/v2/plugin-contracts.test.ts packages/domain/src/rls-isolation.test.ts packages/schemas/tests/',
     specSection: '§39–§41',
     description:
-      'Validates 5 metamorphic scientific relations, candidate permutation invariance, canonical schema contract boundaries, and tenant isolation.',
+      'Validates 5 metamorphic scientific relations, candidate permutation invariance, canonical data schemas & prohibited fields, schema contract boundaries, and tenant isolation.',
   },
   {
     level: 5,
@@ -76,10 +76,10 @@ export const PYRAMID_LAYERS: readonly PyramidLayer[] = [
     level: 6,
     name: 'Level 6: Worker Queue Resilience & Service Contracts',
     command:
-      'npx vitest run services/workflow-worker/tests/worker.test.ts services/workflow-worker/tests/worker-permissions.test.ts',
+      'npx vitest run services/workflow-worker/tests/worker.test.ts services/workflow-worker/tests/worker-permissions.test.ts services/workflow-worker/tests/functional-verification.test.ts services/workflow-worker/tests/structural-verification.test.ts',
     specSection: '§47–§48',
     description:
-      'Simulates worker crashes, duplicate delivery idempotency, poison messages, attempt limits, and storage containment.',
+      'Simulates worker crashes, duplicate delivery idempotency, poison messages, attempt limits, structural validation, and storage containment.',
   },
   {
     level: 7,
@@ -93,10 +93,10 @@ export const PYRAMID_LAYERS: readonly PyramidLayer[] = [
     level: 8,
     name: 'Level 8: Measurement Validation & Imaging QA Fallback Suite',
     command:
-      'npx vitest run packages/target-engine/tests/imaging-validation.test.ts packages/target-engine/tests/v2/laterality-release-blocking.test.ts packages/modalities/ packages/measurement-core/ packages/measurement-testkit/',
+      'npx vitest run packages/target-engine/tests/imaging-validation.test.ts packages/target-engine/tests/v2/laterality-release-blocking.test.ts packages/modalities/ packages/measurement-core/ packages/measurement-testkit/ && npm run test:neurocompute -- --fast',
     specSection: '§66–§79',
     description:
-      'Validates BIDS conformance, connectome matrices, motion artifacts (I01–I10), and release-blocking laterality invariants.',
+      'Validates BIDS conformance, connectome matrices, motion artifacts (I01–I10), release-blocking laterality invariants, and executes multi-language neurocompute unit tests.',
   },
   {
     level: 9,
@@ -119,10 +119,10 @@ export const PYRAMID_LAYERS: readonly PyramidLayer[] = [
     level: 11,
     name: 'Level 11: Human Factors, Clinician Anti-Bias Shell & Accessibility',
     command:
-      'npx vitest run packages/presentation/src/presentation.test.ts packages/presentation/tests/ux-golden-cases-v2.test.ts packages/presentation/tests/shell-navigation-v2.test.ts apps/web/tests/shell-v2-authority.test.ts apps/web/tests/route-security-auth-guard.test.ts apps/web/tests/auth-universal-login.test.ts',
+      'npx vitest run packages/presentation/src/presentation.test.ts packages/presentation/tests/ux-golden-cases-v2.test.ts packages/presentation/tests/shell-navigation-v2.test.ts apps/web/tests/shell-v2-authority.test.ts apps/web/tests/route-security-auth-guard.test.ts apps/web/tests/auth-universal-login.test.ts apps/web/tests/case-store-authority.test.ts apps/web/tests/route-integrity-audit.test.ts apps/web/tests/design-system-integrity.test.ts',
     specSection: '§86–§91',
     description:
-      'Verifies clinician workspace view models, anti-bias UI non-preselection of Candidate 1 (§89), WCAG 2.2 AA shell navigation, and route security auth guards.',
+      'Verifies clinician workspace view models, anti-bias UI non-preselection of Candidate 1 (§89), WCAG 2.2 AA shell navigation, route security auth guards, case store authority, and design system token integrity.',
   },
   {
     level: 12,

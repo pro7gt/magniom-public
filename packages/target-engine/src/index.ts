@@ -38,3 +38,5 @@ export * from './slate/v2/explanation.js';
 export * from './abstention/v2/manager.js';
 export * from './plugins/index.js';
 export * from './orchestrator/synthetic-vertical-slice.js';
+export * from './algorithms/cash-zalesky-clustering.js';
+export * from './algorithms/seguin-pathway-routing.js';

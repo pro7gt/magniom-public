@@ -13,11 +13,23 @@ export type EvidenceTier = 'T1' | 'T2' | 'T3' | 'T4' | 'T_EXP';
 
 export type LegacyEvidenceTier = 'A' | 'B' | 'C' | 'D' | 'R';
 
+export type DataOrigin = 'patient_measured' | 'normative' | 'synthetic';
+
+export type ConnectomicRefinementMethod =
+  | 'FC_CLUSTER_PERSONALISED'
+  | 'SC_CLUSTER_PERSONALISED'
+  | 'NORMATIVE_PATHWAY_MODEL'
+  | 'HYBRID_CONNECTOMIC_RESEARCH';
+
 export type TargetMethod =
   | 'EVIDENCE_ONLY_PRIOR'
   | 'STRUCTURAL_ANATOMICAL'
   | 'CONNECTOME_REFINED'
-  | 'ELECTRIC_FIELD_OPTIMIZED';
+  | 'ELECTRIC_FIELD_OPTIMIZED'
+  | 'FC_CLUSTER_PERSONALISED'
+  | 'SC_CLUSTER_PERSONALISED'
+  | 'NORMATIVE_PATHWAY_MODEL'
+  | 'HYBRID_CONNECTOMIC_RESEARCH';
 
 export type CoordinateSpace = 'MNI152NLin2009cAsym' | 'fsLR_32k' | 'NATIVE_T1W';
 

@@ -55,11 +55,21 @@ class ConnectomeProcessingJobHandler:
         bold_results: List[Dict[str, Any]],  # Output of BOLDProcessingJobHandler containing runs, cd1, sd1
         output_directory: str,
         mode: str = "CLINICAL",
+        allow_synthetic: bool = False,
     ) -> ConnectomePipelineOutput:
         """
         Executes Stages 06, 07, and 08 across all available runs and returns
         versioned circuit measurements and connectome candidate regions.
         """
+        # Fail-closed check: Synthetic data is strictly barred from CLINICAL mode
+        data_origin = "synthetic"
+        if mode.upper() == "CLINICAL" and data_origin == "synthetic" and not allow_synthetic:
+            raise ValueError(
+                "FAIL_CLOSED: Synthetic neurocompute pipeline outputs are strictly prohibited "
+                "in CLINICAL mode under ISO 13485 / IEC 62304 / MAGNIOM Revision 01. "
+                "Switch mode to RESEARCH or VALIDATION, or provide qualified patient-measured NIfTI/GIFTI data."
+            )
+
         subject_id = bids_dataset.subject_id
         manifests_dir = os.path.join(output_directory, "manifests")
         os.makedirs(manifests_dir, exist_ok=True)
@@ -267,6 +277,7 @@ class ConnectomeProcessingJobHandler:
             accessibility="good",
             reliability_score=0.88,
             fit_interpretation=f"Strong patient-specific concordance ({conv_res.percentile_concordance * 100:.1f}th percentile) with convergent depression circuit.",
+            data_origin=data_origin,
         )
         candidates.append(conv_cand)
 
@@ -288,6 +299,7 @@ class ConnectomeProcessingJobHandler:
             accessibility="good",
             reliability_score=0.86,
             fit_interpretation=f"Subgenual cingulate functional anticorrelation target ({sgacc_res.concordance_score * 100:.1f}th percentile within Left DLPFC).",
+            data_origin=data_origin,
         )
         candidates.append(sgacc_cand)
 
@@ -311,6 +323,7 @@ class ConnectomeProcessingJobHandler:
                     accessibility="good",
                     reliability_score=0.90,
                     fit_interpretation=sym_res.rationale,
+                    data_origin=data_origin,
                 )
                 candidates.append(sym_cand)
 
@@ -436,5 +449,6 @@ class ConnectomeProcessingJobHandler:
             reliability_profiles=reliability_profiles,
             reliability_manifest_path=s11_manifest_path,
             reliability_manifest_sha256=Hasher.sha256_file(s11_manifest_path),
+            data_origin=data_origin,
         )
 

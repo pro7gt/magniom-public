@@ -235,18 +235,27 @@ export function auditTargetEngineV21SpecConformance(
         });
 
         const researchDraft: CandidateDraft = {
-          candidate_id: 'cand-research-leak',
-          indication_code: 'mdd',
-          target_family: 'DLPFC_LEFT',
-          geometry: createCanonicalPointGeometry([-42, 44, 30]),
-          evidence_path: 'EVID_LEVEL_RESEARCH',
-          clinical_objectives: ['symptom_reduction'],
-          intended_clinical_role: 'P1',
-          tags: ['research_only'],
+          draftId: 'cand-research-leak',
+          generatorId: 'GEN_RESEARCH_01',
+          targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
+          proposedRole: 'research_hypothesis',
+          targetGeometry: createCanonicalPointGeometry(-42, 44, 30, 'left'),
+          evidencePathIds: ['EVID_LEVEL_RESEARCH'],
+          clinicalObjectiveIds: ['symptom_reduction'],
+          reliedOnMeasurementIds: [],
+          reliedOnReliabilityIds: [],
+          rawScientificFeatures: [],
+          generatorLimitations: ['SYNTHETIC_DEMONSTRATOR'],
+          nominationRationale: 'Research nomination',
+          generatorTrace: {
+            algorithmCode: 'MDD_RESEARCH_GEN',
+            algorithmVersion: '1.0.0',
+          },
+          dataOrigin: 'synthetic',
         };
 
         const resG14 = evaluateGateG14(researchDraft, context);
-        if (resG14.passed) {
+        if (resG14.result === 'pass') {
           return {
             passed: false,
             details: 'Gate G14 must block research-only candidate in clinical mode (§40).',
@@ -279,16 +288,25 @@ export function auditTargetEngineV21SpecConformance(
         }
 
         const draft: CandidateDraft = {
-          candidate_id: 'draft-gen-001',
-          indication_code: 'mdd',
-          target_family: 'DLPFC_LEFT',
-          geometry: createCanonicalPointGeometry([-42, 44, 30]),
-          evidence_path: 'EVID_CANONICAL_MDD',
-          clinical_objectives: ['symptom_reduction'],
-          intended_clinical_role: 'P1',
+          draftId: 'draft-gen-001',
+          generatorId: 'GEN-MDD-EVIDENCE-001',
+          targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
+          proposedRole: 'P1',
+          targetGeometry: createCanonicalPointGeometry(-42, 44, 30, 'left'),
+          evidencePathIds: ['EVID_CANONICAL_MDD'],
+          clinicalObjectiveIds: ['symptom_reduction'],
+          reliedOnMeasurementIds: [],
+          reliedOnReliabilityIds: [],
+          rawScientificFeatures: [],
+          generatorLimitations: [],
+          nominationRationale: 'Canonical nomination',
+          generatorTrace: {
+            algorithmCode: 'MDD_GEN',
+            algorithmVersion: '1.0.0',
+          },
         };
 
-        if (!draft.candidate_id || !draft.target_family || !draft.geometry) {
+        if (!draft.draftId || !draft.targetFamilyId || !draft.targetGeometry) {
           return { passed: false, details: 'CandidateDraft structure malformed (§43).' };
         }
 

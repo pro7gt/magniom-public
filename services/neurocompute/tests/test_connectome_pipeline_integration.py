@@ -163,6 +163,7 @@ class TestConnectomePipelineIntegration(unittest.TestCase):
             bold_results=self.bold_results,
             output_directory=self.test_dir,
             mode="CLINICAL",
+            allow_synthetic=True,
         )
 
         # 1. Output Metadata
@@ -202,6 +203,19 @@ class TestConnectomePipelineIntegration(unittest.TestCase):
         self.assertEqual(output.combined_fc_cd1.num_parcels, 374)
         self.assertEqual(len(output.combined_fc_cd1.run_indices), 2)
         self.assertTrue(os.path.exists(output.combined_fc_cd1.artifact_tsv_path))
+
+    def test_fail_closed_synthetic_in_clinical_mode(self):
+        handler = ConnectomeProcessingJobHandler(work_dir=self.test_dir)
+        with self.assertRaises(ValueError) as cm:
+            handler.execute_connectome_pipeline(
+                bids_dataset=self.bids_dataset,
+                surface_resampling=self.surface_resampling,
+                bold_results=self.bold_results,
+                output_directory=self.test_dir,
+                mode="CLINICAL",
+                allow_synthetic=False,
+            )
+        self.assertIn("FAIL_CLOSED", str(cm.exception))
 
 
 if __name__ == "__main__":
