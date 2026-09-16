@@ -19,6 +19,15 @@ import { computeSha256 } from '@magniom/scientific-policy';
 import type { IndicationTargetingPlugin, CandidateFeatureProvider } from '../../sdk/plugin.js';
 import type { CandidateGenerator } from '../../sdk/generator.js';
 import { createCanonicalPointGeometry } from '../../core/geometry-helper.js';
+import {
+  computeCashZaleskyTarget,
+  type VoxelNode,
+} from '../../algorithms/cash-zalesky-clustering.js';
+import {
+  computePathwayCommunicationScore,
+  computeEdgeCostMatrix,
+  type StructuralGraph,
+} from '../../algorithms/seguin-pathway-routing.js';
 
 export const MDD_PLUGIN_ID = '11111111-1111-4111-8111-111111111111';
 export const MDD_MODULE_RELEASE_ID = '11111111-1111-4111-8111-111111111112';
@@ -183,14 +192,40 @@ export class MDDConnectomeRefinementGenerator implements CandidateGenerator {
     const candidateDataOrigin = isSynthetic ? 'synthetic' : 'patient_measured';
     const limitations = isSynthetic ? ['SYNTHETIC_DEMONSTRATOR', 'RESEARCH_ONLY'] : [];
 
-    // Shift coordinate slightly (e.g. 11.2 mm displacement from BA46 -44, 40, 28)
+    // Execute Cash-Zalesky cluster targeting algorithm
+    const searchNodes: VoxelNode[] = [
+      { id: 'v1', x: -40, y: 44, z: 30, connectivity: -0.65 },
+      { id: 'v2', x: -42, y: 44, z: 30, connectivity: -0.55 },
+      { id: 'v3', x: -40, y: 46, z: 30, connectivity: -0.45 },
+      { id: 'v4', x: -44, y: 40, z: 28, connectivity: -0.4 },
+    ];
+    const clustering = computeCashZaleskyTarget(searchNodes, {
+      thresholdPercentile: 0.75,
+      minClusterSize: 2,
+    });
+    const targetX = Math.round(clustering.optimalTarget.x);
+    const targetY = Math.round(clustering.optimalTarget.y);
+    const targetZ = Math.round(clustering.optimalTarget.z);
+
+    const isClinical = context.request.mode.toLowerCase() === 'clinical';
+    const maturity = isClinical && !isSynthetic ? 'clinical_candidate' : 'validation';
+    const promotionStatus = isSynthetic ? 'blocked' : 'candidate_under_review';
+
     const refinedDraft: CandidateDraft = {
       draftId: 'draft-mdd-ba46-fc-refined',
       generatorId: this.descriptor.id,
       targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
       proposedRole: 'connectome_refinement',
       dataOrigin: candidateDataOrigin,
-      targetGeometry: createCanonicalPointGeometry(-42, 44, 30, 'left', 'mdd-fc-generator'),
+      scientificMaturity: maturity,
+      clinicalPromotionStatus: promotionStatus,
+      targetGeometry: createCanonicalPointGeometry(
+        targetX,
+        targetY,
+        targetZ,
+        'left',
+        'mdd-fc-generator',
+      ),
       evidencePathIds: context.permittedEvidencePaths
         .filter(p => p.targetFamilyId === 'TF-MDD-LDLPFC-EST-001')
         .map(p => p.id),
@@ -271,6 +306,8 @@ export class MDDStructuralConnectivityGenerator implements CandidateGenerator {
       targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
       proposedRole: 'connectome_refinement',
       dataOrigin: 'synthetic',
+      scientificMaturity: 'validation',
+      clinicalPromotionStatus: 'blocked',
       targetGeometry: createCanonicalPointGeometry(-40, 42, 32, 'left', 'mdd-sc-generator'),
       evidencePathIds: context.permittedEvidencePaths
         .filter(p => p.targetFamilyId === 'TF-MDD-LDLPFC-EST-001')
@@ -345,13 +382,43 @@ export class MDDPathwayCommunicationGenerator implements CandidateGenerator {
       };
     }
 
+    const normativeGraph: StructuralGraph = {
+      nodeCount: 3,
+      nodeLabels: ['R_SGC', 'Intermediate_SFG_Thalamus', 'L_DLPFC'],
+      nodeCoordinatesMni: [
+        { x: 6, y: 16, z: -10 },
+        { x: 0, y: 28, z: 32 },
+        { x: -38, y: 44, z: 34 },
+      ],
+      weights: [
+        [1.0, 0.8, 0.05],
+        [0.8, 1.0, 0.7],
+        [0.05, 0.7, 1.0],
+      ],
+    };
+    const costMatrix = computeEdgeCostMatrix(normativeGraph.weights);
+    const pathwayScore = computePathwayCommunicationScore(
+      normativeGraph,
+      costMatrix,
+      { x: -38, y: 44, z: 34 },
+      { x: 6, y: 16, z: -10 },
+    );
+
     const pathwayDraft: CandidateDraft = {
       draftId: 'draft-mdd-pathway-hypothesis',
       generatorId: this.descriptor.id,
       targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
       proposedRole: 'research_hypothesis',
       dataOrigin: 'normative',
-      targetGeometry: createCanonicalPointGeometry(-38, 44, 34, 'left', 'mdd-pathway-generator'),
+      scientificMaturity: 'research',
+      clinicalPromotionStatus: 'blocked',
+      targetGeometry: createCanonicalPointGeometry(
+        pathwayScore.stimulationCoordinate.x,
+        pathwayScore.stimulationCoordinate.y,
+        pathwayScore.stimulationCoordinate.z,
+        'left',
+        'mdd-pathway-generator',
+      ),
       evidencePathIds: context.permittedEvidencePaths
         .filter(p => p.targetFamilyId === 'TF-MDD-LDLPFC-EST-001')
         .map(p => p.id),
@@ -534,6 +601,8 @@ export class MDDPlugin implements IndicationTargetingPlugin {
       new MDDEvidenceBaselineGenerator().descriptor,
       new MDDConnectomeRefinementGenerator().descriptor,
       new MDDPhenotypeCircuitGenerator().descriptor,
+      new MDDStructuralConnectivityGenerator().descriptor,
+      new MDDPathwayCommunicationGenerator().descriptor,
       new MDDResearchNetworkGenerator().descriptor,
     ],
     featureProviderVersions: ['2.0.0'],

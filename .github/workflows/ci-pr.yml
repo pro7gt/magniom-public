@@ -39,8 +39,8 @@ jobs:
       - name: Stage 1 — Static Architecture, 15 Specification Conformance & Target Engine Rules (§34–35)
         run: npm run verify:stage1
 
-      - name: Stage 2 — Monorepo Unit Tests (Vitest) (§36)
-        run: npm test
+      - name: Stage 2 — Monorepo Unit Tests (Vitest) & 375 SRS Requirements Traceability (§36, §126–127)
+        run: npm run verify:stage2
 
       - name: Stage 3 — Target Engine Mathematical Property Invariants (fast-check) (§38)
         run: npm run verify:properties

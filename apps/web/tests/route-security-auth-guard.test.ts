@@ -45,6 +45,7 @@ describe('MAG-SEC-001: Edge Middleware Route Protection & Access Control', () =>
     expect(res.status).toBe(307);
     const location = res.headers.get('location');
     expect(location).toBe('https://app.magniom.com/login');
+    expect(res.headers.get('Cache-Control')).toContain('no-store');
   });
 
   it('SEC-MW-02: redirects unauthenticated request on /cases to /login?redirect=%2Fcases', async () => {

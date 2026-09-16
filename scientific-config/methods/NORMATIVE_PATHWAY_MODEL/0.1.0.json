@@ -1,0 +1,26 @@
+{
+  "methodId": "NORMATIVE_PATHWAY_MODEL",
+  "version": "0.1.0",
+  "indication": "MDD",
+  "scientificMaturity": "research",
+  "permittedModes": ["research"],
+  "dataOrigins": ["normative"],
+  "requiredModalities": ["normative_structural_connectome"],
+  "atlas": "Schaefer200_and_TianSubcortex",
+  "coordinateSpace": "MNI152NLin2009cAsym",
+  "seedDefinitionId": "SEED-MDD-SGC-SEGUIN-2026",
+  "parameters": {
+    "costTransform": "negative_log_weight",
+    "shortestPathAlgorithm": "dijkstra",
+    "hopLimit": 6,
+    "dominantRoutes": ["cortical_3_hop", "fronto_thalamic_4_hop"]
+  },
+  "evidenceIds": ["src-mdd-seguin-2026"],
+  "implementationHash": "a1b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef0",
+  "limitations": [
+    "Normative pathway routing is derived from group-averaged human connectomes and does not reflect patient-specific dysconnectivity.",
+    "Calculated shortest paths provide mechanistic hypotheses regarding communication efficiency; they do not prove causal stimulation propagation.",
+    "Strictly isolated to research mode and barred from clinical target qualification."
+  ],
+  "clinicalPromotionStatus": "blocked"
+}

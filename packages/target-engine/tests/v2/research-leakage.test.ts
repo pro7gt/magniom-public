@@ -217,12 +217,127 @@ describe('Target Engine Core Exit Criterion 4: Research Candidate Isolation', ()
       reliedOnReliabilityIds: [],
       lineage: { lineageType: 'experimental_protocol' },
       rawScientificFeatures: [],
-      generatorLimitations: ['SYNTHETIC_DEMONSTRATOR'],
-      nominationRationale: 'Synthetic target test',
       generatorTrace: { algorithmCode: 'CASH_ZALESKY_FC_CENTROID', algorithmVersion: '1.0.0' },
     };
 
     const evalResult = evaluateGateG14(draft, context);
     expect(evalResult.result).toBe('pass');
+  });
+
+  it('Gate G14 directly rejects candidate draft with unknown dataOrigin in clinical mode', () => {
+    const context = createCanonicalResolvedContextV2({
+      request: { mode: 'clinical' } as any,
+    });
+
+    const draft: CandidateDraft = {
+      draftId: 'draft-unknown-origin',
+      generatorId: 'GEN-MDD-CONNECTOME-REFINED-001',
+      targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
+      proposedRole: 'primary',
+      dataOrigin: 'unknown',
+      targetGeometry: createCanonicalPointGeometry(-42, 44, 30, 'left', 'pipeline'),
+      evidencePathIds: ['PATH-MDD-BA46'],
+      clinicalObjectiveIds: ['00000000-0000-0000-0000-000000000040'],
+      reliedOnMeasurementIds: [],
+      reliedOnReliabilityIds: [],
+      rawScientificFeatures: [],
+      generatorLimitations: [],
+      nominationRationale: 'Unknown origin test',
+      generatorTrace: { algorithmCode: 'CASH_ZALESKY_FC_CENTROID', algorithmVersion: '1.0.0' },
+    };
+
+    const evalResult = evaluateGateG14(draft, context);
+    expect(evalResult.result).toBe('fail');
+    expect(evalResult.reasonCodes).toContain(
+      'TN-014:UNKNOWN_DATA_ORIGIN_PROHIBITED_IN_CLINICAL_MODE',
+    );
+  });
+
+  it('Gate G14 rejects normative dataOrigin in clinical mode', () => {
+    const context = createCanonicalResolvedContextV2({
+      request: { mode: 'clinical' } as any,
+    });
+
+    const draft: CandidateDraft = {
+      draftId: 'draft-normative-origin',
+      generatorId: 'GEN-MDD-PATHWAY-001',
+      targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
+      proposedRole: 'primary',
+      dataOrigin: 'normative',
+      targetGeometry: createCanonicalPointGeometry(-38, 44, 34, 'left', 'pathway-pipeline'),
+      evidencePathIds: ['PATH-MDD-BA46'],
+      clinicalObjectiveIds: ['00000000-0000-0000-0000-000000000040'],
+      reliedOnMeasurementIds: [],
+      reliedOnReliabilityIds: [],
+      rawScientificFeatures: [],
+      generatorLimitations: [],
+      nominationRationale: 'Normative origin clinical test',
+      generatorTrace: { algorithmCode: 'SEGUIN_PATHWAY_ROUTING', algorithmVersion: '1.0.0' },
+    };
+
+    const evalResult = evaluateGateG14(draft, context);
+    expect(evalResult.result).toBe('fail');
+    expect(evalResult.reasonCodes).toContain(
+      'TN-012:NORMATIVE_CANDIDATE_PROHIBITED_IN_CLINICAL_MODE',
+    );
+  });
+
+  it('Gate G14 rejects candidate with unpromoted scientificMaturity (validation) in clinical mode', () => {
+    const context = createCanonicalResolvedContextV2({
+      request: { mode: 'clinical' } as any,
+    });
+
+    const draft: CandidateDraft = {
+      draftId: 'draft-validation-maturity',
+      generatorId: 'GEN-MDD-CONNECTOME-REFINED-001',
+      targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
+      proposedRole: 'primary',
+      dataOrigin: 'patient_measured',
+      scientificMaturity: 'validation',
+      targetGeometry: createCanonicalPointGeometry(-42, 44, 30, 'left', 'pipeline'),
+      evidencePathIds: ['PATH-MDD-BA46'],
+      clinicalObjectiveIds: ['00000000-0000-0000-0000-000000000040'],
+      reliedOnMeasurementIds: [],
+      reliedOnReliabilityIds: [],
+      rawScientificFeatures: [],
+      generatorLimitations: [],
+      nominationRationale: 'Unpromoted validation candidate test',
+      generatorTrace: { algorithmCode: 'CASH_ZALESKY_FC_CENTROID', algorithmVersion: '1.0.0' },
+    };
+
+    const evalResult = evaluateGateG14(draft, context);
+    expect(evalResult.result).toBe('fail');
+    expect(evalResult.reasonCodes).toContain(
+      'TN-012:UNPROMOTED_MATURITY_PROHIBITED_IN_CLINICAL_MODE',
+    );
+  });
+
+  it('Gate G14 rejects candidate with clinicalPromotionStatus = blocked in clinical mode', () => {
+    const context = createCanonicalResolvedContextV2({
+      request: { mode: 'clinical' } as any,
+    });
+
+    const draft: CandidateDraft = {
+      draftId: 'draft-blocked-status',
+      generatorId: 'GEN-MDD-CONNECTOME-REFINED-001',
+      targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
+      proposedRole: 'primary',
+      dataOrigin: 'patient_measured',
+      scientificMaturity: 'clinical_candidate',
+      clinicalPromotionStatus: 'blocked',
+      targetGeometry: createCanonicalPointGeometry(-42, 44, 30, 'left', 'pipeline'),
+      evidencePathIds: ['PATH-MDD-BA46'],
+      clinicalObjectiveIds: ['00000000-0000-0000-0000-000000000040'],
+      reliedOnMeasurementIds: [],
+      reliedOnReliabilityIds: [],
+      rawScientificFeatures: [],
+      generatorLimitations: [],
+      nominationRationale: 'Blocked promotion status candidate test',
+      generatorTrace: { algorithmCode: 'CASH_ZALESKY_FC_CENTROID', algorithmVersion: '1.0.0' },
+    };
+
+    const evalResult = evaluateGateG14(draft, context);
+    expect(evalResult.result).toBe('fail');
+    expect(evalResult.reasonCodes).toContain('TN-012:CLINICAL_PROMOTION_BLOCKED');
   });
 });

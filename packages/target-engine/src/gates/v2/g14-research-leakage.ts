@@ -25,16 +25,37 @@ export function evaluateGateG14(
       reasons.push('TN-012:RESEARCH_CANDIDATE_PROHIBITED_IN_CLINICAL_MODE');
     }
 
-    // 2. Check if candidate has synthetic data origin or synthetic limitations
+    // 2. Check if candidate has synthetic or unknown data origin, or synthetic limitations
     if (
       candidate.dataOrigin === 'synthetic' ||
       candidate.generatorLimitations?.includes('SYNTHETIC_DEMONSTRATOR') ||
       candidate.generatorLimitations?.includes('SYNTHETIC_GENERATOR_FAIL_CLOSED')
     ) {
       reasons.push('TN-014:SYNTHETIC_CANDIDATE_PROHIBITED_IN_CLINICAL_MODE');
+    } else if (candidate.dataOrigin === 'unknown') {
+      reasons.push('TN-014:UNKNOWN_DATA_ORIGIN_PROHIBITED_IN_CLINICAL_MODE');
     }
 
-    // 3. Check if candidate relies on synthetic measurements
+    // 3. Normative-only data origin cannot be a clinical candidate
+    if (candidate.dataOrigin === 'normative') {
+      reasons.push('TN-012:NORMATIVE_CANDIDATE_PROHIBITED_IN_CLINICAL_MODE');
+    }
+
+    // 4. Check scientific maturity: unpromoted maturity cannot produce clinical candidate
+    if (
+      candidate.scientificMaturity === 'prototype' ||
+      candidate.scientificMaturity === 'research' ||
+      candidate.scientificMaturity === 'validation'
+    ) {
+      reasons.push('TN-012:UNPROMOTED_MATURITY_PROHIBITED_IN_CLINICAL_MODE');
+    }
+
+    // 5. Check clinical promotion status
+    if (candidate.clinicalPromotionStatus === 'blocked') {
+      reasons.push('TN-012:CLINICAL_PROMOTION_BLOCKED');
+    }
+
+    // 6. Check if candidate relies on synthetic or unknown measurements
     const reliedMeasurementIds = candidate.reliedOnMeasurementIds ?? [];
     const reliedMeasurements = context.measurementBundle.measurements.filter(m =>
       reliedMeasurementIds.includes(m.measurementId),
@@ -44,9 +65,14 @@ export function evaluateGateG14(
       reliedMeasurements.some(m => m.dataOrigin === 'synthetic')
     ) {
       reasons.push('TN-014:SYNTHETIC_MEASUREMENT_LEAKAGE_IN_CLINICAL_MODE');
+    } else if (
+      context.measurementBundle.dataOrigin === 'unknown' ||
+      reliedMeasurements.some(m => m.dataOrigin === 'unknown')
+    ) {
+      reasons.push('TN-014:UNKNOWN_MEASUREMENT_ORIGIN_IN_CLINICAL_MODE');
     }
 
-    // 4. Check if relying on research-only features (dynamic FC, normative pathway models, unvalidated ML)
+    // 7. Check if relying on research-only features (dynamic FC, normative pathway models, unvalidated ML)
     if (candidate.generatorLimitations?.includes('DYNAMIC_FC_RESEARCH_ONLY')) {
       reasons.push('TN-012:DYNAMIC_FC_PROHIBITED_IN_CLINICAL_MODE');
     }
@@ -58,7 +84,7 @@ export function evaluateGateG14(
       reasons.push('TN-012:NORMATIVE_PATHWAY_PROHIBITED_IN_CLINICAL_MODE');
     }
 
-    // 5. Check if relying on experimental unvalidated ML predictions
+    // 8. Check if relying on experimental unvalidated ML predictions
     if (candidate.generatorLimitations?.includes('UNVALIDATED_ML_MODEL')) {
       reasons.push('TN-012:UNVALIDATED_ML_PREDICTION_PROHIBITED_IN_CLINICAL_MODE');
     }

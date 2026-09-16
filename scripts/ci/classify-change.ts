@@ -179,29 +179,63 @@ export class ScientificChangeClassifier {
   }
 
   public getChangedFiles(baseBranch = 'main'): string[] {
+    const files = new Set<string>();
+
     try {
       const output = execSync(`git diff --name-only origin/${baseBranch}...HEAD`, {
         cwd: this.repoRoot,
         encoding: 'utf8',
+        stdio: ['pipe', 'pipe', 'ignore'],
       });
-      return output
+      output
         .split('\n')
         .map(s => s.trim())
-        .filter(Boolean);
+        .filter(Boolean)
+        .forEach(f => files.add(f));
     } catch {
       try {
         const output = execSync('git diff --name-only HEAD~1 HEAD', {
           cwd: this.repoRoot,
           encoding: 'utf8',
+          stdio: ['pipe', 'pipe', 'ignore'],
         });
-        return output
+        output
           .split('\n')
           .map(s => s.trim())
-          .filter(Boolean);
+          .filter(Boolean)
+          .forEach(f => files.add(f));
       } catch {
-        return [];
+        // ignore
       }
     }
+
+    // If no commits differ from baseBranch, also inspect staged & unstaged working-tree changes
+    // to provide immediate feedback during local development and pre-commit checks.
+    if (files.size === 0) {
+      try {
+        const status = execSync('git status --porcelain', {
+          cwd: this.repoRoot,
+          encoding: 'utf8',
+          stdio: ['pipe', 'pipe', 'ignore'],
+        });
+        status
+          .split('\n')
+          .map(s => s.trim())
+          .filter(Boolean)
+          .forEach(line => {
+            const clean = line
+              .replace(/^[?MADRCU!\s]{1,3}\s+/, '')
+              .split(' -> ')
+              .pop()
+              ?.trim();
+            if (clean) files.add(clean);
+          });
+      } catch {
+        // ignore
+      }
+    }
+
+    return Array.from(files);
   }
 
   public classifyFile(filePath: string): FileClassification {

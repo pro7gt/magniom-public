@@ -81,6 +81,7 @@
     "ci:measurements": "npm run verify:measurement-spec && vitest run packages/modalities/ packages/measurement-core/ packages/measurement-testkit/",
     "ci:golden-matrix": "npm run verify:scientific-impact && vitest run packages/target-engine/tests/v2/golden-suites/",
     "ci:validation": "npm run verify:v2-baseline && npm run release:manifest-v2",
+    "ci:rc": "npm run verify:v2-baseline && npm run verify:scientific-impact && npm run release:manifest-v2 && npm run release:affected-cases",
     "ci:deploy:staging": "npm run release:manifest-v2 && npm run verify:db:from-zero && npm run security:secrets && npm run postdeploy:smoke",
     "ci:deploy:prod": "npm run release:manifest-v2 && npm run verify:db:from-zero && npm run postdeploy:smoke",
     "ci:postdeploy": "npm run release:manifest-v2 && npm run postdeploy:smoke && npm run release:affected-cases",

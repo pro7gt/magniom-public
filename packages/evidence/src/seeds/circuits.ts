@@ -21,15 +21,16 @@ export const CANONICAL_CIRCUITS_V2: readonly TherapeuticCircuitV2[] = [
     scientificStatus: 'treatment_effect_linked',
     circuitDefinition: {
       sourceNodes: ['L_DLPFC_BA46', 'L_DLPFC_BA9'],
-      targetNode: 'SGC_BA25',
+      targetNode: 'SEED-MDD-SGC-FOX-2012 (Fox 2012 Bilateral SGC Sphere MNI ±6, 16, -10)',
       interactionType: 'negative_correlation',
-      normativeBasis: 'Yeo 2011 7-Network + Fox 2012 SGC Anticorrelation',
+      normativeBasis: 'Yeo 2011 7-Network + Fox 2012 SGC Anticorrelation (radius 5mm)',
     },
     circuitArtifactIds: ['art-mdd-sgc-mask-001'],
     supportingEvidenceClaimIds: ['c0000000-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000002'],
     conflictingEvidenceClaimIds: [],
     limitations: [
       'Inter-individual functional variance necessitates individualized fMRI mapping for optimal precision.',
+      'Spherical seed may capture mixed tissue classes across individual anatomy.',
     ],
     provenance: {
       createdBy: 'magniom_scientific_curation',
@@ -48,7 +49,7 @@ export const CANONICAL_CIRCUITS_V2: readonly TherapeuticCircuitV2[] = [
     scientificStatus: 'treatment_effect_linked',
     circuitDefinition: {
       sourceNodes: ['L_DLPFC_Cluster_Centroid'],
-      targetNode: 'SGC_Group_Seedmap_or_A32sg',
+      targetNode: 'SEED-MDD-SGC-CASH-2021 (Cash 2021 Group Seedmap MNI152NLin2009cAsym)',
       interactionType: 'negative_correlation',
       normativeBasis: 'Cash et al. 2021 Hum Brain Mapp; 26-neighborhood clustering; top 10% (seed) / 0.5% (seedmap)',
     },
@@ -57,6 +58,8 @@ export const CANONICAL_CIRCUITS_V2: readonly TherapeuticCircuitV2[] = [
     conflictingEvidenceClaimIds: [],
     limitations: [
       'Requires >=15-20 min usable resting-state fMRI for high intraindividual reproducibility (R=0.94, variation 2.2mm).',
+      'Functional connectivity represents statistical covariance, not direct axonal continuity.',
+      'Single-voxel local extrema are noise-sensitive; cluster centroid and medoid geometry are required.',
     ],
     provenance: {
       createdBy: 'magniom_scientific_curation',
@@ -75,7 +78,7 @@ export const CANONICAL_CIRCUITS_V2: readonly TherapeuticCircuitV2[] = [
     scientificStatus: 'treatment_effect_linked',
     circuitDefinition: {
       sourceNodes: ['L_DLPFC_A8dl_A9l_A46_A946d'],
-      targetNode: 'L_sgACC_A32sg',
+      targetNode: 'SEED-MDD-SGC-LI-2026 (Brainnetome L_sgACC_A32sg Parcel)',
       interactionType: 'structural_probabilistic_tractography',
       normativeBasis: 'Li et al. 2026 Am J Psychiatry; MRtrix3 probabilistic tractography + SIFT2; top 5% cluster centroid',
     },
@@ -84,6 +87,7 @@ export const CANONICAL_CIRCUITS_V2: readonly TherapeuticCircuitV2[] = [
     conflictingEvidenceClaimIds: [],
     limitations: [
       'Pivotal RCT evidence demonstrates week 2 and week 6 superiority; staged initially under validation mode.',
+      'Diffusion tractography does not demonstrate synaptic directionality or physiological propagation efficacy.',
     ],
     provenance: {
       createdBy: 'magniom_scientific_curation',
@@ -102,7 +106,7 @@ export const CANONICAL_CIRCUITS_V2: readonly TherapeuticCircuitV2[] = [
     scientificStatus: 'treatment_effect_linked',
     circuitDefinition: {
       sourceNodes: ['L_DLPFC_TMS_Site'],
-      targetNode: 'R_SGC_Sphere_MNI_6_16_-10',
+      targetNode: 'SEED-MDD-SGC-SEGUIN-2026 (Seguin Right SGC Sphere MNI 6, 16, -10)',
       intermediateNodes: ['SFG', 'Thalamus', 'ACC'],
       interactionType: 'polysynaptic_shortest_path_routing',
       normativeBasis: 'Seguin & Zalesky 2026 Nat Neurosci; Edge cost L=-log(W); hop count H(a,b); 3-hop cortical and 4-hop fronto-thalamic routes',
@@ -112,6 +116,7 @@ export const CANONICAL_CIRCUITS_V2: readonly TherapeuticCircuitV2[] = [
     conflictingEvidenceClaimIds: [],
     limitations: [
       'Normative connectome communication model; strictly research-only and prohibited from unverified clinical substitution.',
+      'Group-averaged shortest paths do not capture patient-specific lesion, atrophy, or white matter disconnectivity.',
     ],
     provenance: {
       createdBy: 'magniom_scientific_curation',

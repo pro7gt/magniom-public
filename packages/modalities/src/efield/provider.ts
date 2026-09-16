@@ -8,6 +8,9 @@ import type {
   EFieldMeasurement,
   MeasurementProviderManifest,
   MeasurementReliability,
+  DataOrigin,
+  ScientificMaturity,
+  ClinicalPromotionStatus,
 } from '@magniom/domain';
 import {
   type MeasurementProvider,
@@ -104,6 +107,17 @@ export class EFieldProvider implements MeasurementProvider<EFieldMeasurement> {
       context.configurationParameters['skullDefectPresent'] ?? false,
     );
 
+    const isMock = Boolean(context.configurationParameters['mockOnly'] ?? false);
+    const dataOrigin: DataOrigin = isMock ? 'synthetic' : 'derived_from_patient_measured';
+    const scientificMaturity: ScientificMaturity = isMock ? 'prototype' : 'clinical_candidate';
+    const clinicalPromotionStatus: ClinicalPromotionStatus = isMock
+      ? 'blocked'
+      : 'candidate_under_review';
+
+    const angularDev = Number(context.configurationParameters['angularDeviationDegrees'] ?? 1.2);
+    const posDisp = Number(context.configurationParameters['positionDisplacementMm'] ?? 0.8);
+    const poseToleranceVerified = angularDev <= 5.0 && posDisp <= 2.0;
+
     const measurement: EFieldMeasurement = {
       id: `MEAS-EFL-${context.caseId.slice(0, 8)}`,
       organisationId: context.organisationId,
@@ -111,6 +125,9 @@ export class EFieldProvider implements MeasurementProvider<EFieldMeasurement> {
       modality: 'efield',
       version: '2.0.0',
       status: 'qualified',
+      dataOrigin,
+      scientificMaturity,
+      clinicalPromotionStatus,
       acquisitionTime: '2026-09-02T12:00:00.000Z',
       pipelineVersionIds: ['PIPE-EFIELD-SIMNIBS-2.0.0'],
       artifactIds: ['ART-HEAD-MESH-001', 'ART-EFIELD-SIM-001'],
@@ -125,6 +142,9 @@ export class EFieldProvider implements MeasurementProvider<EFieldMeasurement> {
       scalpToCortexDistanceMm: scalpToCortexDistance,
       accessibilityAttenuationFactor: 0.82,
       skullDefectPresent,
+      poseToleranceVerified,
+      angularDeviationDegrees: angularDev,
+      positionDisplacementMm: posDisp,
       provenance: {
         createdBy: 'magniom-efield-worker',
         createdAt: '2026-09-02T12:00:00.000Z',
@@ -157,6 +177,30 @@ export class EFieldProvider implements MeasurementProvider<EFieldMeasurement> {
     if (measurement.peakCorticalEFieldVm < 50.0) {
       criticalFailures.push(
         `Peak induced cortical electric field (${measurement.peakCorticalEFieldVm} V/m) below minimum physiological activation threshold (50 V/m).`,
+      );
+    }
+
+    if (
+      measurement.angularDeviationDegrees !== undefined &&
+      measurement.angularDeviationDegrees > 5.0
+    ) {
+      criticalFailures.push(
+        `Coil angular deviation (${measurement.angularDeviationDegrees}°) exceeds strict safety tolerance (5.0°).`,
+      );
+    }
+
+    if (
+      measurement.positionDisplacementMm !== undefined &&
+      measurement.positionDisplacementMm > 2.0
+    ) {
+      criticalFailures.push(
+        `Coil position displacement (${measurement.positionDisplacementMm} mm) exceeds safety tolerance (2.0 mm).`,
+      );
+    }
+
+    if (measurement.dataOrigin === 'synthetic') {
+      warnings.push(
+        'E-field modeling was generated with synthetic/mock configuration without verified FEM solver convergence.',
       );
     }
 

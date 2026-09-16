@@ -1,0 +1,27 @@
+{
+  "methodId": "SC_CLUSTER_PERSONALISED",
+  "version": "0.1.0",
+  "indication": "MDD",
+  "scientificMaturity": "validation",
+  "permittedModes": ["research", "validation"],
+  "dataOrigins": ["patient_measured", "derived_from_patient_measured"],
+  "requiredModalities": ["structural_mri", "diffusion_mri"],
+  "atlas": "Brainnetome_Atlas",
+  "coordinateSpace": "MNI152NLin2009cAsym",
+  "seedDefinitionId": "SEED-MDD-SGC-LI-2026",
+  "parameters": {
+    "tractographyAlgorithm": "iFOD2",
+    "sift2Weighting": true,
+    "streamlineCount": 10000000,
+    "thresholdPercentile": 0.05,
+    "minClusterSize": 2
+  },
+  "evidenceIds": ["src-mdd-li-2026"],
+  "implementationHash": "f8a923bc74d01934e89921dae9821034bc819924ae019234bb8912efd01924ca",
+  "limitations": [
+    "Diffusion tractography reconstructs white-matter trajectories but does not prove physiological propagation or directionality.",
+    "Tractography is sensitive to crossing-fiber geometry, curvature thresholds, and seeding strategies.",
+    "Staged strictly as a validation/research candidate pending multi-cohort outcome replication."
+  ],
+  "clinicalPromotionStatus": "blocked"
+}

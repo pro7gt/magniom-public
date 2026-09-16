@@ -16,6 +16,9 @@ import type {
   TinnitusPerceivedLaterality,
   ConductionMethod,
   ThresholdType,
+  DataOrigin,
+  ScientificMaturity,
+  ClinicalPromotionStatus,
 } from './enums.js';
 import type { CommonProvenance, SpatialRegion } from './types.js';
 import type { Coordinate3D, CoordinateSpaceRef } from './target-geometry.js';
@@ -34,6 +37,7 @@ export interface MeasurementRef {
   readonly version: string;
   readonly status: MeasurementStatus;
   readonly dataOrigin?: import('./enums.js').DataOrigin | undefined;
+  readonly scientificMaturity?: import('./enums.js').ScientificMaturity | undefined;
   readonly acquisitionTime?: string;
   readonly pipelineVersionIds?: readonly string[];
   readonly artifactIds?: readonly string[];
@@ -60,6 +64,7 @@ export interface MeasurementBundle {
   readonly qualificationStatus: MeasurementBundleQualificationStatus;
   readonly requirementEvaluations: readonly MeasurementRequirementEvaluation[];
   readonly dataOrigin?: import('./enums.js').DataOrigin | undefined;
+  readonly scientificMaturity?: import('./enums.js').ScientificMaturity | undefined;
   readonly limitingFactors: readonly string[];
   readonly createdAt: string;
   readonly payloadSha256: string;
@@ -278,6 +283,9 @@ export interface CanonicalMeasurement {
   readonly qc_assessment_id?: string;
   readonly measurement_manifest_sha256?: string;
   readonly mode?: 'clinical' | 'research';
+  readonly dataOrigin?: DataOrigin | undefined;
+  readonly scientificMaturity?: ScientificMaturity | undefined;
+  readonly clinicalPromotionStatus?: ClinicalPromotionStatus | undefined;
 }
 
 // 1. Structural MRI
@@ -662,6 +670,9 @@ export interface EFieldMeasurement extends CanonicalMeasurement {
   readonly scalpToCortexDistanceMm: number;
   readonly accessibilityAttenuationFactor: number;
   readonly skullDefectPresent?: boolean | undefined;
+  readonly poseToleranceVerified?: boolean | undefined;
+  readonly angularDeviationDegrees?: number | undefined;
+  readonly positionDisplacementMm?: number | undefined;
 }
 
 export type AnyModalityMeasurement =

@@ -59,7 +59,7 @@ export const PYRAMID_LAYERS: readonly PyramidLayer[] = [
     level: 4,
     name: 'Level 4: Metamorphic Relations & Domain/API Contracts',
     command:
-      'npx vitest run packages/target-engine/tests/v2/metamorphic-and-boundary.test.ts packages/domain/tests/canonical-data-spec-invariants.test.ts packages/target-engine/tests/v2/plugin-contracts.test.ts packages/domain/src/rls-isolation.test.ts packages/schemas/tests/',
+      'npx vitest run packages/target-engine/tests/v2/metamorphic-and-boundary.test.ts packages/domain/tests/ packages/target-engine/tests/v2/plugin-contracts.test.ts packages/domain/src/rls-isolation.test.ts packages/schemas/tests/',
     specSection: '§39–§41',
     description:
       'Validates 5 metamorphic scientific relations, candidate permutation invariance, canonical data schemas & prohibited fields, schema contract boundaries, and tenant isolation.',
@@ -119,10 +119,10 @@ export const PYRAMID_LAYERS: readonly PyramidLayer[] = [
     level: 11,
     name: 'Level 11: Human Factors, Clinician Anti-Bias Shell & Accessibility',
     command:
-      'npx vitest run packages/presentation/src/presentation.test.ts packages/presentation/tests/ux-golden-cases-v2.test.ts packages/presentation/tests/shell-navigation-v2.test.ts apps/web/tests/shell-v2-authority.test.ts apps/web/tests/route-security-auth-guard.test.ts apps/web/tests/auth-universal-login.test.ts apps/web/tests/case-store-authority.test.ts apps/web/tests/route-integrity-audit.test.ts apps/web/tests/design-system-integrity.test.ts',
+      'npx vitest run packages/presentation/src/presentation.test.ts packages/presentation/tests/ux-golden-cases-v2.test.ts packages/presentation/tests/shell-navigation-v2.test.ts apps/web/tests/shell-v2-authority.test.ts apps/web/tests/route-security-auth-guard.test.ts apps/web/tests/auth-universal-login.test.ts apps/web/tests/auth-api-endpoints.test.ts apps/web/tests/case-store-authority.test.ts apps/web/tests/route-integrity-audit.test.ts apps/web/tests/design-system-integrity.test.ts',
     specSection: '§86–§91',
     description:
-      'Verifies clinician workspace view models, anti-bias UI non-preselection of Candidate 1 (§89), WCAG 2.2 AA shell navigation, route security auth guards, case store authority, and design system token integrity.',
+      'Verifies clinician workspace view models, anti-bias UI non-preselection of Candidate 1 (§89), WCAG 2.2 AA shell navigation, route security auth guards, server auth endpoints, case store authority, and design system token integrity.',
   },
   {
     level: 12,
@@ -134,6 +134,11 @@ export const PYRAMID_LAYERS: readonly PyramidLayer[] = [
   },
 ];
 
+export interface PyramidRunOptions {
+  layer?: number;
+  full?: boolean;
+}
+
 export class PyramidTestingRunner {
   private repoRoot: string;
 
@@ -142,6 +147,10 @@ export class PyramidTestingRunner {
   }
 
   public runAllLayers(): boolean {
+    return this.run();
+  }
+
+  public run(options: PyramidRunOptions = {}): boolean {
     console.log('='.repeat(96));
     console.log('🏛️  MAGNIOM FORMAL TESTING PYRAMID v2.0 RUNNER');
     console.log(
@@ -150,19 +159,35 @@ export class PyramidTestingRunner {
     console.log('Standard Reference:  IEC 62304:2006/Amd 1:2015 Class C | ISO 13485:2016 §7.3.6');
     console.log('='.repeat(96) + '\n');
 
+    let layersToRun = [...PYRAMID_LAYERS];
+    if (options.layer !== undefined) {
+      const target = PYRAMID_LAYERS.find(l => l.level === options.layer);
+      if (!target) {
+        console.error(`❌ Invalid pyramid layer: ${options.layer}. Valid layers are 1 through 12.`);
+        return false;
+      }
+      layersToRun = [target];
+      console.log(`🎯 Target: Executing single pyramid layer [Layer ${options.layer}/12]`);
+    }
+
     const suiteStartTime = Date.now();
     let passedLayers = 0;
     const layerResults: { level: number; name: string; durationSec: string; passed: boolean }[] =
       [];
 
-    for (const layer of PYRAMID_LAYERS) {
+    for (const layer of layersToRun) {
+      let cmd = layer.command;
+      if (layer.level === 8 && options.full) {
+        cmd = cmd.replace('-- --fast', '-- --full');
+      }
+
       console.log(`\n▶️ [PYRAMID LAYER ${layer.level}/12] (${layer.specSection}): ${layer.name}`);
       console.log(`   Scope:       ${layer.description}`);
-      console.log(`   Command:     ${layer.command}`);
+      console.log(`   Command:     ${cmd}`);
 
       const layerStart = Date.now();
       try {
-        execSync(layer.command, {
+        execSync(cmd, {
           cwd: this.repoRoot,
           stdio: 'inherit',
           env: { ...process.env, CI: 'true' },
@@ -174,7 +199,7 @@ export class PyramidTestingRunner {
       } catch {
         const durationSec = ((Date.now() - layerStart) / 1000).toFixed(2);
         console.error(`\n❌ [LAYER ${layer.level} FAILED] after ${durationSec}s!`);
-        console.error(`Command failed: ${layer.command}`);
+        console.error(`Command failed: ${cmd}`);
         layerResults.push({ level: layer.level, name: layer.name, durationSec, passed: false });
         return false;
       }
@@ -183,7 +208,7 @@ export class PyramidTestingRunner {
     const totalDurationSec = ((Date.now() - suiteStartTime) / 1000).toFixed(2);
     console.log('\n' + '='.repeat(96));
     console.log(
-      `🎉 ALL 12 TESTING PYRAMID LAYERS VERIFIED (100% PASS RATE) in ${totalDurationSec}s`,
+      `🎉 ALL ${passedLayers} REQUESTED TESTING PYRAMID LAYERS VERIFIED (100% PASS RATE) in ${totalDurationSec}s`,
     );
     console.log('='.repeat(96));
     console.log('\nSummary:');
@@ -199,7 +224,33 @@ export class PyramidTestingRunner {
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
+  const args = process.argv.slice(2);
+  const options: PyramidRunOptions = {};
+
+  if (args.includes('--help') || args.includes('-h')) {
+    console.log(`
+MAGNIOM Testing Pyramid Runner v2.0
+Usage:
+  npx tsx scripts/ci/run-pyramid-testing.ts [options]
+
+Options:
+  --layer <N>    Execute only pyramid layer N (1–12)
+  --full         Execute full NeuroCompute suite (Level 8) instead of fast unit suite
+  --help, -h     Show this help message
+`);
+    process.exit(0);
+  }
+
+  const layerIdx = args.indexOf('--layer');
+  if (layerIdx !== -1 && args[layerIdx + 1]) {
+    options.layer = parseInt(args[layerIdx + 1], 10);
+  }
+
+  if (args.includes('--full')) {
+    options.full = true;
+  }
+
   const runner = new PyramidTestingRunner();
-  const success = runner.runAllLayers();
+  const success = runner.run(options);
   process.exit(success ? 0 : 1);
 }

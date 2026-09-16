@@ -98,14 +98,12 @@ if (pytestCmd) {
     process.exit(1);
   }
 } else {
-  console.log('ℹ️  Python environment not detected on local system.');
-  console.log(
-    '   In GitHub Actions CI, tests run automatically via actions/setup-python@v5 (Python 3.11).',
-  );
-  console.log('   To run locally:');
-  console.log('     cd services/neurocompute');
-  console.log('     python3 -m venv .venv && source .venv/bin/activate');
-  console.log('     pip install -r requirements.txt pytest pytest-cov');
-  console.log('     pytest tests/ -v\n');
-  process.exit(0);
+  console.error('❌ FAIL_CLOSED: Python environment not detected on local system.');
+  console.error('   NeuroCompute scientific test execution is required and cannot be bypassed.');
+  console.error('   To configure locally:');
+  console.error('     cd services/neurocompute');
+  console.error('     python3 -m venv .venv && source .venv/bin/activate');
+  console.error('     pip install -r requirements.txt pytest pytest-cov');
+  console.error('     pytest tests/ -v\n');
+  process.exit(1);
 }

@@ -5,6 +5,7 @@ export interface BreadcrumbItem {
   label: string;
   href?: string;
   current?: boolean;
+  prefetch?: boolean;
 }
 
 export interface BreadcrumbsProps {
@@ -34,7 +35,11 @@ export function Breadcrumbs({
                 </span>
               )}
               {item.href && !isCurrent ? (
-                <Link href={item.href} className="breadcrumbs-link">
+                <Link
+                  href={item.href}
+                  prefetch={item.prefetch !== undefined ? item.prefetch : null}
+                  className="breadcrumbs-link"
+                >
                   {item.label}
                 </Link>
               ) : (

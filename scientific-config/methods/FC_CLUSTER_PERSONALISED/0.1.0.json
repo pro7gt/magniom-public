@@ -1,0 +1,29 @@
+{
+  "methodId": "FC_CLUSTER_PERSONALISED",
+  "version": "0.1.0",
+  "indication": "MDD",
+  "scientificMaturity": "validation",
+  "permittedModes": ["research", "validation"],
+  "dataOrigins": ["patient_measured", "derived_from_patient_measured"],
+  "requiredModalities": ["structural_mri", "resting_state_fmri"],
+  "atlas": "HCP-MMP1.0",
+  "coordinateSpace": "MNI152NLin2009cAsym",
+  "seedDefinitionId": "SEED-MDD-SGC-CASH-2021",
+  "parameters": {
+    "thresholdPercentile": 0.1,
+    "seedmapThresholdPercentile": 0.005,
+    "minClusterSize": 2,
+    "connectivityRule": "26_neighborhood",
+    "smoothingKernelFwhmMm": 6.0,
+    "bandpassLowHz": 0.01,
+    "bandpassHighHz": 0.08
+  },
+  "evidenceIds": ["src-mdd-004", "src-mdd-cash-2021"],
+  "implementationHash": "c0bb83e8749a20468e89f928e3b7bb577e1121d51c31da4c017d2a58b88d447a",
+  "limitations": [
+    "Functional connectivity is an indirect statistical association, not proof of direct neuroanatomical wiring.",
+    "Requires minimum 15-20 minutes of usable resting-state fMRI (after motion censoring) for high intraindividual reproducibility (variation <= 2.2mm).",
+    "Single-voxel local extrema are sensitive to noise; spatial cluster delineation and weighted centroid calculation are required."
+  ],
+  "clinicalPromotionStatus": "blocked"
+}

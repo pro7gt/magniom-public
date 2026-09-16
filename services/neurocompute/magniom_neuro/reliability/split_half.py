@@ -277,8 +277,15 @@ class SplitHalfPartitionEngine:
         num_vertices: int,
         num_timepoints: int,
     ) -> Tuple[List[float], int, int, List[int], SpatialCoordinate, SpatialCoordinate]:
-        # sgACC proxy seed from medial subgenual vertices
-        seed_vertices = [v for v in range(25000, 26000) if v < num_vertices and not medial_mask[v]]
+        # sgACC seed derived from canonical HCP-MMP1.0 subgenual parcels (Area 25, s32, s24)
+        parcels = HcpMmpAtlasManager.get_cortical_parcels()
+        sgacc_parcels = [
+            p for p in parcels if p.hemisphere == "L" and any(k in p.parcel_name for k in ["25_L", "s32_L", "s24_L"])
+        ]
+        if sgacc_parcels:
+            seed_vertices = [v for p in sgacc_parcels for v in p.vertex_indices if v < num_vertices and not medial_mask[v]]
+        else:
+            seed_vertices = [v for v in range(25000, 26000) if v < num_vertices and not medial_mask[v]]
         if not seed_vertices:
             seed_vertices = [0]
 

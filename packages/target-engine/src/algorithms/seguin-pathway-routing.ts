@@ -108,14 +108,19 @@ export function findShortestPath(
 
   // Reconstruct path
   const path: number[] = [];
-  let curr: number | null = target;
-  while (curr !== null) {
+  if (source === target) {
+    return { source, target, path: [source], hops: 0, totalCost: 0 };
+  }
+  if (dist[target] === Infinity) {
+    return { source, target, path: [], hops: 0, totalCost: Infinity };
+  }
+  let curr: number | null | undefined = target;
+  while (curr !== null && curr !== undefined && path.length <= n + 1) {
     path.unshift(curr);
-    curr = prev[curr]!;
     if (curr === source) {
-      path.unshift(source);
       break;
     }
+    curr = prev[curr];
   }
 
   const hops = path.length > 1 ? path.length - 1 : 0;

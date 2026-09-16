@@ -156,7 +156,9 @@ class ClinicianAuthStore {
       // Set cookie for HTTP / edge route checks
       try {
         const maxAge = options.rememberMe ? 60 * 60 * 24 * 30 : 60 * 60 * 24; // 30 days vs 1 day
-        document.cookie = `${AUTH_COOKIE_NAME}=${sessionToken}; Path=/; Max-Age=${maxAge}; SameSite=Lax`;
+        const isSecure = typeof window !== 'undefined' && window.location.protocol === 'https:';
+        const secureAttr = isSecure ? '; Secure' : '';
+        document.cookie = `${AUTH_COOKIE_NAME}=${sessionToken}; Path=/; Max-Age=${maxAge}; SameSite=Lax${secureAttr}`;
       } catch {
         // Cookie access error
       }
@@ -182,6 +184,58 @@ class ClinicianAuthStore {
   }
 
   /**
+   * Asynchronously authenticates clinician via the server API endpoint (/api/auth/login),
+   * ensuring authoritative HTTP-level cookies are established before navigating, with
+   * seamless fallback to local client generation for offline/test environments.
+   */
+  public async authenticateClinicianAsync(
+    usernameInput: string,
+    passwordInput: string,
+    options: { rememberMe?: boolean } = {},
+  ): Promise<AuthResult> {
+    if (typeof window !== 'undefined') {
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            username: usernameInput,
+            password: passwordInput,
+            rememberMe: options.rememberMe,
+          }),
+        });
+
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.success && data.session) {
+          this.cachedSession = data.session;
+          try {
+            localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(data.session));
+          } catch {}
+
+          try {
+            const maxAge = options.rememberMe ? 60 * 60 * 24 * 30 : 60 * 60 * 24;
+            const isSecure = window.location.protocol === 'https:';
+            const secureAttr = isSecure ? '; Secure' : '';
+            document.cookie = `${AUTH_COOKIE_NAME}=${data.session.sessionToken}; Path=/; Max-Age=${maxAge}; SameSite=Lax${secureAttr}`;
+          } catch {}
+
+          this.notifyListeners();
+          return { success: true, session: data.session };
+        } else if (!res.ok) {
+          return {
+            success: false,
+            error: data.error || `Authentication service error (HTTP ${res.status}).`,
+          };
+        }
+      } catch {
+        // Fall back to client authentication if fetch fails (e.g. offline/mock environment)
+      }
+    }
+
+    return this.authenticateClinician(usernameInput, passwordInput, options);
+  }
+
+  /**
    * Signs out the clinician, invalidates the session, and clears storage.
    */
   public logoutClinician(): void {
@@ -194,7 +248,14 @@ class ClinicianAuthStore {
       } catch {}
 
       try {
-        document.cookie = `${AUTH_COOKIE_NAME}=; Path=/; Max-Age=0; SameSite=Lax`;
+        const isSecure = window.location.protocol === 'https:';
+        const secureAttr = isSecure ? '; Secure' : '';
+        document.cookie = `${AUTH_COOKIE_NAME}=; Path=/; Max-Age=0; SameSite=Lax${secureAttr}`;
+      } catch {}
+
+      // Notify server logout in background
+      try {
+        fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
       } catch {}
     }
 

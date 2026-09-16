@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useTransition, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import {
   Button,
@@ -70,16 +70,17 @@ function EyeOffIcon({ size = 16, className = '' }: { size?: number; className?: 
 }
 
 function LoginContent() {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTarget = searchParams?.get('redirect') || '/';
+  const rawRedirect = searchParams?.get('redirect') || '/';
+  const redirectTarget = rawRedirect && !rawRedirect.startsWith('/login') ? rawRedirect : '/';
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const [existingSession, setExistingSession] = useState<ClinicianAuthSession | null>(null);
 
   useEffect(() => {
@@ -88,20 +89,40 @@ function LoginContent() {
     if (session && session.isAuthenticated) {
       setExistingSession(session);
     }
+
+    const unsubscribe = authStore.subscribe(updated => {
+      setExistingSession(updated && updated.isAuthenticated ? updated : null);
+    });
+    return () => unsubscribe();
   }, []);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
+    setIsSubmitting(true);
 
-    const result = authStore.authenticateClinician(username, password, { rememberMe });
-
-    if (result.success) {
-      startTransition(() => {
-        router.push(redirectTarget);
+    try {
+      const result = await authStore.authenticateClinicianAsync(username, password, {
+        rememberMe,
       });
-    } else {
-      setErrorMessage(result.error || 'Authentication failed. Please check your credentials.');
+
+      if (result.success) {
+        setIsRedirecting(true);
+        // Hard navigation forces full document request with freshly established HTTP cookies,
+        // bypassing stale Next.js App Router client router cache containing unauthenticated 307 redirects.
+        window.location.replace(redirectTarget);
+      } else {
+        setIsSubmitting(false);
+        setErrorMessage(result.error || 'Authentication failed. Please check your credentials.');
+        setPassword('');
+      }
+    } catch (err) {
+      setIsSubmitting(false);
+      setErrorMessage(
+        err instanceof Error
+          ? err.message
+          : 'Authentication failed. Please check your credentials.',
+      );
       setPassword('');
     }
   };
@@ -111,6 +132,7 @@ function LoginContent() {
     setExistingSession(null);
     setUsername('');
     setPassword('');
+    setErrorMessage(null);
   };
 
   return (
@@ -141,7 +163,7 @@ function LoginContent() {
         </CardHeader>
 
         <CardContent>
-          {existingSession ? (
+          {existingSession && !isRedirecting ? (
             /* Active Session Resume Card */
             <div className="login-active-session-prompt">
               <div className="alert alert-info mb-4" role="status">
@@ -160,7 +182,7 @@ function LoginContent() {
                   variant="primary"
                   size="lg"
                   className="w-full flex items-center justify-center gap-2"
-                  onClick={() => router.push(redirectTarget)}
+                  onClick={() => window.location.replace(redirectTarget)}
                 >
                   <span>Continue to Clinical Workspace</span>
                   <ArrowRightIcon size={16} />
@@ -187,7 +209,19 @@ function LoginContent() {
                 </CardDescription>
               </div>
 
-              {/* Error Callout */}
+              {/* Status or Error Callout */}
+              {isRedirecting && (
+                <div className="alert alert-success mb-4" role="status" aria-live="polite">
+                  <div className="flex items-center gap-2 font-semibold text-sm">
+                    <CheckIcon size={16} className="text-emerald" />
+                    <span>Credentials Verified</span>
+                  </div>
+                  <p className="text-xs text-secondary mt-1">
+                    Opening clinical workspace session...
+                  </p>
+                </div>
+              )}
+
               {errorMessage && (
                 <div className="alert alert-danger mb-4" role="alert" aria-live="assertive">
                   <div className="flex items-center gap-2 font-semibold text-sm">
@@ -265,9 +299,11 @@ function LoginContent() {
                   size="lg"
                   id="login-submit-btn"
                   className="login-submit-btn"
-                  disabled={isPending}
+                  disabled={isSubmitting || isRedirecting}
                 >
-                  {isPending ? (
+                  {isRedirecting ? (
+                    <span>Opening Clinical Workspace...</span>
+                  ) : isSubmitting ? (
                     <span>Authorising Session...</span>
                   ) : (
                     <>
@@ -316,7 +352,9 @@ export default function LoginPage() {
   return (
     <div className="container page-container-col login-page-container">
       {/* Navigation and Breadcrumbs */}
-      <Breadcrumbs items={[{ label: 'Magniom', href: '/' }, { label: 'Clinician Portal' }]} />
+      <Breadcrumbs
+        items={[{ label: 'Magniom', href: '/', prefetch: false }, { label: 'Clinician Portal' }]}
+      />
 
       {/* Dedicated Top Utility Navigation Strip */}
       <nav className="login-nav-strip" aria-label="Portal Navigation">

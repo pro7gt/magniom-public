@@ -51,4 +51,46 @@ describe('@magniom/modalities Unit Tests', () => {
     const result = diff.process(context);
     expect(result.measurement.isAxonCountEquivalent).toBe(false);
   });
+
+  it('enforces that EFieldProvider tags mock configuration as synthetic/prototype and verifies coil pose tolerance (§116, §120)', () => {
+    const efield = new EFieldProvider();
+    const context = {
+      caseId: '00000000-0000-0000-0000-000000000001',
+      organisationId: '00000000-0000-0000-0000-000000000000',
+      rawInputArtifacts: [{ path: 'head_mesh.msh', content: 'MSH', sha256: 'a'.repeat(64) }],
+      pipelineVersionId: 'PIPE-EFIELD-SIMNIBS-2.0.0',
+      configurationParameters: {
+        mockOnly: true,
+        angularDeviationDegrees: 3.5,
+        positionDisplacementMm: 1.5,
+      },
+    };
+
+    const res = efield.process(context);
+    expect(res.measurement.dataOrigin).toBe('synthetic');
+    expect(res.measurement.scientificMaturity).toBe('prototype');
+    expect(res.measurement.clinicalPromotionStatus).toBe('blocked');
+    expect(res.measurement.poseToleranceVerified).toBe(true);
+    expect(res.qcResult.warnings.some(w => w.includes('synthetic/mock'))).toBe(true);
+  });
+
+  it('enforces that EFieldProvider fails QC when coil angular deviation > 5 deg or displacement > 2mm (§116, §120)', () => {
+    const efield = new EFieldProvider();
+    const context = {
+      caseId: '00000000-0000-0000-0000-000000000001',
+      organisationId: '00000000-0000-0000-0000-000000000000',
+      rawInputArtifacts: [{ path: 'head_mesh.msh', content: 'MSH', sha256: 'a'.repeat(64) }],
+      pipelineVersionId: 'PIPE-EFIELD-SIMNIBS-2.0.0',
+      configurationParameters: {
+        angularDeviationDegrees: 6.2,
+        positionDisplacementMm: 2.8,
+      },
+    };
+
+    const res = efield.process(context);
+    expect(res.measurement.poseToleranceVerified).toBe(false);
+    expect(res.qcResult.qcStatus).toBe('fail');
+    expect(res.qcResult.criticalFailures.some(f => f.includes('angular deviation'))).toBe(true);
+    expect(res.qcResult.criticalFailures.some(f => f.includes('displacement'))).toBe(true);
+  });
 });

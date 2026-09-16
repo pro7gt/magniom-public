@@ -13,7 +13,19 @@ export type EvidenceTier = 'T1' | 'T2' | 'T3' | 'T4' | 'T_EXP';
 
 export type LegacyEvidenceTier = 'A' | 'B' | 'C' | 'D' | 'R';
 
-export type DataOrigin = 'patient_measured' | 'normative' | 'synthetic';
+export type DataOrigin =
+  | 'patient_measured'
+  | 'normative'
+  | 'synthetic'
+  | 'derived_from_patient_measured'
+  | 'mixed'
+  | 'unknown';
+
+export type ScientificMaturity =
+  'prototype' | 'research' | 'validation' | 'clinical_candidate' | 'clinical_approved' | 'retired';
+
+export type ClinicalPromotionStatus =
+  'blocked' | 'provisional_validation' | 'candidate_under_review' | 'approved';
 
 export type ConnectomicRefinementMethod =
   | 'FC_CLUSTER_PERSONALISED'

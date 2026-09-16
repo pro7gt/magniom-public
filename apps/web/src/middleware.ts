@@ -18,8 +18,12 @@ export const AUTH_COOKIE_NAME = 'magniom_session';
 export async function middleware(request: NextRequest): Promise<NextResponse> {
   const { pathname, search } = request.nextUrl;
 
-  // 1. Allow login portal and public system health checks
-  if (pathname.startsWith('/login') || pathname === '/api/health') {
+  // 1. Allow login portal, public auth endpoints, and public system health checks
+  if (
+    pathname.startsWith('/login') ||
+    pathname.startsWith('/api/auth') ||
+    pathname === '/api/health'
+  ) {
     return NextResponse.next();
   }
 
@@ -54,11 +58,13 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     // Redirect to /login preserving intended destination
     const redirectUrl = new URL('/login', request.url);
     const fullTarget = pathname + (search || '');
-    if (fullTarget && fullTarget !== '/') {
+    if (fullTarget && fullTarget !== '/' && !fullTarget.startsWith('/login')) {
       redirectUrl.searchParams.set('redirect', fullTarget);
     }
 
     const redirectResponse = NextResponse.redirect(redirectUrl);
+    redirectResponse.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+    redirectResponse.headers.set('Pragma', 'no-cache');
     if (sessionCookie) {
       redirectResponse.cookies.delete(AUTH_COOKIE_NAME);
     }
