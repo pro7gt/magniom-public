@@ -1,26 +1,17 @@
 /**
- * @magniom/web - Universal Clinician Authentication & Session Store
+ * @magniom/web - Clinician Authentication & Session Store
  * Conforms to MAGNIOM Clinical Platform & Shell Navigation Specification.
  *
- * Universal Credentials:
- *   user_name = 'magniom'
- *   password  = 'amygdala'
- *
- * Provides authoritative specialist session state, storage persistence,
- * cookie synchronization, and regulatory audit logging.
+ * Provides authoritative specialist session state, storage synchronization,
+ * and security audit logging. Authentication is strictly executed on the server.
  */
 
-import { CANONICAL_CLINICAL_SESSION } from './release-authority';
 import { emitAuditEvent } from './shell-observability';
-import { createSignedSessionToken } from './security/session-crypto';
 import type {
   UserIdentityViewModel,
   OrganisationContextViewModel,
   EnvironmentMode,
 } from '@magniom/presentation';
-
-export const UNIVERSAL_USER_NAME = 'magniom';
-export const UNIVERSAL_PASSWORD = 'amygdala';
 
 export const AUTH_STORAGE_KEY = 'magniom_clinician_session';
 export const AUTH_COOKIE_NAME = 'magniom_session';
@@ -29,7 +20,7 @@ export interface ClinicianAuthSession {
   isAuthenticated: boolean;
   username: string;
   loginTimestamp: string;
-  sessionToken: string;
+  sessionToken?: string;
   rememberMe: boolean;
   user: UserIdentityViewModel;
   organization: OrganisationContextViewModel;
@@ -50,9 +41,10 @@ class ClinicianAuthStore {
   private isInitialized = false;
 
   constructor() {
-    // Lazy initialize on client
     if (typeof window !== 'undefined') {
       this.initFromStorage();
+      // Synchronize with server on load
+      this.refreshSessionFromServer().catch(() => {});
     }
   }
 
@@ -64,7 +56,7 @@ class ClinicianAuthStore {
       const stored = localStorage.getItem(AUTH_STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored) as ClinicianAuthSession;
-        if (parsed && parsed.isAuthenticated && parsed.sessionToken) {
+        if (parsed && parsed.isAuthenticated) {
           this.cachedSession = parsed;
           return;
         }
@@ -76,7 +68,55 @@ class ClinicianAuthStore {
   }
 
   /**
-   * Retrieves the current authenticated clinician session, or null if unauthenticated.
+   * Refreshes active session state authoritatively from the server via HttpOnly cookie.
+   */
+  public async refreshSessionFromServer(): Promise<ClinicianAuthSession | null> {
+    if (typeof window === 'undefined') return null;
+
+    try {
+      const res = await fetch('/api/auth/session', {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.isAuthenticated) {
+          const session: ClinicianAuthSession = {
+            isAuthenticated: true,
+            username: data.username,
+            loginTimestamp: data.issuedAt,
+            rememberMe: false,
+            user: data.user,
+            organization: data.organization,
+            mode: data.mode,
+          };
+          this.cachedSession = session;
+          try {
+            localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session));
+          } catch {}
+          this.notifyListeners();
+          return session;
+        }
+      } else {
+        // Unauthenticated or expired
+        if (this.cachedSession) {
+          this.cachedSession = null;
+          try {
+            localStorage.removeItem(AUTH_STORAGE_KEY);
+          } catch {}
+          this.notifyListeners();
+        }
+      }
+    } catch {
+      // Server unreachable
+    }
+
+    return this.cachedSession;
+  }
+
+  /**
+   * Retrieves the current clinician session, or null if unauthenticated.
    */
   public getAuthSession(): ClinicianAuthSession | null {
     if (typeof window !== 'undefined' && !this.isInitialized) {
@@ -94,145 +134,79 @@ class ClinicianAuthStore {
   }
 
   /**
-   * Authenticates clinician using universal credentials.
-   * Universal credentials:
-   *   username: 'magniom' (case-insensitive, trimmed)
-   *   password: 'amygdala' (exact match)
+   * Directly sets active session for isolated automated testing suites.
    */
-  public authenticateClinician(
-    usernameInput: string,
-    passwordInput: string,
-    options: { rememberMe?: boolean } = {},
-  ): AuthResult {
-    const normalizedUser = (usernameInput || '').trim().toLowerCase();
-    const cleanPassword = passwordInput || '';
-
-    const isValidUser = normalizedUser === UNIVERSAL_USER_NAME.toLowerCase();
-    const isValidPass = cleanPassword === UNIVERSAL_PASSWORD;
-
-    if (!isValidUser || !isValidPass) {
-      emitAuditEvent('CLINICIAN_AUTH_FAILED', {
-        message: 'Clinician authentication failed: Invalid universal credentials.',
-        metadata: {
-          attemptedUser: normalizedUser,
-          reason: !isValidUser ? 'INVALID_USERNAME' : 'INVALID_PASSWORD',
-        },
-      });
-
-      return {
-        success: false,
-        error: 'Invalid clinician credentials. Please verify your username and password.',
-      };
-    }
-
-    const timestamp = new Date().toISOString();
-    const sessionToken = createSignedSessionToken(CANONICAL_CLINICAL_SESSION.user.id);
-
-    const newSession: ClinicianAuthSession = {
-      isAuthenticated: true,
-      username: UNIVERSAL_USER_NAME,
-      loginTimestamp: timestamp,
-      sessionToken,
-      rememberMe: Boolean(options.rememberMe),
-      user: {
-        ...CANONICAL_CLINICAL_SESSION.user,
-      },
-      organization: {
-        ...CANONICAL_CLINICAL_SESSION.organization,
-      },
-      mode: CANONICAL_CLINICAL_SESSION.mode,
-    };
-
-    this.cachedSession = newSession;
-
-    // Persist to localStorage
-    if (typeof window !== 'undefined') {
-      try {
-        localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(newSession));
-      } catch {
-        // LocalStorage quota or access denied
-      }
-
-      // Set cookie for HTTP / edge route checks
-      try {
-        const maxAge = options.rememberMe ? 60 * 60 * 24 * 30 : 60 * 60 * 24; // 30 days vs 1 day
-        const isSecure = typeof window !== 'undefined' && window.location.protocol === 'https:';
-        const secureAttr = isSecure ? '; Secure' : '';
-        document.cookie = `${AUTH_COOKIE_NAME}=${sessionToken}; Path=/; Max-Age=${maxAge}; SameSite=Lax${secureAttr}`;
-      } catch {
-        // Cookie access error
-      }
-    }
-
-    emitAuditEvent('CLINICIAN_AUTHENTICATED', {
-      userId: newSession.user.id,
-      sessionId: sessionToken.split('.')[0] || 'mgn-sess',
-      message: `Specialist clinician ${newSession.user.displayName} authenticated via universal credentials.`,
-      metadata: {
-        userId: newSession.user.id,
-        roleTitle: newSession.user.roleTitle,
-        rememberMe: newSession.rememberMe,
-      },
-    });
-
+  public setSessionForTesting(session: ClinicianAuthSession | null): void {
+    this.cachedSession = session;
     this.notifyListeners();
-
-    return {
-      success: true,
-      session: newSession,
-    };
   }
 
   /**
-   * Asynchronously authenticates clinician via the server API endpoint (/api/auth/login),
-   * ensuring authoritative HTTP-level cookies are established before navigating, with
-   * seamless fallback to local client generation for offline/test environments.
+   * Authenticates clinician strictly through the server API endpoint (/api/auth/login).
+   * Ensures authoritative HttpOnly cookies are established on the HTTP response.
+   * Fails closed if the server is unreachable.
    */
   public async authenticateClinicianAsync(
     usernameInput: string,
     passwordInput: string,
     options: { rememberMe?: boolean } = {},
   ): Promise<AuthResult> {
-    if (typeof window !== 'undefined') {
-      try {
-        const res = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            username: usernameInput,
-            password: passwordInput,
-            rememberMe: options.rememberMe,
-          }),
-        });
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: usernameInput,
+          password: passwordInput,
+          rememberMe: options.rememberMe,
+        }),
+      });
 
-        const data = await res.json().catch(() => ({}));
-        if (res.ok && data.success && data.session) {
-          this.cachedSession = data.session;
-          try {
-            localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(data.session));
-          } catch {}
+      const data = await res.json().catch(() => ({}));
 
-          try {
-            const maxAge = options.rememberMe ? 60 * 60 * 24 * 30 : 60 * 60 * 24;
-            const isSecure = window.location.protocol === 'https:';
-            const secureAttr = isSecure ? '; Secure' : '';
-            document.cookie = `${AUTH_COOKIE_NAME}=${data.session.sessionToken}; Path=/; Max-Age=${maxAge}; SameSite=Lax${secureAttr}`;
-          } catch {}
+      if (res.ok && data.success && data.session) {
+        this.cachedSession = data.session;
+        try {
+          localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(data.session));
+        } catch {}
 
-          this.notifyListeners();
-          return { success: true, session: data.session };
-        } else if (!res.ok) {
-          return {
-            success: false,
-            error: data.error || `Authentication service error (HTTP ${res.status}).`,
-          };
-        }
-      } catch {
-        // Fall back to client authentication if fetch fails (e.g. offline/mock environment)
+        this.notifyListeners();
+        return { success: true, session: data.session };
       }
-    }
 
-    return this.authenticateClinician(usernameInput, passwordInput, options);
+      return {
+        success: false,
+        error: data.error || `Authentication failed (HTTP ${res?.status ?? 500}).`,
+      };
+    } catch {
+      return {
+        success: false,
+        error: 'Authentication service unavailable. Please check your network connection.',
+      };
+    }
+  }
+
+  /**
+   * Synchronous authenticateClinician placeholder that enforces asynchronous server authentication.
+   * Prevents any client-side credential evaluation.
+   */
+  public authenticateClinician(
+    usernameInput: string,
+    _passwordInput: string,
+    _options: { rememberMe?: boolean } = {},
+  ): AuthResult {
+    // In strict security mode, synchronous client-side authentication is rejected.
+    emitAuditEvent('CLINICIAN_AUTH_FAILED', {
+      message:
+        'Client-side synchronous authentication attempt rejected; server authentication required.',
+      metadata: { attemptedUser: usernameInput },
+    });
+
+    return {
+      success: false,
+      error:
+        'Direct client-side authentication is prohibited. Please use authenticateClinicianAsync.',
+    };
   }
 
   /**
@@ -248,12 +222,10 @@ class ClinicianAuthStore {
       } catch {}
 
       try {
-        const isSecure = window.location.protocol === 'https:';
-        const secureAttr = isSecure ? '; Secure' : '';
-        document.cookie = `${AUTH_COOKIE_NAME}=; Path=/; Max-Age=0; SameSite=Lax${secureAttr}`;
+        document.cookie = `${AUTH_COOKIE_NAME}=; Path=/; Max-Age=0; SameSite=Lax`;
       } catch {}
 
-      // Notify server logout in background
+      // Notify server logout
       try {
         fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
       } catch {}
@@ -287,9 +259,7 @@ class ClinicianAuthStore {
     for (const listener of this.listeners) {
       try {
         listener(this.cachedSession);
-      } catch {
-        // Ignore listener error
-      }
+      } catch {}
     }
   }
 }

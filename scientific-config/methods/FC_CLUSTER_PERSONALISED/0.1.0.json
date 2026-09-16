@@ -18,8 +18,8 @@
     "bandpassLowHz": 0.01,
     "bandpassHighHz": 0.08
   },
-  "evidenceIds": ["src-mdd-004", "src-mdd-cash-2021"],
-  "implementationHash": "c0bb83e8749a20468e89f928e3b7bb577e1121d51c31da4c017d2a58b88d447a",
+  "evidenceIds": ["src-mdd-004", "src-mdd-005"],
+  "implementationHash": "edb586ce2b840bf3ddb5e4c2d6a9a060eb86651cce1241ab90dbb26bf1fc23e3",
   "limitations": [
     "Functional connectivity is an indirect statistical association, not proof of direct neuroanatomical wiring.",
     "Requires minimum 15-20 minutes of usable resting-state fMRI (after motion censoring) for high intraindividual reproducibility (variation <= 2.2mm).",

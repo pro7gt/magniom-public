@@ -88,6 +88,9 @@ export class TbiEvidenceBoundTargetGenerator implements CandidateGenerator {
       reliedOnMeasurementIds: [],
       reliedOnReliabilityIds: [],
       lineage: { lineageType: 'evidence_baseline' },
+      dataOrigin: 'patient_measured',
+      scientificMaturity: 'clinical_approved',
+      clinicalPromotionStatus: 'approved',
       rawScientificFeatures: [
         { code: 'evidence_binding_strength', value: 0.85, isApplicable: true },
         { code: 'structural_safety_cleared', value: hasDistortion ? 0.0 : 1.0, isApplicable: true },

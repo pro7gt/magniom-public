@@ -11,7 +11,7 @@
 
 While functional connectivity (fc-fMRI) reflects dynamic synchronization between DLPFC and sgACC, structural connectivity derived from diffusion-weighted imaging (DWI) reveals direct and indirect axonal pathways (such as the uncinate fasciculus and fronto-thalamic projections).
 
-Li et al. (*NeuroImage*, 2026) demonstrated that individual probabilistic tractography seeded from the subgenual cingulate (specifically the Brainnetome A32sg parcel) directly to Left DLPFC parcels predicts individual clinical response differences that complement or dissociate from functional anticorrelation.
+Li et al. (*Am J Psychiatry*, 2026; doi:10.1176/appi.ajp.20251084) demonstrated in a pivotal randomized double-blind parallel-design trial that individual probabilistic tractography seeded from the subgenual cingulate (specifically the Brainnetome A32sg parcel) directly to Left DLPFC parcels achieves clinical superiority over conventional targeting.
 
 ---
 
@@ -32,10 +32,10 @@ Li et al. (*NeuroImage*, 2026) demonstrated that individual probabilistic tracto
 - **Target Inclusion Mask:** Left DLPFC cortical ribbon (Brainnetome A9/46d, A9/46v, A46).
 - **Streamline Filtering:** Streamlines terminating at the gray-white matter interface (GWMI) of the target mask are isolated.
 
-### 2.4 Density Surface Mapping & Target Identification
-- Streamline terminations are mapped to the cortical mid-thickness mesh.
-- Log-transformed streamline endpoint density $D(v) = \log_{10}(1 + \sum_{s \in \text{terminations}(v)} w_s)$ is smoothed along the geodesic surface using a Gaussian kernel ($\text{FWHM} = 5\text{ mm}$).
-- The local density maxima $v^* = \arg\max_{v} D(v)$ is extracted as the structural connectivity candidate.
+### 2.4 Strongest-Cluster Target Delineation
+- Streamline terminations are mapped to the cortical mid-thickness mesh or 3D voxel space.
+- Log-transformed streamline endpoint density $D(v) = \log_{10}(1 + \sum_{s \in \text{terminations}(v)} w_s)$ is smoothed along the surface using a Gaussian kernel ($\text{FWHM} = 5\text{ mm}$).
+- Rather than selecting an isolated point local maximum, the trial procedure delineates the **strongest contiguous spatial cluster** exceeding the 5% threshold ($T_{\text{threshold}} = 0.05$), and computes the center of gravity / weighted centroid as the target coordinate.
 
 ---
 

@@ -74,6 +74,9 @@ export class PtsdRightDlpfcGenerator implements CandidateGenerator {
       reliedOnMeasurementIds: [],
       reliedOnReliabilityIds: [],
       lineage: { lineageType: 'evidence_baseline' },
+      dataOrigin: 'patient_measured',
+      scientificMaturity: 'clinical_approved',
+      clinicalPromotionStatus: 'approved',
       rawScientificFeatures: [
         { code: 'hyperarousal_circuit_concordance', value: 0.88, isApplicable: true },
         {
@@ -146,6 +149,9 @@ export class PtsdLeftDlpfcGenerator implements CandidateGenerator {
       reliedOnMeasurementIds: [],
       reliedOnReliabilityIds: [],
       lineage: { lineageType: 'clinical_alternative' },
+      dataOrigin: 'patient_measured',
+      scientificMaturity: 'clinical_approved',
+      clinicalPromotionStatus: 'approved',
       rawScientificFeatures: [
         { code: 'comorbid_depression_concordance', value: 0.84, isApplicable: true },
       ],

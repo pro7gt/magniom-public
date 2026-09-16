@@ -33,19 +33,20 @@ Every algorithm, candidate generator, and measurement within MAGNIOM possesses a
    - Fully validated pipeline with verified split-half reliability ($r \ge 0.60$), artifact binary validation, and clinical advisory board review.
    - Permitted in clinical execution for candidate generation.
 5. **`clinical_approved`**:
-   - Cleared by regulatory review (CE mark / 510(k)) or established clinical consensus (e.g., 5.5 cm rule, Beam F3, Cash 2021 personalized rs-fMRI).
+   - Cleared by regulatory review (CE mark / 510(k)) or established clinical guidelines and pivotal RCT consensus (e.g., 5.5 cm rule, Beam F3, Lefaucheur 2020 international guidelines, Blumberger 2018 THREE-D trial baseline).
+   - *Note on Connectomics:* Connectomic methods such as Cash 2021 personalized rs-fMRI (`FC_CLUSTER_PERSONALISED`) and Li 2026 SC tractography (`SC_CLUSTER_PERSONALISED`) remain in the `validation` maturity tier with `clinicalPromotionStatus = 'blocked'` pending multi-cohort individual pipeline qualification and software release clearance.
 
 ---
 
 ## 2. Gate G14: Fail-Closed Enforcement Rules
 
-Gate G14 (`packages/target-engine/src/gates/v2/g14-research-leakage.ts`) strictly enforces the following invariant rules in `clinical` mode:
+Gate G14 (`packages/target-engine/src/gates/v2/g14-research-leakage.ts`) enforces a strict, fail-closed allowlist in `clinical` mode:
 
-1. **Rule 1 (Data Origin Fail-Closed)**:
-   Any candidate or relied-on measurement with `dataOrigin = 'synthetic'`, `'unknown'`, or `'normative'` is **immediately rejected**.
-2. **Rule 2 (Maturity Containment)**:
-   Any candidate with `scientificMaturity = 'prototype'`, `'research'`, or `'validation'` is **immediately rejected** in clinical mode.
-3. **Rule 3 (Promotion Status)**:
-   Any candidate with `clinicalPromotionStatus = 'blocked'` is **immediately rejected**.
-4. **Rule 4 (No Silent Passthrough)**:
+1. **Rule 1 (Data Origin Allowlist)**:
+   Candidates and relied-on measurements must explicitly declare `dataOrigin = 'patient_measured'` or `'derived_from_patient_measured'`. Missing origin, `'unknown'`, `'synthetic'`, or `'normative'` origins are **strictly rejected** (TN-014 / TN-012).
+2. **Rule 2 (Maturity Allowlist)**:
+   Candidates must possess `scientificMaturity = 'clinical_approved'` or `'clinical_candidate'`. Unspecified maturity, `'prototype'`, `'research'`, or `'validation'` are **strictly rejected** (TN-012).
+3. **Rule 3 (Clinical Promotion Status Allowlist)**:
+   Candidates must possess `clinicalPromotionStatus = 'approved'`. Unspecified status, `'blocked'`, `'candidate_under_review'`, or `'provisional_validation'` are **strictly rejected** (TN-012).
+4. **Rule 4 (No Silent Passthrough / Fail-Closed Abstention)**:
    If a clinical execution receives zero valid clinical candidates after Gate G14 filtering, the engine **abstains completely** (`abstain_zero_candidates`) rather than substituting an unpromoted research hypothesis.

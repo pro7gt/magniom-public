@@ -156,9 +156,6 @@ function LoginContent() {
             <Badge variant="neutral" className="login-compliance-badge">
               ISO 14971
             </Badge>
-            <Badge variant="neutral" className="login-compliance-badge">
-              21 CFR Part 11
-            </Badge>
           </div>
         </CardHeader>
 
@@ -330,8 +327,7 @@ function LoginContent() {
         <p>
           <strong>Restricted Clinical Decision Support System.</strong> Unauthorised access or
           misuse is prohibited. All target selections, modification slates, and clinician sign-offs
-          are cryptographically hashed and audited under 21 CFR Part 11 and hospital IT governance
-          protocols.
+          are cryptographically signed and audited under institutional IT governance protocols.
         </p>
         <div className="login-system-meta">
           <span className="inline-flex items-center gap-1.5">

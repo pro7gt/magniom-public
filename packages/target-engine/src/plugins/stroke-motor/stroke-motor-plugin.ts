@@ -74,6 +74,9 @@ export class StrokeContralesionalM1Generator implements CandidateGenerator {
       reliedOnMeasurementIds: lesion ? [lesion.id] : [],
       reliedOnReliabilityIds: [],
       lineage: { lineageType: 'evidence_baseline' },
+      dataOrigin: 'patient_measured',
+      scientificMaturity: 'clinical_approved',
+      clinicalPromotionStatus: 'approved',
       rawScientificFeatures: [
         { code: 'motor_circuit_concordance', value: 0.89, isApplicable: true },
         { code: 'interhemispheric_inhibition_ratio', value: 0.76, isApplicable: true },
@@ -173,6 +176,9 @@ export class StrokeIpsilesionalM1Generator implements CandidateGenerator {
       reliedOnMeasurementIds: lesion ? [lesion.id] : [],
       reliedOnReliabilityIds: [],
       lineage: { lineageType: 'clinical_alternative' },
+      dataOrigin: 'patient_measured',
+      scientificMaturity: 'clinical_approved',
+      clinicalPromotionStatus: 'approved',
       rawScientificFeatures: [
         { code: 'residual_perilesional_integrity', value: 0.72, isApplicable: true },
         { code: 'corticospinal_tract_sparing', value: 0.65, isApplicable: true },
@@ -262,6 +268,9 @@ export class StrokeBilateralStrategyGenerator implements CandidateGenerator {
       reliedOnMeasurementIds: [],
       reliedOnReliabilityIds: [],
       lineage: { lineageType: 'clinical_alternative' },
+      dataOrigin: 'patient_measured',
+      scientificMaturity: 'clinical_approved',
+      clinicalPromotionStatus: 'approved',
       rawScientificFeatures: [
         { code: 'bilateral_coordination_index', value: 0.84, isApplicable: true },
       ],
@@ -359,6 +368,9 @@ export class StrokeMotorMapRefinementGenerator implements CandidateGenerator {
         refinementKind: 'motor_mapping',
         baselineCandidateDraftId: `draft-stroke-contralesional-${contralesionalHemisphere}-m1`,
       },
+      dataOrigin: 'patient_measured',
+      scientificMaturity: 'clinical_approved',
+      clinicalPromotionStatus: 'approved',
       rawScientificFeatures: [
         { code: 'hotspot_concordance', value: 0.95, isApplicable: true },
         { code: 'incremental_gain', value: 0.11, isApplicable: true },

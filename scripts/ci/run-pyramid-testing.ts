@@ -119,7 +119,7 @@ export const PYRAMID_LAYERS: readonly PyramidLayer[] = [
     level: 11,
     name: 'Level 11: Human Factors, Clinician Anti-Bias Shell & Accessibility',
     command:
-      'npx vitest run packages/presentation/src/presentation.test.ts packages/presentation/tests/ux-golden-cases-v2.test.ts packages/presentation/tests/shell-navigation-v2.test.ts apps/web/tests/shell-v2-authority.test.ts apps/web/tests/route-security-auth-guard.test.ts apps/web/tests/auth-universal-login.test.ts apps/web/tests/auth-api-endpoints.test.ts apps/web/tests/case-store-authority.test.ts apps/web/tests/route-integrity-audit.test.ts apps/web/tests/design-system-integrity.test.ts',
+      'npx vitest run packages/presentation/src/presentation.test.ts packages/presentation/tests/ apps/web/tests/',
     specSection: '§86–§91',
     description:
       'Verifies clinician workspace view models, anti-bias UI non-preselection of Candidate 1 (§89), WCAG 2.2 AA shell navigation, route security auth guards, server auth endpoints, case store authority, and design system token integrity.',

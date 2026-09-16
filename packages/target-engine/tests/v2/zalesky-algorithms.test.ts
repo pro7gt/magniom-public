@@ -72,6 +72,47 @@ describe('Cash-Zalesky FC Clustering Algorithm (Hum Brain Mapp 2021)', () => {
     expect(metrics.intrascanFcQualified).toBe(true);
   });
 
+  it('fails closed when no qualifying cluster meets minimum cluster size (§40, Revision 02)', () => {
+    // 3 isolated voxels far apart (>10mm), minClusterSize = 2 -> each cluster size is 1 < 2
+    const isolatedNodes: VoxelNode[] = [
+      { id: 'v1', x: -40, y: 44, z: 30, connectivity: -0.65 },
+      { id: 'v2', x: -20, y: 10, z: 50, connectivity: -0.55 },
+      { id: 'v3', x: 10, y: -20, z: 20, connectivity: -0.45 },
+    ];
+
+    const result = computeCashZaleskyTarget(isolatedNodes, {
+      thresholdPercentile: 1.0,
+      minClusterSize: 2,
+    });
+
+    expect(result.status).toBe('no_qualifying_cluster');
+    expect(result.optimalTarget).toBeNull();
+    expect(result.rawPeak).toBeNull();
+    expect(result.largestCluster).toBeNull();
+    expect(result.allClusters).toHaveLength(0);
+  });
+
+  it('calculates unweighted cluster center of gravity alongside weighted centroid', () => {
+    const nodes: VoxelNode[] = [
+      { id: 'v1', x: -40, y: 44, z: 30, connectivity: -0.65 },
+      { id: 'v2', x: -42, y: 44, z: 30, connectivity: -0.55 },
+      { id: 'v3', x: -40, y: 46, z: 30, connectivity: -0.45 },
+    ];
+
+    const result = computeCashZaleskyTarget(nodes, {
+      thresholdPercentile: 1.0,
+      minClusterSize: 2,
+    });
+
+    expect(result.status).toBe('success');
+    expect(result.largestCluster).not.toBeNull();
+    // Unweighted centroid: mean of x (-40, -42, -40) = -40.67; y (44, 44, 46) = 44.67; z (30, 30, 30) = 30
+    expect(result.largestCluster!.unweightedCentroid).toBeDefined();
+    expect(result.largestCluster!.unweightedCentroid!.x).toBeCloseTo(-40.67, 2);
+    expect(result.largestCluster!.unweightedCentroid!.y).toBeCloseTo(44.67, 2);
+    expect(result.largestCluster!.unweightedCentroid!.z).toBe(30);
+  });
+
   it('throws when nodes array is empty', () => {
     expect(() => {
       computeCashZaleskyTarget([]);

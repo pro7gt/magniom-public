@@ -108,6 +108,9 @@ export class AphasiaRightIfgGenerator implements CandidateGenerator {
       reliedOnMeasurementIds: [],
       reliedOnReliabilityIds: [],
       lineage: { lineageType: 'evidence_baseline' },
+      dataOrigin: 'patient_measured',
+      scientificMaturity: 'clinical_approved',
+      clinicalPromotionStatus: 'approved',
       rawScientificFeatures: [
         { code: 'language_circuit_concordance', value: 0.87, isApplicable: true },
         { code: 'slt_context_paired', value: hasSltPairing ? 1.0 : 0.0, isApplicable: true },
@@ -203,6 +206,9 @@ export class AphasiaIpsilesionalLanguageGenerator implements CandidateGenerator 
       reliedOnMeasurementIds: [],
       reliedOnReliabilityIds: [],
       lineage: { lineageType: 'clinical_alternative' },
+      dataOrigin: 'patient_measured',
+      scientificMaturity: 'clinical_approved',
+      clinicalPromotionStatus: 'approved',
       rawScientificFeatures: [
         { code: 'residual_language_cortex_sparing', value: 0.68, isApplicable: true },
       ],

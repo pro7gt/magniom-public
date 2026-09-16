@@ -1,14 +1,50 @@
 /**
  * @magniom/web - Web Crypto HMAC-SHA256 Session Token Engine
- * Conforms to MAG-SEC-001, MAG-SEC-009, HIPAA § 164.312(a)(1), and 21 CFR Part 11.
+ * Conforms to MAG-SEC-001 (Mandatory authentication) and MAG-SEC-009 (Session Integrity).
  *
  * Implements tamper-evident, cryptographically signed clinician session tokens
- * verified at the edge (Next.js Edge Middleware) using the standard Web Crypto API.
+ * verified at the edge (Next.js Edge Middleware) and Node.js runtime using
+ * the standard Web Crypto API.
  */
 
-export const DEFAULT_SESSION_SECRET =
-  (typeof process !== 'undefined' && process.env?.MAGNIOM_SESSION_SECRET) ||
-  'magniom-clinical-session-hmac-sha256-secret-key-2026';
+export interface SessionClaims {
+  readonly sub: string; // userId
+  readonly iat: number; // issued at (unix seconds)
+  readonly exp: number; // expiration (unix seconds)
+  readonly jti: string; // cryptographically secure random session ID
+  readonly role?: string;
+  readonly orgId?: string;
+  readonly iss: string; // 'magniom-authority'
+  readonly aud: string; // 'magniom-workstation'
+}
+
+export interface SessionVerificationResult {
+  readonly valid: boolean;
+  readonly claims?: SessionClaims;
+  readonly reason?: 'INVALID_FORMAT' | 'SIGNATURE_MISMATCH' | 'EXPIRED' | 'CRYPTO_ERROR';
+}
+
+/**
+ * Retrieves the authoritative session secret.
+ * Enforces fail-fast startup: throws if MAGNIOM_SESSION_SECRET is missing,
+ * except in isolated automated test runners where a dedicated test secret is provided.
+ */
+export function getSessionSecret(): string {
+  const secret = typeof process !== 'undefined' ? process.env?.MAGNIOM_SESSION_SECRET : undefined;
+  if (!secret) {
+    const isTest =
+      typeof process !== 'undefined' &&
+      (process.env?.NODE_ENV === 'test' || Boolean(process.env?.VITEST));
+    if (isTest) {
+      return 'magniom-test-isolated-session-secret-key-at-least-32-chars';
+    }
+    throw new Error(
+      'CRITICAL SECURITY ERROR: MAGNIOM_SESSION_SECRET environment variable is missing. ' +
+        'Workstation server cannot start or verify sessions without an authoritative secret key.',
+    );
+  }
+  return secret;
+}
 
 /**
  * Derives a CryptoKey for HMAC-SHA256 operations via Web Crypto API.
@@ -46,6 +82,34 @@ function bytesToHex(buffer: ArrayBuffer | Uint8Array): string {
     hex += (bytes[i] ?? 0).toString(16).padStart(2, '0');
   }
   return hex;
+}
+
+/**
+ * Base64URL string encoder (RFC 4648 §5).
+ */
+export function base64UrlEncode(str: string): string {
+  const bytes = new TextEncoder().encode(str);
+  let binary = '';
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]!);
+  }
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+/**
+ * Base64URL string decoder (RFC 4648 §5).
+ */
+export function base64UrlDecode(str: string): string {
+  let base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+  while (base64.length % 4) {
+    base64 += '=';
+  }
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return new TextDecoder().decode(bytes);
 }
 
 /**
@@ -193,76 +257,132 @@ export function computeHmacSha256Sync(keyStr: string, messageStr: string): strin
 /**
  * Signs a session payload with HMAC-SHA256 synchronously, returning `${payload}.${signature}`.
  */
-export function signSessionTokenSync(payload: string, secret = DEFAULT_SESSION_SECRET): string {
-  const signature = computeHmacSha256Sync(secret, payload);
+export function signSessionTokenSync(payload: string, secret?: string): string {
+  const effectiveSecret = secret ?? getSessionSecret();
+  const signature = computeHmacSha256Sync(effectiveSecret, payload);
   return `${payload}.${signature}`;
 }
 
 /**
- * Signs a session payload using Web Crypto API.
+ * Generates cryptographically secure random identifier bytes.
  */
-export async function signSessionToken(
-  payload: string,
-  secret = DEFAULT_SESSION_SECRET,
-): Promise<string> {
-  const key = await getWebCryptoKey(secret);
-  const enc = new TextEncoder();
-  const sigBuffer = await crypto.subtle.sign('HMAC', key, enc.encode(payload));
-  return `${payload}.${bytesToHex(sigBuffer)}`;
+export function generateCryptographicNonce(byteLength = 16): string {
+  const bytes = new Uint8Array(byteLength);
+  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+    crypto.getRandomValues(bytes);
+  } else {
+    for (let i = 0; i < byteLength; i++) {
+      bytes[i] = Math.floor(Math.random() * 256);
+    }
+  }
+  return bytesToHex(bytes);
 }
 
 /**
- * Verifies an HMAC-SHA256 session token using the standard Web Crypto API (for Next.js Edge Middleware).
- * Returns true if and only if the token has valid structure and cryptographic signature matches.
+ * Creates an authoritative, tamper-evident clinician session token with structured claims.
  */
-export async function verifySessionToken(
+export function createSignedSessionToken(
+  userId = 'usr-spec-001',
+  options: {
+    expiresInSeconds?: number;
+    role?: string;
+    orgId?: string;
+    secret?: string;
+  } = {},
+): string {
+  const nowSec = Math.floor(Date.now() / 1000);
+  const ttl = options.expiresInSeconds ?? 3600; // default 1 hour expiration
+  const claims: SessionClaims = {
+    sub: userId,
+    iat: nowSec,
+    exp: nowSec + ttl,
+    jti: generateCryptographicNonce(16),
+    role: options.role ?? 'TMS Specialist & Clinical Reviewer',
+    orgId: options.orgId ?? 'melb-tms-01',
+    iss: 'magniom-authority',
+    aud: 'magniom-workstation',
+  };
+
+  const payloadStr = base64UrlEncode(JSON.stringify(claims));
+  const effectiveSecret = options.secret ?? getSessionSecret();
+  return signSessionTokenSync(payloadStr, effectiveSecret);
+}
+
+/**
+ * Verifies an HMAC-SHA256 session token, checking signature, structure, and expiration.
+ */
+export async function verifySessionTokenWithClaims(
   token: string | undefined | null,
-  secret = DEFAULT_SESSION_SECRET,
-): Promise<boolean> {
+  secret?: string,
+): Promise<SessionVerificationResult> {
   if (!token || typeof token !== 'string') {
-    return false;
+    return { valid: false, reason: 'INVALID_FORMAT' };
   }
 
   const parts = token.trim().split('.');
   if (parts.length !== 2) {
-    return false;
+    return { valid: false, reason: 'INVALID_FORMAT' };
   }
 
-  const [payload, sigHex] = parts;
-  if (!payload || !sigHex || sigHex.length !== 64) {
-    return false;
+  const [payloadBase64, sigHex] = parts;
+  if (!payloadBase64 || !sigHex || sigHex.length !== 64) {
+    return { valid: false, reason: 'INVALID_FORMAT' };
   }
 
+  const effectiveSecret = secret ?? getSessionSecret();
+
+  // 1. Verify HMAC signature via Web Crypto API
   try {
-    const key = await getWebCryptoKey(secret);
+    const key = await getWebCryptoKey(effectiveSecret);
     const enc = new TextEncoder();
     const sigBytes = hexToBytes(sigHex);
-    return await crypto.subtle.verify(
+    const isValidSignature = await crypto.subtle.verify(
       'HMAC',
       key,
       sigBytes as unknown as BufferSource,
-      enc.encode(payload) as unknown as BufferSource,
+      enc.encode(payloadBase64) as unknown as BufferSource,
     );
+
+    if (!isValidSignature) {
+      return { valid: false, reason: 'SIGNATURE_MISMATCH' };
+    }
   } catch {
-    return false;
+    return { valid: false, reason: 'CRYPTO_ERROR' };
+  }
+
+  // 2. Decode claims and verify expiration and authority
+  try {
+    const jsonStr = base64UrlDecode(payloadBase64);
+    const claims = JSON.parse(jsonStr) as SessionClaims;
+    const nowSec = Math.floor(Date.now() / 1000);
+
+    if (typeof claims.exp !== 'number' || claims.exp <= nowSec) {
+      return { valid: false, reason: 'EXPIRED' };
+    }
+
+    if (claims.iss !== 'magniom-authority' || claims.aud !== 'magniom-workstation') {
+      return { valid: false, reason: 'INVALID_FORMAT' };
+    }
+
+    return { valid: true, claims };
+  } catch {
+    return { valid: false, reason: 'INVALID_FORMAT' };
   }
 }
 
 /**
- * Generates an authoritative, tamper-evident clinician session token.
+ * Verifies session token returning a boolean (standard Edge Middleware interface).
  */
-export function createSignedSessionToken(
-  userId = 'usr-spec-001',
-  secret = DEFAULT_SESSION_SECRET,
-): string {
-  const timestamp = Date.now();
-  const randomSuffix = Math.random().toString(36).substring(2, 9);
-  const rawPayload = `mgn-sess-${userId}-${timestamp}-${randomSuffix}`;
-  return signSessionTokenSync(rawPayload, secret);
+export async function verifySessionToken(
+  token: string | undefined | null,
+  secret?: string,
+): Promise<boolean> {
+  const result = await verifySessionTokenWithClaims(token, secret);
+  return result.valid;
 }
 
 /**
- * Parses and extracts the payload and signature from a signed session token.
+ * Parses and extracts payload and signature from a signed token without verification.
  */
 export function parseSignedSessionToken(
   token: string,

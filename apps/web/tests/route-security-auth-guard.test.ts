@@ -184,14 +184,60 @@ describe('MAG-SEC-002: Sign-Off Guard Session Expiry Integration', () => {
     expect(isSessionValid()).toBe(false);
   });
 
-  it('SEC-SIG-02: isSessionValid() returns true when clinician is authenticated with universal credentials', () => {
-    authStore.authenticateClinician('magniom', 'amygdala');
+  it('SEC-SIG-02: isSessionValid() returns true when clinician is authenticated', () => {
+    authStore.setSessionForTesting({
+      isAuthenticated: true,
+      username: 'dr_asmith',
+      loginTimestamp: new Date().toISOString(),
+      rememberMe: false,
+      user: {
+        id: 'usr-spec-001',
+        displayName: 'Dr A. Smith',
+        roleTitle: 'TMS Specialist & Clinical Reviewer',
+        hasSigningAuthority: true,
+        organizationId: 'melb-tms-01',
+        organizationName: 'Melbourne TMS Centre',
+        siteName: 'Main Clinic',
+        initials: 'AS',
+      },
+      organization: {
+        organizationId: 'melb-tms-01',
+        organizationName: 'Melbourne TMS Centre',
+        siteId: 'site-01',
+        siteName: 'Main Clinic',
+        displayLabel: 'Melbourne TMS Centre - Main Clinic',
+      },
+      mode: 'CLINICAL',
+    });
     expect(authStore.isAuthenticated()).toBe(true);
     expect(isSessionValid()).toBe(true);
   });
 
   it('SEC-SIG-03: isSessionValid() immediately reverts to false after clinician logout', () => {
-    authStore.authenticateClinician('magniom', 'amygdala');
+    authStore.setSessionForTesting({
+      isAuthenticated: true,
+      username: 'dr_asmith',
+      loginTimestamp: new Date().toISOString(),
+      rememberMe: false,
+      user: {
+        id: 'usr-spec-001',
+        displayName: 'Dr A. Smith',
+        roleTitle: 'TMS Specialist & Clinical Reviewer',
+        hasSigningAuthority: true,
+        organizationId: 'melb-tms-01',
+        organizationName: 'Melbourne TMS Centre',
+        siteName: 'Main Clinic',
+        initials: 'AS',
+      },
+      organization: {
+        organizationId: 'melb-tms-01',
+        organizationName: 'Melbourne TMS Centre',
+        siteId: 'site-01',
+        siteName: 'Main Clinic',
+        displayLabel: 'Melbourne TMS Centre - Main Clinic',
+      },
+      mode: 'CLINICAL',
+    });
     expect(isSessionValid()).toBe(true);
 
     authStore.logoutClinician();

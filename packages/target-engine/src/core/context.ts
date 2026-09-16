@@ -87,12 +87,14 @@ export function createCanonicalResolvedContextV2(
       indicationModuleReleaseId: request.indicationModuleReleaseId,
       phenotypeSnapshotId: request.phenotypeSnapshotId,
       qualificationStatus: 'qualified',
+      dataOrigin: 'patient_measured',
       measurements: [
         {
           measurementId: 'MEAS-01',
           modality: 'resting_state_fmri',
           version: '2.0.0',
           status: 'qualified',
+          dataOrigin: 'patient_measured',
         },
       ],
       requirementEvaluations: [

@@ -340,4 +340,153 @@ describe('Target Engine Core Exit Criterion 4: Research Candidate Isolation', ()
     expect(evalResult.result).toBe('fail');
     expect(evalResult.reasonCodes).toContain('TN-012:CLINICAL_PROMOTION_BLOCKED');
   });
+
+  it('Gate G14 fails closed when dataOrigin is missing/undefined in clinical mode', () => {
+    const context = createCanonicalResolvedContextV2({
+      request: { mode: 'clinical' } as any,
+    });
+
+    const draft: CandidateDraft = {
+      draftId: 'draft-missing-origin',
+      generatorId: 'GEN-TEST-001',
+      targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
+      proposedRole: 'primary',
+      // dataOrigin omitted!
+      scientificMaturity: 'clinical_approved',
+      clinicalPromotionStatus: 'approved',
+      targetGeometry: createCanonicalPointGeometry(-42, 44, 30, 'left', 'pipeline'),
+      evidencePathIds: ['PATH-MDD-BA46'],
+      clinicalObjectiveIds: ['00000000-0000-0000-0000-000000000040'],
+      reliedOnMeasurementIds: [],
+      reliedOnReliabilityIds: [],
+      rawScientificFeatures: [],
+      generatorLimitations: [],
+      nominationRationale: 'Missing origin test',
+      generatorTrace: { algorithmCode: 'TEST', algorithmVersion: '1.0.0' },
+    };
+
+    const evalResult = evaluateGateG14(draft, context);
+    expect(evalResult.result).toBe('fail');
+    expect(evalResult.reasonCodes).toContain(
+      'TN-014:UNKNOWN_DATA_ORIGIN_PROHIBITED_IN_CLINICAL_MODE',
+    );
+  });
+
+  it('Gate G14 fails closed when scientificMaturity is missing/undefined in clinical mode', () => {
+    const context = createCanonicalResolvedContextV2({
+      request: { mode: 'clinical' } as any,
+    });
+
+    const draft: CandidateDraft = {
+      draftId: 'draft-missing-maturity',
+      generatorId: 'GEN-TEST-001',
+      targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
+      proposedRole: 'primary',
+      dataOrigin: 'patient_measured',
+      // scientificMaturity omitted!
+      clinicalPromotionStatus: 'approved',
+      targetGeometry: createCanonicalPointGeometry(-42, 44, 30, 'left', 'pipeline'),
+      evidencePathIds: ['PATH-MDD-BA46'],
+      clinicalObjectiveIds: ['00000000-0000-0000-0000-000000000040'],
+      reliedOnMeasurementIds: [],
+      reliedOnReliabilityIds: [],
+      rawScientificFeatures: [],
+      generatorLimitations: [],
+      nominationRationale: 'Missing maturity test',
+      generatorTrace: { algorithmCode: 'TEST', algorithmVersion: '1.0.0' },
+    };
+
+    const evalResult = evaluateGateG14(draft, context);
+    expect(evalResult.result).toBe('fail');
+    expect(evalResult.reasonCodes).toContain(
+      'TN-012:UNPROMOTED_MATURITY_PROHIBITED_IN_CLINICAL_MODE',
+    );
+  });
+
+  it('Gate G14 fails closed when clinicalPromotionStatus is missing/undefined in clinical mode', () => {
+    const context = createCanonicalResolvedContextV2({
+      request: { mode: 'clinical' } as any,
+    });
+
+    const draft: CandidateDraft = {
+      draftId: 'draft-missing-promotion',
+      generatorId: 'GEN-TEST-001',
+      targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
+      proposedRole: 'primary',
+      dataOrigin: 'patient_measured',
+      scientificMaturity: 'clinical_approved',
+      // clinicalPromotionStatus omitted!
+      targetGeometry: createCanonicalPointGeometry(-42, 44, 30, 'left', 'pipeline'),
+      evidencePathIds: ['PATH-MDD-BA46'],
+      clinicalObjectiveIds: ['00000000-0000-0000-0000-000000000040'],
+      reliedOnMeasurementIds: [],
+      reliedOnReliabilityIds: [],
+      rawScientificFeatures: [],
+      generatorLimitations: [],
+      nominationRationale: 'Missing promotion status test',
+      generatorTrace: { algorithmCode: 'TEST', algorithmVersion: '1.0.0' },
+    };
+
+    const evalResult = evaluateGateG14(draft, context);
+    expect(evalResult.result).toBe('fail');
+    expect(evalResult.reasonCodes).toContain('TN-012:CLINICAL_PROMOTION_BLOCKED');
+  });
+
+  it('Gate G14 fails closed on candidate_under_review in clinical mode', () => {
+    const context = createCanonicalResolvedContextV2({
+      request: { mode: 'clinical' } as any,
+    });
+
+    const draft: CandidateDraft = {
+      draftId: 'draft-under-review',
+      generatorId: 'GEN-TEST-001',
+      targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
+      proposedRole: 'primary',
+      dataOrigin: 'patient_measured',
+      scientificMaturity: 'clinical_candidate',
+      clinicalPromotionStatus: 'candidate_under_review', // Not yet approved!
+      targetGeometry: createCanonicalPointGeometry(-42, 44, 30, 'left', 'pipeline'),
+      evidencePathIds: ['PATH-MDD-BA46'],
+      clinicalObjectiveIds: ['00000000-0000-0000-0000-000000000040'],
+      reliedOnMeasurementIds: [],
+      reliedOnReliabilityIds: [],
+      rawScientificFeatures: [],
+      generatorLimitations: [],
+      nominationRationale: 'Candidate under review test',
+      generatorTrace: { algorithmCode: 'TEST', algorithmVersion: '1.0.0' },
+    };
+
+    const evalResult = evaluateGateG14(draft, context);
+    expect(evalResult.result).toBe('fail');
+    expect(evalResult.reasonCodes).toContain('TN-012:CLINICAL_PROMOTION_BLOCKED');
+  });
+
+  it('Gate G14 passes candidate with complete valid clinical provenance in clinical mode', () => {
+    const context = createCanonicalResolvedContextV2({
+      request: { mode: 'clinical' } as any,
+    });
+
+    const draft: CandidateDraft = {
+      draftId: 'draft-valid-clinical',
+      generatorId: 'GEN-MDD-EVIDENCE-001',
+      targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
+      proposedRole: 'primary',
+      dataOrigin: 'patient_measured',
+      scientificMaturity: 'clinical_approved',
+      clinicalPromotionStatus: 'approved',
+      targetGeometry: createCanonicalPointGeometry(-44, 40, 28, 'left', 'pipeline'),
+      evidencePathIds: ['PATH-MDD-BA46'],
+      clinicalObjectiveIds: ['00000000-0000-0000-0000-000000000040'],
+      reliedOnMeasurementIds: [],
+      reliedOnReliabilityIds: [],
+      rawScientificFeatures: [],
+      generatorLimitations: [],
+      nominationRationale: 'Fully qualified clinical candidate',
+      generatorTrace: { algorithmCode: 'CANONICAL_ANCHOR', algorithmVersion: '2.0.0' },
+    };
+
+    const evalResult = evaluateGateG14(draft, context);
+    expect(evalResult.result).toBe('pass');
+    expect(evalResult.reasonCodes).toHaveLength(0);
+  });
 });

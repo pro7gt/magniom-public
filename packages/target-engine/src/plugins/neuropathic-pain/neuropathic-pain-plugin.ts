@@ -102,6 +102,9 @@ export class PainM1SomatotopicBaselineGenerator implements CandidateGenerator {
       reliedOnMeasurementIds: [],
       reliedOnReliabilityIds: [],
       lineage: { lineageType: 'evidence_baseline' },
+      dataOrigin: 'patient_measured',
+      scientificMaturity: 'clinical_approved',
+      clinicalPromotionStatus: 'approved',
       rawScientificFeatures: [
         { code: 'somatotopic_concordance', value: 0.94, isApplicable: true },
         { code: 'contralateral_alignment', value: 1.0, isApplicable: true },
@@ -212,6 +215,9 @@ export class PainMotorMapRefinementGenerator implements CandidateGenerator {
         refinementKind: 'motor_mapping',
         baselineCandidateDraftId: `draft-pain-m1-${stimulationHemisphere}-somatotopic`,
       },
+      dataOrigin: 'patient_measured',
+      scientificMaturity: 'clinical_approved',
+      clinicalPromotionStatus: 'approved',
       rawScientificFeatures: [
         { code: 'hotspot_concordance', value: 0.98, isApplicable: true },
         { code: 'incremental_gain', value: 0.15, isApplicable: true },

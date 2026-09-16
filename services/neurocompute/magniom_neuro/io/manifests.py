@@ -11,7 +11,7 @@ from dataclasses import dataclass, field, asdict
 from typing import List, Dict, Any, Optional
 
 
-@dataclass
+@dataclass(frozen=True)
 class SourceArtifactRecord:
     path: str
     sha256: str
@@ -20,22 +20,22 @@ class SourceArtifactRecord:
     data_origin: str
 
 
-@dataclass
+@dataclass(frozen=True)
 class PreprocessingProvenance:
-    toolchain: str = "fMRIPrep-23.2.0 / FreeSurfer-7.4.1 / ANTs-2.4.3"
-    pipeline_version: str = "MAGNIOM-NEURO-2.0.0"
-    motion_scrubbing_fd_threshold_mm: float = 0.5
-    mean_framewise_displacement_mm: float = 0.12
-    censored_volumes_count: int = 0
-    total_volumes_count: int = 240
-    bandpass_low_hz: float = 0.01
-    bandpass_high_hz: float = 0.08
-    spatial_smoothing_fwhm_mm: float = 6.0
-    global_signal_regression: bool = False
-    surface_registration_atlas: str = "fsLR_32k"
+    toolchain: Optional[str] = None
+    pipeline_version: Optional[str] = None
+    motion_scrubbing_fd_threshold_mm: Optional[float] = None
+    mean_framewise_displacement_mm: Optional[float] = None
+    censored_volumes_count: Optional[int] = None
+    total_volumes_count: Optional[int] = None
+    bandpass_low_hz: Optional[float] = None
+    bandpass_high_hz: Optional[float] = None
+    spatial_smoothing_fwhm_mm: Optional[float] = None
+    global_signal_regression: Optional[bool] = None
+    surface_registration_atlas: Optional[str] = None
 
 
-@dataclass
+@dataclass(frozen=True)
 class MeasurementArtifactManifest:
     manifest_id: str
     case_id: str

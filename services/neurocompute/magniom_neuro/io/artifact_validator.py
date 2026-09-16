@@ -53,10 +53,13 @@ class ArtifactValidator:
         file_path: str,
         is_4d_bold: bool = False,
         min_timepoints: int = 50,
+        declared_origin: Optional[str] = None,
+        declared_coordinate_space: Optional[str] = None,
     ) -> ValidationResult:
         """
         Validates a NIfTI-1 file (.nii or .nii.gz) by parsing binary header fields.
         Asserts non-mock content, dimensionality, positive voxel spacing, and TR.
+        Does NOT infer clinical provenance from file structure (Finding P1-3 / Revision 02 §4).
         """
         if not os.path.exists(file_path):
             return ValidationResult(
@@ -144,6 +147,7 @@ class ArtifactValidator:
                 )
 
             dims = tuple(dim[1 : ndim + 1])
+            bitpix = struct.unpack(f"{endian}h", header_bytes[72:74])[0]
             pixdim = struct.unpack(f"{endian}8f", header_bytes[76:108])
             voxel_sizes = tuple(pixdim[1 : ndim + 1])
 
@@ -153,6 +157,17 @@ class ArtifactValidator:
             # Check spatial dimensions
             if any(d <= 0 for d in dims[:3]):
                 errors.append(f"Non-positive spatial dimensions: {dims[:3]}")
+
+            # Verify uncompressed payload size matches declared dimensions
+            if not is_gz and bitpix > 0:
+                expected_voxels = 1
+                for d in dims:
+                    expected_voxels *= d
+                expected_min_bytes = 352 + (expected_voxels * (bitpix // 8))
+                if file_size < expected_min_bytes:
+                    errors.append(
+                        f"Uncompressed NIfTI payload truncated: expected at least {expected_min_bytes} bytes for shape {dims} (bitpix={bitpix}), found {file_size} bytes."
+                    )
 
             tr_val: Optional[float] = None
             if is_4d_bold:
@@ -167,16 +182,19 @@ class ArtifactValidator:
             file_type = "nifti_4d" if is_4d_bold or (ndim >= 4 and dims[3] > 1) else "nifti_3d"
             valid = len(errors) == 0
 
+            # Separate file format validity from provenance authority (Revision 02 §4)
+            data_origin = declared_origin if declared_origin is not None else "unknown"
+
             return ValidationResult(
                 valid=valid,
                 file_path=file_path,
                 file_type=file_type,
                 sha256=file_hash,
-                data_origin="patient_measured" if valid else "unknown",
+                data_origin=data_origin if valid else "unknown",
                 dimensions=dims,
                 voxel_sizes=voxel_sizes,
                 tr_seconds=tr_val,
-                coordinate_space="MNI152NLin2009cAsym",
+                coordinate_space=declared_coordinate_space or "MNI152NLin2009cAsym",
                 errors=errors,
                 warnings=warnings,
             )
@@ -192,9 +210,16 @@ class ArtifactValidator:
             )
 
     @classmethod
-    def validate_gifti(cls, file_path: str, expected_surface: str = "fsLR_32k") -> ValidationResult:
+    def validate_gifti(
+        cls,
+        file_path: str,
+        expected_surface: str = "fsLR_32k",
+        declared_origin: Optional[str] = None,
+    ) -> ValidationResult:
         """
         Validates a GIFTI surface/shape file (.gii) ensuring proper XML structure.
+        Uses real XML ElementTree parsing and requires valid DataArray elements.
+        Does NOT infer clinical provenance from file structure (Revision 02 §4).
         """
         if not os.path.exists(file_path):
             return ValidationResult(
@@ -221,12 +246,42 @@ class ArtifactValidator:
                     errors=["File missing canonical <GIFTI> XML element. Mock placeholder rejected."],
                 )
 
+            # Robust XML ElementTree verification
+            import xml.etree.ElementTree as ET
+            tree = ET.parse(file_path)
+            root = tree.getroot()
+
+            # Root tag should be GIFTI
+            if root.tag != "GIFTI" and not root.tag.endswith("GIFTI"):
+                return ValidationResult(
+                    valid=False,
+                    file_path=file_path,
+                    file_type="invalid",
+                    sha256=file_hash,
+                    data_origin="unknown",
+                    errors=[f"Root XML tag '{root.tag}' is not GIFTI."],
+                )
+
+            # DataArray elements must be present
+            data_arrays = root.findall(".//DataArray")
+            if not data_arrays:
+                return ValidationResult(
+                    valid=False,
+                    file_path=file_path,
+                    file_type="invalid",
+                    sha256=file_hash,
+                    data_origin="unknown",
+                    errors=["GIFTI surface file contains no DataArray elements."],
+                )
+
+            data_origin = declared_origin if declared_origin is not None else "unknown"
+
             return ValidationResult(
                 valid=True,
                 file_path=file_path,
                 file_type="gifti_surface",
                 sha256=file_hash,
-                data_origin="patient_measured",
+                data_origin=data_origin,
                 coordinate_space=expected_surface,
                 errors=[],
                 warnings=[],

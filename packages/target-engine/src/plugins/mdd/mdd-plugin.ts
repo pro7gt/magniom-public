@@ -66,6 +66,9 @@ export class MDDEvidenceBaselineGenerator implements CandidateGenerator {
       reliedOnMeasurementIds: [],
       reliedOnReliabilityIds: [],
       lineage: { lineageType: 'evidence_baseline' },
+      dataOrigin: 'patient_measured',
+      scientificMaturity: 'clinical_approved',
+      clinicalPromotionStatus: 'approved',
       rawScientificFeatures: [
         { code: 'phenotype_concordance', value: 0.85, isApplicable: true },
         { code: 'circuit_concordance', value: 0.9, isApplicable: true },
@@ -100,6 +103,9 @@ export class MDDEvidenceBaselineGenerator implements CandidateGenerator {
       reliedOnMeasurementIds: [],
       reliedOnReliabilityIds: [],
       lineage: { lineageType: 'evidence_baseline' },
+      dataOrigin: 'patient_measured',
+      scientificMaturity: 'clinical_approved',
+      clinicalPromotionStatus: 'approved',
       rawScientificFeatures: [
         { code: 'phenotype_concordance', value: 0.7, isApplicable: true },
         { code: 'circuit_concordance', value: 0.75, isApplicable: true },
@@ -131,8 +137,8 @@ export class MDDConnectomeRefinementGenerator implements CandidateGenerator {
     indicationModuleReleaseIds: [MDD_MODULE_RELEASE_ID],
     candidateRoles: ['connectome_refinement'],
     targetFamilyScopeIds: ['TF-MDD-LDLPFC-EST-001'],
-    evidencePathStatusScope: ['clinical_permitted', 'validation_permitted', 'research_permitted'],
-    permittedModes: ['clinical', 'research', 'validation'],
+    evidencePathStatusScope: ['validation_permitted', 'research_permitted'],
+    permittedModes: ['validation', 'research'],
     requiredCapabilities: ['individual_fc_refinement'],
     optionalCapabilities: [],
     permittedGeometryTypes: ['point'],
@@ -143,6 +149,24 @@ export class MDDConnectomeRefinementGenerator implements CandidateGenerator {
   };
 
   public generate(context: ResolvedTargetEngineContextV2): CandidateGeneratorResult {
+    // P0 Fail-Closed: synthetic demonstrator connectomics strictly prohibited in clinical mode
+    if (context.request.mode.toLowerCase() === 'clinical') {
+      return {
+        generatorId: this.descriptor.id,
+        generatorVersion: this.descriptor.semanticVersion,
+        status: 'no_candidate',
+        candidates: [],
+        diagnostics: [
+          {
+            level: 'warning',
+            code: 'FC_EXCLUDED_FROM_CLINICAL_MODE',
+            message:
+              'MDDConnectomeRefinementGenerator uses synthetic demonstrator data and is strictly excluded from clinical mode runs (§40, Revision 02).',
+          },
+        ],
+      };
+    }
+
     // If measurement capability is completely absent, emit no candidate
     const cap = context.measurementBundle.requirementEvaluations?.find(
       c => c.requirementCode === 'individual_fc_refinement',
@@ -163,36 +187,7 @@ export class MDDConnectomeRefinementGenerator implements CandidateGenerator {
       };
     }
 
-    const rsMeasurement = context.measurementBundle.measurements.find(
-      m => m.modality === 'resting_state_fmri',
-    );
-    const isSynthetic =
-      context.measurementBundle.dataOrigin === 'synthetic' ||
-      rsMeasurement?.dataOrigin === 'synthetic' ||
-      !rsMeasurement;
-
-    // Strict P0 Fail-Closed check: in CLINICAL mode, synthetic connectomics cannot refine targets
-    if (context.request.mode.toLowerCase() === 'clinical' && isSynthetic) {
-      return {
-        generatorId: this.descriptor.id,
-        generatorVersion: this.descriptor.semanticVersion,
-        status: 'no_candidate',
-        candidates: [],
-        diagnostics: [
-          {
-            level: 'warning',
-            code: 'FC_SYNTHETIC_PROHIBITED_IN_CLINICAL_MODE',
-            message:
-              'Simulated or synthetic rs-fMRI connectomics strictly prohibited from clinical target refinement (§40, Revision 01). Falling back to anatomical baseline.',
-          },
-        ],
-      };
-    }
-
-    const candidateDataOrigin = isSynthetic ? 'synthetic' : 'patient_measured';
-    const limitations = isSynthetic ? ['SYNTHETIC_DEMONSTRATOR', 'RESEARCH_ONLY'] : [];
-
-    // Execute Cash-Zalesky cluster targeting algorithm
+    // Research/validation demonstrator candidate
     const searchNodes: VoxelNode[] = [
       { id: 'v1', x: -40, y: 44, z: 30, connectivity: -0.65 },
       { id: 'v2', x: -42, y: 44, z: 30, connectivity: -0.55 },
@@ -200,25 +195,21 @@ export class MDDConnectomeRefinementGenerator implements CandidateGenerator {
       { id: 'v4', x: -44, y: 40, z: 28, connectivity: -0.4 },
     ];
     const clustering = computeCashZaleskyTarget(searchNodes, {
-      thresholdPercentile: 0.75,
+      thresholdPercentile: 0.1,
       minClusterSize: 2,
     });
-    const targetX = Math.round(clustering.optimalTarget.x);
-    const targetY = Math.round(clustering.optimalTarget.y);
-    const targetZ = Math.round(clustering.optimalTarget.z);
-
-    const isClinical = context.request.mode.toLowerCase() === 'clinical';
-    const maturity = isClinical && !isSynthetic ? 'clinical_candidate' : 'validation';
-    const promotionStatus = isSynthetic ? 'blocked' : 'candidate_under_review';
+    const targetX = Math.round(clustering.optimalTarget ? clustering.optimalTarget.x : -42);
+    const targetY = Math.round(clustering.optimalTarget ? clustering.optimalTarget.y : 44);
+    const targetZ = Math.round(clustering.optimalTarget ? clustering.optimalTarget.z : 30);
 
     const refinedDraft: CandidateDraft = {
       draftId: 'draft-mdd-ba46-fc-refined',
       generatorId: this.descriptor.id,
       targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
       proposedRole: 'connectome_refinement',
-      dataOrigin: candidateDataOrigin,
-      scientificMaturity: maturity,
-      clinicalPromotionStatus: promotionStatus,
+      dataOrigin: 'synthetic',
+      scientificMaturity: 'validation',
+      clinicalPromotionStatus: 'blocked',
       targetGeometry: createCanonicalPointGeometry(
         targetX,
         targetY,
@@ -243,10 +234,9 @@ export class MDDConnectomeRefinementGenerator implements CandidateGenerator {
         { code: 'incremental_gain', value: 0.12, isApplicable: true },
         { code: 'cortical_depth_mm', value: 14.8, isApplicable: true },
       ],
-      generatorLimitations: limitations,
-      nominationRationale: isSynthetic
-        ? 'Simulated rs-fMRI connectome refined demonstration target in Left DLPFC BA46 (Research/Validation only).'
-        : 'Cash-Zalesky personalized rs-fMRI connectome refined target in Left DLPFC BA46.',
+      generatorLimitations: ['SYNTHETIC_DEMONSTRATOR', 'NOT_CLINICALLY_PROMOTED', 'RESEARCH_ONLY'],
+      nominationRationale:
+        'Cash-Zalesky demonstration rs-fMRI connectome refined target in Left DLPFC BA46 (Research/Validation only).',
       generatorTrace: {
         algorithmCode: this.descriptor.code,
         algorithmVersion: this.descriptor.semanticVersion,
@@ -508,6 +498,9 @@ export class MDDPhenotypeCircuitGenerator implements CandidateGenerator {
       reliedOnMeasurementIds: [],
       reliedOnReliabilityIds: [],
       lineage: { lineageType: 'clinical_alternative' },
+      dataOrigin: 'patient_measured',
+      scientificMaturity: 'clinical_approved',
+      clinicalPromotionStatus: 'approved',
       rawScientificFeatures: [
         { code: 'phenotype_concordance', value: 0.92, isApplicable: true },
         { code: 'circuit_concordance', value: 0.84, isApplicable: true },

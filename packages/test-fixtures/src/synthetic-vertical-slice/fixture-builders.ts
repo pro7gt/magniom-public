@@ -114,12 +114,14 @@ export function createMockMeasurementBundle(params: {
     indicationModuleReleaseId: params.indicationModuleReleaseId,
     phenotypeSnapshotId: params.phenotypeSnapshotId,
     qualificationStatus: 'qualified',
+    dataOrigin: 'patient_measured',
     measurements: [
       {
         measurementId: `meas-${params.id}-primary`,
         modality: params.modality ?? 'structural_mri',
         version: '2.0.0',
         status: 'qualified',
+        dataOrigin: 'patient_measured',
       },
     ],
     requirementEvaluations: [

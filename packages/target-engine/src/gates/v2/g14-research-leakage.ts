@@ -25,33 +25,53 @@ export function evaluateGateG14(
       reasons.push('TN-012:RESEARCH_CANDIDATE_PROHIBITED_IN_CLINICAL_MODE');
     }
 
-    // 2. Check if candidate has synthetic or unknown data origin, or synthetic limitations
-    if (
+    // 2. Check data origin: Fail-closed allowlist in Clinical Mode
+    // Missing, undefined, synthetic, normative, or unknown origins are strictly prohibited.
+    if (!candidate.dataOrigin || candidate.dataOrigin === 'unknown') {
+      reasons.push('TN-014:UNKNOWN_DATA_ORIGIN_PROHIBITED_IN_CLINICAL_MODE');
+    } else if (
       candidate.dataOrigin === 'synthetic' ||
       candidate.generatorLimitations?.includes('SYNTHETIC_DEMONSTRATOR') ||
       candidate.generatorLimitations?.includes('SYNTHETIC_GENERATOR_FAIL_CLOSED')
     ) {
       reasons.push('TN-014:SYNTHETIC_CANDIDATE_PROHIBITED_IN_CLINICAL_MODE');
-    } else if (candidate.dataOrigin === 'unknown') {
+    } else if (candidate.dataOrigin === 'normative') {
+      reasons.push('TN-012:NORMATIVE_CANDIDATE_PROHIBITED_IN_CLINICAL_MODE');
+    } else if (
+      candidate.dataOrigin !== 'patient_measured' &&
+      candidate.dataOrigin !== 'derived_from_patient_measured'
+    ) {
       reasons.push('TN-014:UNKNOWN_DATA_ORIGIN_PROHIBITED_IN_CLINICAL_MODE');
     }
 
-    // 3. Normative-only data origin cannot be a clinical candidate
-    if (candidate.dataOrigin === 'normative') {
-      reasons.push('TN-012:NORMATIVE_CANDIDATE_PROHIBITED_IN_CLINICAL_MODE');
-    }
-
-    // 4. Check scientific maturity: unpromoted maturity cannot produce clinical candidate
-    if (
+    // 3. Check scientific maturity: Fail-closed allowlist in Clinical Mode
+    // Missing, undefined, prototype, research, or validation maturity cannot produce clinical candidate.
+    if (!candidate.scientificMaturity) {
+      reasons.push('TN-012:UNPROMOTED_MATURITY_PROHIBITED_IN_CLINICAL_MODE');
+    } else if (
       candidate.scientificMaturity === 'prototype' ||
       candidate.scientificMaturity === 'research' ||
       candidate.scientificMaturity === 'validation'
     ) {
       reasons.push('TN-012:UNPROMOTED_MATURITY_PROHIBITED_IN_CLINICAL_MODE');
+    } else if (
+      candidate.scientificMaturity !== 'clinical_candidate' &&
+      candidate.scientificMaturity !== 'clinical_approved'
+    ) {
+      reasons.push('TN-012:UNPROMOTED_MATURITY_PROHIBITED_IN_CLINICAL_MODE');
     }
 
-    // 5. Check clinical promotion status
-    if (candidate.clinicalPromotionStatus === 'blocked') {
+    // 4. Check clinical promotion status: Fail-closed allowlist in Clinical Mode
+    // Missing, undefined, blocked, under review, or provisional status cannot produce clinical candidate.
+    if (!candidate.clinicalPromotionStatus) {
+      reasons.push('TN-012:CLINICAL_PROMOTION_BLOCKED');
+    } else if (
+      candidate.clinicalPromotionStatus === 'blocked' ||
+      candidate.clinicalPromotionStatus === 'candidate_under_review' ||
+      candidate.clinicalPromotionStatus === 'provisional_validation'
+    ) {
+      reasons.push('TN-012:CLINICAL_PROMOTION_BLOCKED');
+    } else if (candidate.clinicalPromotionStatus !== 'approved') {
       reasons.push('TN-012:CLINICAL_PROMOTION_BLOCKED');
     }
 

@@ -108,6 +108,9 @@ describe('MAGNIOM Target Engine Specification v2.0 Conformance Suite', () => {
       rawScientificFeatures: [],
       generatorLimitations: [],
       nominationRationale: 'Standard evidence anchor nomination',
+      dataOrigin: 'patient_measured',
+      scientificMaturity: 'clinical_approved',
+      clinicalPromotionStatus: 'approved',
       generatorTrace: { algorithmCode: 'TEST', algorithmVersion: '2.0' },
     };
 

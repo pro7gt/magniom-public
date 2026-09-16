@@ -11,7 +11,7 @@
 
 Direct structural connections between Left DLPFC and subgenual ACC (sgACC) are sparse in the human brain. Therapeutic neuromodulation effects are primarily mediated through polysynaptic routing across intermediate hub structures, such as the anterior cingulate cortex (ACC) and the thalamus.
 
-Seguin et al. (*Nature Neuroscience*, 2026) modeled polysynaptic communication across a high-resolution normative structural connectome (HCP 1,065 consensus structural connectome in Brainnetome / HCP-MMP1.0 parcellation), discovering that:
+Seguin et al. (*Nature Neuroscience*, 2026) modeled polysynaptic communication across a high-resolution normative structural connectome (HCP 1,065 consensus structural connectome using the `Schaefer200_and_TianSubcortex` combined cortical-subcortical parcellation), discovering that:
 1. 3-hop cortical pathways (DLPFC $\to$ Superior Frontal Gyrus $\to$ Rostral ACC $\to$ sgACC) and
 2. 4-hop fronto-thalamic pathways (DLPFC $\to$ Thalamus $\to$ Medial SFG $\to$ Rostral ACC $\to$ sgACC)
 account for the vast majority of communication capacity between DLPFC stimulation sites and the subgenual target.
@@ -31,11 +31,15 @@ $$p^*(u, v) = \arg\min_{p \in \mathcal{P}_{uv}} \sum_{e \in p} L_e$$
 The number of white matter hops is given by:
 $$H(u, v) = |p^*(u, v)| - 1$$
 
-### 2.3 Distance-Weighted Target Proximity
+### 2.3 Distance-Weighted Target Proximity & Mechanistic Hypotheses
 For a given TMS coil location $k$, cortical parcels within distance radius $R \le 15\text{ mm}$ of the coil coordinate are weighted by exponential attenuation:
 $$w_i = \exp(\kappa \cdot d_i / 10.0), \quad \kappa = -1.0$$
+If no parcel is within the radius $R$, the algorithm fails closed rather than assigning an arbitrary distant parcel.
 The weighted average hops $h(k)$ to the downstream sgACC target sphere $T$ is computed as:
 $$h(k) = \frac{1}{\sum_i w_i |T|} \sum_{i \in S(k)} \sum_{j \in T} w_i \cdot H(i, j)$$
+
+> [!NOTE]
+> Output communication metrics (average hops and efficiency rank) provide mechanistic hypotheses of communication capacity across the normative connectome; they do not constitute individual causal treatment-effect predictions.
 
 ---
 

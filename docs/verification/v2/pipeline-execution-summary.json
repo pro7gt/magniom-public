@@ -1,0 +1,98 @@
+{
+  "runId": "CI-RUN-20260916212223",
+  "timestamp": "2026-09-16T21:22:23.744Z",
+  "gitCommit": "cca6b59385b4ba8f3683cc4d25f5e20f8f6db4c8",
+  "gitBranch": "main",
+  "governingSpec": "public/guides/MAGNIOM-Enterprise Verification, Testing CICD Specification v2.0.md",
+  "allPassed": true,
+  "totalDurationSec": 120.45,
+  "stagesRequested": 12,
+  "stagesPassed": 12,
+  "stages": [
+    {
+      "stage": 0,
+      "name": "Stage 0 — C0–C4 Scientific Change Classifier & PR Policy",
+      "command": "npm run verify:stage0",
+      "durationSec": 0.18,
+      "passed": true
+    },
+    {
+      "stage": 1,
+      "name": "Stage 1 — Static Verification & Target Engine Rules",
+      "command": "npm run verify:stage1",
+      "durationSec": 14.32,
+      "passed": true
+    },
+    {
+      "stage": 2,
+      "name": "Stage 2 — Unit Tests & 375 SRS Requirements Traceability",
+      "command": "npm run verify:stage2",
+      "durationSec": 8.78,
+      "passed": true
+    },
+    {
+      "stage": 3,
+      "name": "Stage 3 — Property-Based Invariant Verification",
+      "command": "npm run verify:stage3",
+      "durationSec": 1.61,
+      "passed": true
+    },
+    {
+      "stage": 4,
+      "name": "Stage 4 — Database Zero-State Rebuild & 11-Domain RLS",
+      "command": "npm run verify:stage4",
+      "durationSec": 0.25,
+      "passed": true
+    },
+    {
+      "stage": 5,
+      "name": "Stage 5 — Multi-Indication 72 Golden Cases & Spatial Differentials",
+      "command": "npm run verify:stage5",
+      "durationSec": 0.48,
+      "passed": true
+    },
+    {
+      "stage": 6,
+      "name": "Stage 6 — Release-Blocking Laterality & Adversarial Boundaries",
+      "command": "npm run verify:stage6",
+      "durationSec": 1.39,
+      "passed": true
+    },
+    {
+      "stage": 7,
+      "name": "Stage 7 — Presentation & Workflow Worker Integration",
+      "command": "npm run verify:stage7",
+      "durationSec": 1.34,
+      "passed": true
+    },
+    {
+      "stage": 8,
+      "name": "Stage 8 — Security, SBOM, Secrets & Pentest Readiness",
+      "command": "npm run verify:stage8",
+      "durationSec": 1.19,
+      "passed": true
+    },
+    {
+      "stage": 9,
+      "name": "Stage 9 — Reproducible Monorepo Build & MagniomReleaseManifestV2",
+      "command": "npm run verify:stage9",
+      "durationSec": 49.01,
+      "passed": true
+    },
+    {
+      "stage": 10,
+      "name": "Stage 10 — Multi-Indication Smoke Test & Recall Indexing",
+      "command": "npm run verify:stage10",
+      "durationSec": 0.62,
+      "passed": true
+    },
+    {
+      "stage": "neurocompute",
+      "name": "NeuroCompute Scientific Service",
+      "command": "npm run test:neurocompute -- --fast",
+      "durationSec": 41.29,
+      "passed": true
+    }
+  ],
+  "sha256Digest": "05943468f6bbea01738007cedb30be77a981438a3f16aa732dd40f9aa273e2e9"
+}

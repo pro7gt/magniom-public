@@ -104,7 +104,9 @@ describe('Target Engine Core Exit Criterion 6: Refinement Baseline Declaration',
   });
 
   it('correctly processes anchored refinement when baseline candidate draft ID is declared and valid', () => {
-    const context = createCanonicalResolvedContextV2();
+    const context = createCanonicalResolvedContextV2({
+      request: { mode: 'validation' } as any,
+    });
     const result = runTargetEngineV2(context);
 
     // MDD reference plugin provides a valid refinement anchored to BA46

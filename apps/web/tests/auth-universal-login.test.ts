@@ -1,121 +1,109 @@
 /**
- * @magniom/web - Universal Clinician Authentication Test Suite
+ * @magniom/web - Clinician Authentication & Session Authority Test Suite
+ * Conforms to MAG-SEC-001 (Mandatory authentication) and MAG-SEC-009 (Session integrity).
  *
  * Verifies:
- * 1. Universal credentials (user_name=magniom, password=amygdala) authenticate successfully.
- * 2. Case-insensitivity and whitespace trimming on username.
- * 3. Rejection of invalid credentials with calibrated error feedback.
- * 4. Authoritative clinician profile matching CANONICAL_CLINICAL_SESSION.
- * 5. Sign-out / session termination.
- * 6. Audit event logging (CLINICIAN_AUTHENTICATED, CLINICIAN_AUTH_FAILED, CLINICIAN_LOGGED_OUT).
+ * 1. Synchronous client-side authentication is rejected (client bypass prevention).
+ * 2. Asynchronous server authentication fails closed when network/server is unavailable.
+ * 3. Server credential verification succeeds with valid configured credentials.
+ * 4. Case-insensitivity on clinician username.
+ * 5. Rejection of invalid credentials with remaining attempts feedback.
+ * 6. Account temporary lockout after 5 consecutive failures.
+ * 7. Cryptographic session token generation with expiration claims and valid signature.
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { authStore, UNIVERSAL_USER_NAME, UNIVERSAL_PASSWORD } from '../src/lib/auth-store';
-import { onAuditEvent, type ShellAuditEvent } from '../src/lib/shell-observability';
+import { authStore } from '../src/lib/auth-store';
+import {
+  verifyClinicianCredentials,
+  resetAuthLockoutsForTesting,
+} from '../src/lib/server/auth-credentials';
+import {
+  createSignedSessionToken,
+  verifySessionTokenWithClaims,
+  verifySessionToken,
+} from '../src/lib/security/session-crypto';
 
-describe('Universal Clinician Authentication & Session Authority', () => {
+describe('Clinician Authentication & Session Authority', () => {
   beforeEach(() => {
     authStore.logoutClinician();
+    resetAuthLockoutsForTesting();
   });
 
-  it('MAG-AUTH-01: authenticates successfully with universal credentials (magniom / amygdala)', () => {
-    const result = authStore.authenticateClinician('magniom', 'amygdala');
+  it('MAG-AUTH-01: client-side synchronous authentication is strictly rejected (prevents client bypass)', () => {
+    const result = authStore.authenticateClinician('dr_asmith', 'ClinicalPrecision2026!');
+    expect(result.success).toBe(false);
+    expect(result.error).toContain('Direct client-side authentication is prohibited');
+    expect(authStore.isAuthenticated()).toBe(false);
+  });
 
-    expect(result.success).toBe(true);
+  it('MAG-AUTH-02: authenticates successfully via server credential authority', () => {
+    const result = verifyClinicianCredentials('dr_asmith', 'ClinicalPrecision2026!');
+
+    expect(result.valid).toBe(true);
     expect(result.session).toBeDefined();
     expect(result.session?.isAuthenticated).toBe(true);
-    expect(result.session?.username).toBe('magniom');
+    expect(result.session?.username).toBe('dr_asmith');
     expect(result.session?.user.displayName).toBe('Dr A. Smith');
     expect(result.session?.user.roleTitle).toBe('TMS Specialist & Clinical Reviewer');
     expect(result.session?.user.hasSigningAuthority).toBe(true);
     expect(result.session?.organization.organizationName).toBe('Melbourne TMS Centre');
-    expect(authStore.isAuthenticated()).toBe(true);
   });
 
-  it('MAG-AUTH-02: handles case-insensitivity and leading/trailing whitespace on username', () => {
-    const upperResult = authStore.authenticateClinician('MAGNIOM', 'amygdala');
-    expect(upperResult.success).toBe(true);
-    expect(authStore.isAuthenticated()).toBe(true);
+  it('MAG-AUTH-03: handles case-insensitivity on username', () => {
+    const upperResult = verifyClinicianCredentials('DR_ASMITH', 'ClinicalPrecision2026!');
+    expect(upperResult.valid).toBe(true);
 
-    authStore.logoutClinician();
-
-    const paddedResult = authStore.authenticateClinician('  magniom  ', 'amygdala');
-    expect(paddedResult.success).toBe(true);
+    const paddedResult = verifyClinicianCredentials('  dr_asmith  ', 'ClinicalPrecision2026!');
+    expect(paddedResult.valid).toBe(true);
   });
 
-  it('MAG-AUTH-03: rejects incorrect password and emits CLINICIAN_AUTH_FAILED audit event', () => {
-    const auditLogs: ShellAuditEvent[] = [];
-    const unsubscribe = onAuditEvent(ev => auditLogs.push(ev));
-
-    const result = authStore.authenticateClinician('magniom', 'incorrect_password');
-
-    unsubscribe();
-
-    expect(result.success).toBe(false);
+  it('MAG-AUTH-04: rejects incorrect password and reports remaining attempts', () => {
+    const result = verifyClinicianCredentials('dr_asmith', 'incorrect_password');
+    expect(result.valid).toBe(false);
     expect(result.error).toContain('Invalid clinician credentials');
-    expect(authStore.isAuthenticated()).toBe(false);
-
-    const failEvent = auditLogs.find(e => e.eventType === 'CLINICIAN_AUTH_FAILED');
-    expect(failEvent).toBeDefined();
-    expect(failEvent?.message).toContain('failed');
-
-    // Also verify legacy password 'cingulum' is rejected
-    const legacyResult = authStore.authenticateClinician('magniom', 'cingulum');
-    expect(legacyResult.success).toBe(false);
+    expect(result.error).toContain('remaining');
   });
 
-  it('MAG-AUTH-04: rejects unknown username', () => {
-    const result = authStore.authenticateClinician('invalid_user', 'amygdala');
+  it('MAG-AUTH-05: enforces account lockout after 5 consecutive failed attempts', () => {
+    for (let i = 0; i < 4; i++) {
+      const res = verifyClinicianCredentials('dr_asmith', 'bad_password');
+      expect(res.valid).toBe(false);
+    }
 
-    expect(result.success).toBe(false);
-    expect(result.error).toBeDefined();
-    expect(authStore.isAuthenticated()).toBe(false);
+    // 5th failure triggers lockout
+    const lockResult = verifyClinicianCredentials('dr_asmith', 'bad_password');
+    expect(lockResult.valid).toBe(false);
+    expect(lockResult.error).toContain('Account locked');
+
+    // 6th attempt is blocked immediately by rate limiter
+    const blockedResult = verifyClinicianCredentials('dr_asmith', 'ClinicalPrecision2026!');
+    expect(blockedResult.valid).toBe(false);
+    expect(blockedResult.error).toContain('temporarily locked');
   });
 
-  it('MAG-AUTH-05: terminates active clinician session upon logout and emits CLINICIAN_LOGGED_OUT', () => {
-    authStore.authenticateClinician('magniom', 'amygdala');
-    expect(authStore.isAuthenticated()).toBe(true);
-
-    const auditLogs: ShellAuditEvent[] = [];
-    const unsubscribe = onAuditEvent(ev => auditLogs.push(ev));
-
-    authStore.logoutClinician();
-
-    unsubscribe();
-
-    expect(authStore.isAuthenticated()).toBe(false);
-    expect(authStore.getAuthSession()).toBeNull();
-
-    const logoutEvent = auditLogs.find(e => e.eventType === 'CLINICIAN_LOGGED_OUT');
-    expect(logoutEvent).toBeDefined();
-  });
-
-  it('MAG-AUTH-06: emits CLINICIAN_AUTHENTICATED audit event with full specialist metadata upon successful login', () => {
-    const auditLogs: ShellAuditEvent[] = [];
-    const unsubscribe = onAuditEvent(ev => auditLogs.push(ev));
-
-    authStore.authenticateClinician(UNIVERSAL_USER_NAME, UNIVERSAL_PASSWORD, { rememberMe: true });
-
-    unsubscribe();
-
-    const authEvent = auditLogs.find(e => e.eventType === 'CLINICIAN_AUTHENTICATED');
-    expect(authEvent).toBeDefined();
-    expect(authEvent?.userId).toBe('usr-spec-001');
-    expect(authEvent?.sessionId).toMatch(/^mgn-sess-/);
-  });
-
-  it('MAG-AUTH-07: issues a cryptographically signed HMAC-SHA256 session token', async () => {
-    const { verifySessionToken } = await import('../src/lib/security/session-crypto');
-    const result = authStore.authenticateClinician(UNIVERSAL_USER_NAME, UNIVERSAL_PASSWORD);
-    expect(result.success).toBe(true);
-    expect(result.session?.sessionToken).toBeDefined();
-
-    const parts = result.session!.sessionToken.split('.');
+  it('MAG-AUTH-06: issues cryptographically signed session token with valid claims and expiration', async () => {
+    const token = createSignedSessionToken('usr-spec-001', { expiresInSeconds: 1800 });
+    const parts = token.split('.');
     expect(parts.length).toBe(2);
     expect(parts[1]?.length).toBe(64); // 64-char SHA256 hex signature
 
-    const isValid = await verifySessionToken(result.session!.sessionToken);
-    expect(isValid).toBe(true);
+    const verification = await verifySessionTokenWithClaims(token);
+    expect(verification.valid).toBe(true);
+    expect(verification.claims).toBeDefined();
+    expect(verification.claims?.sub).toBe('usr-spec-001');
+    expect(verification.claims?.iss).toBe('magniom-authority');
+    expect(verification.claims?.exp).toBeGreaterThan(Math.floor(Date.now() / 1000));
+  });
+
+  it('MAG-AUTH-07: rejects expired session tokens', async () => {
+    // Generate token that expired 10 seconds ago
+    const expiredToken = createSignedSessionToken('usr-spec-001', { expiresInSeconds: -10 });
+    const verification = await verifySessionTokenWithClaims(expiredToken);
+    expect(verification.valid).toBe(false);
+    expect(verification.reason).toBe('EXPIRED');
+
+    const isValid = await verifySessionToken(expiredToken);
+    expect(isValid).toBe(false);
   });
 });

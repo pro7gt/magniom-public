@@ -1,22 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import {
-  UNIVERSAL_USER_NAME,
-  UNIVERSAL_PASSWORD,
-  AUTH_COOKIE_NAME,
-  type ClinicianAuthSession,
-} from '../../../../lib/auth-store';
-import { CANONICAL_CLINICAL_SESSION } from '../../../../lib/release-authority';
+import { AUTH_COOKIE_NAME } from '../../../../lib/auth-store';
 import { createSignedSessionToken } from '../../../../lib/security/session-crypto';
 import { emitAuditEvent } from '../../../../lib/shell-observability';
+import { verifyClinicianCredentials } from '../../../../lib/server/auth-credentials';
 
 export const runtime = 'nodejs';
 
 /**
  * Magniom Authoritative Server-Side Clinician Authentication API
- * Conforms to MAG-SEC-001, HIPAA § 164.312(a)(1), and 21 CFR Part 11.
+ * Conforms to MAG-SEC-001 (Mandatory authentication) and MAG-SEC-009 (Session Integrity).
  *
- * Validates universal credentials on the server, generates an authoritative
- * HMAC-SHA256 signed session token, and sets the session cookie on the response.
+ * Validates credentials on the server, generates an authoritative
+ * HMAC-SHA256 signed session token with claims & expiration,
+ * and sets an HttpOnly session cookie on the response.
  */
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
@@ -27,52 +23,44 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       rememberMe?: boolean;
     };
 
-    const normalizedUser = (username || '').trim().toLowerCase();
-    const cleanPassword = password || '';
+    const authResult = verifyClinicianCredentials(username || '', password || '');
 
-    const isValidUser = normalizedUser === UNIVERSAL_USER_NAME.toLowerCase();
-    const isValidPass = cleanPassword === UNIVERSAL_PASSWORD;
-
-    if (!isValidUser || !isValidPass) {
+    if (!authResult.valid || !authResult.session) {
       emitAuditEvent('CLINICIAN_AUTH_FAILED', {
-        message: 'Clinician authentication failed: Invalid universal credentials.',
+        message: 'Clinician authentication failed.',
         metadata: {
-          attemptedUser: normalizedUser,
-          reason: !isValidUser ? 'INVALID_USERNAME' : 'INVALID_PASSWORD',
+          attemptedUser: (username || '').trim().toLowerCase(),
+          reason: authResult.error || 'INVALID_CREDENTIALS',
         },
       });
 
       return NextResponse.json(
         {
           success: false,
-          error: 'Invalid clinician credentials. Please verify your username and password.',
+          error:
+            authResult.error ||
+            'Invalid clinician credentials. Please verify your username and password.',
         },
         { status: 401 },
       );
     }
 
-    const timestamp = new Date().toISOString();
-    const sessionToken = createSignedSessionToken(CANONICAL_CLINICAL_SESSION.user.id);
+    const maxAge = rememberMe ? 60 * 60 * 24 * 30 : 60 * 60 * 8; // 30 days vs 8 hours
+    const sessionToken = createSignedSessionToken(authResult.session.user.id, {
+      expiresInSeconds: maxAge,
+      role: authResult.session.user.roleTitle,
+    });
 
-    const session: ClinicianAuthSession = {
-      isAuthenticated: true,
-      username: UNIVERSAL_USER_NAME,
-      loginTimestamp: timestamp,
+    const session = {
+      ...authResult.session,
       sessionToken,
       rememberMe: Boolean(rememberMe),
-      user: {
-        ...CANONICAL_CLINICAL_SESSION.user,
-      },
-      organization: {
-        ...CANONICAL_CLINICAL_SESSION.organization,
-      },
-      mode: CANONICAL_CLINICAL_SESSION.mode,
     };
 
     emitAuditEvent('CLINICIAN_AUTHENTICATED', {
       userId: session.user.id,
       sessionId: sessionToken.split('.')[0] || 'mgn-sess',
-      message: `Specialist clinician ${session.user.displayName} authenticated via universal credentials.`,
+      message: `Specialist clinician ${session.user.displayName} authenticated.`,
       metadata: {
         userId: session.user.id,
         roleTitle: session.user.roleTitle,
@@ -85,7 +73,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       session,
     });
 
-    const maxAge = rememberMe ? 60 * 60 * 24 * 30 : 60 * 60 * 24; // 30 days vs 1 day
     const forwardedProto = request.headers.get('x-forwarded-proto');
     const isHttps =
       request.url.startsWith('https:') ||
@@ -101,7 +88,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       maxAge,
       sameSite: 'lax',
       secure: isHttps,
-      httpOnly: false, // Accessible by client store synchronization
+      httpOnly: true, // Secure: inaccessible by browser scripts, preventing XSS extraction
     });
 
     return response;

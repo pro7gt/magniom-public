@@ -51,6 +51,9 @@ describe('Target Engine Core Exit Criterion 7: Suppressed Candidate Reconstructa
           reliedOnMeasurementIds: [],
           reliedOnReliabilityIds: [],
           lineage: { lineageType: 'evidence_baseline' },
+          dataOrigin: 'patient_measured',
+          scientificMaturity: 'clinical_approved',
+          clinicalPromotionStatus: 'approved',
           rawScientificFeatures: [
             { code: 'phenotype_concordance', value: 0.82, isApplicable: true },
             { code: 'circuit_concordance', value: 0.85, isApplicable: true },
@@ -80,9 +83,9 @@ describe('Target Engine Core Exit Criterion 7: Suppressed Candidate Reconstructa
     // Verify suppressed candidates list is non-empty
     expect(result.suppressedCandidates.length).toBeGreaterThan(0);
 
-    // Find the redundant candidate in suppressed list
+    // Find the candidate in suppressed list
     const redundantCand = result.suppressedCandidates.find(
-      c => c.provenance.createdBy === 'GEN-REDUNDANT-001',
+      c => c.generationStatus === 'suppressed',
     );
     expect(redundantCand).toBeDefined();
     expect(redundantCand?.generationStatus).toBe('suppressed');

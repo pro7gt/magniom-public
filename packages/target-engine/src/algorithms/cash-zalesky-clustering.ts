@@ -30,17 +30,19 @@ export interface ClusterComponent {
   readonly meanConnectivity: number;
   readonly peakNode: VoxelNode;
   readonly centroid: { readonly x: number; readonly y: number; readonly z: number };
+  readonly unweightedCentroid?: { readonly x: number; readonly y: number; readonly z: number };
 }
 
 export interface CashZaleskyTargetResult {
-  readonly optimalTarget: { readonly x: number; readonly y: number; readonly z: number };
-  readonly rawPeak: { readonly x: number; readonly y: number; readonly z: number };
-  readonly largestCluster: ClusterComponent;
+  readonly optimalTarget: { readonly x: number; readonly y: number; readonly z: number } | null;
+  readonly rawPeak: { readonly x: number; readonly y: number; readonly z: number } | null;
+  readonly largestCluster: ClusterComponent | null;
   readonly allClusters: readonly ClusterComponent[];
   readonly thresholdValue: number;
   readonly totalSearchNodes: number;
   readonly retainedNodesCount: number;
   readonly methodCode: 'FC_CLUSTER_PERSONALISED';
+  readonly status: 'success' | 'no_qualifying_cluster';
 }
 
 export interface TestRetestReliabilityMetrics {
@@ -147,6 +149,9 @@ export function computeCashZaleskyTarget(
       let weightedX = 0;
       let weightedY = 0;
       let weightedZ = 0;
+      let sumX = 0;
+      let sumY = 0;
+      let sumZ = 0;
 
       for (const cn of clusterNodes) {
         sumConn += cn.connectivity;
@@ -160,12 +165,21 @@ export function computeCashZaleskyTarget(
         weightedX += cn.x * w;
         weightedY += cn.y * w;
         weightedZ += cn.z * w;
+        sumX += cn.x;
+        sumY += cn.y;
+        sumZ += cn.z;
       }
 
       const cog = {
         x: Number((weightedX / sumWeight).toFixed(2)),
         y: Number((weightedY / sumWeight).toFixed(2)),
         z: Number((weightedZ / sumWeight).toFixed(2)),
+      };
+
+      const unweightedCog = {
+        x: Number((sumX / clusterNodes.length).toFixed(2)),
+        y: Number((sumY / clusterNodes.length).toFixed(2)),
+        z: Number((sumZ / clusterNodes.length).toFixed(2)),
       };
 
       clusters.push({
@@ -175,41 +189,25 @@ export function computeCashZaleskyTarget(
         meanConnectivity: Number((sumConn / clusterNodes.length).toFixed(4)),
         peakNode,
         centroid: cog,
+        unweightedCentroid: unweightedCog,
       });
     }
   }
 
-  // If no clusters met min size, fallback to entire suprathreshold set as single component
+  // Fail-closed (§40, Revision 02 Finding 9): If no clusters met minClusterSize, fail closed!
+  // Do NOT merge disconnected suprathreshold nodes into a fabricated single component.
   if (clusters.length === 0) {
-    let peakNode = suprathreshold[0]!;
-    let sumConn = 0;
-    let sumWeight = 0;
-    let weightedX = 0;
-    let weightedY = 0;
-    let weightedZ = 0;
-
-    for (const cn of suprathreshold) {
-      sumConn += cn.connectivity;
-      if (cn.connectivity < peakNode.connectivity) peakNode = cn;
-      const w = Math.max(1e-6, Math.abs(cn.connectivity));
-      sumWeight += w;
-      weightedX += cn.x * w;
-      weightedY += cn.y * w;
-      weightedZ += cn.z * w;
-    }
-
-    clusters.push({
-      clusterId: 1,
-      nodes: suprathreshold,
-      size: suprathreshold.length,
-      meanConnectivity: Number((sumConn / suprathreshold.length).toFixed(4)),
-      peakNode,
-      centroid: {
-        x: Number((weightedX / sumWeight).toFixed(2)),
-        y: Number((weightedY / sumWeight).toFixed(2)),
-        z: Number((weightedZ / sumWeight).toFixed(2)),
-      },
-    });
+    return {
+      optimalTarget: null,
+      rawPeak: null,
+      largestCluster: null,
+      allClusters: [],
+      thresholdValue,
+      totalSearchNodes: nodes.length,
+      retainedNodesCount: retainCount,
+      methodCode: 'FC_CLUSTER_PERSONALISED',
+      status: 'no_qualifying_cluster',
+    };
   }
 
   // 4. Select largest coherent cluster (Cash 2021 requirement)
@@ -228,6 +226,7 @@ export function computeCashZaleskyTarget(
     totalSearchNodes: nodes.length,
     retainedNodesCount: retainCount,
     methodCode: 'FC_CLUSTER_PERSONALISED',
+    status: 'success',
   };
 }
 
@@ -241,6 +240,23 @@ export function evaluateCashZaleskyReliability(
   fullPattern1?: readonly number[],
   fullPattern2?: readonly number[],
 ): TestRetestReliabilityMetrics {
+  if (
+    !session1.optimalTarget ||
+    !session2.optimalTarget ||
+    !session1.rawPeak ||
+    !session2.rawPeak ||
+    !session1.largestCluster ||
+    !session2.largestCluster
+  ) {
+    return {
+      intraindividualDistanceMm: 999.0,
+      peakDistanceMm: 999.0,
+      clusterSpatialOverlapDice: 0.0,
+      patternCorrelationR: 0.0,
+      intrascanFcQualified: false,
+    };
+  }
+
   // 1. Intraindividual Euclidean distance (between cluster centroids)
   const dx = session1.optimalTarget.x - session2.optimalTarget.x;
   const dy = session1.optimalTarget.y - session2.optimalTarget.y;

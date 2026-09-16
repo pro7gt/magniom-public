@@ -15,7 +15,7 @@
         "clinical",
         "research"
       ],
-      "plugin_digest": "b0548c3bcb2c095cd6a46038d6cd5d3bb510b1cdacdeefd8e3bb0c95086f0100",
+      "plugin_digest": "eebbddcc7dcac3a92c8d3da2a16b3a8c131b22320f2149f76a16fff5575b57dd",
       "goldenCaseCount": 10
     },
     {
@@ -26,7 +26,7 @@
         "validation",
         "research"
       ],
-      "plugin_digest": "c1de8c76b97e4d379398eb8523b5e3bbd60f93df2d8b5d0256e34ca93a0e1af0",
+      "plugin_digest": "20f3779704f566164c751153d365aa7a569523f85d3d22f09e7fd2ee3a01b04c",
       "goldenCaseCount": 8
     },
     {
@@ -37,7 +37,7 @@
         "validation",
         "research"
       ],
-      "plugin_digest": "0de2d1927a92b9b3bcc84cb7317103e4d8eef58dc84da5671056cf0547e9073b",
+      "plugin_digest": "c94b702af61ae17d7ec8f45612516259a8f9a3b5272949caa57cb806866998d4",
       "goldenCaseCount": 8
     },
     {
@@ -48,7 +48,7 @@
         "validation",
         "research"
       ],
-      "plugin_digest": "65e14fab4dcfc39fd4b4312e54c6e6c5d7c956b65e5227999fe9408f8a78a3e8",
+      "plugin_digest": "1d97b97d68d585600dc822ee1dac3e868ec910cb35515d37d8d021c30818b8f5",
       "goldenCaseCount": 10
     },
     {
@@ -58,7 +58,7 @@
       "permitted_modes": [
         "research"
       ],
-      "plugin_digest": "0c4c9cf4d24854ff1a3cd50067b5f5a5d547180ec6f68f0c47125ff8b31d852a",
+      "plugin_digest": "21f4e158591ae5bbd55a3ebb3ad6213c38c0d83765bb214d0dc7267c6a299513",
       "goldenCaseCount": 10
     },
     {
@@ -68,7 +68,7 @@
       "permitted_modes": [
         "research"
       ],
-      "plugin_digest": "9aee8d42379939583c28f8d188953baab1e2990448495a94f67f60507c9d284e",
+      "plugin_digest": "5a49f08194739bef21c4accc8bb9fc05d67f0d90a0c8bd9b265fea68244d53b9",
       "goldenCaseCount": 9
     },
     {
@@ -78,7 +78,7 @@
       "permitted_modes": [
         "research"
       ],
-      "plugin_digest": "607bd55ca79e0110f5b5136f229a3c609c5a29a2311b41a2af98aaa021c6efc2",
+      "plugin_digest": "c9da568bf578aa5307f7861aad0fab2378df71708f2d8619a0991c6cea049e85",
       "goldenCaseCount": 7
     },
     {
@@ -139,9 +139,9 @@
     }
   ],
   "sbom_digests": [
-    "49c0a28026d6931c83a9e874d661c4d1f574d4cfea15755d059c282ee3749b0f"
+    "2110128e59f79e56bb52162604cb9db798fe03595967e1e2b850217d36f1d738"
   ],
-  "test_evidence_digest": "f869c84c774c0ff7e4300af4ad648ddaa4d81a81044cf98014b29493a6d6ed37",
+  "test_evidence_digest": "8c13a93409de407c8ac249a44724bd2c3af89d162b5efad8627484d2254708e1",
   "signatures": [
     {
       "signerRole": "ENGINEERING_LEAD",
@@ -149,7 +149,7 @@
       "signerEmail": "engineering-lead@magniom.internal",
       "keyId": "KEY-ENG-RELEASE-2026-ED25519",
       "algorithm": "Ed25519",
-      "signature": "4568145c7414fe757e2a3d45eab2630c480f793bb6a3979694561ab74d23a65c",
+      "signature": "6527676069cdbc96ab5e89942eba8674da0bb9d01d642e68ffcea3760bd7a55e",
       "signedAt": "2026-09-03T22:00:00.000Z",
       "signingComment": "100% test pass across 72 golden cases and 332 SRS requirements."
     },
@@ -159,12 +159,12 @@
       "signerEmail": "safety-officer@magniom.internal",
       "keyId": "KEY-SAFETY-OFFICER-2026-ED25519",
       "algorithm": "Ed25519",
-      "signature": "5979557cbafc5a3da97bf9cbb54f9abfe86e5137f0b8fddd23b509e53bb7d21f",
+      "signature": "10f34976f16a5973a20f90aa17c0c12e1840f6cc997018b600830baa0e434cfa",
       "signedAt": "2026-09-03T22:05:00.000Z",
       "signingComment": "All 8 indication modules verified against formal criteria. Q3 Qualified."
     }
   ],
   "generated_at": "2026-09-03T22:10:00.000Z",
   "status": "VERIFICATION_QUALIFIED",
-  "manifest_sha256": "534ca241d4adac1da71095e900c3ac7860cf9ded8342d6279ac05455db084b15"
+  "manifest_sha256": "54ed5e6e2d32a59f0f15ae611d962a8bae6cccf95274b7be136ea9244ad099a4"
 }
