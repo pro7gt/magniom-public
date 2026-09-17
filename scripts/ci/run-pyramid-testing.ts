@@ -59,10 +59,10 @@ export const PYRAMID_LAYERS: readonly PyramidLayer[] = [
     level: 4,
     name: 'Level 4: Metamorphic Relations & Domain/API Contracts',
     command:
-      'npx vitest run packages/target-engine/tests/v2/metamorphic-and-boundary.test.ts packages/domain/tests/ packages/target-engine/tests/v2/plugin-contracts.test.ts packages/domain/src/rls-isolation.test.ts packages/schemas/tests/',
+      'npx vitest run packages/target-engine/tests/v2/metamorphic-and-boundary.test.ts packages/domain/tests/ packages/target-engine/tests/v2/plugin-contracts.test.ts packages/domain/src/rls-isolation.test.ts packages/schemas/tests/ packages/target-engine/tests/v2/research-leakage.test.ts packages/target-engine/tests/v2/zalesky-algorithms.test.ts',
     specSection: '§39–§41',
     description:
-      'Validates 5 metamorphic scientific relations, candidate permutation invariance, canonical data schemas & prohibited fields, schema contract boundaries, and tenant isolation.',
+      'Validates 5 metamorphic scientific relations, candidate permutation invariance, canonical data schemas & prohibited fields, Gate 14 candidate provenance and research-leakage boundaries, Zalesky algorithm parameters, schema contract boundaries, and tenant isolation.',
   },
   {
     level: 5,

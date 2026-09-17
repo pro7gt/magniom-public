@@ -353,6 +353,11 @@ export interface CandidateDraft {
   readonly dataOrigin?: import('./enums.js').DataOrigin | undefined;
   readonly scientificMaturity?: import('./enums.js').ScientificMaturity | undefined;
   readonly clinicalPromotionStatus?: import('./enums.js').ClinicalPromotionStatus | undefined;
+  readonly targetDefinitionOrigin?: import('./enums.js').TargetDefinitionOrigin | undefined;
+  readonly inputDataOrigin?: import('./enums.js').InputDataOrigin | undefined;
+  readonly clinicalApprovalStatus?: import('./enums.js').ClinicalPromotionStatus | undefined;
+  readonly patientPersonalizationStatus?:
+    import('./enums.js').PatientPersonalizationStatus | undefined;
 }
 
 export interface CandidateGeneratorDescriptor {

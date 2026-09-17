@@ -8,7 +8,7 @@ import json
 import hashlib
 from datetime import datetime, timezone
 from dataclasses import dataclass, field, asdict
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 
 
 @dataclass(frozen=True)
@@ -42,7 +42,7 @@ class MeasurementArtifactManifest:
     modality: str
     created_at: str
     data_origin: str  # 'patient_measured', 'synthetic', 'normative', 'derived_from_patient_measured'
-    source_artifacts: List[SourceArtifactRecord]
+    source_artifacts: Tuple[SourceArtifactRecord, ...]
     preprocessing: PreprocessingProvenance
     coordinate_space: str
     atlas: str
@@ -92,7 +92,7 @@ class ArtifactManifestBuilder:
             modality=modality,
             created_at=now_utc,
             data_origin=data_origin,
-            source_artifacts=source_artifacts,
+            source_artifacts=tuple(source_artifacts),
             preprocessing=prep,
             coordinate_space=coordinate_space,
             atlas=atlas,

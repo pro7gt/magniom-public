@@ -16,7 +16,8 @@
     "dominantRoutes": ["cortical_3_hop", "fronto_thalamic_4_hop"]
   },
   "evidenceIds": ["src-mdd-007"],
-  "implementationHash": "da2919286f2bd9560209f803fb64d2ad542d383a1bdca6c6fc8a4834477282d5",
+  "implementationStatus": "implemented",
+  "implementationHash": "31591e5ed8f2e188be1dd1fbb9fc5cc47af7ed6d3d9f85e9be63c06ac60c48a8",
   "limitations": [
     "Normative pathway routing is derived from group-averaged human connectomes and does not reflect patient-specific dysconnectivity.",
     "Calculated shortest paths provide mechanistic hypotheses regarding communication efficiency; they do not prove causal stimulation propagation.",

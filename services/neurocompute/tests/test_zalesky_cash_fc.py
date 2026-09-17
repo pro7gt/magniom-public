@@ -191,5 +191,59 @@ class TestZaleskyCashFc(unittest.TestCase):
         self.assertEqual(cluster_voxel_ids, {101, 102, 103})
 
 
+    def test_exact_target_reliability_no_qualifying_cluster_fail_closed(self):
+        """Validates that split-half reliability fails closed if one partition has no qualifying cluster."""
+        half_a = [
+            VoxelCoordinate(x=-40.0, y=44.0, z=30.0, connectivity=-0.60, voxel_id=1),
+            VoxelCoordinate(x=-42.0, y=44.0, z=30.0, connectivity=-0.50, voxel_id=2),
+        ]
+        # Dispersed voxels with distance > 26-neighborhood (> 2.0 mm) and min_cluster_size=2
+        half_b_dispersed = [
+            VoxelCoordinate(x=-40.0, y=44.0, z=30.0, connectivity=-0.60, voxel_id=10),
+            VoxelCoordinate(x=0.0, y=0.0, z=0.0, connectivity=-0.50, voxel_id=11),
+        ]
+
+        metrics = ExactTargetReliabilityEngine.evaluate_split_half_fc(
+            search_voxels_half_a=half_a,
+            search_voxels_half_b=half_b_dispersed,
+            threshold_percentile=1.0,
+            min_cluster_size=2,
+        )
+
+        self.assertEqual(metrics.confidence_status, "not_estimable")
+        self.assertEqual(metrics.spatial_displacement_mm, 999.0)
+        self.assertEqual(metrics.cluster_dice_overlap, 0.0)
+        self.assertFalse(metrics.connectivity_sign_consistent)
+        self.assertIn("No qualifying cluster", metrics.recommendation)
+
+    def test_cash_zalesky_parameter_validations(self):
+        """Validates fail-closed ValueErrors on invalid parameters or non-finite voxels."""
+        valid_voxels = [
+            VoxelCoordinate(x=-40.0, y=44.0, z=30.0, connectivity=-0.60, voxel_id=1),
+            VoxelCoordinate(x=-42.0, y=44.0, z=30.0, connectivity=-0.50, voxel_id=2),
+        ]
+
+        # Invalid threshold_percentile
+        with self.assertRaises(ValueError):
+            CashZaleskyFcPipeline.compute_fc_clustering(valid_voxels, threshold_percentile=0.0)
+        with self.assertRaises(ValueError):
+            CashZaleskyFcPipeline.compute_fc_clustering(valid_voxels, threshold_percentile=1.5)
+
+        # Invalid min_cluster_size
+        with self.assertRaises(ValueError):
+            CashZaleskyFcPipeline.compute_fc_clustering(valid_voxels, min_cluster_size=0)
+
+        # Invalid grid_step_mm
+        with self.assertRaises(ValueError):
+            CashZaleskyFcPipeline.compute_fc_clustering(valid_voxels, grid_step_mm=-2.0)
+
+        # Non-finite voxel coordinates
+        invalid_nan_voxel = [
+            VoxelCoordinate(x=float("nan"), y=44.0, z=30.0, connectivity=-0.60, voxel_id=1),
+        ]
+        with self.assertRaises(ValueError):
+            CashZaleskyFcPipeline.compute_fc_clustering(invalid_nan_voxel)
+
+
 if __name__ == "__main__":
     unittest.main()

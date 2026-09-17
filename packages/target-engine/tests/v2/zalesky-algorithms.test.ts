@@ -257,5 +257,92 @@ describe('Seguin & Zalesky Polysynaptic Pathway Routing (Nat Neurosci 2026)', ()
       expect(res.totalCost).toBe(0);
       expect(res.path).toEqual([1]);
     });
+
+    it('validates Cash-Zalesky parameter boundaries and non-finite inputs', () => {
+      const validNodes: VoxelNode[] = [
+        { id: 'v1', x: -40, y: 44, z: 30, connectivity: -0.6 },
+        { id: 'v2', x: -41, y: 44, z: 30, connectivity: -0.5 },
+      ];
+
+      expect(() => computeCashZaleskyTarget(validNodes, { thresholdPercentile: 0 })).toThrow(
+        'thresholdPercentile must be in (0, 1]',
+      );
+      expect(() => computeCashZaleskyTarget(validNodes, { thresholdPercentile: 1.1 })).toThrow(
+        'thresholdPercentile must be in (0, 1]',
+      );
+      expect(() => computeCashZaleskyTarget(validNodes, { minClusterSize: 0 })).toThrow(
+        'minClusterSize must be an integer >= 1',
+      );
+      expect(() =>
+        computeCashZaleskyTarget([{ id: 'v1', x: NaN, y: 44, z: 30, connectivity: -0.6 }]),
+      ).toThrow('contains non-finite coordinates or connectivity');
+      expect(() =>
+        computeCashZaleskyTarget([
+          { id: 'v1', x: -40, y: 44, z: 30, connectivity: -0.6 },
+          { id: 'v1', x: -41, y: 44, z: 30, connectivity: -0.5 },
+        ]),
+      ).toThrow('duplicate node id detected');
+    });
+
+    it('fails closed when stimulation or target coordinate is >15mm from parcels', () => {
+      const graph: StructuralGraph = {
+        nodeCount: 2,
+        nodeCoordinatesMni: [
+          { x: -40, y: 44, z: 30 },
+          { x: 6, y: 16, z: -10 },
+        ],
+        weights: [
+          [1.0, 0.5],
+          [0.5, 1.0],
+        ],
+      };
+      const costs = computeEdgeCostMatrix(graph.weights);
+
+      // Distant stim coordinate (50mm away)
+      expect(() =>
+        computePathwayCommunicationScore(
+          graph,
+          costs,
+          { x: 50, y: 44, z: 30 },
+          { x: 6, y: 16, z: -10 },
+        ),
+      ).toThrow('No cortical parcels found within 15mm of stimulation coordinate');
+
+      // Distant target coordinate (60mm away)
+      expect(() =>
+        computePathwayCommunicationScore(
+          graph,
+          costs,
+          { x: -40, y: 44, z: 30 },
+          { x: 100, y: 16, z: -10 },
+        ),
+      ).toThrow('No target parcels found within 15mm of target coordinate');
+    });
+
+    it('correctly handles disconnected graphs without treating unreachable nodes as 0 hops', () => {
+      const graph: StructuralGraph = {
+        nodeCount: 2,
+        nodeCoordinatesMni: [
+          { x: -40, y: 44, z: 30 },
+          { x: 6, y: 16, z: -10 },
+        ],
+        weights: [
+          [1.0, 0.0],
+          [0.0, 1.0],
+        ], // 0 weight -> completely disconnected
+      };
+      const costs = computeEdgeCostMatrix(graph.weights);
+
+      const score = computePathwayCommunicationScore(
+        graph,
+        costs,
+        { x: -40, y: 44, z: 30 },
+        { x: 6, y: 16, z: -10 },
+      );
+
+      expect(score.averageHops).toBe(Infinity);
+      expect(score.predictedEfficiencyRank).toBe(0.0);
+      expect(score.dominantPathway).toEqual([]);
+    });
   });
 });

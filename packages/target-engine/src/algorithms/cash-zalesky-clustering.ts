@@ -64,6 +64,44 @@ export function computeCashZaleskyTarget(
     throw new Error('CashZaleskyTargeting: nodes array cannot be empty');
   }
 
+  if (
+    options.thresholdPercentile !== undefined &&
+    (options.thresholdPercentile <= 0 ||
+      options.thresholdPercentile > 1 ||
+      !Number.isFinite(options.thresholdPercentile))
+  ) {
+    throw new Error(
+      `CashZaleskyTargeting: thresholdPercentile must be in (0, 1], received ${options.thresholdPercentile}`,
+    );
+  }
+
+  if (
+    options.minClusterSize !== undefined &&
+    (options.minClusterSize < 1 || !Number.isInteger(options.minClusterSize))
+  ) {
+    throw new Error(
+      `CashZaleskyTargeting: minClusterSize must be an integer >= 1, received ${options.minClusterSize}`,
+    );
+  }
+
+  const seenIds = new Set<number | string>();
+  for (const n of nodes) {
+    if (seenIds.has(n.id)) {
+      throw new Error(`CashZaleskyTargeting: duplicate node id detected: ${n.id}`);
+    }
+    seenIds.add(n.id);
+    if (
+      !Number.isFinite(n.x) ||
+      !Number.isFinite(n.y) ||
+      !Number.isFinite(n.z) ||
+      !Number.isFinite(n.connectivity)
+    ) {
+      throw new Error(
+        `CashZaleskyTargeting: node ${n.id} contains non-finite coordinates or connectivity`,
+      );
+    }
+  }
+
   // 1. Determine optimal threshold
   // Cash 2021 §2.4.4: 10% for conventional seed, 0.5% for group seedmap, 5% for Brainnetome A32sg
   const seedType = options.seedType ?? 'conventional_seed';

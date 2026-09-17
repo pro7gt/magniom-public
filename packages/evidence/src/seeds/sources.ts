@@ -123,7 +123,7 @@ export const CANONICAL_SOURCES: readonly CanonicalSourceEntry[] = [
     doi: '10.1176/appi.ajp.20251084',
     citationText: 'Li M, et al. Am J Psychiatry. 2026; doi:10.1176/appi.ajp.20251084',
     domain: 'mdd',
-    role: 'pivotal 3-arm RCT demonstrating clinical superiority of sgACC SC-guided and FC-guided iTBS over 5-cm targeting',
+    role: 'single-centre 3-arm RCT reporting structural connectivity superiority over 5-cm targeting at primary 2-week endpoint, both SC and FC differences at 6 weeks, and no statistically significant group difference at 12 weeks (requires multi-cohort replication)',
   },
   {
     id: 'src-mdd-007',

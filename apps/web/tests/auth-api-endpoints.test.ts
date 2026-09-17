@@ -19,7 +19,11 @@ import { GET as sessionRoute } from '../src/app/api/auth/session/route';
 import { middleware, AUTH_COOKIE_NAME } from '../src/middleware';
 import { authStore } from '../src/lib/auth-store';
 import { verifySessionTokenWithClaims } from '../src/lib/security/session-crypto';
-import { resetAuthLockoutsForTesting } from '../src/lib/server/auth-credentials';
+import {
+  verifyClinicianCredentials,
+  resetAuthLockoutsForTesting,
+} from '../src/lib/server/auth-credentials';
+import { sanitizeRedirectUrl } from '../src/lib/security/redirect-sanitizer';
 
 describe('Server-Side Authentication API Endpoints', () => {
   beforeEach(() => {
@@ -47,6 +51,8 @@ describe('Server-Side Authentication API Endpoints', () => {
     expect(json.session.isAuthenticated).toBe(true);
     expect(json.session.username).toBe('dr_asmith');
     expect(json.session.user.displayName).toBe('Dr A. Smith');
+    // Session token MUST NOT be exposed in JSON response (P0 finding #2)
+    expect(json.session.sessionToken).toBeUndefined();
 
     const cookieHeader = res.headers.get('set-cookie');
     expect(cookieHeader).toBeDefined();
@@ -81,12 +87,35 @@ describe('Server-Side Authentication API Endpoints', () => {
     expect(json.error).toContain('Invalid clinician credentials');
   });
 
-  it('AUTH-API-03: POST /api/auth/logout expires session cookie', async () => {
-    const req = new NextRequest('https://app.magniom.com/api/auth/logout', {
+  it('AUTH-API-03: POST /api/auth/logout expires session cookie and revokes session server-side', async () => {
+    // 1. Log in to establish an active session
+    const loginReq = new NextRequest('https://app.magniom.com/api/auth/login', {
       method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: 'dr_asmith',
+        password: 'ClinicalPrecision2026!',
+      }),
+    });
+    const loginRes = await loginRoute(loginReq);
+    const token = loginRes.headers
+      .get('set-cookie')
+      ?.match(new RegExp(`${AUTH_COOKIE_NAME}=([^;]+)`))?.[1];
+    expect(token).toBeDefined();
+
+    // Verify session is initially valid
+    const preLogoutCheck = await verifySessionTokenWithClaims(token);
+    expect(preLogoutCheck.valid).toBe(true);
+
+    // 2. Perform logout
+    const logoutReq = new NextRequest('https://app.magniom.com/api/auth/logout', {
+      method: 'POST',
+      headers: {
+        cookie: `${AUTH_COOKIE_NAME}=${token}`,
+      },
     });
 
-    const res = await logoutRoute(req);
+    const res = await logoutRoute(logoutReq);
     expect(res.status).toBe(200);
 
     const json = await res.json();
@@ -95,6 +124,22 @@ describe('Server-Side Authentication API Endpoints', () => {
     const cookieHeader = res.headers.get('set-cookie');
     expect(cookieHeader).toBeDefined();
     expect(cookieHeader?.toLowerCase()).toMatch(/max-age=0|expires=/);
+
+    // 3. Server-side revocation verification: same token is now rejected with REVOKED
+    const postLogoutVerification = await verifySessionTokenWithClaims(token);
+    expect(postLogoutVerification.valid).toBe(false);
+    expect(postLogoutVerification.reason).toBe('REVOKED');
+
+    // 4. Session endpoint rejects revoked token
+    const revokedSessionReq = new NextRequest('https://app.magniom.com/api/auth/session', {
+      headers: {
+        cookie: `${AUTH_COOKIE_NAME}=${token}`,
+      },
+    });
+    const revokedRes = await sessionRoute(revokedSessionReq);
+    expect(revokedRes.status).toBe(401);
+    const revokedJson = await revokedRes.json();
+    expect(revokedJson.reason).toBe('REVOKED');
   });
 
   it('AUTH-API-04: GET /api/auth/session validates active HttpOnly cookie', async () => {
@@ -143,15 +188,69 @@ describe('Server-Side Authentication API Endpoints', () => {
   });
 
   it('AUTH-API-06: authStore fails closed and denies access when server is unreachable (no offline fallback)', async () => {
-    // In node/vitest test environment where window fetch to relative URL fails or is mocked to fail
     const result = await authStore.authenticateClinicianAsync(
       'dr_asmith',
       'ClinicalPrecision2026!',
     );
-    // If fetch fails (because no local server is listening on relative /api/auth/login in unit test),
-    // it must return failure, NOT authenticate client-side!
     expect(result.success).toBe(false);
     expect(result.error).toContain('unavailable');
     expect(authStore.isAuthenticated()).toBe(false);
+  });
+
+  it('AUTH-API-07: prevents open redirects and protocol-relative navigation after login', () => {
+    expect(sanitizeRedirectUrl('//evil.com')).toBe('/');
+    expect(sanitizeRedirectUrl('//evil.com/path')).toBe('/');
+    expect(sanitizeRedirectUrl('/\\evil.com')).toBe('/');
+    expect(sanitizeRedirectUrl('https://evil.com')).toBe('/');
+    expect(sanitizeRedirectUrl('javascript:alert(1)')).toBe('/');
+    expect(sanitizeRedirectUrl('/login')).toBe('/');
+    expect(sanitizeRedirectUrl('/cases')).toBe('/cases');
+    expect(sanitizeRedirectUrl('/evidence/viewer?id=src-001')).toBe('/evidence/viewer?id=src-001');
+  });
+
+  it('AUTH-API-08: production fails fast when clinician credentials are missing', () => {
+    const prevEnv = process.env.NODE_ENV;
+    const prevUser = process.env.MAGNIOM_CLINICIAN_USER;
+    const prevPass = process.env.MAGNIOM_CLINICIAN_PASSWORD;
+    try {
+      (process.env as Record<string, string | undefined>).NODE_ENV = 'production';
+      delete process.env.MAGNIOM_CLINICIAN_USER;
+      delete process.env.MAGNIOM_CLINICIAN_PASSWORD;
+
+      expect(() => {
+        verifyClinicianCredentials('dr_asmith', 'ClinicalPrecision2026!');
+      }).toThrow('CRITICAL SECURITY ERROR');
+    } finally {
+      (process.env as Record<string, string | undefined>).NODE_ENV = prevEnv;
+      if (prevUser) process.env.MAGNIOM_CLINICIAN_USER = prevUser;
+      if (prevPass) process.env.MAGNIOM_CLINICIAN_PASSWORD = prevPass;
+    }
+  });
+
+  it('AUTH-API-09: authenticates secondary specialist credentials and respects environment overrides', () => {
+    // Default specialist credentials in dev/test
+    const resDefault = verifyClinicianCredentials('magniom_spec', 'Specialist2026!');
+    expect(resDefault.valid).toBe(true);
+    expect(resDefault.session?.username).toBe('magniom_spec');
+
+    // Custom specialist credentials via environment variables
+    const prevSpecUser = process.env.MAGNIOM_SPECIALIST_USER;
+    const prevSpecPass = process.env.MAGNIOM_SPECIALIST_PASSWORD;
+    try {
+      process.env.MAGNIOM_SPECIALIST_USER = 'custom_spec';
+      process.env.MAGNIOM_SPECIALIST_PASSWORD = 'CustomSpecPassword2026!';
+
+      const resCustom = verifyClinicianCredentials('custom_spec', 'CustomSpecPassword2026!');
+      expect(resCustom.valid).toBe(true);
+      expect(resCustom.session?.username).toBe('custom_spec');
+
+      const resOld = verifyClinicianCredentials('magniom_spec', 'Specialist2026!');
+      expect(resOld.valid).toBe(false);
+    } finally {
+      if (prevSpecUser) process.env.MAGNIOM_SPECIALIST_USER = prevSpecUser;
+      else delete process.env.MAGNIOM_SPECIALIST_USER;
+      if (prevSpecPass) process.env.MAGNIOM_SPECIALIST_PASSWORD = prevSpecPass;
+      else delete process.env.MAGNIOM_SPECIALIST_PASSWORD;
+    }
   });
 });

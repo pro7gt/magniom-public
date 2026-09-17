@@ -89,6 +89,32 @@ class CashZaleskyFcPipeline:
         if not search_voxels:
             raise ValueError("CashZaleskyFcPipeline: search_voxels list cannot be empty.")
 
+        if not (0.0 < threshold_percentile <= 1.0):
+            raise ValueError(
+                f"CashZaleskyFcPipeline: threshold_percentile must be in (0.0, 1.0], got {threshold_percentile}"
+            )
+
+        if min_cluster_size < 1:
+            raise ValueError(
+                f"CashZaleskyFcPipeline: min_cluster_size must be >= 1, got {min_cluster_size}"
+            )
+
+        if grid_step_mm <= 0:
+            raise ValueError(
+                f"CashZaleskyFcPipeline: grid_step_mm must be > 0, got {grid_step_mm}"
+            )
+
+        for v in search_voxels:
+            if not (
+                math.isfinite(v.x)
+                and math.isfinite(v.y)
+                and math.isfinite(v.z)
+                and math.isfinite(v.connectivity)
+            ):
+                raise ValueError(
+                    "CashZaleskyFcPipeline: All voxel coordinates and connectivity values must be finite numbers."
+                )
+
         total_search = len(search_voxels)
 
         # 1. Rank voxels by most negative connectivity (strongest anticorrelation)

@@ -7,6 +7,8 @@
  * the standard Web Crypto API.
  */
 
+import { isSessionRevoked } from '../server/session-registry';
+
 export interface SessionClaims {
   readonly sub: string; // userId
   readonly iat: number; // issued at (unix seconds)
@@ -21,12 +23,13 @@ export interface SessionClaims {
 export interface SessionVerificationResult {
   readonly valid: boolean;
   readonly claims?: SessionClaims;
-  readonly reason?: 'INVALID_FORMAT' | 'SIGNATURE_MISMATCH' | 'EXPIRED' | 'CRYPTO_ERROR';
+  readonly reason?:
+    'INVALID_FORMAT' | 'SIGNATURE_MISMATCH' | 'EXPIRED' | 'CRYPTO_ERROR' | 'REVOKED';
 }
 
 /**
  * Retrieves the authoritative session secret.
- * Enforces fail-fast startup: throws if MAGNIOM_SESSION_SECRET is missing,
+ * Enforces fail-fast startup: throws if MAGNIOM_SESSION_SECRET is missing or weak,
  * except in isolated automated test runners where a dedicated test secret is provided.
  */
 export function getSessionSecret(): string {
@@ -41,6 +44,12 @@ export function getSessionSecret(): string {
     throw new Error(
       'CRITICAL SECURITY ERROR: MAGNIOM_SESSION_SECRET environment variable is missing. ' +
         'Workstation server cannot start or verify sessions without an authoritative secret key.',
+    );
+  }
+  if (secret.length < 32) {
+    throw new Error(
+      'CRITICAL SECURITY ERROR: MAGNIOM_SESSION_SECRET must be at least 32 characters long ' +
+        'to prevent brute-force attacks against HMAC-SHA256 session signatures.',
     );
   }
   return secret;
@@ -314,6 +323,7 @@ export function createSignedSessionToken(
 export async function verifySessionTokenWithClaims(
   token: string | undefined | null,
   secret?: string,
+  options?: { checkRevocation?: boolean },
 ): Promise<SessionVerificationResult> {
   if (!token || typeof token !== 'string') {
     return { valid: false, reason: 'INVALID_FORMAT' };
@@ -364,10 +374,23 @@ export async function verifySessionTokenWithClaims(
       return { valid: false, reason: 'INVALID_FORMAT' };
     }
 
+    if ((options?.checkRevocation ?? true) && claims.jti && isSessionRevoked(claims.jti)) {
+      return { valid: false, reason: 'REVOKED' };
+    }
+
     return { valid: true, claims };
   } catch {
     return { valid: false, reason: 'INVALID_FORMAT' };
   }
+}
+
+/**
+ * Computes a one-way deterministic non-reversible audit hash of a jti.
+ * Guarantees live bearer tokens and signatures never enter audit logs.
+ */
+export function hashJtiForAudit(jti: string): string {
+  if (!jti) return 'unknown';
+  return computeHmacSha256Sync('magniom-audit-salt-2026', `jti:${jti}`).slice(0, 16);
 }
 
 /**

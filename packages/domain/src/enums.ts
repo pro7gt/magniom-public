@@ -21,6 +21,15 @@ export type DataOrigin =
   | 'mixed'
   | 'unknown';
 
+export type TargetDefinitionOrigin =
+  'guideline' | 'trial' | 'normative_atlas' | 'patient_derived' | 'synthetic';
+
+export type InputDataOrigin =
+  'patient_measured' | 'derived_patient_data' | 'normative' | 'synthetic' | 'none';
+
+export type PatientPersonalizationStatus =
+  'fixed' | 'anatomically_transformed' | 'individually_computed';
+
 export type ScientificMaturity =
   'prototype' | 'research' | 'validation' | 'clinical_candidate' | 'clinical_approved' | 'retired';
 

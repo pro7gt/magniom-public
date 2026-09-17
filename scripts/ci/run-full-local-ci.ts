@@ -111,6 +111,7 @@ export interface PipelineRunOptions {
   fromStage?: number;
   skipBuild?: boolean;
   includeNeurocompute?: boolean;
+  fullNeurocompute?: boolean;
   noReport?: boolean;
 }
 
@@ -336,9 +337,14 @@ export class LocalContinuousIntegrationRunner {
       }
     }
 
-    if (options.includeNeurocompute) {
-      const ncCmd = 'npm run test:neurocompute -- --fast';
-      console.log('\n▶️ [SERVICE TEST]: NeuroCompute Scientific Service (Python/Pytest)');
+    if (options.includeNeurocompute || options.fullNeurocompute) {
+      const isFull = !!options.fullNeurocompute;
+      const ncCmd = isFull
+        ? 'npm run test:neurocompute -- --full'
+        : 'npm run test:neurocompute -- --fast';
+      console.log(
+        `\n▶️ [SERVICE TEST]: NeuroCompute Scientific Service (Python/Pytest ${isFull ? 'FULL' : 'FAST'})`,
+      );
       console.log(`   Command: ${ncCmd}`);
       const ncStart = Date.now();
       try {
@@ -351,7 +357,7 @@ export class LocalContinuousIntegrationRunner {
         console.log(`✅ [NEUROCOMPUTE SERVICE PASSED] (${durationSec}s)`);
         stageResults.push({
           stage: 99,
-          name: 'NeuroCompute Scientific Service',
+          name: `NeuroCompute Scientific Service (${isFull ? 'Full' : 'Fast'})`,
           command: ncCmd,
           durationSec,
           passed: true,
@@ -361,7 +367,7 @@ export class LocalContinuousIntegrationRunner {
         console.error(`\n❌ [NEUROCOMPUTE SERVICE FAILED] after ${durationSec}s!`);
         stageResults.push({
           stage: 99,
-          name: 'NeuroCompute Scientific Service',
+          name: `NeuroCompute Scientific Service (${isFull ? 'Full' : 'Fast'})`,
           command: ncCmd,
           durationSec,
           passed: false,
@@ -413,6 +419,8 @@ function parseCliArgs(args: string[]): {
       showList = true;
     } else if (arg === '--help' || arg === '-h') {
       showHelp = true;
+    } else if (arg === '--full-neurocompute') {
+      options.fullNeurocompute = true;
     } else if (arg === '--include-neurocompute' || arg === '--neurocompute') {
       options.includeNeurocompute = true;
     } else if (arg === '--no-report') {
@@ -458,7 +466,10 @@ if (process.argv[1]?.endsWith('run-full-local-ci.ts')) {
     console.log(
       '  --skip-build            Skip heavy opennext bundle in Stage 9 for fast local runs',
     );
-    console.log('  --include-neurocompute  Also run NeuroCompute Python test suites');
+    console.log('  --include-neurocompute  Also run NeuroCompute Python test suites (fast unit)');
+    console.log(
+      '  --full-neurocompute     Also run full NeuroCompute test suites (including integration)',
+    );
     console.log('  --neurocompute          Alias for --include-neurocompute');
     console.log('  --no-report             Skip generating persistent execution reports');
     console.log('  --list, -l              List all stages and descriptions without executing');

@@ -34,7 +34,7 @@ jobs:
         run: npm ci
 
       - name: Stage 0 — Scientific Change Classifier (C0–C4) (§112–118)
-        run: npx tsx scripts/ci/classify-change.ts
+        run: npm run verify:stage0
 
       - name: Stage 1 — Static Architecture, 15 Specification Conformance & Target Engine Rules (§34–35)
         run: npm run verify:stage1
@@ -43,4 +43,4 @@ jobs:
         run: npm run verify:stage2
 
       - name: Stage 3 — Target Engine Mathematical Property Invariants (fast-check) (§38)
-        run: npm run verify:properties
+        run: npm run verify:stage3

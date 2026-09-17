@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AUTH_COOKIE_NAME } from '../../../../lib/auth-store';
-import { createSignedSessionToken } from '../../../../lib/security/session-crypto';
+import {
+  createSignedSessionToken,
+  verifySessionTokenWithClaims,
+  hashJtiForAudit,
+} from '../../../../lib/security/session-crypto';
 import { emitAuditEvent } from '../../../../lib/shell-observability';
 import { verifyClinicianCredentials } from '../../../../lib/server/auth-credentials';
+import { registerServerSession } from '../../../../lib/server/session-registry';
 
 export const runtime = 'nodejs';
 
@@ -51,26 +56,44 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       role: authResult.session.user.roleTitle,
     });
 
-    const session = {
-      ...authResult.session,
-      sessionToken,
+    const verification = await verifySessionTokenWithClaims(sessionToken);
+    const jti = verification.claims?.jti || 'unknown-jti';
+    const nowSec = Math.floor(Date.now() / 1000);
+
+    registerServerSession({
+      jti,
+      userId: authResult.session.user.id,
+      username: authResult.session.username,
+      organizationId: authResult.session.organization.organizationId,
+      issuedAt: verification.claims?.iat ?? nowSec,
+      expiresAt: verification.claims?.exp ?? nowSec + maxAge,
+      authAssuranceLevel: 'AAL2',
+    });
+
+    const displaySession = {
+      isAuthenticated: true,
+      username: authResult.session.username,
+      loginTimestamp: authResult.session.loginTimestamp,
       rememberMe: Boolean(rememberMe),
+      user: authResult.session.user,
+      organization: authResult.session.organization,
+      mode: authResult.session.mode,
     };
 
     emitAuditEvent('CLINICIAN_AUTHENTICATED', {
-      userId: session.user.id,
-      sessionId: sessionToken.split('.')[0] || 'mgn-sess',
-      message: `Specialist clinician ${session.user.displayName} authenticated.`,
+      userId: displaySession.user.id,
+      sessionId: hashJtiForAudit(jti),
+      message: `Specialist clinician ${displaySession.user.displayName} authenticated.`,
       metadata: {
-        userId: session.user.id,
-        roleTitle: session.user.roleTitle,
-        rememberMe: session.rememberMe,
+        userId: displaySession.user.id,
+        roleTitle: displaySession.user.roleTitle,
+        rememberMe: displaySession.rememberMe,
       },
     });
 
     const response = NextResponse.json({
       success: true,
-      session,
+      session: displaySession,
     });
 
     const forwardedProto = request.headers.get('x-forwarded-proto');

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { AUTH_COOKIE_NAME } from '../../../../lib/auth-store';
 import { CANONICAL_CLINICAL_SESSION } from '../../../../lib/release-authority';
 import { verifySessionTokenWithClaims } from '../../../../lib/security/session-crypto';
+import { touchSessionActivity } from '../../../../lib/server/session-registry';
 
 export const runtime = 'nodejs';
 
@@ -23,7 +24,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const response = NextResponse.json(
       {
         isAuthenticated: false,
-        error: 'Session expired or invalid signature.',
+        error: 'Session expired, revoked, or invalid signature.',
         reason: verification.reason,
       },
       { status: 401 },
@@ -31,6 +32,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     // Clear invalid or expired cookie
     response.cookies.delete(AUTH_COOKIE_NAME);
     return response;
+  }
+
+  if (verification.claims.jti) {
+    touchSessionActivity(verification.claims.jti);
   }
 
   return NextResponse.json({

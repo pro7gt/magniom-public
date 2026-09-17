@@ -141,6 +141,7 @@ class TestArtifactValidationAndManifests(unittest.TestCase):
             source_artifacts=[source],
             preprocessing=prov,
         )
+        self.assertIsInstance(manifest.source_artifacts, tuple)
         with self.assertRaises(FrozenInstanceError):
             manifest.manifest_id = "MAN-002"  # type: ignore
 

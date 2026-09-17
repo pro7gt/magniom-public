@@ -1,18 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AUTH_COOKIE_NAME } from '../../../../lib/auth-store';
 import { emitAuditEvent } from '../../../../lib/shell-observability';
+import {
+  verifySessionTokenWithClaims,
+  hashJtiForAudit,
+} from '../../../../lib/security/session-crypto';
+import { revokeSession } from '../../../../lib/server/session-registry';
 
 export const runtime = 'nodejs';
 
 /**
  * Magniom Authoritative Server-Side Clinician Sign-Out API
  * Conforms to MAG-SEC-001 and 21 CFR Part 11 session termination.
+ * Server-side revokes token jti and purges HttpOnly session cookie.
  */
 export async function POST(request: NextRequest): Promise<NextResponse> {
   const sessionCookie = request.cookies.get(AUTH_COOKIE_NAME);
+  let sessionAuditId = 'anonymous-logout';
+
+  if (sessionCookie?.value) {
+    const verification = await verifySessionTokenWithClaims(sessionCookie.value, undefined, {
+      checkRevocation: false,
+    });
+    if (verification.claims?.jti) {
+      revokeSession(verification.claims.jti, 'CLINICIAN_LOGOUT');
+      sessionAuditId = hashJtiForAudit(verification.claims.jti);
+    }
+  }
 
   emitAuditEvent('CLINICIAN_LOGGED_OUT', {
-    sessionId: sessionCookie?.value,
+    sessionId: sessionAuditId,
     message: 'Clinician signed out via server API.',
   });
 

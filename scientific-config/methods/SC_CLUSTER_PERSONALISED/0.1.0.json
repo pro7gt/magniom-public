@@ -17,7 +17,7 @@
     "minClusterSize": 2
   },
   "evidenceIds": ["src-mdd-006"],
-  "implementationHash": "edb586ce2b840bf3ddb5e4c2d6a9a060eb86651cce1241ab90dbb26bf1fc23e3",
+  "implementationStatus": "not_implemented",
   "limitations": [
     "Diffusion tractography reconstructs white-matter trajectories but does not prove physiological propagation or directionality.",
     "Tractography is sensitive to crossing-fiber geometry, curvature thresholds, and seeding strategies.",

@@ -102,7 +102,11 @@ export class PainM1SomatotopicBaselineGenerator implements CandidateGenerator {
       reliedOnMeasurementIds: [],
       reliedOnReliabilityIds: [],
       lineage: { lineageType: 'evidence_baseline' },
-      dataOrigin: 'patient_measured',
+      targetDefinitionOrigin: 'guideline',
+      inputDataOrigin: 'none',
+      patientPersonalizationStatus: 'fixed',
+      clinicalApprovalStatus: 'approved',
+      dataOrigin: 'normative',
       scientificMaturity: 'clinical_approved',
       clinicalPromotionStatus: 'approved',
       rawScientificFeatures: [
@@ -216,6 +220,10 @@ export class PainMotorMapRefinementGenerator implements CandidateGenerator {
         baselineCandidateDraftId: `draft-pain-m1-${stimulationHemisphere}-somatotopic`,
       },
       dataOrigin: 'patient_measured',
+      targetDefinitionOrigin: 'patient_derived',
+      inputDataOrigin: 'patient_measured',
+      patientPersonalizationStatus: 'individually_computed',
+      clinicalApprovalStatus: 'approved',
       scientificMaturity: 'clinical_approved',
       clinicalPromotionStatus: 'approved',
       rawScientificFeatures: [

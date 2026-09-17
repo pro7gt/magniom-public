@@ -93,6 +93,20 @@ class ExactTargetReliabilityEngine:
             min_cluster_size=min_cluster_size,
         )
 
+        if (
+            result_a.target_centroid_mni is None
+            or result_b.target_centroid_mni is None
+            or result_a.status == "no_qualifying_cluster"
+            or result_b.status == "no_qualifying_cluster"
+        ):
+            return TargetReliabilityMetrics(
+                spatial_displacement_mm=999.0,
+                cluster_dice_overlap=0.0,
+                connectivity_sign_consistent=False,
+                confidence_status="not_estimable",
+                recommendation="No qualifying cluster delineated in one or both split-half partitions.",
+            )
+
         dist = cls.calculate_euclidean_distance(
             result_a.target_centroid_mni, result_b.target_centroid_mni
         )

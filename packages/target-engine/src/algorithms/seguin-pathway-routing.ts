@@ -151,13 +151,13 @@ export function computePathwayCommunicationScore(
   },
   kappa: number = -1.0,
 ): PathwayCommunicationScore {
-  if (!graph.nodeCoordinatesMni || graph.nodeCoordinatesMni.length === 0) {
+  if (!graph.nodeCoordinatesMni || graph.nodeCoordinatesMni.length !== graph.nodeCount) {
     throw new Error(
-      'StructuralGraph requires nodeCoordinatesMni to map TMS coordinates to parcels',
+      'StructuralGraph requires nodeCoordinatesMni matching nodeCount to map coordinates to parcels',
     );
   }
 
-  // 1. Identify parcels within 10mm of TMS site S(k)
+  // 1. Identify parcels within 15mm of TMS site S(k)
   const stimParcels: { parcelIndex: number; distance: number; weight: number }[] = [];
   for (let i = 0; i < graph.nodeCount; i++) {
     const c = graph.nodeCoordinatesMni[i]!;
@@ -171,26 +171,14 @@ export function computePathwayCommunicationScore(
     }
   }
 
-  // If no parcels within 15mm, use nearest parcel
+  // Fail-closed: do not silently map to distant parcels
   if (stimParcels.length === 0) {
-    let nearestIdx = 0;
-    let minDist = Infinity;
-    for (let i = 0; i < graph.nodeCount; i++) {
-      const c = graph.nodeCoordinatesMni[i]!;
-      const dist = Math.sqrt(
-        (c.x - stimulationMni.x) ** 2 +
-          (c.y - stimulationMni.y) ** 2 +
-          (c.z - stimulationMni.z) ** 2,
-      );
-      if (dist < minDist) {
-        minDist = dist;
-        nearestIdx = i;
-      }
-    }
-    stimParcels.push({ parcelIndex: nearestIdx, distance: minDist, weight: 1.0 });
+    throw new Error(
+      `PathwayRouting: No cortical parcels found within 15mm of stimulation coordinate (${stimulationMni.x}, ${stimulationMni.y}, ${stimulationMni.z})`,
+    );
   }
 
-  // 2. Identify target parcel(s) within 10mm of SGC (MNI 6, 16, -10)
+  // 2. Identify target parcel(s) within 15mm of SGC
   const targetParcels: number[] = [];
   for (let j = 0; j < graph.nodeCount; j++) {
     const c = graph.nodeCoordinatesMni[j]!;
@@ -202,41 +190,41 @@ export function computePathwayCommunicationScore(
     }
   }
 
+  // Fail-closed: do not silently map to distant parcels
   if (targetParcels.length === 0) {
-    let nearestTarget = 0;
-    let minDist = Infinity;
-    for (let j = 0; j < graph.nodeCount; j++) {
-      const c = graph.nodeCoordinatesMni[j]!;
-      const dist = Math.sqrt(
-        (c.x - targetMni.x) ** 2 + (c.y - targetMni.y) ** 2 + (c.z - targetMni.z) ** 2,
-      );
-      if (dist < minDist) {
-        minDist = dist;
-        nearestTarget = j;
-      }
-    }
-    targetParcels.push(nearestTarget);
+    throw new Error(
+      `PathwayRouting: No target parcels found within 15mm of target coordinate (${targetMni.x}, ${targetMni.y}, ${targetMni.z})`,
+    );
   }
 
-  // 3. Compute distance-weighted hops
+  // 3. Compute distance-weighted hops on reachable pairs only
   let totalWeightedHops = 0;
-  let totalWeight = 0;
+  let totalReachableWeight = 0;
   let dominantPath: readonly number[] = [];
   let minCost = Infinity;
 
   for (const s of stimParcels) {
     for (const t of targetParcels) {
       const sp = findShortestPath(costMatrix, s.parcelIndex, t);
-      totalWeightedHops += s.weight * sp.hops;
-      totalWeight += s.weight;
-      if (sp.totalCost < minCost && sp.path.length > 0) {
-        minCost = sp.totalCost;
-        dominantPath = sp.path;
+      if (sp.path.length > 0 && sp.totalCost < Infinity) {
+        totalWeightedHops += s.weight * sp.hops;
+        totalReachableWeight += s.weight;
+        if (sp.totalCost < minCost) {
+          minCost = sp.totalCost;
+          dominantPath = sp.path;
+        }
       }
     }
   }
 
-  const averageHops = totalWeight > 0 ? Number((totalWeightedHops / totalWeight).toFixed(2)) : 3.0;
+  const averageHops =
+    totalReachableWeight > 0
+      ? Number((totalWeightedHops / totalReachableWeight).toFixed(2))
+      : Infinity;
+
+  const predictedEfficiencyRank = Number.isFinite(averageHops)
+    ? Math.max(0.0, Number((10.0 - averageHops).toFixed(2)))
+    : 0.0;
 
   // Classify dominant pathway according to Seguin 2026 Fig 2h
   let dominantRouteType:
@@ -256,7 +244,7 @@ export function computePathwayCommunicationScore(
     averageHops,
     dominantPathway: dominantPath,
     dominantRouteType,
-    predictedEfficiencyRank: Number((10.0 - averageHops).toFixed(2)),
+    predictedEfficiencyRank,
     dataOrigin: 'normative',
     methodCode: 'NORMATIVE_PATHWAY_MODEL',
   };

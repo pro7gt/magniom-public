@@ -20,7 +20,6 @@ export interface ClinicianAuthSession {
   isAuthenticated: boolean;
   username: string;
   loginTimestamp: string;
-  sessionToken?: string;
   rememberMe: boolean;
   user: UserIdentityViewModel;
   organization: OrganisationContextViewModel;
@@ -42,33 +41,14 @@ class ClinicianAuthStore {
 
   constructor() {
     if (typeof window !== 'undefined') {
-      this.initFromStorage();
-      // Synchronize with server on load
+      // Synchronize authoritatively with server on load via HttpOnly cookie
       this.refreshSessionFromServer().catch(() => {});
     }
   }
 
-  private initFromStorage(): void {
-    if (this.isInitialized) return;
-    this.isInitialized = true;
-
-    try {
-      const stored = localStorage.getItem(AUTH_STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored) as ClinicianAuthSession;
-        if (parsed && parsed.isAuthenticated) {
-          this.cachedSession = parsed;
-          return;
-        }
-      }
-    } catch {
-      // Storage unavailable or parsing error
-    }
-    this.cachedSession = null;
-  }
-
   /**
    * Refreshes active session state authoritatively from the server via HttpOnly cookie.
+   * State remains unauthenticated until confirmed by /api/auth/session.
    */
   public async refreshSessionFromServer(): Promise<ClinicianAuthSession | null> {
     if (typeof window === 'undefined') return null;
@@ -92,26 +72,26 @@ class ClinicianAuthStore {
             mode: data.mode,
           };
           this.cachedSession = session;
-          try {
-            localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session));
-          } catch {}
+          this.isInitialized = true;
           this.notifyListeners();
           return session;
         }
       } else {
-        // Unauthenticated or expired
+        // Unauthenticated or expired/revoked
         if (this.cachedSession) {
           this.cachedSession = null;
-          try {
-            localStorage.removeItem(AUTH_STORAGE_KEY);
-          } catch {}
           this.notifyListeners();
         }
       }
     } catch {
-      // Server unreachable
+      // Server unreachable - fail closed (do NOT retain stale client cached session)
+      if (this.cachedSession) {
+        this.cachedSession = null;
+        this.notifyListeners();
+      }
     }
 
+    this.isInitialized = true;
     return this.cachedSession;
   }
 
@@ -119,9 +99,6 @@ class ClinicianAuthStore {
    * Retrieves the current clinician session, or null if unauthenticated.
    */
   public getAuthSession(): ClinicianAuthSession | null {
-    if (typeof window !== 'undefined' && !this.isInitialized) {
-      this.initFromStorage();
-    }
     return this.cachedSession;
   }
 
@@ -131,6 +108,13 @@ class ClinicianAuthStore {
   public isAuthenticated(): boolean {
     const session = this.getAuthSession();
     return Boolean(session?.isAuthenticated);
+  }
+
+  /**
+   * Checks whether initial server session handshake has completed.
+   */
+  public isReady(): boolean {
+    return this.isInitialized;
   }
 
   /**
@@ -166,10 +150,6 @@ class ClinicianAuthStore {
 
       if (res.ok && data.success && data.session) {
         this.cachedSession = data.session;
-        try {
-          localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(data.session));
-        } catch {}
-
         this.notifyListeners();
         return { success: true, session: data.session };
       }
@@ -233,13 +213,10 @@ class ClinicianAuthStore {
 
     emitAuditEvent('CLINICIAN_LOGGED_OUT', {
       userId: priorSession?.user.id,
-      sessionId: priorSession?.sessionToken,
+      sessionId: 'client-signout',
       message: priorSession
         ? `Clinician ${priorSession.user.displayName} signed out of active workstation session.`
         : 'Workstation session signed out.',
-      metadata: {
-        priorSessionToken: priorSession?.sessionToken,
-      },
     });
 
     this.notifyListeners();

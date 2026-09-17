@@ -25,74 +25,160 @@ export function evaluateGateG14(
       reasons.push('TN-012:RESEARCH_CANDIDATE_PROHIBITED_IN_CLINICAL_MODE');
     }
 
-    // 2. Check data origin: Fail-closed allowlist in Clinical Mode
-    // Missing, undefined, synthetic, normative, or unknown origins are strictly prohibited.
-    if (!candidate.dataOrigin || candidate.dataOrigin === 'unknown') {
-      reasons.push('TN-014:UNKNOWN_DATA_ORIGIN_PROHIBITED_IN_CLINICAL_MODE');
-    } else if (
-      candidate.dataOrigin === 'synthetic' ||
-      candidate.generatorLimitations?.includes('SYNTHETIC_DEMONSTRATOR') ||
-      candidate.generatorLimitations?.includes('SYNTHETIC_GENERATOR_FAIL_CLOSED')
-    ) {
-      reasons.push('TN-014:SYNTHETIC_CANDIDATE_PROHIBITED_IN_CLINICAL_MODE');
-    } else if (candidate.dataOrigin === 'normative') {
-      reasons.push('TN-012:NORMATIVE_CANDIDATE_PROHIBITED_IN_CLINICAL_MODE');
-    } else if (
-      candidate.dataOrigin !== 'patient_measured' &&
-      candidate.dataOrigin !== 'derived_from_patient_measured'
-    ) {
-      reasons.push('TN-014:UNKNOWN_DATA_ORIGIN_PROHIBITED_IN_CLINICAL_MODE');
+    // 2. Disambiguated Provenance Evaluation (MAGNIOM Revision 03 §4 & §8)
+    const isGuidelineApprovedFixed =
+      (candidate.targetDefinitionOrigin === 'guideline' ||
+        candidate.targetDefinitionOrigin === 'trial') &&
+      candidate.patientPersonalizationStatus === 'fixed' &&
+      (candidate.clinicalApprovalStatus === 'approved' ||
+        candidate.clinicalPromotionStatus === 'approved');
+
+    if (isGuidelineApprovedFixed) {
+      // Clinically permitted guideline/trial fixed baseline without falsely requiring patient measurements
+      if (
+        candidate.inputDataOrigin === 'synthetic' ||
+        candidate.generatorLimitations?.includes('SYNTHETIC_DEMONSTRATOR') ||
+        candidate.generatorLimitations?.includes('SYNTHETIC_GENERATOR_FAIL_CLOSED')
+      ) {
+        reasons.push('TN-014:SYNTHETIC_CANDIDATE_PROHIBITED_IN_CLINICAL_MODE');
+      }
+    } else {
+      // Personalized / derived / other candidates:
+      if (
+        candidate.targetDefinitionOrigin === 'synthetic' ||
+        candidate.inputDataOrigin === 'synthetic'
+      ) {
+        reasons.push('TN-014:SYNTHETIC_CANDIDATE_PROHIBITED_IN_CLINICAL_MODE');
+      }
+
+      // Check data origin: Fail-closed allowlist in Clinical Mode
+      // Missing, undefined, synthetic, normative, or unknown origins are strictly prohibited.
+      if (!candidate.dataOrigin || candidate.dataOrigin === 'unknown') {
+        reasons.push('TN-014:UNKNOWN_DATA_ORIGIN_PROHIBITED_IN_CLINICAL_MODE');
+      } else if (
+        candidate.dataOrigin === 'synthetic' ||
+        candidate.generatorLimitations?.includes('SYNTHETIC_DEMONSTRATOR') ||
+        candidate.generatorLimitations?.includes('SYNTHETIC_GENERATOR_FAIL_CLOSED')
+      ) {
+        reasons.push('TN-014:SYNTHETIC_CANDIDATE_PROHIBITED_IN_CLINICAL_MODE');
+      } else if (candidate.dataOrigin === 'normative') {
+        reasons.push('TN-012:NORMATIVE_CANDIDATE_PROHIBITED_IN_CLINICAL_MODE');
+      } else if (
+        candidate.dataOrigin !== 'patient_measured' &&
+        candidate.dataOrigin !== 'derived_from_patient_measured'
+      ) {
+        reasons.push('TN-014:UNKNOWN_DATA_ORIGIN_PROHIBITED_IN_CLINICAL_MODE');
+      }
     }
 
     // 3. Check scientific maturity: Fail-closed allowlist in Clinical Mode
     // Missing, undefined, prototype, research, or validation maturity cannot produce clinical candidate.
-    if (!candidate.scientificMaturity) {
+    const effectiveMaturity = candidate.scientificMaturity;
+    if (!effectiveMaturity) {
       reasons.push('TN-012:UNPROMOTED_MATURITY_PROHIBITED_IN_CLINICAL_MODE');
     } else if (
-      candidate.scientificMaturity === 'prototype' ||
-      candidate.scientificMaturity === 'research' ||
-      candidate.scientificMaturity === 'validation'
+      effectiveMaturity === 'prototype' ||
+      effectiveMaturity === 'research' ||
+      effectiveMaturity === 'validation'
     ) {
       reasons.push('TN-012:UNPROMOTED_MATURITY_PROHIBITED_IN_CLINICAL_MODE');
     } else if (
-      candidate.scientificMaturity !== 'clinical_candidate' &&
-      candidate.scientificMaturity !== 'clinical_approved'
+      effectiveMaturity !== 'clinical_candidate' &&
+      effectiveMaturity !== 'clinical_approved'
     ) {
       reasons.push('TN-012:UNPROMOTED_MATURITY_PROHIBITED_IN_CLINICAL_MODE');
     }
 
     // 4. Check clinical promotion status: Fail-closed allowlist in Clinical Mode
     // Missing, undefined, blocked, under review, or provisional status cannot produce clinical candidate.
-    if (!candidate.clinicalPromotionStatus) {
+    const effectivePromotion =
+      candidate.clinicalApprovalStatus ?? candidate.clinicalPromotionStatus;
+    if (!effectivePromotion) {
       reasons.push('TN-012:CLINICAL_PROMOTION_BLOCKED');
     } else if (
-      candidate.clinicalPromotionStatus === 'blocked' ||
-      candidate.clinicalPromotionStatus === 'candidate_under_review' ||
-      candidate.clinicalPromotionStatus === 'provisional_validation'
+      effectivePromotion === 'blocked' ||
+      effectivePromotion === 'candidate_under_review' ||
+      effectivePromotion === 'provisional_validation'
     ) {
       reasons.push('TN-012:CLINICAL_PROMOTION_BLOCKED');
-    } else if (candidate.clinicalPromotionStatus !== 'approved') {
+    } else if (effectivePromotion !== 'approved') {
       reasons.push('TN-012:CLINICAL_PROMOTION_BLOCKED');
     }
 
-    // 6. Check if candidate relies on synthetic or unknown measurements
-    const reliedMeasurementIds = candidate.reliedOnMeasurementIds ?? [];
-    const reliedMeasurements = context.measurementBundle.measurements.filter(m =>
-      reliedMeasurementIds.includes(m.measurementId),
-    );
-    if (
-      context.measurementBundle.dataOrigin === 'synthetic' ||
-      reliedMeasurements.some(m => m.dataOrigin === 'synthetic')
-    ) {
+    // 5. Check Measurement Bundle & Relied-On Measurement Provenance (Finding 8)
+    const bundleOrigin = context.measurementBundle?.dataOrigin;
+    if (bundleOrigin === 'synthetic') {
       reasons.push('TN-014:SYNTHETIC_MEASUREMENT_LEAKAGE_IN_CLINICAL_MODE');
-    } else if (
-      context.measurementBundle.dataOrigin === 'unknown' ||
-      reliedMeasurements.some(m => m.dataOrigin === 'unknown')
-    ) {
-      reasons.push('TN-014:UNKNOWN_MEASUREMENT_ORIGIN_IN_CLINICAL_MODE');
+    } else if (!bundleOrigin || bundleOrigin === 'unknown') {
+      if (!isGuidelineApprovedFixed && candidate.dataOrigin === 'patient_measured') {
+        reasons.push('TN-014:UNKNOWN_MEASUREMENT_ORIGIN_IN_CLINICAL_MODE');
+      }
+    } else if (bundleOrigin === 'normative') {
+      if (!isGuidelineApprovedFixed && candidate.dataOrigin === 'patient_measured') {
+        reasons.push('TN-012:NORMATIVE_MEASUREMENT_PROHIBITED_IN_CLINICAL_MODE');
+      }
+    } else if (bundleOrigin === 'mixed') {
+      reasons.push('TN-014:MIXED_MEASUREMENT_ORIGIN_PROHIBITED_IN_CLINICAL_MODE');
     }
 
-    // 7. Check if relying on research-only features (dynamic FC, normative pathway models, unvalidated ML)
+    const reliedMeasurementIds = candidate.reliedOnMeasurementIds ?? [];
+    if (reliedMeasurementIds.length > 0) {
+      const bundleMeasurements = context.measurementBundle?.measurements ?? [];
+      const measurementMap = new Map(bundleMeasurements.map(m => [m.measurementId, m]));
+      const lesionMap = new Map(context.lesionContexts?.map(l => [l.id, l]) ?? []);
+
+      for (const mId of reliedMeasurementIds) {
+        const m = measurementMap.get(mId);
+        if (!m) {
+          if (lesionMap.has(mId)) {
+            continue;
+          }
+          reasons.push(`TN-014:UNRESOLVED_MEASUREMENT_ID:${mId}`);
+          continue;
+        }
+
+        if (!m.dataOrigin || m.dataOrigin === 'unknown') {
+          reasons.push('TN-014:UNKNOWN_MEASUREMENT_ORIGIN_IN_CLINICAL_MODE');
+        } else if (m.dataOrigin === 'synthetic') {
+          reasons.push('TN-014:SYNTHETIC_MEASUREMENT_LEAKAGE_IN_CLINICAL_MODE');
+        } else if (m.dataOrigin === 'normative') {
+          reasons.push('TN-012:NORMATIVE_MEASUREMENT_PROHIBITED_IN_CLINICAL_MODE');
+        } else if (m.dataOrigin === 'mixed') {
+          reasons.push('TN-014:MIXED_MEASUREMENT_ORIGIN_PROHIBITED_IN_CLINICAL_MODE');
+        } else if (
+          m.dataOrigin !== 'patient_measured' &&
+          m.dataOrigin !== 'derived_from_patient_measured'
+        ) {
+          reasons.push('TN-014:UNKNOWN_MEASUREMENT_ORIGIN_IN_CLINICAL_MODE');
+        }
+
+        // Check verified lineage for derived_from_patient_measured
+        if (m.dataOrigin === 'derived_from_patient_measured') {
+          const mAny = m as unknown as Record<string, unknown>;
+          const hasLineage = Boolean(
+            mAny.rawAcquisitionId ||
+            mAny.sourceAcquisitionId ||
+            mAny.acquisitionId ||
+            (Array.isArray((mAny.lineage as any)?.sourceMeasurementIds) &&
+              (mAny.lineage as any).sourceMeasurementIds.length > 0) ||
+            candidate.lineage?.lineageType,
+          );
+          if (!hasLineage) {
+            reasons.push('TN-014:DERIVED_MEASUREMENT_WITHOUT_VERIFIED_LINEAGE');
+          }
+        }
+      }
+    } else {
+      // If individually computed without relied-on measurements, fail closed
+      if (
+        !isGuidelineApprovedFixed &&
+        candidate.patientPersonalizationStatus === 'individually_computed'
+      ) {
+        reasons.push('TN-014:INDIVIDUALLY_COMPUTED_TARGET_LACKS_MEASUREMENTS');
+      }
+    }
+
+    // 6. Check research-only feature flags (dynamic FC, normative pathway models, unvalidated ML)
     if (candidate.generatorLimitations?.includes('DYNAMIC_FC_RESEARCH_ONLY')) {
       reasons.push('TN-012:DYNAMIC_FC_PROHIBITED_IN_CLINICAL_MODE');
     }
@@ -104,7 +190,7 @@ export function evaluateGateG14(
       reasons.push('TN-012:NORMATIVE_PATHWAY_PROHIBITED_IN_CLINICAL_MODE');
     }
 
-    // 8. Check if relying on experimental unvalidated ML predictions
+    // 7. Check experimental unvalidated ML predictions
     if (candidate.generatorLimitations?.includes('UNVALIDATED_ML_MODEL')) {
       reasons.push('TN-012:UNVALIDATED_ML_PREDICTION_PROHIBITED_IN_CLINICAL_MODE');
     }

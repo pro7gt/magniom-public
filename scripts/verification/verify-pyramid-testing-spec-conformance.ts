@@ -216,13 +216,28 @@ export const PYRAMID_AUDIT_SECTIONS: readonly PyramidSectionAudit[] = [
         repoRoot,
         'packages/target-engine/tests/v2/plugin-contracts.test.ts',
       );
+      const researchLeakage = path.join(
+        repoRoot,
+        'packages/target-engine/tests/v2/research-leakage.test.ts',
+      );
+      const zaleskyAlgo = path.join(
+        repoRoot,
+        'packages/target-engine/tests/v2/zalesky-algorithms.test.ts',
+      );
       if (!fs.existsSync(pluginContracts)) {
         return { passed: false, details: 'Missing plugin-contracts.test.ts.' };
+      }
+      if (!fs.existsSync(researchLeakage) || !fs.existsSync(zaleskyAlgo)) {
+        return {
+          passed: false,
+          details:
+            'Missing research-leakage.test.ts or zalesky-algorithms.test.ts contract suites.',
+        };
       }
       return {
         passed: true,
         details:
-          'Plugin contracts, candidate generator interfaces, and hermetic execution bounds validated across all 8 modules.',
+          'Plugin contracts, Gate 14 candidate provenance rules, algorithm parameter boundaries, and hermetic execution bounds validated across all 8 modules.',
       };
     },
   },
@@ -523,14 +538,16 @@ ${results.map(r => `| **${r.section}** | ${r.name} | ${r.passed ? '✅ **PASS**'
 
 ### Level 4: Metamorphic Relations & Domain/API Contracts (§39–§41)
 * **Tooling:** Vitest / Zod 4 Standard Schema
-* **Harnesses:** \`packages/target-engine/tests/v2/metamorphic-and-boundary.test.ts\`, \`packages/domain/tests/canonical-data-spec-invariants.test.ts\`, \`packages/target-engine/tests/v2/plugin-contracts.test.ts\`, \`packages/domain/src/rls-isolation.test.ts\`
-* **Metamorphic Relations:**
+* **Harnesses:** \`packages/target-engine/tests/v2/metamorphic-and-boundary.test.ts\`, \`packages/domain/tests/canonical-data-spec-invariants.test.ts\`, \`packages/target-engine/tests/v2/plugin-contracts.test.ts\`, \`packages/domain/src/rls-isolation.test.ts\`, \`packages/target-engine/tests/v2/research-leakage.test.ts\`, \`packages/target-engine/tests/v2/zalesky-algorithms.test.ts\`
+* **Metamorphic Relations & Contracts:**
   - *Relation 1:* Lower reliability never increases permission of refinement.
   - *Relation 2:* Adding an unpermitted Research-only generator leaves Clinical slate unaltered.
   - *Relation 3:* Permuting candidate generator declaration order produces identical slate candidates.
   - *Relation 4:* Adding optional unused measurement leaves candidate geometries and slate unchanged.
   - *Relation 5:* Permuting input context arrays preserves slate structure and candidate set.
-* **Result:** **All 5 Metamorphic Relations, Canonical Schema Contracts & Tenant Isolation Confirmed.**
+  - *Gate 14 Provenance:* Candidate origin classification (\`targetDefinitionOrigin\`, \`inputDataOrigin\`, \`clinicalApprovalStatus\`, \`patientPersonalizationStatus\`) strictly verified; unverified lineage fails closed.
+  - *Algorithm Boundary Contracts:* Cash–Zalesky parameter boundary validation and Seguin pathway disconnected graph handling fail closed.
+* **Result:** **All 5 Metamorphic Relations, Canonical Schema Contracts, Gate 14 Provenance & Algorithm Boundary Invariants Confirmed.**
 
 ### Level 5: Database Zero-State Rebuild & 11-Domain RLS Security Matrix (§42, §45–§46)
 * **Tooling:** TypeScript Rebuild Harness & Supabase SQL Test Suites

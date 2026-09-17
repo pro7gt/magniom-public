@@ -489,4 +489,113 @@ describe('Target Engine Core Exit Criterion 4: Research Candidate Isolation', ()
     expect(evalResult.result).toBe('pass');
     expect(evalResult.reasonCodes).toHaveLength(0);
   });
+
+  it('Gate G14 passes guideline-approved fixed baseline with normative origin in clinical mode (MAGNIOM Revision 03 §4)', () => {
+    const context = createCanonicalResolvedContextV2({
+      request: { mode: 'clinical' } as any,
+    });
+
+    const fixedGuidelineDraft: CandidateDraft = {
+      draftId: 'draft-mdd-guideline-fixed',
+      generatorId: 'GEN-MDD-EVIDENCE-001',
+      targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
+      proposedRole: 'evidence_anchor',
+      targetDefinitionOrigin: 'guideline',
+      inputDataOrigin: 'none',
+      patientPersonalizationStatus: 'fixed',
+      clinicalApprovalStatus: 'approved',
+      dataOrigin: 'normative',
+      scientificMaturity: 'clinical_approved',
+      clinicalPromotionStatus: 'approved',
+      targetGeometry: createCanonicalPointGeometry(-44, 40, 28, 'left', 'pipeline'),
+      evidencePathIds: ['PATH-MDD-BA46'],
+      clinicalObjectiveIds: ['00000000-0000-0000-0000-000000000040'],
+      reliedOnMeasurementIds: [],
+      reliedOnReliabilityIds: [],
+      rawScientificFeatures: [],
+      generatorLimitations: [],
+      nominationRationale: 'Guideline-approved canonical fixed baseline',
+      generatorTrace: { algorithmCode: 'CANONICAL_ANCHOR', algorithmVersion: '2.0.0' },
+    };
+
+    const evalResult = evaluateGateG14(fixedGuidelineDraft, context);
+    expect(evalResult.result).toBe('pass');
+    expect(evalResult.reasonCodes).toHaveLength(0);
+  });
+
+  it('Gate G14 rejects candidate with unresolved reliedOnMeasurementId in clinical mode (MAGNIOM Revision 03 §8)', () => {
+    const context = createCanonicalResolvedContextV2({
+      request: { mode: 'clinical' } as any,
+    });
+
+    const unresolvableDraft: CandidateDraft = {
+      draftId: 'draft-unresolvable-measurement',
+      generatorId: 'GEN-MDD-CONNECTOME-001',
+      targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
+      proposedRole: 'primary',
+      dataOrigin: 'patient_measured',
+      scientificMaturity: 'clinical_approved',
+      clinicalPromotionStatus: 'approved',
+      targetGeometry: createCanonicalPointGeometry(-44, 40, 28, 'left', 'pipeline'),
+      evidencePathIds: ['PATH-MDD-BA46'],
+      clinicalObjectiveIds: ['00000000-0000-0000-0000-000000000040'],
+      reliedOnMeasurementIds: ['MEAS-DOES-NOT-EXIST'],
+      reliedOnReliabilityIds: [],
+      rawScientificFeatures: [],
+      generatorLimitations: [],
+      nominationRationale: 'Target with dangling measurement ID',
+      generatorTrace: { algorithmCode: 'CANONICAL_ANCHOR', algorithmVersion: '2.0.0' },
+    };
+
+    const evalResult = evaluateGateG14(unresolvableDraft, context);
+    expect(evalResult.result).toBe('fail');
+    expect(evalResult.reasonCodes).toContain(
+      'TN-014:UNRESOLVED_MEASUREMENT_ID:MEAS-DOES-NOT-EXIST',
+    );
+  });
+
+  it('Gate G14 rejects candidate relying on mixed measurement bundle in clinical mode (MAGNIOM Revision 03 §8)', () => {
+    const context = createCanonicalResolvedContextV2({
+      request: { mode: 'clinical' } as any,
+      measurementBundle: {
+        bundleId: 'bundle-mixed-01',
+        patientId: 'patient-01',
+        createdAt: new Date().toISOString(),
+        dataOrigin: 'mixed', // Mixed bundle!
+        measurements: [
+          {
+            measurementId: 'MEAS-01',
+            modality: 'resting_state_fmri',
+            status: 'qualified',
+            dataOrigin: 'patient_measured',
+          },
+        ],
+      } as any,
+    });
+
+    const draft: CandidateDraft = {
+      draftId: 'draft-mixed-bundle',
+      generatorId: 'GEN-MDD-CONNECTOME-001',
+      targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
+      proposedRole: 'primary',
+      dataOrigin: 'patient_measured',
+      scientificMaturity: 'clinical_approved',
+      clinicalPromotionStatus: 'approved',
+      targetGeometry: createCanonicalPointGeometry(-44, 40, 28, 'left', 'pipeline'),
+      evidencePathIds: ['PATH-MDD-BA46'],
+      clinicalObjectiveIds: ['00000000-0000-0000-0000-000000000040'],
+      reliedOnMeasurementIds: ['MEAS-01'],
+      reliedOnReliabilityIds: [],
+      rawScientificFeatures: [],
+      generatorLimitations: [],
+      nominationRationale: 'Candidate relying on mixed bundle',
+      generatorTrace: { algorithmCode: 'CANONICAL_ANCHOR', algorithmVersion: '2.0.0' },
+    };
+
+    const evalResult = evaluateGateG14(draft, context);
+    expect(evalResult.result).toBe('fail');
+    expect(evalResult.reasonCodes).toContain(
+      'TN-014:MIXED_MEASUREMENT_ORIGIN_PROHIBITED_IN_CLINICAL_MODE',
+    );
+  });
 });

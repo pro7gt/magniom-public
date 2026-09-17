@@ -1,12 +1,12 @@
 # Formal Verification & CI Pipeline Execution Report v2.0
 
-**Run ID:** `CI-RUN-20260916212223`  
-**Execution Date:** 2026-09-16T21:22:23.744Z  
-**Git Branch / Commit:** `main` / `cca6b59385`  
+**Run ID:** `CI-RUN-20260917112256`  
+**Execution Date:** 2026-09-17T11:22:56.561Z  
+**Git Branch / Commit:** `main` / `60f5b87145`  
 **Governing Specification:** `public/guides/MAGNIOM-Enterprise Verification, Testing CICD Specification v2.0.md`  
 **Overall Verdict:** ✅ **100% PASS — ALL STAGES VERIFIED**  
-**Total Execution Duration:** 120.45s  
-**Cryptographic Seal (SHA-256):** `05943468f6bbea01738007cedb30be77a981438a3f16aa732dd40f9aa273e2e9`  
+**Total Execution Duration:** 122.38s  
+**Cryptographic Seal (SHA-256):** `d6a9e7015da5b40e542f312c4cb8f41baf776406a78ac2bf1f74e4f0656f28f0`  
 
 ---
 
@@ -14,18 +14,18 @@
 
 | Stage # | Stage Name | Verification Command | Duration | Status |
 | :---: | :--- | :--- | :---: | :---: |
-| **Stage 0** | Stage 0 — C0–C4 Scientific Change Classifier & PR Policy | `npm run verify:stage0` | 0.18s | ✅ PASS |
-| **Stage 1** | Stage 1 — Static Verification & Target Engine Rules | `npm run verify:stage1` | 14.32s | ✅ PASS |
-| **Stage 2** | Stage 2 — Unit Tests & 375 SRS Requirements Traceability | `npm run verify:stage2` | 8.78s | ✅ PASS |
-| **Stage 3** | Stage 3 — Property-Based Invariant Verification | `npm run verify:stage3` | 1.61s | ✅ PASS |
+| **Stage 0** | Stage 0 — C0–C4 Scientific Change Classifier & PR Policy | `npm run verify:stage0` | 0.19s | ✅ PASS |
+| **Stage 1** | Stage 1 — Static Verification & Target Engine Rules | `npm run verify:stage1` | 14.75s | ✅ PASS |
+| **Stage 2** | Stage 2 — Unit Tests & 375 SRS Requirements Traceability | `npm run verify:stage2` | 9.44s | ✅ PASS |
+| **Stage 3** | Stage 3 — Property-Based Invariant Verification | `npm run verify:stage3` | 1.63s | ✅ PASS |
 | **Stage 4** | Stage 4 — Database Zero-State Rebuild & 11-Domain RLS | `npm run verify:stage4` | 0.25s | ✅ PASS |
-| **Stage 5** | Stage 5 — Multi-Indication 72 Golden Cases & Spatial Differentials | `npm run verify:stage5` | 0.48s | ✅ PASS |
-| **Stage 6** | Stage 6 — Release-Blocking Laterality & Adversarial Boundaries | `npm run verify:stage6` | 1.39s | ✅ PASS |
-| **Stage 7** | Stage 7 — Presentation & Workflow Worker Integration | `npm run verify:stage7` | 1.34s | ✅ PASS |
-| **Stage 8** | Stage 8 — Security, SBOM, Secrets & Pentest Readiness | `npm run verify:stage8` | 1.19s | ✅ PASS |
-| **Stage 9** | Stage 9 — Reproducible Monorepo Build & MagniomReleaseManifestV2 | `npm run verify:stage9` | 49.01s | ✅ PASS |
-| **Stage 10** | Stage 10 — Multi-Indication Smoke Test & Recall Indexing | `npm run verify:stage10` | 0.62s | ✅ PASS |
-| **Service** | NeuroCompute Scientific Service | `npm run test:neurocompute -- --fast` | 41.29s | ✅ PASS |
+| **Stage 5** | Stage 5 — Multi-Indication 72 Golden Cases & Spatial Differentials | `npm run verify:stage5` | 0.51s | ✅ PASS |
+| **Stage 6** | Stage 6 — Release-Blocking Laterality & Adversarial Boundaries | `npm run verify:stage6` | 1.41s | ✅ PASS |
+| **Stage 7** | Stage 7 — Presentation & Workflow Worker Integration | `npm run verify:stage7` | 1.37s | ✅ PASS |
+| **Stage 8** | Stage 8 — Security, SBOM, Secrets & Pentest Readiness | `npm run verify:stage8` | 1.30s | ✅ PASS |
+| **Stage 9** | Stage 9 — Reproducible Monorepo Build & MagniomReleaseManifestV2 | `npm run verify:stage9` | 48.98s | ✅ PASS |
+| **Stage 10** | Stage 10 — Multi-Indication Smoke Test & Recall Indexing | `npm run verify:stage10` | 0.64s | ✅ PASS |
+| **Service** | NeuroCompute Scientific Service (Fast) | `npm run test:neurocompute -- --fast` | 41.91s | ✅ PASS |
 
 ---
 

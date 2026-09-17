@@ -5,7 +5,7 @@
 **Standard Compliance:** IEC 62304:2006/Amd 1:2015 Class C (§5.5, §5.6, §5.7) / ISO 13485:2016 §7.3.6 / ISO 14971:2019  
 **Software Safety Class:** IEC 62304 Class C (Highest Medical Safety Classification)  
 **Release Version:** Magniom Enterprise Release v2.0.0 (Release ID: `MAGNIOM-RELEASE-v2.0.0-20260903`)  
-**Audit Execution Date:** 2026-09-16T21:20:28.002Z  
+**Audit Execution Date:** 2026-09-17T11:20:59.026Z  
 **Overall Status:** ✅ **PASSED (100% PYRAMID LAYERS & SECTIONS VERIFIED)**
 
 ---
@@ -48,7 +48,7 @@ graph TD
 | **§38** | Property-Based Invariant Tests (fast-check) | ✅ **PASS** | Fast-check randomized fuzzing verifies 8 mathematical invariants across 10,000+ permutations. |
 | **§39** | Metamorphic Scientific Relations | ✅ **PASS** | 5 metamorphic scientific relations verified: reliability monotonicity, research isolation, ordering invariance, unused measurements, and context permutations. |
 | **§40** | Domain Contract Tests | ✅ **PASS** | Domain contract tests validate canonical schemas, missing required fields, enum bounds, UUID references, and TargetGeometry subtypes. |
-| **§41** | API & Plugin Contract Tests | ✅ **PASS** | Plugin contracts, candidate generator interfaces, and hermetic execution bounds validated across all 8 modules. |
+| **§41** | API & Plugin Contract Tests | ✅ **PASS** | Plugin contracts, Gate 14 candidate provenance rules, algorithm parameter boundaries, and hermetic execution bounds validated across all 8 modules. |
 | **§42** | Database Migration Tests (Zero-State Rebuild & Integrity) | ✅ **PASS** | Zero-state rebuild audits 51 sequential migrations (001–065) in strict monotonic forward ordering. |
 | **§43** | Prohibition of Manual Production Schema Editing | ✅ **PASS** | Monotonic sequence enforcement and immutability trigger audits guarantee zero unmanaged production schema edits. |
 | **§44** | Structural Data-Integrity Tests | ✅ **PASS** | Structural relationships verified: case ownership, indication ownership, candidate-to-slate relations, and decision immutability. |
@@ -101,14 +101,16 @@ graph TD
 
 ### Level 4: Metamorphic Relations & Domain/API Contracts (§39–§41)
 * **Tooling:** Vitest / Zod 4 Standard Schema
-* **Harnesses:** `packages/target-engine/tests/v2/metamorphic-and-boundary.test.ts`, `packages/domain/tests/canonical-data-spec-invariants.test.ts`, `packages/target-engine/tests/v2/plugin-contracts.test.ts`, `packages/domain/src/rls-isolation.test.ts`
-* **Metamorphic Relations:**
+* **Harnesses:** `packages/target-engine/tests/v2/metamorphic-and-boundary.test.ts`, `packages/domain/tests/canonical-data-spec-invariants.test.ts`, `packages/target-engine/tests/v2/plugin-contracts.test.ts`, `packages/domain/src/rls-isolation.test.ts`, `packages/target-engine/tests/v2/research-leakage.test.ts`, `packages/target-engine/tests/v2/zalesky-algorithms.test.ts`
+* **Metamorphic Relations & Contracts:**
   - *Relation 1:* Lower reliability never increases permission of refinement.
   - *Relation 2:* Adding an unpermitted Research-only generator leaves Clinical slate unaltered.
   - *Relation 3:* Permuting candidate generator declaration order produces identical slate candidates.
   - *Relation 4:* Adding optional unused measurement leaves candidate geometries and slate unchanged.
   - *Relation 5:* Permuting input context arrays preserves slate structure and candidate set.
-* **Result:** **All 5 Metamorphic Relations, Canonical Schema Contracts & Tenant Isolation Confirmed.**
+  - *Gate 14 Provenance:* Candidate origin classification (`targetDefinitionOrigin`, `inputDataOrigin`, `clinicalApprovalStatus`, `patientPersonalizationStatus`) strictly verified; unverified lineage fails closed.
+  - *Algorithm Boundary Contracts:* Cash–Zalesky parameter boundary validation and Seguin pathway disconnected graph handling fail closed.
+* **Result:** **All 5 Metamorphic Relations, Canonical Schema Contracts, Gate 14 Provenance & Algorithm Boundary Invariants Confirmed.**
 
 ### Level 5: Database Zero-State Rebuild & 11-Domain RLS Security Matrix (§42, §45–§46)
 * **Tooling:** TypeScript Rebuild Harness & Supabase SQL Test Suites

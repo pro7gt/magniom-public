@@ -14,7 +14,6 @@ import { CANONICAL_SOURCES } from '../../packages/evidence/src/seeds/sources';
 
 const METHOD_IMPLEMENTATION_MAP: Record<string, string> = {
   FC_CLUSTER_PERSONALISED: 'packages/target-engine/src/algorithms/cash-zalesky-clustering.ts',
-  SC_CLUSTER_PERSONALISED: 'packages/target-engine/src/algorithms/cash-zalesky-clustering.ts',
   NORMATIVE_PATHWAY_MODEL: 'packages/target-engine/src/algorithms/seguin-pathway-routing.ts',
 };
 
@@ -66,7 +65,16 @@ export function verifyMethodManifests(repoRoot: string = process.cwd()): {
         }
       }
 
-      // 2. Verify Implementation Hash
+      // 2. Verify Implementation Status & Hash
+      if (manifest.implementationStatus === 'not_implemented') {
+        if (manifest.implementationHash !== undefined && manifest.implementationHash !== null) {
+          errors.push(
+            `[${methodId}/${cfgFile}] Method marked as not_implemented must not have an implementationHash.`,
+          );
+        }
+        continue;
+      }
+
       const relImplPath = METHOD_IMPLEMENTATION_MAP[methodId];
       if (!relImplPath) {
         errors.push(

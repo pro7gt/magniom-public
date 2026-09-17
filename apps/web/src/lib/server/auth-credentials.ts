@@ -7,7 +7,6 @@
 
 import { CANONICAL_CLINICAL_SESSION } from '../release-authority';
 import type { ClinicianAuthSession } from '../auth-store';
-import { createSignedSessionToken } from '../security/session-crypto';
 
 interface AttemptRecord {
   failedCount: number;
@@ -91,31 +90,56 @@ export function verifyClinicianCredentials(
     };
   }
 
-  const configuredUser = (
-    (typeof process !== 'undefined' && process.env?.MAGNIOM_CLINICIAN_USER) ||
-    'dr_asmith'
-  )
-    .trim()
-    .toLowerCase();
-
-  const configuredPassword =
-    (typeof process !== 'undefined' && process.env?.MAGNIOM_CLINICIAN_PASSWORD) ||
-    'ClinicalPrecision2026!';
+  const isProduction = typeof process !== 'undefined' && process.env?.NODE_ENV === 'production';
 
   const isDevOrTest =
+    !isProduction &&
     typeof process !== 'undefined' &&
     (process.env?.NODE_ENV === 'test' ||
       Boolean(process.env?.VITEST) ||
       process.env?.NODE_ENV !== 'production');
 
-  const isValidUser =
-    normalizedUser === configuredUser || (isDevOrTest && normalizedUser === 'magniom_spec');
+  const configuredUser = (
+    typeof process !== 'undefined' ? process.env?.MAGNIOM_CLINICIAN_USER : undefined
+  )
+    ?.trim()
+    .toLowerCase();
 
-  const isValidPass =
-    cleanPassword === configuredPassword ||
-    (isDevOrTest && normalizedUser === 'magniom_spec' && cleanPassword === 'Specialist2026!');
+  const configuredPassword =
+    typeof process !== 'undefined' ? process.env?.MAGNIOM_CLINICIAN_PASSWORD : undefined;
 
-  if (!isValidUser || !isValidPass) {
+  const configuredSpecUser = (
+    typeof process !== 'undefined' ? process.env?.MAGNIOM_SPECIALIST_USER : undefined
+  )
+    ?.trim()
+    .toLowerCase();
+
+  const configuredSpecPassword =
+    typeof process !== 'undefined' ? process.env?.MAGNIOM_SPECIALIST_PASSWORD : undefined;
+
+  if (!isDevOrTest && (!configuredUser || !configuredPassword)) {
+    throw new Error(
+      'CRITICAL SECURITY ERROR: Production deployment requires MAGNIOM_CLINICIAN_USER and ' +
+        'MAGNIOM_CLINICIAN_PASSWORD environment variables to be explicitly configured. ' +
+        'Public development defaults are strictly disabled in production mode.',
+    );
+  }
+
+  const effectiveUser = configuredUser || (isDevOrTest ? 'dr_asmith' : '');
+  const effectivePassword = configuredPassword || (isDevOrTest ? 'ClinicalPrecision2026!' : '');
+
+  const effectiveSpecUser = configuredSpecUser || (isDevOrTest ? 'magniom_spec' : '');
+  const effectiveSpecPassword = configuredSpecPassword || (isDevOrTest ? 'Specialist2026!' : '');
+
+  const isPrimaryMatch =
+    effectiveUser !== '' && normalizedUser === effectiveUser && cleanPassword === effectivePassword;
+
+  const isSpecMatch =
+    effectiveSpecUser !== '' &&
+    normalizedUser === effectiveSpecUser &&
+    cleanPassword === effectiveSpecPassword;
+
+  if (!isPrimaryMatch && !isSpecMatch) {
     const failInfo = recordLoginFailure(normalizedUser);
     if (failInfo.isNowLocked) {
       return {
@@ -133,13 +157,11 @@ export function verifyClinicianCredentials(
   recordLoginSuccess(normalizedUser);
 
   const timestamp = new Date().toISOString();
-  const sessionToken = createSignedSessionToken(CANONICAL_CLINICAL_SESSION.user.id);
 
   const session: ClinicianAuthSession = {
     isAuthenticated: true,
     username: normalizedUser,
     loginTimestamp: timestamp,
-    sessionToken,
     rememberMe: false,
     user: {
       ...CANONICAL_CLINICAL_SESSION.user,

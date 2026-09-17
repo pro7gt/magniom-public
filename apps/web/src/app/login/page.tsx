@@ -69,10 +69,12 @@ function EyeOffIcon({ size = 16, className = '' }: { size?: number; className?: 
   );
 }
 
+import { sanitizeRedirectUrl } from '../../lib/security/redirect-sanitizer';
+
 function LoginContent() {
   const searchParams = useSearchParams();
-  const rawRedirect = searchParams?.get('redirect') || '/';
-  const redirectTarget = rawRedirect && !rawRedirect.startsWith('/login') ? rawRedirect : '/';
+  const rawRedirect = searchParams?.get('redirect');
+  const redirectTarget = sanitizeRedirectUrl(rawRedirect);
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
