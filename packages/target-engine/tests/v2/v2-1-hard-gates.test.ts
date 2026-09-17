@@ -61,6 +61,8 @@ function createMockCandidate(overrides: Partial<CandidateDraft> = {}): Candidate
     patientPersonalizationStatus: 'individually_computed',
     scientificMaturity: 'clinical_approved',
     clinicalPromotionStatus: 'approved',
+    targetingMethodId: 'EVD_PRIOR',
+    approvalReference: 'DEC-CLIN-2026-001',
     generatorTrace: {
       algorithmCode: 'EVD_PRIOR',
       algorithmVersion: '2.1.0',

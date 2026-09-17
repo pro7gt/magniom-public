@@ -18,13 +18,17 @@ export const AUTH_COOKIE_NAME = 'magniom_session';
 export async function middleware(request: NextRequest): Promise<NextResponse> {
   const { pathname, search } = request.nextUrl;
 
-  // 1. Allow login portal, explicitly allowlisted public auth endpoints, and public system health checks
+  // 1. Allow login portal, explicitly allowlisted public auth endpoints, static assets, and public system health checks
   const isPublicAuthRoute =
     pathname === '/api/auth/login' ||
     pathname === '/api/auth/logout' ||
     pathname === '/api/auth/session';
 
-  if (pathname.startsWith('/login') || isPublicAuthRoute || pathname === '/api/health') {
+  const isStaticAsset =
+    pathname.startsWith('/_next/') ||
+    /\.(?:png|jpg|jpeg|gif|webp|svg|ico|woff|woff2|ttf|eot|css|js|json|map)$/i.test(pathname);
+
+  if (pathname.startsWith('/login') || isPublicAuthRoute || pathname === '/api/health' || isStaticAsset) {
     return NextResponse.next();
   }
 
@@ -84,8 +88,8 @@ export const config = {
      * Intercept all request paths except:
      * - _next/static (static JS/CSS files)
      * - _next/image (image optimization files)
-     * - Static asset files (favicons, icons, manifest)
+     * - Static asset files (favicons, icons, manifest, public media)
      */
-    '/((?!_next/static|_next/image|favicon\\.ico|favicon\\.svg|icon\\.svg|apple-touch-icon\\.png).*)',
+    '/((?!_next/static|_next/image|favicon\\.ico|favicon\\.svg|icon\\.svg|apple-touch-icon\\.png|.*\\.(?:png|jpg|jpeg|gif|webp|svg|ico|woff|woff2|ttf|eot|css|js|json|map)$).*)',
   ],
 };

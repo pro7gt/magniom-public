@@ -1,10 +1,7 @@
-/**
- * @magniom/web - Server-Side Clinician Session Registry & Revocation Authority
- * Conforms to MAG-SEC-001 (Mandatory Authentication) & MAG-SEC-009 (Session Integrity).
- *
- * Implements authoritative server-side session tracking keyed by JWT ID (jti).
- * Ensures server-side revocation on logout or compromise, protecting against token replay.
- */
+import {
+  setGlobalSessionRegistrar,
+  setGlobalSessionRevocationChecker,
+} from '../security/session-crypto';
 
 export interface ServerSessionRecord {
   readonly jti: string;
@@ -19,6 +16,8 @@ export interface ServerSessionRecord {
   readonly authAssuranceLevel: 'AAL1' | 'AAL2' | 'AAL3';
   lastActivityAt: number; // Unix timestamp in seconds
   readonly keyVersion: number;
+  revision: number; // Monotonically increasing revision for conflict resolution
+  updatedAt: number; // Unix timestamp in seconds
 }
 
 // Global registry store preserved across hot reloads and worker executions
@@ -39,19 +38,48 @@ globalThis.__magniom_session_registry__ = sessions;
 
 function getDurableStorePath(): string | null {
   if (typeof process === 'undefined' || !process.cwd) return null;
-  const storeOverride = process.env?.MAGNIOM_SESSION_STORE_PATH;
-  if (storeOverride) return storeOverride;
   try {
     const fs = require('node:fs');
     const path = require('node:path');
-    const tempDir = path.join(process.cwd(), '.temp');
-    if (!fs.existsSync(tempDir)) {
-      fs.mkdirSync(tempDir, { recursive: true });
+    const effectivePath =
+      process.env?.MAGNIOM_SESSION_STORE_PATH ??
+      path.join(process.cwd(), '.temp', 'session-registry-authority.json');
+    const parentDir = path.dirname(effectivePath);
+    if (!fs.existsSync(parentDir)) {
+      fs.mkdirSync(parentDir, { recursive: true });
     }
-    return path.join(tempDir, 'session-registry-authority.json');
+    return effectivePath;
   } catch {
     return null;
   }
+}
+
+/**
+ * Merges two session records deterministically:
+ * - Revocation is terminal: any revoked record takes precedence over non-revoked.
+ * - If both or neither revoked: higher revision wins.
+ * - If revisions equal: higher updatedAt wins.
+ */
+function mergeRecords(
+  current: ServerSessionRecord | undefined,
+  incoming: ServerSessionRecord,
+): ServerSessionRecord {
+  if (!current) return incoming;
+
+  // Revocation tombstone is strictly terminal
+  if (incoming.revoked && !current.revoked) return incoming;
+  if (current.revoked && !incoming.revoked) return current;
+
+  const currentRev = current.revision ?? 0;
+  const incomingRev = incoming.revision ?? 0;
+
+  if (incomingRev > currentRev) return incoming;
+  if (currentRev > incomingRev) return current;
+
+  const currentUpdated = current.updatedAt ?? current.lastActivityAt ?? 0;
+  const incomingUpdated = incoming.updatedAt ?? incoming.lastActivityAt ?? 0;
+
+  return incomingUpdated >= currentUpdated ? incoming : current;
 }
 
 function syncFromDurableStore(): void {
@@ -63,8 +91,10 @@ function syncFromDurableStore(): void {
       const data = JSON.parse(fs.readFileSync(storePath, 'utf-8'));
       if (Array.isArray(data)) {
         for (const item of data) {
-          if (item && item.jti && !sessions.has(item.jti)) {
-            sessions.set(item.jti, item);
+          if (item && item.jti) {
+            const existing = sessions.get(item.jti);
+            const resolved = mergeRecords(existing, item);
+            sessions.set(item.jti, resolved);
           }
         }
       }
@@ -79,8 +109,44 @@ function persistToDurableStore(): void {
   if (!storePath) return;
   try {
     const fs = require('node:fs');
-    const records = Array.from(sessions.values());
-    fs.writeFileSync(storePath, JSON.stringify(records, null, 2), 'utf-8');
+
+    // Read existing file to merge disk changes from other processes
+    const diskRecords = new Map<string, ServerSessionRecord>();
+    if (fs.existsSync(storePath)) {
+      try {
+        const fileContent = fs.readFileSync(storePath, 'utf-8');
+        const parsed = JSON.parse(fileContent);
+        if (Array.isArray(parsed)) {
+          for (const item of parsed) {
+            if (item && item.jti) {
+              diskRecords.set(item.jti, item);
+            }
+          }
+        }
+      } catch {
+        // Disk read issue, proceed with memory
+      }
+    }
+
+    // Merge in-memory records with disk records
+    for (const [jti, memRec] of sessions.entries()) {
+      const diskRec = diskRecords.get(jti);
+      const merged = mergeRecords(diskRec, memRec);
+      diskRecords.set(jti, merged);
+      sessions.set(jti, merged);
+    }
+
+    // Merge any disk records not currently in memory
+    for (const [jti, diskRec] of diskRecords.entries()) {
+      if (!sessions.has(jti)) {
+        sessions.set(jti, diskRec);
+      }
+    }
+
+    const records = Array.from(diskRecords.values());
+    const tempPath = `${storePath}.tmp.${process.pid}.${Date.now()}`;
+    fs.writeFileSync(tempPath, JSON.stringify(records, null, 2), 'utf-8');
+    fs.renameSync(tempPath, storePath);
   } catch {
     // Durable store write error - remain in memory
   }
@@ -105,6 +171,10 @@ export function registerServerSession(params: {
   authAssuranceLevel?: 'AAL1' | 'AAL2' | 'AAL3';
   keyVersion?: number;
 }): ServerSessionRecord {
+  const now = Math.floor(Date.now() / 1000);
+  const existing = sessions.get(params.jti);
+  const revision = (existing?.revision ?? 0) + 1;
+
   const record: ServerSessionRecord = {
     jti: params.jti,
     userId: params.userId,
@@ -114,8 +184,10 @@ export function registerServerSession(params: {
     expiresAt: params.expiresAt,
     revoked: false,
     authAssuranceLevel: params.authAssuranceLevel ?? 'AAL2',
-    lastActivityAt: Math.floor(Date.now() / 1000),
+    lastActivityAt: now,
     keyVersion: params.keyVersion ?? 1,
+    revision,
+    updatedAt: now,
   };
 
   sessions.set(params.jti, record);
@@ -162,6 +234,8 @@ export function revokeSession(jti: string, reason = 'CLINICIAN_LOGOUT'): boolean
     record.revoked = true;
     record.revokedAt = now;
     record.revocationReason = reason;
+    record.revision = (record.revision ?? 0) + 1;
+    record.updatedAt = now;
     persistToDurableStore();
     return true;
   }
@@ -180,6 +254,8 @@ export function revokeSession(jti: string, reason = 'CLINICIAN_LOGOUT'): boolean
     authAssuranceLevel: 'AAL2',
     lastActivityAt: now,
     keyVersion: 1,
+    revision: 1,
+    updatedAt: now,
   });
   persistToDurableStore();
   return true;
@@ -191,10 +267,17 @@ export function revokeSession(jti: string, reason = 'CLINICIAN_LOGOUT'): boolean
 export function touchSessionActivity(jti: string): void {
   const record = sessions.get(jti);
   if (record && !record.revoked) {
-    record.lastActivityAt = Math.floor(Date.now() / 1000);
+    const now = Math.floor(Date.now() / 1000);
+    record.lastActivityAt = now;
+    record.revision = (record.revision ?? 0) + 1;
+    record.updatedAt = now;
     persistToDurableStore();
   }
 }
+
+// Bind authoritative hooks to globalThis for Edge middleware / Next.js server runtime
+setGlobalSessionRevocationChecker(isSessionRevoked);
+setGlobalSessionRegistrar(registerServerSession);
 
 /**
  * Retrieves a session record by jti.

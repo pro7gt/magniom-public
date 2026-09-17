@@ -365,6 +365,7 @@ export interface CandidateDraft {
   readonly clinicalApprovalStatus?: import('./enums.js').ClinicalPromotionStatus | undefined;
   readonly patientPersonalizationStatus?:
     import('./enums.js').PatientPersonalizationStatus | undefined;
+  readonly targetingMethodId?: string | undefined;
   readonly approvalReference?: string | undefined;
 }
 

@@ -460,7 +460,7 @@ function draftToCandidateEntity(
     inputDataOrigin: draft.inputDataOrigin,
     patientPersonalizationStatus: draft.patientPersonalizationStatus,
     clinicalApprovalStatus: draft.clinicalApprovalStatus,
-    targetingMethodId: draft.generatorTrace?.algorithmCode,
+    targetingMethodId: draft.targetingMethodId ?? draft.generatorTrace?.algorithmCode,
     approvalReference: draft.approvalReference,
   };
 }

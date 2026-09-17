@@ -129,8 +129,8 @@ function LoginContent() {
     }
   };
 
-  const handleLogoutExisting = () => {
-    authStore.logoutClinician();
+  const handleLogoutExisting = async () => {
+    await authStore.logoutClinicianAsync();
     setExistingSession(null);
     setUsername('');
     setPassword('');
@@ -162,7 +162,7 @@ function LoginContent() {
         </CardHeader>
 
         <CardContent>
-          {existingSession && !isRedirecting ? (
+          {existingSession && !isRedirecting && !isSubmitting ? (
             /* Active Session Resume Card */
             <div className="login-active-session-prompt">
               <div className="alert alert-info mb-4" role="status">

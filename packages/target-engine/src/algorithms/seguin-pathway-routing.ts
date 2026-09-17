@@ -113,8 +113,9 @@ export function computeEdgeCostMatrix(weights: readonly (readonly number[])[]): 
 }
 
 /**
- * Dijkstra's algorithm to find the weighted shortest path between source and target
- * using the edge cost matrix L = -log(W).
+ * Exact Bounded / Hop-Constrained Shortest Path Algorithm
+ * Finds the minimum-cost path from source to target subject to hops <= hopLimit.
+ * Searches the state space of (node, hops) using dynamic programming over L = -log(W).
  */
 export function findShortestPath(
   costMatrix: readonly (readonly number[])[],
@@ -123,57 +124,88 @@ export function findShortestPath(
   hopLimit: number = 6,
 ): ShortestPathResult {
   const n = costMatrix.length;
-  const dist: number[] = Array(n).fill(Infinity);
-  const prev: (number | null)[] = Array(n).fill(null);
-  const visited: boolean[] = Array(n).fill(false);
+  if (n === 0) {
+    throw new Error('PathwayRouting: Cost matrix cannot be empty');
+  }
+  if (!Number.isInteger(source) || source < 0 || source >= n) {
+    throw new Error(`PathwayRouting: Source node index ${source} is out of bounds [0, ${n - 1}]`);
+  }
+  if (!Number.isInteger(target) || target < 0 || target >= n) {
+    throw new Error(`PathwayRouting: Target node index ${target} is out of bounds [0, ${n - 1}]`);
+  }
+  if (!Number.isInteger(hopLimit) || hopLimit < 1) {
+    throw new Error(`PathwayRouting: hopLimit must be an integer >= 1 (received ${hopLimit})`);
+  }
 
-  dist[source] = 0;
+  if (source === target) {
+    return { source, target, path: [source], hops: 0, totalCost: 0 };
+  }
 
-  for (let step = 0; step < n; step++) {
-    let u = -1;
-    let minDist = Infinity;
-    for (let i = 0; i < n; i++) {
-      if (!visited[i] && dist[i]! < minDist) {
-        minDist = dist[i]!;
-        u = i;
-      }
-    }
+  // dp[h][v] = minimum cost to reach node v using exactly h hops from source
+  const dp: number[][] = Array.from({ length: hopLimit + 1 }, () => Array(n).fill(Infinity));
+  const prev: (number | null)[][] = Array.from({ length: hopLimit + 1 }, () => Array(n).fill(null));
+  dp[0]![source] = 0;
 
-    if (u === -1 || u === target) break;
-    visited[u] = true;
+  for (let h = 1; h <= hopLimit; h++) {
+    const prevDp = dp[h - 1]!;
+    const currDp = dp[h]!;
+    const currPrev = prev[h]!;
 
-    const row = costMatrix[u]!;
-    for (let v = 0; v < n; v++) {
-      const edgeCost = row[v]!;
-      if (!visited[v] && edgeCost < Infinity) {
-        const alt = dist[u]! + edgeCost;
-        if (alt < dist[v]!) {
-          dist[v] = alt;
-          prev[v] = u;
+    for (let u = 0; u < n; u++) {
+      const uCost = prevDp[u]!;
+      if (uCost === Infinity) continue;
+      const row = costMatrix[u];
+      if (!row) continue;
+
+      for (let v = 0; v < n; v++) {
+        if (u === v) continue; // Skip zero-cost self loops
+        const edgeCost = row[v];
+        if (
+          edgeCost === undefined ||
+          edgeCost === Infinity ||
+          !Number.isFinite(edgeCost) ||
+          edgeCost < 0
+        ) {
+          continue;
+        }
+
+        // Cycle check: verify v is not already in the path from source to u at hop h-1
+        let isCycle = false;
+        let pNode: number | null = u;
+        let pHop = h - 1;
+        while (pNode !== null && pHop > 0) {
+          if (pNode === v) {
+            isCycle = true;
+            break;
+          }
+          const hopPrev = prev[pHop];
+          const nextParent: number | null | undefined = hopPrev ? hopPrev[pNode] : null;
+          pNode = typeof nextParent === 'number' ? nextParent : null;
+          pHop--;
+        }
+        if (isCycle) continue;
+
+        const candidateCost = uCost + edgeCost;
+        if (candidateCost < currDp[v]!) {
+          currDp[v] = candidateCost;
+          currPrev[v] = u;
         }
       }
     }
   }
 
-  // Reconstruct path
-  const path: number[] = [];
-  if (source === target) {
-    return { source, target, path: [source], hops: 0, totalCost: 0 };
-  }
-  if (dist[target] === Infinity) {
-    return { source, target, path: [], hops: 0, totalCost: Infinity };
-  }
-  let curr: number | null | undefined = target;
-  while (curr !== null && curr !== undefined && path.length <= n + 1) {
-    path.unshift(curr);
-    if (curr === source) {
-      break;
+  // Find optimal hop count h* in [1, hopLimit] that minimizes total cost to target
+  let bestHops = 0;
+  let minCost = Infinity;
+  for (let h = 1; h <= hopLimit; h++) {
+    const costAtH = dp[h]![target]!;
+    if (costAtH < minCost - 1e-9) {
+      minCost = costAtH;
+      bestHops = h;
     }
-    curr = prev[curr];
   }
 
-  const hops = path.length > 1 ? path.length - 1 : 0;
-  if (hops > hopLimit) {
+  if (minCost === Infinity || bestHops === 0) {
     return {
       source,
       target,
@@ -183,12 +215,24 @@ export function findShortestPath(
     };
   }
 
+  // Reconstruct path backwards from target at bestHops
+  const path: number[] = [target];
+  let curr = target;
+  let currH = bestHops;
+  while (currH > 0) {
+    const parentNode = prev[currH]?.[curr];
+    if (parentNode === null || parentNode === undefined) break;
+    path.unshift(parentNode);
+    curr = parentNode;
+    currH--;
+  }
+
   return {
     source,
     target,
     path,
-    hops,
-    totalCost: dist[target]!,
+    hops: bestHops,
+    totalCost: minCost,
   };
 }
 
@@ -211,8 +255,48 @@ export function computePathwayCommunicationScore(
   kappa: number = -1.0,
   hopLimit: number = 6,
 ): PathwayCommunicationScore {
+  if (costMatrix.length !== graph.nodeCount) {
+    throw new Error(
+      `PathwayRouting: Cost matrix dimension (${costMatrix.length}) does not match graph nodeCount (${graph.nodeCount})`,
+    );
+  }
+  for (let i = 0; i < costMatrix.length; i++) {
+    if (costMatrix[i]!.length !== graph.nodeCount) {
+      throw new Error(
+        `PathwayRouting: Cost matrix row ${i} dimension (${costMatrix[i]!.length}) does not match graph nodeCount (${graph.nodeCount})`,
+      );
+    }
+  }
+
   if (graph.weights) {
     validateStructuralConnectivityMatrix(graph.weights);
+    if (graph.weights.length !== costMatrix.length) {
+      throw new Error(
+        'PathwayRouting: costMatrix dimensions do not match graph.weights dimensions',
+      );
+    }
+    for (let i = 0; i < graph.nodeCount; i++) {
+      for (let j = 0; j < graph.nodeCount; j++) {
+        if (i !== j) {
+          const w = graph.weights[i]![j]!;
+          const expectedCost = w > 0 ? -Math.log(w) : Infinity;
+          const actualCost = costMatrix[i]![j]!;
+          if (expectedCost === Infinity) {
+            if (actualCost !== Infinity) {
+              throw new Error(
+                `PathwayRouting: costMatrix[${i}][${j}] must be Infinity for disconnected weight 0`,
+              );
+            }
+          } else {
+            if (Math.abs(expectedCost - actualCost) > 1e-4) {
+              throw new Error(
+                `PathwayRouting: costMatrix[${i}][${j}]=${actualCost} does not match -log(graph.weights[${i}][${j}])=${expectedCost}`,
+              );
+            }
+          }
+        }
+      }
+    }
   }
 
   if (!graph.nodeCoordinatesMni || graph.nodeCoordinatesMni.length !== graph.nodeCount) {
@@ -296,6 +380,8 @@ export function computePathwayCommunicationScore(
   }
 
   const averageHops = Number((totalWeightedHops / totalReachableWeight).toFixed(2));
+  // Heuristic normative display score for exploratory connectomics research (Seguin 2026 Fig 2).
+  // Note: predictedEfficiencyRank = 10 - averageHops is an uncalibrated visualization index, strictly non-clinical.
   const predictedEfficiencyRank = Math.max(0.0, Number((10.0 - averageHops).toFixed(2)));
 
   // Classify dominant pathway according to Seguin 2026 Fig 2h
@@ -325,7 +411,34 @@ export function computePathwayCommunicationScore(
     }
   } else if (dominantPath.length === 5) {
     // 4 hops = 5 nodes: DLPFC -> Thal -> mSFG -> rSFG -> SGC
-    dominantRouteType = 'fronto_thalamic_4_hop_ipsi';
+    // Classify fronto_thalamic_4_hop_early_cross vs fronto_thalamic_4_hop_ipsi
+    let isEarlyCross = false;
+    if (graph.nodeCoordinatesMni && graph.nodeCoordinatesMni.length === graph.nodeCount) {
+      const x0 = graph.nodeCoordinatesMni[dominantPath[0]!]?.x ?? 0;
+      const x1 = graph.nodeCoordinatesMni[dominantPath[1]!]?.x ?? 0;
+      const x2 = graph.nodeCoordinatesMni[dominantPath[2]!]?.x ?? 0;
+      // If hemispheric sign crosses in first 2 hops (threshold > 1.0mm away from midline)
+      if ((x0 < -1.0 && (x1 > 1.0 || x2 > 1.0)) || (x0 > 1.0 && (x1 < -1.0 || x2 < -1.0))) {
+        isEarlyCross = true;
+      }
+    }
+    if (!isEarlyCross && graph.nodeLabels && graph.nodeLabels.length === graph.nodeCount) {
+      const l0 = graph.nodeLabels[dominantPath[0]!]?.toLowerCase() ?? '';
+      const l1 = graph.nodeLabels[dominantPath[1]!]?.toLowerCase() ?? '';
+      const l2 = graph.nodeLabels[dominantPath[2]!]?.toLowerCase() ?? '';
+      const isLeft = (l: string) => l.includes('lh') || l.includes('left') || l.startsWith('l_');
+      const isRight = (l: string) => l.includes('rh') || l.includes('right') || l.startsWith('r_');
+      if (
+        (isLeft(l0) && (isRight(l1) || isRight(l2))) ||
+        (isRight(l0) && (isLeft(l1) || isLeft(l2)))
+      ) {
+        isEarlyCross = true;
+      }
+    }
+
+    dominantRouteType = isEarlyCross
+      ? 'fronto_thalamic_4_hop_early_cross'
+      : 'fronto_thalamic_4_hop_ipsi';
   } else if (dominantPath.length === 0) {
     dominantRouteType = 'unclassified';
   }

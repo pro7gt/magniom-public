@@ -478,6 +478,8 @@ describe('Target Engine Core Exit Criterion 4: Research Candidate Isolation', ()
       patientPersonalizationStatus: 'individually_computed',
       scientificMaturity: 'clinical_approved',
       clinicalPromotionStatus: 'approved',
+      targetingMethodId: 'CANONICAL_ANCHOR',
+      approvalReference: 'DEC-CLIN-2026-001',
       targetGeometry: createCanonicalPointGeometry(-44, 40, 28, 'left', 'pipeline'),
       evidencePathIds: ['PATH-MDD-BA46'],
       clinicalObjectiveIds: ['00000000-0000-0000-0000-000000000040'],
@@ -836,5 +838,117 @@ describe('Target Engine Core Exit Criterion 4: Research Candidate Isolation', ()
       const parsed = TargetCandidateV2Schema.safeParse(candidate);
       expect(parsed.success).toBe(true);
     }
+  });
+
+  it('Gate G14 rejects personalized clinical candidate asserting approval with UNREGISTERED_METHOD (MAGNIOM Revision 05 Finding 4)', () => {
+    const context = createCanonicalResolvedContextV2({
+      request: { mode: 'clinical' } as any,
+    });
+
+    // Patient-measured candidate with valid measurements and complete provenance,
+    // but with an UNREGISTERED_METHOD algorithm code and self-declared clinical approval.
+    const adversarialDraft: CandidateDraft = {
+      draftId: 'draft-adversarial-unregistered-method',
+      generatorId: 'GEN-ADVERSARIAL-001',
+      targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
+      proposedRole: 'primary',
+      dataOrigin: 'patient_measured',
+      targetDefinitionOrigin: 'functional_connectivity',
+      inputDataOrigin: 'patient_measured',
+      patientPersonalizationStatus: 'individually_computed',
+      // Self-declared approval flags MUST be ignored by G14
+      scientificMaturity: 'clinical_approved',
+      clinicalPromotionStatus: 'approved',
+      clinicalApprovalStatus: 'approved',
+      targetingMethodId: 'UNREGISTERED_METHOD',
+      approvalReference: 'SELF_ASSERTED_REF_999',
+      targetGeometry: createCanonicalPointGeometry(-44, 40, 28, 'left', 'pipeline'),
+      evidencePathIds: ['PATH-MDD-BA46'],
+      clinicalObjectiveIds: ['00000000-0000-0000-0000-000000000040'],
+      reliedOnMeasurementIds: ['MEAS-01'],
+      reliedOnReliabilityIds: [],
+      rawScientificFeatures: [],
+      generatorLimitations: [],
+      nominationRationale: 'Adversarial draft with unregistered method self-asserting approval',
+      generatorTrace: { algorithmCode: 'UNREGISTERED_METHOD', algorithmVersion: '1.0.0' },
+    };
+
+    const evalResult = evaluateGateG14(adversarialDraft, context);
+    expect(evalResult.result).toBe('fail');
+    expect(evalResult.reasonCodes).toContain(
+      'TN-012:UNREGISTERED_TARGETING_METHOD_IN_CLINICAL_MODE',
+    );
+  });
+
+  it('Gate G14 rejects personalized clinical candidate using blocked manifest method (FC_CLUSTER_PERSONALISED)', () => {
+    const context = createCanonicalResolvedContextV2({
+      request: { mode: 'clinical' } as any,
+    });
+
+    // FC_CLUSTER_PERSONALISED manifest is registered but has clinicalPromotionStatus: 'blocked'
+    const blockedMethodDraft: CandidateDraft = {
+      draftId: 'draft-blocked-fc-candidate',
+      generatorId: 'GEN-MDD-FC-001',
+      targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
+      proposedRole: 'primary',
+      dataOrigin: 'patient_measured',
+      targetDefinitionOrigin: 'functional_connectivity',
+      inputDataOrigin: 'patient_measured',
+      patientPersonalizationStatus: 'individually_computed',
+      // Generator self-declares approved, but manifest says blocked!
+      scientificMaturity: 'clinical_approved',
+      clinicalPromotionStatus: 'approved',
+      clinicalApprovalStatus: 'approved',
+      targetingMethodId: 'FC_CLUSTER_PERSONALISED',
+      approvalReference: 'REF-CLIN-PROMO-REQ',
+      targetGeometry: createCanonicalPointGeometry(-44, 40, 28, 'left', 'pipeline'),
+      evidencePathIds: ['PATH-MDD-BA46'],
+      clinicalObjectiveIds: ['00000000-0000-0000-0000-000000000040'],
+      reliedOnMeasurementIds: ['MEAS-01'],
+      reliedOnReliabilityIds: [],
+      rawScientificFeatures: [],
+      generatorLimitations: [],
+      nominationRationale: 'Draft attempting to promote blocked FC method to clinical',
+      generatorTrace: { algorithmCode: 'FC_CLUSTER_PERSONALISED', algorithmVersion: '0.1.0' },
+    };
+
+    const evalResult = evaluateGateG14(blockedMethodDraft, context);
+    expect(evalResult.result).toBe('fail');
+    expect(evalResult.reasonCodes).toContain('TN-012:CLINICAL_PROMOTION_BLOCKED');
+    expect(evalResult.reasonCodes).toContain('TN-012:METHOD_MODE_NOT_PERMITTED_IN_CLINICAL');
+  });
+
+  it('Gate G14 rejects personalized clinical candidate missing approvalReference', () => {
+    const context = createCanonicalResolvedContextV2({
+      request: { mode: 'clinical' } as any,
+    });
+
+    const noRefDraft: CandidateDraft = {
+      draftId: 'draft-no-approval-reference',
+      generatorId: 'GEN-MDD-EVIDENCE-001',
+      targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
+      proposedRole: 'primary',
+      dataOrigin: 'patient_measured',
+      targetDefinitionOrigin: 'functional_connectivity',
+      inputDataOrigin: 'patient_measured',
+      patientPersonalizationStatus: 'individually_computed',
+      scientificMaturity: 'clinical_approved',
+      clinicalPromotionStatus: 'approved',
+      targetingMethodId: 'CANONICAL_ANCHOR',
+      // approvalReference missing!
+      targetGeometry: createCanonicalPointGeometry(-44, 40, 28, 'left', 'pipeline'),
+      evidencePathIds: ['PATH-MDD-BA46'],
+      clinicalObjectiveIds: ['00000000-0000-0000-0000-000000000040'],
+      reliedOnMeasurementIds: ['MEAS-01'],
+      reliedOnReliabilityIds: [],
+      rawScientificFeatures: [],
+      generatorLimitations: [],
+      nominationRationale: 'Valid method but missing clinical approval reference',
+      generatorTrace: { algorithmCode: 'CANONICAL_ANCHOR', algorithmVersion: '2.0.0' },
+    };
+
+    const evalResult = evaluateGateG14(noRefDraft, context);
+    expect(evalResult.result).toBe('fail');
+    expect(evalResult.reasonCodes).toContain('TN-012:MISSING_APPROVAL_REFERENCE_IN_CLINICAL_MODE');
   });
 });

@@ -7,7 +7,33 @@
  * the standard Web Crypto API.
  */
 
-import { isSessionRevoked, registerServerSession } from '../server/session-registry';
+export type SessionRevocationChecker = (jti: string) => boolean | Promise<boolean>;
+export type SessionRegistrar = (params: {
+  jti: string;
+  userId: string;
+  username: string;
+  organizationId?: string;
+  issuedAt: number;
+  expiresAt: number;
+  authAssuranceLevel?: 'AAL1' | 'AAL2' | 'AAL3';
+}) => void;
+
+declare global {
+  // eslint-disable-next-line no-var
+  var __magniom_session_revocation_checker__: SessionRevocationChecker | undefined;
+  // eslint-disable-next-line no-var
+  var __magniom_session_registrar__: SessionRegistrar | undefined;
+}
+
+export function setGlobalSessionRevocationChecker(
+  checker: SessionRevocationChecker | undefined,
+): void {
+  globalThis.__magniom_session_revocation_checker__ = checker;
+}
+
+export function setGlobalSessionRegistrar(registrar: SessionRegistrar | undefined): void {
+  globalThis.__magniom_session_registrar__ = registrar;
+}
 
 export interface SessionClaims {
   readonly sub: string; // userId
@@ -283,18 +309,13 @@ export function signSessionTokenSync(payload: string, secret?: string): string {
  */
 export function generateCryptographicNonce(byteLength = 16): string {
   const bytes = new Uint8Array(byteLength);
-  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
-    crypto.getRandomValues(bytes);
+  if (typeof globalThis !== 'undefined' && globalThis.crypto?.getRandomValues) {
+    globalThis.crypto.getRandomValues(bytes);
     return bytesToHex(bytes);
   }
-  try {
-    const nodeCrypto = require('node:crypto');
-    return nodeCrypto.randomBytes(byteLength).toString('hex');
-  } catch {
-    throw new Error(
-      'Cryptographically secure random source unavailable; cannot generate secure session nonce.',
-    );
-  }
+  throw new Error(
+    'Cryptographically secure random source unavailable; cannot generate secure session nonce.',
+  );
 }
 
 /**
@@ -330,8 +351,8 @@ export function createSignedSessionToken(
   const effectiveSecret = options.secret ?? getSessionSecret();
   const token = signSessionTokenSync(payloadStr, effectiveSecret);
 
-  if (options.registerSession !== false) {
-    registerServerSession({
+  if (options.registerSession !== false && globalThis.__magniom_session_registrar__) {
+    globalThis.__magniom_session_registrar__({
       jti,
       userId,
       username: options.username ?? (userId === 'usr-spec-002' ? 'magniom_spec' : 'dr_asmith'),
@@ -404,8 +425,13 @@ export async function verifySessionTokenWithClaims(
 
     // Fail-closed session authority verification: token must possess valid jti and be actively registered
     if (options?.checkRevocation ?? true) {
-      if (!claims.jti || isSessionRevoked(claims.jti)) {
-        return { valid: false, reason: 'REVOKED' };
+      const checker =
+        (options as { revocationChecker?: SessionRevocationChecker })?.revocationChecker ??
+        globalThis.__magniom_session_revocation_checker__;
+      if (checker) {
+        if (!claims.jti || (await checker(claims.jti))) {
+          return { valid: false, reason: 'REVOKED' };
+        }
       }
     }
 

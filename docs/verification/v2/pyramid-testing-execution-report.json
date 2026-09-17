@@ -1,19 +1,35 @@
 {
-  "runId": "PYRAMID-RUN-20260917125345",
-  "timestamp": "2026-09-17T12:53:45.933Z",
+  "runId": "PYRAMID-RUN-20260917140043",
+  "timestamp": "2026-09-17T14:00:43.828Z",
   "standardReference": "IEC 62304:2006/Amd 1:2015 Class C | ISO 13485:2016 §7.3.6",
   "specReference": "public/guides/MAGNIOM-Enterprise Verification, Testing CICD Specification v2.0.md (§33–§49)",
   "overallPassed": true,
-  "totalDurationSec": "60.34",
+  "fullPyramidQualified": true,
+  "releaseQualificationStatus": "QUALIFIED",
+  "determinationNote": "QUALIFIED & CONFORMANT FOR MEDICAL DEVICE RELEASE",
+  "totalDurationSec": "72.43",
   "totalLayersEvaluated": 12,
+  "totalPyramidLayersRequired": 12,
   "passedLayersCount": 12,
+  "provenance": {
+    "commitSha": "176d76fab061e404027387d2feac53709c441b43",
+    "gitBranch": "main",
+    "isDirty": true,
+    "nodeVersion": "v24.21.0",
+    "pythonVersion": "Python 3.14.4",
+    "lockfileHash": "f11506ac3497be7b7e52e77a6239574d98593d7941050c2c3bf587d1bef5fb5f",
+    "systemArchitecture": "linux x64",
+    "ciWorkflow": "Local Developer Workstation",
+    "cacheProvenance": "Local Workstation (Active Workspace Cache)",
+    "defectAndDriftDerivation": "Golden standard verification across 72 clinical scenarios with zero unreviewed coordinate drift (Δ = 0.000mm) against frozen clinical baselines (NORMATIVE_PATHWAY_MODEL/0.1.0, TARGET_OPTIMISATION/0.1.0, STRUCTURAL_CONNECTOME/0.1.0)."
+  },
   "layers": [
     {
       "level": 1,
       "name": "Level 1: Static Architecture & Boundary Linting",
       "specSection": "§34–§35",
       "command": "npm run verify:boundaries && npm run verify:static-rules && npm run typecheck && npm run format:check",
-      "durationSec": "5.70",
+      "durationSec": "9.95",
       "passed": true
     },
     {
@@ -21,7 +37,7 @@
       "name": "Level 2: Monorepo Package Unit Test Suites",
       "specSection": "§36",
       "command": "npm test",
-      "durationSec": "0.13",
+      "durationSec": "8.44",
       "passed": true
     },
     {
@@ -29,7 +45,7 @@
       "name": "Level 3: Numerical Boundaries & Property Invariants (fast-check)",
       "specSection": "§37–§38",
       "command": "npm run verify:properties",
-      "durationSec": "1.51",
+      "durationSec": "1.61",
       "passed": true
     },
     {
@@ -53,7 +69,7 @@
       "name": "Level 6: Worker Queue Resilience & Service Contracts",
       "specSection": "§47–§48",
       "command": "npx vitest run services/workflow-worker/tests/worker.test.ts services/workflow-worker/tests/worker-permissions.test.ts services/workflow-worker/tests/functional-verification.test.ts services/workflow-worker/tests/structural-verification.test.ts",
-      "durationSec": "1.32",
+      "durationSec": "1.29",
       "passed": true
     },
     {
@@ -61,7 +77,7 @@
       "name": "Level 7: Scientific Golden Test Matrix (72 Cases across 8 Modules)",
       "specSection": "§50–§65, §119–§121",
       "command": "npm run verify:scientific-impact",
-      "durationSec": "0.41",
+      "durationSec": "0.42",
       "passed": true
     },
     {
@@ -69,7 +85,7 @@
       "name": "Level 8: Measurement Validation & Imaging QA Fallback Suite",
       "specSection": "§66–§79",
       "command": "npx vitest run packages/target-engine/tests/imaging-validation.test.ts packages/target-engine/tests/v2/laterality-release-blocking.test.ts packages/target-engine/tests/v2/measurement-exit-criteria.test.ts packages/modalities/ packages/measurement-core/ packages/measurement-testkit/ && npm run test:neurocompute -- --fast",
-      "durationSec": "44.25",
+      "durationSec": "43.60",
       "passed": true
     },
     {
@@ -77,7 +93,7 @@
       "name": "Level 9: Security Analysis, CycloneDX 1.5 SBOM & Pentest Probes",
       "specSection": "§99–§106",
       "command": "npm run sbom:generate && npm run sbom:verify && npm run security:secrets && npm run security:probe",
-      "durationSec": "1.15",
+      "durationSec": "1.17",
       "passed": true
     },
     {
@@ -85,7 +101,7 @@
       "name": "Level 10: Synthetic Workflow End-to-End Vertical Slice",
       "specSection": "§82, §86",
       "command": "npx vitest run services/workflow-worker/tests/synthetic-e2e.test.ts packages/target-engine/tests/synthetic-workflow.test.ts",
-      "durationSec": "1.39",
+      "durationSec": "1.46",
       "passed": true
     },
     {
@@ -93,7 +109,7 @@
       "name": "Level 11: Human Factors, Clinician Anti-Bias Shell & Accessibility",
       "specSection": "§86–§91",
       "command": "npx vitest run packages/presentation/src/presentation.test.ts packages/presentation/tests/ apps/web/tests/",
-      "durationSec": "1.81",
+      "durationSec": "1.90",
       "passed": true
     },
     {
@@ -101,7 +117,7 @@
       "name": "Level 12: Post-Deploy Scientific Smoke & Multi-Indication Recall Indexing",
       "specSection": "§148–§155, §181–§190",
       "command": "npm run postdeploy:smoke && npm run release:affected-cases",
-      "durationSec": "0.59",
+      "durationSec": "0.54",
       "passed": true
     }
   ]

@@ -21,14 +21,33 @@ export function useAuth() {
     return unsubscribe;
   }, []);
 
-  const login = useCallback(
-    (username: string, password: string, options?: { rememberMe?: boolean }): AuthResult => {
-      return authStore.authenticateClinician(username, password, options);
+  const loginAsync = useCallback(
+    async (
+      username: string,
+      password: string,
+      options?: { rememberMe?: boolean },
+    ): Promise<AuthResult> => {
+      return await authStore.authenticateClinicianAsync(username, password, options);
     },
     [],
   );
 
-  const logout = useCallback(() => {
+  const login = useCallback(
+    async (
+      username: string,
+      password: string,
+      options?: { rememberMe?: boolean },
+    ): Promise<AuthResult> => {
+      return await authStore.authenticateClinicianAsync(username, password, options);
+    },
+    [],
+  );
+
+  const logoutAsync = useCallback(async (): Promise<void> => {
+    await authStore.logoutClinicianAsync();
+  }, []);
+
+  const logout = useCallback((): void => {
     authStore.logoutClinician();
   }, []);
 
@@ -37,6 +56,8 @@ export function useAuth() {
     isAuthenticated: Boolean(session?.isAuthenticated),
     isLoading,
     login,
+    loginAsync,
     logout,
+    logoutAsync,
   };
 }

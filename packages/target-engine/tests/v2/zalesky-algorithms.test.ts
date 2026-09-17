@@ -448,5 +448,97 @@ describe('Seguin & Zalesky Polysynaptic Pathway Routing (Nat Neurosci 2026)', ()
       expect(result.status).toBe('no_qualifying_cluster');
       expect(result.optimalTarget).toBeNull();
     });
+
+    it('Bounded shortest path selects valid 2-hop path when cheaper 3-hop path exceeds hopLimit (MAGNIOM Revision 05 Probe)', () => {
+      // 5-node graph:
+      // Node 0: Source
+      // Node 1, 2: Intermediate for cheap 3-hop path: 0 -> 1 -> 2 -> 3 (3 hops, cost = 0.1 + 0.1 + 0.1 = 0.3)
+      // Node 4: Intermediate for more expensive 2-hop path: 0 -> 4 -> 3 (2 hops, cost = 0.5 + 0.5 = 1.0)
+      // Node 3: Target
+      const n = 5;
+      const costs: number[][] = Array.from({ length: n }, () => Array(n).fill(Infinity));
+      for (let i = 0; i < n; i++) costs[i]![i] = 0;
+
+      // 3-hop cheap route: 0 -> 1 -> 2 -> 3
+      costs[0]![1] = 0.1;
+      costs[1]![0] = 0.1;
+      costs[1]![2] = 0.1;
+      costs[2]![1] = 0.1;
+      costs[2]![3] = 0.1;
+      costs[3]![2] = 0.1;
+
+      // 2-hop more expensive route: 0 -> 4 -> 3
+      costs[0]![4] = 0.5;
+      costs[4]![0] = 0.5;
+      costs[4]![3] = 0.5;
+      costs[3]![4] = 0.5;
+
+      // 1. With hopLimit = 3: the cheaper 3-hop route (cost 0.3) is selected
+      const res3 = findShortestPath(costs, 0, 3, 3);
+      expect(res3.hops).toBe(3);
+      expect(res3.path).toEqual([0, 1, 2, 3]);
+      expect(res3.totalCost).toBeCloseTo(0.3, 5);
+
+      // 2. With hopLimit = 2: the algorithm MUST NOT overlook the valid 2-hop route
+      // Prior post-hoc Dijkstra implementation rejected the 3-hop route and returned empty path
+      const res2 = findShortestPath(costs, 0, 3, 2);
+      expect(res2.hops).toBe(2);
+      expect(res2.path).toEqual([0, 4, 3]);
+      expect(res2.totalCost).toBeCloseTo(1.0, 5);
+
+      // 3. With hopLimit = 1: target is truly unreachable in 1 hop -> returns empty
+      const res1 = findShortestPath(costs, 0, 3, 1);
+      expect(res1.hops).toBe(0);
+      expect(res1.path).toEqual([]);
+      expect(res1.totalCost).toBe(Infinity);
+    });
+
+    it('validates node index bounds and costMatrix dimensions fail-closed (MAGNIOM Revision 05)', () => {
+      const costs = [
+        [0, 1],
+        [1, 0],
+      ];
+      expect(() => findShortestPath(costs, -1, 1, 2)).toThrow(
+        'Source node index -1 is out of bounds',
+      );
+      expect(() => findShortestPath(costs, 0, 5, 2)).toThrow(
+        'Target node index 5 is out of bounds',
+      );
+      expect(() => findShortestPath(costs, 0, 1, 0)).toThrow('hopLimit must be an integer >= 1');
+      expect(() => findShortestPath([], 0, 0, 2)).toThrow('Cost matrix cannot be empty');
+    });
+
+    it('classifies fronto_thalamic_4_hop_early_cross when path crosses hemispheres early (MAGNIOM Revision 05)', () => {
+      // 5-node graph representing: Left DLPFC -> Right Thalamus (early cross) -> Right SFG -> Right ACC -> Right SGC
+      const graph: StructuralGraph = {
+        nodeCount: 5,
+        nodeLabels: ['L_DLPFC', 'R_Thalamus', 'R_mSFG', 'R_rSFG', 'R_SGC'],
+        nodeCoordinatesMni: [
+          { x: -42, y: 44, z: 30 }, // Node 0: Left DLPFC (x < -1)
+          { x: 10, y: -15, z: 8 }, // Node 1: Right Thalamus (x > 1) -> early cross!
+          { x: 8, y: 35, z: 40 }, // Node 2: Right mSFG
+          { x: 6, y: 40, z: 25 }, // Node 3: Right rSFG
+          { x: 6, y: 16, z: -10 }, // Node 4: Right SGC
+        ],
+        weights: [
+          [1.0, 0.8, 0.0, 0.0, 0.0],
+          [0.8, 1.0, 0.8, 0.0, 0.0],
+          [0.0, 0.8, 1.0, 0.8, 0.0],
+          [0.0, 0.0, 0.8, 1.0, 0.8],
+          [0.0, 0.0, 0.0, 0.8, 1.0],
+        ],
+      };
+
+      const costs = computeEdgeCostMatrix(graph.weights);
+      const score = computePathwayCommunicationScore(
+        graph,
+        costs,
+        { x: -42, y: 44, z: 30 },
+        { x: 6, y: 16, z: -10 },
+      );
+
+      expect(score.dominantPathway).toEqual([0, 1, 2, 3, 4]);
+      expect(score.dominantRouteType).toBe('fronto_thalamic_4_hop_early_cross');
+    });
   });
 });

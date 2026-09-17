@@ -627,7 +627,7 @@ ${results.map(r => `| **${r.section}** | ${r.name} | ${r.passed ? '✅ **PASS**'
 
 ### Level 11: Human Factors, Clinician Anti-Bias Shell & Accessibility (§86–§91)
 * **Tooling:** Vitest / Presentation Testkit / Playwright Axe-Core
-* **Harnesses:** \`packages/presentation/tests/ux-golden-cases-v2.test.ts\`, \`packages/presentation/tests/shell-navigation-v2.test.ts\`, \`apps/web/tests/shell-v2-authority.test.ts\`, \`apps/web/tests/route-security-auth-guard.test.ts\`, \`apps/web/tests/auth-universal-login.test.ts\`
+* **Harnesses:** \`packages/presentation/tests/ux-golden-cases-v2.test.ts\`, \`packages/presentation/tests/shell-navigation-v2.test.ts\`, \`apps/web/tests/shell-v2-authority.test.ts\`, \`apps/web/tests/route-security-auth-guard.test.ts\`, \`apps/web/tests/auth-universal-login.test.ts\`, \`apps/web/tests/auth-lifecycle-dependable.test.ts\`
 * **Clinical Safety Invariants:**
   - Automation Bias Control (§89): Candidate 1 is **strictly never pre-selected** by default.
   - Persistent Mode Watermarks: Clinical Mode vs Research Mode visually distinct across all views.

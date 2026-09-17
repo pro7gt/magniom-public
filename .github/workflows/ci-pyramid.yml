@@ -56,6 +56,7 @@ jobs:
         run: npm run test:pyramid
 
       - name: Archive Formal Testing Pyramid Evidence
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: testing-pyramid-evidence

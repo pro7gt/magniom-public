@@ -132,6 +132,8 @@ describe('Server-Side Authentication API Endpoints', () => {
     const cookieHeader = res.headers.get('set-cookie');
     expect(cookieHeader).toBeDefined();
     expect(cookieHeader?.toLowerCase()).toMatch(/max-age=0|expires=/);
+    expect(cookieHeader?.toLowerCase()).toContain('httponly');
+    expect(cookieHeader?.toLowerCase()).toContain('secure');
 
     // 3. Server-side revocation verification: same token is now rejected with REVOKED
     const postLogoutVerification = await verifySessionTokenWithClaims(token);

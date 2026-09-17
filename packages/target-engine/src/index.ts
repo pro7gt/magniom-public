@@ -40,3 +40,4 @@ export * from './plugins/index.js';
 export * from './orchestrator/synthetic-vertical-slice.js';
 export * from './algorithms/cash-zalesky-clustering.js';
 export * from './algorithms/seguin-pathway-routing.js';
+export * from './registry/method-manifest-registry.js';

@@ -460,10 +460,10 @@ export function MagniomTopBar({
                   size="sm"
                   id="top-bar-sign-out-btn"
                   className="w-full justify-start text-xs text-danger flex items-center gap-2"
-                  onClick={() => {
+                  onClick={async () => {
                     setIsUserMenuOpen(false);
-                    authStore.logoutClinician();
-                    router.push('/login');
+                    await authStore.logoutClinicianAsync();
+                    window.location.replace('/login');
                   }}
                 >
                   <LockIcon size={13} /> Sign Out / Lock Workstation

@@ -33,6 +33,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     message: 'Clinician signed out via server API.',
   });
 
+  const forwardedProto = request.headers.get('x-forwarded-proto');
+  const isHttps =
+    request.url.startsWith('https:') ||
+    forwardedProto === 'https' ||
+    (process.env.NODE_ENV === 'production' && !request.url.startsWith('http://'));
+
   const response = NextResponse.json({ success: true });
   response.headers.set('Cache-Control', 'no-store, private');
 
@@ -41,7 +47,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     value: '',
     path: '/',
     maxAge: 0,
+    expires: new Date(0),
     sameSite: 'lax',
+    secure: isHttps,
+    httpOnly: true,
   });
 
   return response;

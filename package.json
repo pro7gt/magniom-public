@@ -35,7 +35,7 @@
     "verify:v2-baseline": "tsx scripts/verification/validate-v2-verification-baseline.ts",
     "verify:phase6": "npm run verify:v2-baseline",
     "verify:stage6": "vitest run packages/target-engine/tests/v2/laterality-release-blocking.test.ts packages/target-engine/tests/v2/adversarial-boundaries.test.ts packages/target-engine/tests/v2/module-kill-switch.test.ts",
-    "verify:stage7": "vitest run packages/presentation/src/presentation.test.ts packages/presentation/tests/ services/workflow-worker/tests/synthetic-e2e.test.ts",
+    "verify:stage7": "vitest run packages/presentation/src/presentation.test.ts packages/presentation/tests/ apps/web/tests/ services/workflow-worker/tests/synthetic-e2e.test.ts",
     "verify:stage8": "npm run sbom:generate && npm run sbom:verify && npm run security:secrets && npm run security:probe",
     "verify:stage9": "npm run build && npm run release:manifest-v2",
     "verify:stage10": "npm run postdeploy:smoke && npm run release:affected-cases",

@@ -11,6 +11,7 @@ import type {
   CandidateDraft,
   ResolvedTargetEngineContextV2,
 } from '@magniom/domain';
+import { defaultMethodManifestRegistry } from '../../registry/method-manifest-registry.js';
 
 export function evaluateGateG14(
   candidate: CandidateDraft,
@@ -103,8 +104,47 @@ export function evaluateGateG14(
       reasons.push('TN-014:UNKNOWN_DATA_ORIGIN_PROHIBITED_IN_CLINICAL_MODE');
     }
 
-    // 6. Check scientific maturity: Fail-closed allowlist in Clinical Mode
-    const effectiveMaturity = candidate.scientificMaturity;
+    // 6. Check scientific maturity and clinical promotion: Fail-closed allowlist in Clinical Mode
+    // For personalized or derived clinical candidates, resolve maturity, promotion status, and mode eligibility
+    // strictly from the versioned method manifest registry, ignoring candidate-supplied approval flags (MAGNIOM Rev 05 Finding 4)
+    let effectiveMaturity = candidate.scientificMaturity;
+    let effectivePromotion = candidate.clinicalApprovalStatus ?? candidate.clinicalPromotionStatus;
+
+    const isPersonalizedOrDerived =
+      !isGuidelineApprovedFixed &&
+      (candidate.patientPersonalizationStatus === 'individually_computed' ||
+        candidate.dataOrigin === 'patient_measured' ||
+        candidate.dataOrigin === 'derived_from_patient_measured');
+
+    if (isPersonalizedOrDerived) {
+      const methodId = candidate.targetingMethodId ?? candidate.generatorTrace?.algorithmCode;
+      if (!methodId) {
+        reasons.push('TN-012:MISSING_TARGETING_METHOD_ID_IN_CLINICAL_MODE');
+        effectiveMaturity = undefined;
+        effectivePromotion = undefined;
+      } else {
+        const manifest = defaultMethodManifestRegistry.getManifest(methodId);
+        if (!manifest) {
+          reasons.push('TN-012:UNREGISTERED_TARGETING_METHOD_IN_CLINICAL_MODE');
+          effectiveMaturity = undefined;
+          effectivePromotion = undefined;
+        } else {
+          // Authority is derived strictly from immutable manifest
+          effectiveMaturity = manifest.scientificMaturity;
+          effectivePromotion = manifest.clinicalPromotionStatus;
+
+          if (!manifest.permittedModes.includes('clinical')) {
+            reasons.push('TN-012:METHOD_MODE_NOT_PERMITTED_IN_CLINICAL');
+          }
+        }
+      }
+
+      // Require a non-empty approvalReference for personalized clinical candidates
+      if (!candidate.approvalReference || candidate.approvalReference.trim().length === 0) {
+        reasons.push('TN-012:MISSING_APPROVAL_REFERENCE_IN_CLINICAL_MODE');
+      }
+    }
+
     if (!effectiveMaturity) {
       reasons.push('TN-012:UNPROMOTED_MATURITY_PROHIBITED_IN_CLINICAL_MODE');
     } else if (
@@ -121,8 +161,6 @@ export function evaluateGateG14(
     }
 
     // 7. Check clinical promotion status: Fail-closed allowlist in Clinical Mode
-    const effectivePromotion =
-      candidate.clinicalApprovalStatus ?? candidate.clinicalPromotionStatus;
     if (!effectivePromotion) {
       reasons.push('TN-012:CLINICAL_PROMOTION_BLOCKED');
     } else if (

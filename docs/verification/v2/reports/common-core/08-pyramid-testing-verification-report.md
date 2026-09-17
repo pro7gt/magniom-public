@@ -5,7 +5,7 @@
 **Standard Compliance:** IEC 62304:2006/Amd 1:2015 Class C (§5.5, §5.6, §5.7) / ISO 13485:2016 §7.3.6 / ISO 14971:2019  
 **Software Safety Class:** IEC 62304 Class C (Highest Medical Safety Classification)  
 **Release Version:** Magniom Enterprise Release v2.0.0 (Release ID: `MAGNIOM-RELEASE-v2.0.0-20260903`)  
-**Audit Execution Date:** 2026-09-17T12:51:29.796Z  
+**Audit Execution Date:** 2026-09-17T14:43:56.343Z  
 **Overall Status:** ✅ **PASSED (100% PYRAMID LAYERS & SECTIONS VERIFIED)**
 
 ---
@@ -185,7 +185,7 @@ graph TD
 
 ### Level 11: Human Factors, Clinician Anti-Bias Shell & Accessibility (§86–§91)
 * **Tooling:** Vitest / Presentation Testkit / Playwright Axe-Core
-* **Harnesses:** `packages/presentation/tests/ux-golden-cases-v2.test.ts`, `packages/presentation/tests/shell-navigation-v2.test.ts`, `apps/web/tests/shell-v2-authority.test.ts`, `apps/web/tests/route-security-auth-guard.test.ts`, `apps/web/tests/auth-universal-login.test.ts`
+* **Harnesses:** `packages/presentation/tests/ux-golden-cases-v2.test.ts`, `packages/presentation/tests/shell-navigation-v2.test.ts`, `apps/web/tests/shell-v2-authority.test.ts`, `apps/web/tests/route-security-auth-guard.test.ts`, `apps/web/tests/auth-universal-login.test.ts`, `apps/web/tests/auth-lifecycle-dependable.test.ts`
 * **Clinical Safety Invariants:**
   - Automation Bias Control (§89): Candidate 1 is **strictly never pre-selected** by default.
   - Persistent Mode Watermarks: Clinical Mode vs Research Mode visually distinct across all views.
