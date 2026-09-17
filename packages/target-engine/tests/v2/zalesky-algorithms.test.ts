@@ -14,6 +14,7 @@ import {
   computeEdgeCostMatrix,
   findShortestPath,
   computePathwayCommunicationScore,
+  validateStructuralConnectivityMatrix,
   type StructuralGraph,
 } from '../../src/index.js';
 
@@ -319,7 +320,7 @@ describe('Seguin & Zalesky Polysynaptic Pathway Routing (Nat Neurosci 2026)', ()
       ).toThrow('No target parcels found within 15mm of target coordinate');
     });
 
-    it('correctly handles disconnected graphs without treating unreachable nodes as 0 hops', () => {
+    it('correctly handles disconnected graphs without treating unreachable nodes as 0 hops (MAGNIOM Rev 04 Finding 6: JSON-safe null averageHops)', () => {
       const graph: StructuralGraph = {
         nodeCount: 2,
         nodeCoordinatesMni: [
@@ -340,9 +341,112 @@ describe('Seguin & Zalesky Polysynaptic Pathway Routing (Nat Neurosci 2026)', ()
         { x: 6, y: 16, z: -10 },
       );
 
-      expect(score.averageHops).toBe(Infinity);
-      expect(score.predictedEfficiencyRank).toBe(0.0);
+      // JSON-safe null (never Infinity) and status 'not_estimable'
+      expect(score.status).toBe('not_estimable');
+      expect(score.averageHops).toBeNull();
+      expect(score.predictedEfficiencyRank).toBeNull();
       expect(score.dominantPathway).toEqual([]);
+      expect(score.dominantRouteType).toBe('unclassified');
+    });
+
+    it('rejects weights > 1.0 that would yield invalid negative Dijkstra costs (MAGNIOM Rev 04 Finding 6)', () => {
+      const invalidWeights = [
+        [1.0, 1.5],
+        [1.5, 1.0],
+      ];
+      expect(() => computeEdgeCostMatrix(invalidWeights)).toThrow(
+        'Edge weight at [0, 1] is 1.5 > 1.0, which produces invalid negative Dijkstra cost',
+      );
+      expect(() => validateStructuralConnectivityMatrix(invalidWeights)).toThrow(
+        'Matrix weight at [0, 1] is 1.5, but must be normalized in [0, 1.0]',
+      );
+    });
+
+    it('rejects asymmetric structural connectivity matrices (MAGNIOM Rev 04 Finding 6)', () => {
+      const asymmetricWeights = [
+        [1.0, 0.7],
+        [0.4, 1.0],
+      ];
+      expect(() => validateStructuralConnectivityMatrix(asymmetricWeights)).toThrow(
+        'Structural connectivity matrix must be symmetric',
+      );
+    });
+
+    it('rejects non-square structural connectivity matrices (MAGNIOM Rev 04 Finding 6)', () => {
+      const nonSquareWeights = [
+        [1.0, 0.7, 0.3],
+        [0.7, 1.0],
+      ];
+      expect(() => validateStructuralConnectivityMatrix(nonSquareWeights)).toThrow(
+        'Structural connectivity matrix must be square',
+      );
+    });
+
+    it('enforces hopLimit in Dijkstra shortest path search (MAGNIOM Rev 04 Finding 6)', () => {
+      // 4-node chain: 0 -> 1 -> 2 -> 3 (3 hops)
+      const chainWeights = [
+        [1.0, 0.8, 0.0, 0.0],
+        [0.8, 1.0, 0.8, 0.0],
+        [0.0, 0.8, 1.0, 0.8],
+        [0.0, 0.0, 0.8, 1.0],
+      ];
+      const costs = computeEdgeCostMatrix(chainWeights);
+
+      // Normal search with hopLimit = 6 finds path of 3 hops
+      const normalRes = findShortestPath(costs, 0, 3, 6);
+      expect(normalRes.hops).toBe(3);
+      expect(normalRes.path).toEqual([0, 1, 2, 3]);
+
+      // Constrained search with hopLimit = 2 fails closed (path exceeding hop limit is unreachable)
+      const constrainedRes = findShortestPath(costs, 0, 3, 2);
+      expect(constrainedRes.hops).toBe(0);
+      expect(constrainedRes.path).toEqual([]);
+      expect(constrainedRes.totalCost).toBe(Infinity);
+    });
+
+    it('differentiates cortical 3-hop from subcortical relay via anatomical parcel labels (MAGNIOM Rev 04 Finding 6)', () => {
+      // 4 nodes: DLPFC -> Thalamus -> ACC -> SGC
+      const subcorticalGraph: StructuralGraph = {
+        nodeCount: 4,
+        nodeLabels: ['L_DLPFC_BA46', 'L_Thalamus', 'L_ACC_BA24', 'R_SGC_BA25'],
+        nodeCoordinatesMni: [
+          { x: -40, y: 44, z: 30 }, // Node 0: DLPFC
+          { x: -10, y: -15, z: 8 }, // Node 1: Thalamus
+          { x: 0, y: 28, z: 20 }, // Node 2: ACC
+          { x: 6, y: 16, z: -10 }, // Node 3: SGC
+        ],
+        weights: [
+          [1.0, 0.8, 0.0, 0.0],
+          [0.8, 1.0, 0.8, 0.0],
+          [0.0, 0.8, 1.0, 0.8],
+          [0.0, 0.0, 0.8, 1.0],
+        ],
+      };
+
+      const costs = computeEdgeCostMatrix(subcorticalGraph.weights);
+      const score = computePathwayCommunicationScore(
+        subcorticalGraph,
+        costs,
+        { x: -40, y: 44, z: 30 },
+        { x: 6, y: 16, z: -10 },
+      );
+
+      // Intermediate contains Thalamus -> subcortical relay, NOT cortical 3-hop
+      expect(score.dominantPathway).toEqual([0, 1, 2, 3]);
+      expect(score.dominantRouteType).toBe('subcortical_relay');
+    });
+
+    it('Cash-Zalesky minClusterSize default is 2 matching method manifest (MAGNIOM Rev 04 Finding 6)', () => {
+      // 2 isolated single voxels (>10mm apart) without minClusterSize specified in options
+      const singleNodes: VoxelNode[] = [
+        { id: 'v1', x: -40, y: 44, z: 30, connectivity: -0.65 },
+        { id: 'v2', x: 20, y: 10, z: 0, connectivity: -0.55 },
+      ];
+
+      // Calling without options.minClusterSize should default to 2
+      const result = computeCashZaleskyTarget(singleNodes, { thresholdPercentile: 1.0 });
+      expect(result.status).toBe('no_qualifying_cluster');
+      expect(result.optimalTarget).toBeNull();
     });
   });
 });

@@ -112,6 +112,7 @@ export interface PipelineRunOptions {
   skipBuild?: boolean;
   includeNeurocompute?: boolean;
   fullNeurocompute?: boolean;
+  includePyramid?: boolean;
   noReport?: boolean;
 }
 
@@ -180,7 +181,7 @@ export class LocalContinuousIntegrationRunner {
       stagesRequested: stageResults.length,
       stagesPassed: stageResults.filter(s => s.passed).length,
       stages: stageResults.map(s => ({
-        stage: s.stage === 99 ? 'neurocompute' : s.stage,
+        stage: s.stage === 98 ? 'pyramid' : s.stage === 99 ? 'neurocompute' : s.stage,
         name: s.name,
         command: s.command,
         durationSec: parseFloat(s.durationSec),
@@ -216,7 +217,8 @@ export class LocalContinuousIntegrationRunner {
       '| Stage # | Stage Name | Verification Command | Duration | Status |',
       '| :---: | :--- | :--- | :---: | :---: |',
       ...stageResults.map(s => {
-        const stageLabel = s.stage === 99 ? 'Service' : `Stage ${s.stage}`;
+        const stageLabel =
+          s.stage === 98 ? 'Pyramid' : s.stage === 99 ? 'Service' : `Stage ${s.stage}`;
         return `| **${stageLabel}** | ${s.name} | \`${s.command}\` | ${s.durationSec}s | ${s.passed ? '✅ PASS' : '❌ FAIL'} |`;
       }),
       '',
@@ -337,6 +339,44 @@ export class LocalContinuousIntegrationRunner {
       }
     }
 
+    if (options.includePyramid) {
+      const pyramidCmd = 'npm run test:pyramid';
+      console.log(`\n▶️ [TESTING PYRAMID]: Full 12-Layer Testing Pyramid Execution (§33–§49)`);
+      console.log(`   Command: ${pyramidCmd}`);
+      const pyramidStart = Date.now();
+      try {
+        execSync(pyramidCmd, {
+          cwd: this.repoRoot,
+          stdio: 'inherit',
+          env: { ...process.env, CI: 'true' },
+        });
+        const durationSec = ((Date.now() - pyramidStart) / 1000).toFixed(2);
+        console.log(`✅ [TESTING PYRAMID PASSED] (${durationSec}s)`);
+        stageResults.push({
+          stage: 98,
+          name: 'Testing Pyramid 12-Layer Verification Suite (§33–§49)',
+          command: pyramidCmd,
+          durationSec,
+          passed: true,
+        });
+      } catch {
+        const durationSec = ((Date.now() - pyramidStart) / 1000).toFixed(2);
+        console.error(`\n❌ [TESTING PYRAMID FAILED] after ${durationSec}s!`);
+        stageResults.push({
+          stage: 98,
+          name: 'Testing Pyramid 12-Layer Verification Suite (§33–§49)',
+          command: pyramidCmd,
+          durationSec,
+          passed: false,
+        });
+        if (!options.noReport) {
+          const totalDurationSec = ((Date.now() - totalStart) / 1000).toFixed(2);
+          this.writeExecutionReports(stageResults, totalDurationSec, false);
+        }
+        return false;
+      }
+    }
+
     if (options.includeNeurocompute || options.fullNeurocompute) {
       const isFull = !!options.fullNeurocompute;
       const ncCmd = isFull
@@ -391,7 +431,12 @@ export class LocalContinuousIntegrationRunner {
     console.log('='.repeat(92));
     console.log('\nStage Execution Summary:');
     for (const r of stageResults) {
-      const stageLabel = r.stage === 99 ? 'Service' : `Stage ${String(r.stage).padStart(2, ' ')}`;
+      const stageLabel =
+        r.stage === 98
+          ? 'Pyramid'
+          : r.stage === 99
+            ? 'Service'
+            : `Stage ${String(r.stage).padStart(2, ' ')}`;
       console.log(`  [${stageLabel}]  ✅ PASS (${r.durationSec.padStart(5, ' ')}s) - ${r.name}`);
     }
     console.log('='.repeat(92) + '\n');
@@ -423,6 +468,11 @@ function parseCliArgs(args: string[]): {
       options.fullNeurocompute = true;
     } else if (arg === '--include-neurocompute' || arg === '--neurocompute') {
       options.includeNeurocompute = true;
+    } else if (arg === '--include-pyramid' || arg === '--pyramid') {
+      options.includePyramid = true;
+    } else if (arg === '--all') {
+      options.includeNeurocompute = true;
+      options.includePyramid = true;
     } else if (arg === '--no-report') {
       options.noReport = true;
     } else if (arg === '--skip-build' || arg === '--fast-stages') {
@@ -471,6 +521,9 @@ if (process.argv[1]?.endsWith('run-full-local-ci.ts')) {
       '  --full-neurocompute     Also run full NeuroCompute test suites (including integration)',
     );
     console.log('  --neurocompute          Alias for --include-neurocompute');
+    console.log('  --include-pyramid       Also execute full 12-Layer Testing Pyramid (§33–§49)');
+    console.log('  --pyramid               Alias for --include-pyramid');
+    console.log('  --all                   Execute all 10 stages + NeuroCompute + Testing Pyramid');
     console.log('  --no-report             Skip generating persistent execution reports');
     console.log('  --list, -l              List all stages and descriptions without executing');
     console.log('  --help, -h              Show this help message\n');

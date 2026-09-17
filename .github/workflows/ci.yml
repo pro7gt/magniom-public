@@ -274,6 +274,8 @@ jobs:
             docs/verification/traceability-coverage-v2.json
             docs/verification/reports/*.md
             docs/verification/v2/reports/**/*.md
+            docs/verification/v2/pipeline-execution-summary.json
+            docs/verification/v2/pyramid-testing-execution-report.json
             docs/security/sbom/*.json
 
   stage10-smoke-and-recall:

@@ -191,6 +191,7 @@ class ClinicianAuthStore {
 
   /**
    * Signs out the clinician, invalidates the session, and clears storage.
+   * Dispatches server revocation with keepalive to guarantee completion even during unload.
    */
   public logoutClinician(): void {
     const priorSession = this.cachedSession;
@@ -205,9 +206,41 @@ class ClinicianAuthStore {
         document.cookie = `${AUTH_COOKIE_NAME}=; Path=/; Max-Age=0; SameSite=Lax`;
       } catch {}
 
-      // Notify server logout
+      // Notify server logout with keepalive
       try {
-        fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
+        fetch('/api/auth/logout', { method: 'POST', keepalive: true }).catch(() => {});
+      } catch {}
+    }
+
+    emitAuditEvent('CLINICIAN_LOGGED_OUT', {
+      userId: priorSession?.user.id,
+      sessionId: 'client-signout',
+      message: priorSession
+        ? `Clinician ${priorSession.user.displayName} signed out of active workstation session.`
+        : 'Workstation session signed out.',
+    });
+
+    this.notifyListeners();
+  }
+
+  /**
+   * Asynchronously signs out clinician, awaiting authoritative server revocation before proceeding.
+   */
+  public async logoutClinicianAsync(): Promise<void> {
+    const priorSession = this.cachedSession;
+    this.cachedSession = null;
+
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.removeItem(AUTH_STORAGE_KEY);
+      } catch {}
+
+      try {
+        document.cookie = `${AUTH_COOKIE_NAME}=; Path=/; Max-Age=0; SameSite=Lax`;
+      } catch {}
+
+      try {
+        await fetch('/api/auth/logout', { method: 'POST', keepalive: true });
       } catch {}
     }
 

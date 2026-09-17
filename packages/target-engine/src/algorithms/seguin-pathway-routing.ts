@@ -30,13 +30,56 @@ export interface ShortestPathResult {
 export interface PathwayCommunicationScore {
   readonly stimulationCoordinate: { readonly x: number; readonly y: number; readonly z: number };
   readonly targetCoordinate: { readonly x: number; readonly y: number; readonly z: number };
-  readonly averageHops: number; // h(k)
+  readonly averageHops: number | null; // h(k) - null when not estimable (JSON-safe, not Infinity)
   readonly dominantPathway: readonly number[];
   readonly dominantRouteType:
-    'cortical_3_hop' | 'fronto_thalamic_4_hop_ipsi' | 'fronto_thalamic_4_hop_early_cross' | 'other';
-  readonly predictedEfficiencyRank: number; // lower hops = higher efficiency
+    | 'cortical_3_hop'
+    | 'fronto_thalamic_4_hop_ipsi'
+    | 'fronto_thalamic_4_hop_early_cross'
+    | 'subcortical_relay'
+    | 'other'
+    | 'unclassified';
+  readonly predictedEfficiencyRank: number | null; // lower hops = higher efficiency, null when not estimable
+  readonly status: 'success' | 'not_estimable';
   readonly dataOrigin: 'normative';
   readonly methodCode: 'NORMATIVE_PATHWAY_MODEL';
+}
+
+/**
+ * Validates structural connectivity matrix W according to Seguin-Zalesky invariants:
+ * - Square matrix of dimension n x n
+ * - Normalized weights: 0 <= W_ij <= 1.0 (prevents negative costs in L_ij = -log(W_ij))
+ * - Symmetric: |W_ij - W_ji| <= 1e-6
+ */
+export function validateStructuralConnectivityMatrix(
+  weights: readonly (readonly number[])[],
+): void {
+  const n = weights.length;
+  if (n === 0) {
+    throw new Error('PathwayRouting: Structural connectivity matrix cannot be empty');
+  }
+  for (let i = 0; i < n; i++) {
+    const row = weights[i];
+    if (!row || row.length !== n) {
+      throw new Error(
+        `PathwayRouting: Structural connectivity matrix must be square (expected ${n}x${n}, row ${i} has length ${row?.length ?? 0})`,
+      );
+    }
+    for (let j = 0; j < n; j++) {
+      const w = row[j]!;
+      if (!Number.isFinite(w) || w < 0 || w > 1.0) {
+        throw new Error(
+          `PathwayRouting: Matrix weight at [${i}, ${j}] is ${w}, but must be normalized in [0, 1.0] to prevent negative Dijkstra costs`,
+        );
+      }
+      const wSym = weights[j]![i]!;
+      if (Math.abs(w - wSym) > 1e-6) {
+        throw new Error(
+          `PathwayRouting: Structural connectivity matrix must be symmetric (asymmetry at [${i},${j}]=${w} vs [${j},${i}]=${wSym})`,
+        );
+      }
+    }
+  }
 }
 
 /**
@@ -53,6 +96,11 @@ export function computeEdgeCostMatrix(weights: readonly (readonly number[])[]): 
     for (let j = 0; j < n; j++) {
       if (i !== j) {
         const w = row[j]!;
+        if (w > 1.0) {
+          throw new Error(
+            `PathwayRouting: Edge weight at [${i}, ${j}] is ${w} > 1.0, which produces invalid negative Dijkstra cost -log(${w}) = ${-Math.log(w)}`,
+          );
+        }
         if (w > 0) {
           // L_ij = -log(w)
           costMatrix[i]![j] = -Math.log(w);
@@ -72,6 +120,7 @@ export function findShortestPath(
   costMatrix: readonly (readonly number[])[],
   source: number,
   target: number,
+  hopLimit: number = 6,
 ): ShortestPathResult {
   const n = costMatrix.length;
   const dist: number[] = Array(n).fill(Infinity);
@@ -124,6 +173,16 @@ export function findShortestPath(
   }
 
   const hops = path.length > 1 ? path.length - 1 : 0;
+  if (hops > hopLimit) {
+    return {
+      source,
+      target,
+      path: [],
+      hops: 0,
+      totalCost: Infinity,
+    };
+  }
+
   return {
     source,
     target,
@@ -150,7 +209,12 @@ export function computePathwayCommunicationScore(
     z: -10,
   },
   kappa: number = -1.0,
+  hopLimit: number = 6,
 ): PathwayCommunicationScore {
+  if (graph.weights) {
+    validateStructuralConnectivityMatrix(graph.weights);
+  }
+
   if (!graph.nodeCoordinatesMni || graph.nodeCoordinatesMni.length !== graph.nodeCount) {
     throw new Error(
       'StructuralGraph requires nodeCoordinatesMni matching nodeCount to map coordinates to parcels',
@@ -205,7 +269,7 @@ export function computePathwayCommunicationScore(
 
   for (const s of stimParcels) {
     for (const t of targetParcels) {
-      const sp = findShortestPath(costMatrix, s.parcelIndex, t);
+      const sp = findShortestPath(costMatrix, s.parcelIndex, t, hopLimit);
       if (sp.path.length > 0 && sp.totalCost < Infinity) {
         totalWeightedHops += s.weight * sp.hops;
         totalReachableWeight += s.weight;
@@ -217,25 +281,53 @@ export function computePathwayCommunicationScore(
     }
   }
 
-  const averageHops =
-    totalReachableWeight > 0
-      ? Number((totalWeightedHops / totalReachableWeight).toFixed(2))
-      : Infinity;
+  if (totalReachableWeight === 0) {
+    return {
+      stimulationCoordinate: stimulationMni,
+      targetCoordinate: targetMni,
+      averageHops: null,
+      dominantPathway: [],
+      dominantRouteType: 'unclassified',
+      predictedEfficiencyRank: null,
+      status: 'not_estimable',
+      dataOrigin: 'normative',
+      methodCode: 'NORMATIVE_PATHWAY_MODEL',
+    };
+  }
 
-  const predictedEfficiencyRank = Number.isFinite(averageHops)
-    ? Math.max(0.0, Number((10.0 - averageHops).toFixed(2)))
-    : 0.0;
+  const averageHops = Number((totalWeightedHops / totalReachableWeight).toFixed(2));
+  const predictedEfficiencyRank = Math.max(0.0, Number((10.0 - averageHops).toFixed(2)));
 
   // Classify dominant pathway according to Seguin 2026 Fig 2h
   let dominantRouteType:
     | 'cortical_3_hop'
     | 'fronto_thalamic_4_hop_ipsi'
     | 'fronto_thalamic_4_hop_early_cross'
-    | 'other' = 'other';
+    | 'subcortical_relay'
+    | 'other'
+    | 'unclassified' = 'other';
+
   if (dominantPath.length === 4) {
-    dominantRouteType = 'cortical_3_hop'; // 3 hops = 4 nodes: DLPFC -> SFG -> ACC -> SGC
+    // 3 hops = 4 nodes: DLPFC -> SFC/SFG -> ACC -> SGC
+    if (graph.nodeLabels && graph.nodeLabels.length === graph.nodeCount) {
+      const labels = dominantPath.map(idx => graph.nodeLabels![idx]?.toLowerCase() ?? '');
+      const intermediate = labels.slice(1, 3);
+      const isSubcortical = intermediate.some(
+        l => l.includes('thal') || l.includes('caud') || l.includes('put') || l.includes('striat'),
+      );
+      if (isSubcortical) {
+        dominantRouteType = 'subcortical_relay';
+      } else {
+        dominantRouteType = 'cortical_3_hop';
+      }
+    } else {
+      dominantRouteType = 'cortical_3_hop';
+    }
   } else if (dominantPath.length === 5) {
-    dominantRouteType = 'fronto_thalamic_4_hop_ipsi'; // 4 hops = 5 nodes: DLPFC -> Thal -> mSFG -> rSFG -> SGC
+    // 4 hops = 5 nodes: DLPFC -> Thal -> mSFG -> rSFG -> SGC
+    dominantRouteType = 'fronto_thalamic_4_hop_ipsi';
+  } else if (dominantPath.length === 0) {
+    dominantRouteType = 'unclassified';
   }
 
   return {
@@ -245,6 +337,7 @@ export function computePathwayCommunicationScore(
     dominantPathway: dominantPath,
     dominantRouteType,
     predictedEfficiencyRank,
+    status: 'success',
     dataOrigin: 'normative',
     methodCode: 'NORMATIVE_PATHWAY_MODEL',
   };

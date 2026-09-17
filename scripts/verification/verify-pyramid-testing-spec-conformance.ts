@@ -30,16 +30,21 @@ export const PYRAMID_AUDIT_SECTIONS: readonly PyramidSectionAudit[] = [
         };
       }
       const content = fs.readFileSync(runnerPath, 'utf8');
-      if (!content.includes('PYRAMID_LAYERS') || !content.includes('Level 12')) {
+      if (
+        !content.includes('PYRAMID_LAYERS') ||
+        !content.includes('Level 12') ||
+        !content.includes('writeExecutionReports')
+      ) {
         return {
           passed: false,
-          details: 'Testing pyramid runner does not define 12 formal layers.',
+          details:
+            'Testing pyramid runner does not define 12 formal layers or execution reporting.',
         };
       }
       return {
         passed: true,
         details:
-          'Formal 12-layer verification pyramid defined and automated in run-pyramid-testing.ts.',
+          'Formal 12-layer verification pyramid defined with automated execution report generation in run-pyramid-testing.ts.',
       };
     },
   },

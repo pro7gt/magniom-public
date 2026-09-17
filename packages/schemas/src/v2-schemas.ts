@@ -59,6 +59,53 @@ export const ModuleGovernanceStatusSchema = z.enum([
 
 export const IndicationModuleStatusSchema = ModuleGovernanceStatusSchema;
 
+export const DataOriginSchema = z.enum([
+  'patient_measured',
+  'normative',
+  'synthetic',
+  'derived_from_patient_measured',
+  'mixed',
+  'unknown',
+]);
+
+export const TargetDefinitionOriginSchema = z.enum([
+  'guideline',
+  'trial',
+  'normative_atlas',
+  'patient_derived',
+  'synthetic',
+]);
+
+export const InputDataOriginSchema = z.enum([
+  'patient_measured',
+  'derived_patient_data',
+  'normative',
+  'synthetic',
+  'none',
+]);
+
+export const PatientPersonalizationStatusSchema = z.enum([
+  'fixed',
+  'anatomically_transformed',
+  'individually_computed',
+]);
+
+export const ScientificMaturitySchema = z.enum([
+  'prototype',
+  'research',
+  'validation',
+  'clinical_candidate',
+  'clinical_approved',
+  'retired',
+]);
+
+export const ClinicalPromotionStatusSchema = z.enum([
+  'blocked',
+  'provisional_validation',
+  'candidate_under_review',
+  'approved',
+]);
+
 export const MeasurementModalitySchema = z.enum([
   'structural_mri',
   'lesion_mapping',
@@ -993,6 +1040,15 @@ export const TargetCandidateV2Schema = z.object({
   structuralConnectivityFit: StructuralConnectivityFitProfileSchema.optional(),
   treatmentContextEvaluation: TargetTreatmentContextEvaluationSchema.optional(),
   researchExtension: ResearchTargetExtensionSchema.optional(),
+  dataOrigin: DataOriginSchema.optional(),
+  scientificMaturity: ScientificMaturitySchema.optional(),
+  clinicalPromotionStatus: ClinicalPromotionStatusSchema.optional(),
+  targetDefinitionOrigin: TargetDefinitionOriginSchema.optional(),
+  inputDataOrigin: InputDataOriginSchema.optional(),
+  patientPersonalizationStatus: PatientPersonalizationStatusSchema.optional(),
+  clinicalApprovalStatus: ClinicalPromotionStatusSchema.optional(),
+  targetingMethodId: z.string().optional(),
+  approvalReference: z.string().optional(),
 });
 
 export const SlateCandidateRefV2Schema = z.object({
@@ -1065,6 +1121,8 @@ export const TargetSlateV2Schema = z.object({
   scientificLimitations: z.array(z.string()),
   payloadSha256: z.string().regex(/^[0-9a-fA-F]{64}$/),
   provenance: CommonProvenanceV2Schema,
+  dataOrigin: DataOriginSchema.optional(),
+  scientificMaturity: ScientificMaturitySchema.optional(),
 });
 
 // ---------------------------------------------------------------------------

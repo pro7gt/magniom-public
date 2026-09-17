@@ -47,7 +47,7 @@ jobs:
         run: npm run build
 
       - name: Generate & Seal Master Release Manifest v2 (§131)
-        run: npx tsx scripts/release/generate-release-manifest-v2.ts
+        run: npm run release:manifest-v2
 
       - name: Archive Merge Evidence Bundle
         uses: actions/upload-artifact@v4

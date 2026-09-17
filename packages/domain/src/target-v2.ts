@@ -71,6 +71,13 @@ export interface TargetCandidateV2 {
   readonly dataOrigin?: import('./enums.js').DataOrigin | undefined;
   readonly scientificMaturity?: import('./enums.js').ScientificMaturity | undefined;
   readonly clinicalPromotionStatus?: import('./enums.js').ClinicalPromotionStatus | undefined;
+  readonly targetDefinitionOrigin?: import('./enums.js').TargetDefinitionOrigin | undefined;
+  readonly inputDataOrigin?: import('./enums.js').InputDataOrigin | undefined;
+  readonly patientPersonalizationStatus?:
+    import('./enums.js').PatientPersonalizationStatus | undefined;
+  readonly clinicalApprovalStatus?: import('./enums.js').ClinicalPromotionStatus | undefined;
+  readonly targetingMethodId?: string | undefined;
+  readonly approvalReference?: string | undefined;
 }
 
 // ---------------------------------------------------------------------------
@@ -358,6 +365,7 @@ export interface CandidateDraft {
   readonly clinicalApprovalStatus?: import('./enums.js').ClinicalPromotionStatus | undefined;
   readonly patientPersonalizationStatus?:
     import('./enums.js').PatientPersonalizationStatus | undefined;
+  readonly approvalReference?: string | undefined;
 }
 
 export interface CandidateGeneratorDescriptor {

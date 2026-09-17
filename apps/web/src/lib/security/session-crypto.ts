@@ -7,15 +7,16 @@
  * the standard Web Crypto API.
  */
 
-import { isSessionRevoked } from '../server/session-registry';
+import { isSessionRevoked, registerServerSession } from '../server/session-registry';
 
 export interface SessionClaims {
   readonly sub: string; // userId
+  readonly username?: string | undefined; // clinician username (e.g. dr_asmith, magniom_spec)
   readonly iat: number; // issued at (unix seconds)
   readonly exp: number; // expiration (unix seconds)
   readonly jti: string; // cryptographically secure random session ID
-  readonly role?: string;
-  readonly orgId?: string;
+  readonly role?: string | undefined;
+  readonly orgId?: string | undefined;
   readonly iss: string; // 'magniom-authority'
   readonly aud: string; // 'magniom-workstation'
 }
@@ -24,7 +25,12 @@ export interface SessionVerificationResult {
   readonly valid: boolean;
   readonly claims?: SessionClaims;
   readonly reason?:
-    'INVALID_FORMAT' | 'SIGNATURE_MISMATCH' | 'EXPIRED' | 'CRYPTO_ERROR' | 'REVOKED';
+    | 'INVALID_FORMAT'
+    | 'SIGNATURE_MISMATCH'
+    | 'EXPIRED'
+    | 'CRYPTO_ERROR'
+    | 'REVOKED'
+    | 'UNKNOWN_SESSION';
 }
 
 /**
@@ -279,12 +285,16 @@ export function generateCryptographicNonce(byteLength = 16): string {
   const bytes = new Uint8Array(byteLength);
   if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
     crypto.getRandomValues(bytes);
-  } else {
-    for (let i = 0; i < byteLength; i++) {
-      bytes[i] = Math.floor(Math.random() * 256);
-    }
+    return bytesToHex(bytes);
   }
-  return bytesToHex(bytes);
+  try {
+    const nodeCrypto = require('node:crypto');
+    return nodeCrypto.randomBytes(byteLength).toString('hex');
+  } catch {
+    throw new Error(
+      'Cryptographically secure random source unavailable; cannot generate secure session nonce.',
+    );
+  }
 }
 
 /**
@@ -296,16 +306,20 @@ export function createSignedSessionToken(
     expiresInSeconds?: number;
     role?: string;
     orgId?: string;
+    username?: string;
     secret?: string;
+    registerSession?: boolean;
   } = {},
 ): string {
   const nowSec = Math.floor(Date.now() / 1000);
   const ttl = options.expiresInSeconds ?? 3600; // default 1 hour expiration
+  const jti = generateCryptographicNonce(16);
   const claims: SessionClaims = {
     sub: userId,
+    ...(options.username !== undefined ? { username: options.username } : {}),
     iat: nowSec,
     exp: nowSec + ttl,
-    jti: generateCryptographicNonce(16),
+    jti,
     role: options.role ?? 'TMS Specialist & Clinical Reviewer',
     orgId: options.orgId ?? 'melb-tms-01',
     iss: 'magniom-authority',
@@ -314,7 +328,21 @@ export function createSignedSessionToken(
 
   const payloadStr = base64UrlEncode(JSON.stringify(claims));
   const effectiveSecret = options.secret ?? getSessionSecret();
-  return signSessionTokenSync(payloadStr, effectiveSecret);
+  const token = signSessionTokenSync(payloadStr, effectiveSecret);
+
+  if (options.registerSession !== false) {
+    registerServerSession({
+      jti,
+      userId,
+      username: options.username ?? (userId === 'usr-spec-002' ? 'magniom_spec' : 'dr_asmith'),
+      organizationId: options.orgId ?? 'melb-tms-01',
+      issuedAt: nowSec,
+      expiresAt: nowSec + ttl,
+      authAssuranceLevel: 'AAL2',
+    });
+  }
+
+  return token;
 }
 
 /**
@@ -374,8 +402,11 @@ export async function verifySessionTokenWithClaims(
       return { valid: false, reason: 'INVALID_FORMAT' };
     }
 
-    if ((options?.checkRevocation ?? true) && claims.jti && isSessionRevoked(claims.jti)) {
-      return { valid: false, reason: 'REVOKED' };
+    // Fail-closed session authority verification: token must possess valid jti and be actively registered
+    if (options?.checkRevocation ?? true) {
+      if (!claims.jti || isSessionRevoked(claims.jti)) {
+        return { valid: false, reason: 'REVOKED' };
+      }
     }
 
     return { valid: true, claims };

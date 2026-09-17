@@ -453,5 +453,14 @@ function draftToCandidateEntity(
       createdAt: req.requestedAt ?? '2026-09-02T12:00:00.000Z',
       softwareVersion: '2.1.0',
     },
+    dataOrigin: draft.dataOrigin,
+    scientificMaturity: draft.scientificMaturity,
+    clinicalPromotionStatus: draft.clinicalPromotionStatus,
+    targetDefinitionOrigin: draft.targetDefinitionOrigin,
+    inputDataOrigin: draft.inputDataOrigin,
+    patientPersonalizationStatus: draft.patientPersonalizationStatus,
+    clinicalApprovalStatus: draft.clinicalApprovalStatus,
+    targetingMethodId: draft.generatorTrace?.algorithmCode,
+    approvalReference: draft.approvalReference,
   };
 }

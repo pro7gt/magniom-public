@@ -56,6 +56,9 @@ function createMockCandidate(overrides: Partial<CandidateDraft> = {}): Candidate
     generatorLimitations: [],
     nominationRationale: 'Canonical left DLPFC evidence anchor hypothesis.',
     dataOrigin: 'patient_measured',
+    targetDefinitionOrigin: 'functional_connectivity',
+    inputDataOrigin: 'patient_measured',
+    patientPersonalizationStatus: 'individually_computed',
     scientificMaturity: 'clinical_approved',
     clinicalPromotionStatus: 'approved',
     generatorTrace: {

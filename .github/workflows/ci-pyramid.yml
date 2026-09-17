@@ -1,0 +1,66 @@
+name: Magniom Testing Pyramid Pipeline (ci-pyramid)
+
+# Conforms to MAGNIOM-Enterprise Verification, Testing & CI/CD Specification v2.0 (§33–§49, §192)
+# Standard Reference: IEC 62304:2006/Amd 1:2015 Class C | ISO 13485:2016 §7.3.6
+# Goal: Formal execution of all 12 pyramid layers with automated regulatory qualification reporting
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-pyramid-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  pyramid-12-layer-execution:
+    name: Formal 12-Layer Verification Pyramid (§33–§49)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Node Dependencies
+        run: npm ci
+
+      - name: Install Python Dependencies
+        working-directory: services/neurocompute
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pytest pytest-cov
+
+      - name: Verify Pyramid Specification Conformance (§33–§49)
+        run: npm run verify:pyramid
+
+      - name: Execute Full 12-Layer Testing Pyramid
+        run: npm run test:pyramid
+
+      - name: Archive Formal Testing Pyramid Evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: testing-pyramid-evidence
+          path: |
+            docs/verification/v2/pyramid-testing-execution-report.json
+            docs/verification/v2/reports/pyramid-testing-execution-report.md
+            docs/verification/reports/pyramid-testing-execution-report.md
+            docs/verification/v2/reports/08-pyramid-testing-verification-report.md

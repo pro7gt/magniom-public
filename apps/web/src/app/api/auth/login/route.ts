@@ -54,9 +54,12 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const sessionToken = createSignedSessionToken(authResult.session.user.id, {
       expiresInSeconds: maxAge,
       role: authResult.session.user.roleTitle,
+      username: authResult.session.username,
     });
 
-    const verification = await verifySessionTokenWithClaims(sessionToken);
+    const verification = await verifySessionTokenWithClaims(sessionToken, undefined, {
+      checkRevocation: false,
+    });
     const jti = verification.claims?.jti || 'unknown-jti';
     const nowSec = Math.floor(Date.now() / 1000);
 
@@ -116,10 +119,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     return response;
   } catch (error) {
+    console.error('[MAGNIOM_AUTH_LOGIN_ERROR]', error);
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : 'Internal authentication error.',
+        error:
+          process.env.NODE_ENV === 'test' && error instanceof Error
+            ? error.message
+            : 'Authentication service encountered an internal error. Please contact the system administrator.',
       },
       { status: 500 },
     );

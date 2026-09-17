@@ -177,8 +177,8 @@ export function computeCashZaleskyTarget(
       }
     }
 
-    // Filter by min cluster size
-    const minSize = options.minClusterSize ?? 1;
+    // Filter by min cluster size (conforms to manifest default minClusterSize: 2)
+    const minSize = options.minClusterSize ?? 2;
     if (clusterNodes.length >= minSize) {
       // Find peak node (most anticorrelated in cluster)
       let peakNode = clusterNodes[0]!;

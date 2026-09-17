@@ -21,21 +21,79 @@ export interface ServerSessionRecord {
   readonly keyVersion: number;
 }
 
-// Global registry store preserved across hot reloads in development
+// Global registry store preserved across hot reloads and worker executions
 declare global {
   // eslint-disable-next-line no-var
   var __magniom_session_registry__: Map<string, ServerSessionRecord> | undefined;
+  // eslint-disable-next-line no-var
+  var __magniom_session_durable_loaded__: boolean | undefined;
 }
+
+export type SessionLookupStatus = 'active' | 'revoked' | 'unknown';
 
 const sessions: Map<string, ServerSessionRecord> =
   globalThis.__magniom_session_registry__ ?? new Map<string, ServerSessionRecord>();
 
-if (process.env.NODE_ENV !== 'production') {
-  globalThis.__magniom_session_registry__ = sessions;
+// Unconditionally attach to globalThis across all environments (production, development, test)
+globalThis.__magniom_session_registry__ = sessions;
+
+function getDurableStorePath(): string | null {
+  if (typeof process === 'undefined' || !process.cwd) return null;
+  const storeOverride = process.env?.MAGNIOM_SESSION_STORE_PATH;
+  if (storeOverride) return storeOverride;
+  try {
+    const fs = require('node:fs');
+    const path = require('node:path');
+    const tempDir = path.join(process.cwd(), '.temp');
+    if (!fs.existsSync(tempDir)) {
+      fs.mkdirSync(tempDir, { recursive: true });
+    }
+    return path.join(tempDir, 'session-registry-authority.json');
+  } catch {
+    return null;
+  }
+}
+
+function syncFromDurableStore(): void {
+  const storePath = getDurableStorePath();
+  if (!storePath) return;
+  try {
+    const fs = require('node:fs');
+    if (fs.existsSync(storePath)) {
+      const data = JSON.parse(fs.readFileSync(storePath, 'utf-8'));
+      if (Array.isArray(data)) {
+        for (const item of data) {
+          if (item && item.jti && !sessions.has(item.jti)) {
+            sessions.set(item.jti, item);
+          }
+        }
+      }
+    }
+  } catch {
+    // Durable store read error - fall back to memory
+  }
+}
+
+function persistToDurableStore(): void {
+  const storePath = getDurableStorePath();
+  if (!storePath) return;
+  try {
+    const fs = require('node:fs');
+    const records = Array.from(sessions.values());
+    fs.writeFileSync(storePath, JSON.stringify(records, null, 2), 'utf-8');
+  } catch {
+    // Durable store write error - remain in memory
+  }
+}
+
+// Initial load if running in Node.js
+if (!globalThis.__magniom_session_durable_loaded__) {
+  syncFromDurableStore();
+  globalThis.__magniom_session_durable_loaded__ = true;
 }
 
 /**
- * Registers a newly issued clinician session.
+ * Registers a newly issued clinician session in the authoritative registry.
  */
 export function registerServerSession(params: {
   jti: string;
@@ -61,37 +119,54 @@ export function registerServerSession(params: {
   };
 
   sessions.set(params.jti, record);
+  persistToDurableStore();
   return record;
 }
 
 /**
- * Checks if a session has been revoked or has expired.
+ * Returns the authoritative session lookup status: 'active' | 'revoked' | 'unknown'.
+ * Fails closed: unlisted JTIs are strictly 'unknown'.
  */
-export function isSessionRevoked(jti: string): boolean {
+export function getSessionStatus(jti: string): SessionLookupStatus {
+  syncFromDurableStore();
   const record = sessions.get(jti);
   if (!record) {
-    // If sessions exist in the registry, unlisted jti is treated as invalid/revoked.
-    // However, if the registry is empty (e.g. isolated test or server restart before redis),
-    // we fail closed if it was explicitly revoked.
-    return false;
+    return 'unknown';
   }
-  return record.revoked;
+  if (record.revoked) {
+    return 'revoked';
+  }
+  const now = Math.floor(Date.now() / 1000);
+  if (record.expiresAt < now) {
+    return 'revoked';
+  }
+  return 'active';
 }
 
 /**
- * Revokes an active session by jti.
+ * Checks if a session is invalid or revoked.
+ * Fails closed: unlisted JTIs ('unknown') are treated as revoked/invalid.
+ */
+export function isSessionRevoked(jti: string): boolean {
+  return getSessionStatus(jti) !== 'active';
+}
+
+/**
+ * Revokes an active session by jti and records a tombstone.
  */
 export function revokeSession(jti: string, reason = 'CLINICIAN_LOGOUT'): boolean {
+  syncFromDurableStore();
   const record = sessions.get(jti);
   const now = Math.floor(Date.now() / 1000);
   if (record) {
     record.revoked = true;
     record.revokedAt = now;
     record.revocationReason = reason;
+    persistToDurableStore();
     return true;
   }
 
-  // If token record wasn't registered, create a tombstone record
+  // If token record wasn't previously registered, persist a durable tombstone record
   sessions.set(jti, {
     jti,
     userId: 'unknown',
@@ -106,6 +181,7 @@ export function revokeSession(jti: string, reason = 'CLINICIAN_LOGOUT'): boolean
     lastActivityAt: now,
     keyVersion: 1,
   });
+  persistToDurableStore();
   return true;
 }
 
@@ -116,6 +192,7 @@ export function touchSessionActivity(jti: string): void {
   const record = sessions.get(jti);
   if (record && !record.revoked) {
     record.lastActivityAt = Math.floor(Date.now() / 1000);
+    persistToDurableStore();
   }
 }
 
@@ -123,11 +200,12 @@ export function touchSessionActivity(jti: string): void {
  * Retrieves a session record by jti.
  */
 export function getServerSession(jti: string): ServerSessionRecord | undefined {
+  syncFromDurableStore();
   return sessions.get(jti);
 }
 
 /**
- * Purges expired sessions from memory.
+ * Purges expired sessions from memory and durable store.
  */
 export function cleanupExpiredSessions(): void {
   const now = Math.floor(Date.now() / 1000);
@@ -136,11 +214,28 @@ export function cleanupExpiredSessions(): void {
       sessions.delete(jti);
     }
   }
+  persistToDurableStore();
 }
 
 /**
- * Resets the session registry (for testing only).
+ * Simulates process restart by clearing in-memory Map while retaining durable backing.
+ */
+export function simulateServerRestartForTesting(): void {
+  sessions.clear();
+}
+
+/**
+ * Resets the session registry and durable backing (for testing only).
  */
 export function resetSessionRegistryForTesting(): void {
   sessions.clear();
+  const storePath = getDurableStorePath();
+  if (storePath) {
+    try {
+      const fs = require('node:fs');
+      if (fs.existsSync(storePath)) {
+        fs.unlinkSync(storePath);
+      }
+    } catch {}
+  }
 }

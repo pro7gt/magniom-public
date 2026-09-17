@@ -18,17 +18,25 @@ import { POST as logoutRoute } from '../src/app/api/auth/logout/route';
 import { GET as sessionRoute } from '../src/app/api/auth/session/route';
 import { middleware, AUTH_COOKIE_NAME } from '../src/middleware';
 import { authStore } from '../src/lib/auth-store';
-import { verifySessionTokenWithClaims } from '../src/lib/security/session-crypto';
+import {
+  verifySessionTokenWithClaims,
+  createSignedSessionToken,
+} from '../src/lib/security/session-crypto';
 import {
   verifyClinicianCredentials,
   resetAuthLockoutsForTesting,
 } from '../src/lib/server/auth-credentials';
+import {
+  resetSessionRegistryForTesting,
+  simulateServerRestartForTesting,
+} from '../src/lib/server/session-registry';
 import { sanitizeRedirectUrl } from '../src/lib/security/redirect-sanitizer';
 
 describe('Server-Side Authentication API Endpoints', () => {
   beforeEach(() => {
     authStore.logoutClinician();
     resetAuthLockoutsForTesting();
+    resetSessionRegistryForTesting();
   });
 
   it('AUTH-API-01: POST /api/auth/login issues valid session and HttpOnly session cookie on valid credentials', async () => {
@@ -252,5 +260,85 @@ describe('Server-Side Authentication API Endpoints', () => {
       if (prevSpecPass) process.env.MAGNIOM_SPECIALIST_PASSWORD = prevSpecPass;
       else delete process.env.MAGNIOM_SPECIALIST_PASSWORD;
     }
+  });
+
+  it('AUTH-API-10: session authority fails closed on correctly signed but unregistered token (MAGNIOM Rev 04 Finding 1)', async () => {
+    // Generate validly signed HMAC-SHA256 token without registering in session registry
+    const unregisteredToken = createSignedSessionToken('usr-spec-001', {
+      registerSession: false,
+    });
+
+    const verification = await verifySessionTokenWithClaims(unregisteredToken);
+    expect(verification.valid).toBe(false);
+    expect(verification.reason).toBe('REVOKED');
+
+    // Endpoint must also reject with 401
+    const req = new NextRequest('https://app.magniom.com/api/auth/session', {
+      headers: { cookie: `${AUTH_COOKIE_NAME}=${unregisteredToken}` },
+    });
+    const res = await sessionRoute(req);
+    expect(res.status).toBe(401);
+  });
+
+  it('AUTH-API-11: session authority survives simulated server process restart through durable backing', async () => {
+    // 1. Log in via API route
+    const loginReq = new NextRequest('https://app.magniom.com/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: 'dr_asmith',
+        password: 'ClinicalPrecision2026!',
+      }),
+    });
+    const loginRes = await loginRoute(loginReq);
+    const cookieHeader = loginRes.headers.get('set-cookie');
+    const token = cookieHeader?.match(new RegExp(`${AUTH_COOKIE_NAME}=([^;]+)`))?.[1];
+    expect(token).toBeDefined();
+
+    // Verify token is initially active
+    const checkBefore = await verifySessionTokenWithClaims(token!);
+    expect(checkBefore.valid).toBe(true);
+
+    // 2. Simulate server restart: in-memory Map is cleared
+    simulateServerRestartForTesting();
+
+    // 3. Durable backing reloads active session record
+    const checkAfter = await verifySessionTokenWithClaims(token!);
+    expect(checkAfter.valid).toBe(true);
+
+    const sessionReq = new NextRequest('https://app.magniom.com/api/auth/session', {
+      headers: { cookie: `${AUTH_COOKIE_NAME}=${token}` },
+    });
+    const sessionRes = await sessionRoute(sessionReq);
+    expect(sessionRes.status).toBe(200);
+  });
+
+  it('AUTH-API-12: session route returns genuine username and distinct user profile on refresh (MAGNIOM Rev 04 Finding 4)', async () => {
+    // Login as secondary specialist 'magniom_spec'
+    const loginReq = new NextRequest('https://app.magniom.com/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: 'magniom_spec',
+        password: 'Specialist2026!',
+      }),
+    });
+    const loginRes = await loginRoute(loginReq);
+    const token = loginRes.headers
+      .get('set-cookie')
+      ?.match(new RegExp(`${AUTH_COOKIE_NAME}=([^;]+)`))?.[1];
+    expect(token).toBeDefined();
+
+    const sessionReq = new NextRequest('https://app.magniom.com/api/auth/session', {
+      headers: { cookie: `${AUTH_COOKIE_NAME}=${token}` },
+    });
+    const sessionRes = await sessionRoute(sessionReq);
+    expect(sessionRes.status).toBe(200);
+
+    const sessionJson = await sessionRes.json();
+    // Must return actual username 'magniom_spec', not canonical sub 'usr-spec-001'
+    expect(sessionJson.username).toBe('magniom_spec');
+    expect(sessionJson.user.id).toBe('usr-spec-002');
+    expect(sessionJson.user.displayName).toBe('Specialist Clinician');
   });
 });

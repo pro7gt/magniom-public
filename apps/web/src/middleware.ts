@@ -18,12 +18,13 @@ export const AUTH_COOKIE_NAME = 'magniom_session';
 export async function middleware(request: NextRequest): Promise<NextResponse> {
   const { pathname, search } = request.nextUrl;
 
-  // 1. Allow login portal, public auth endpoints, and public system health checks
-  if (
-    pathname.startsWith('/login') ||
-    pathname.startsWith('/api/auth') ||
-    pathname === '/api/health'
-  ) {
+  // 1. Allow login portal, explicitly allowlisted public auth endpoints, and public system health checks
+  const isPublicAuthRoute =
+    pathname === '/api/auth/login' ||
+    pathname === '/api/auth/logout' ||
+    pathname === '/api/auth/session';
+
+  if (pathname.startsWith('/login') || isPublicAuthRoute || pathname === '/api/health') {
     return NextResponse.next();
   }
 

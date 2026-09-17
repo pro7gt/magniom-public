@@ -1,0 +1,108 @@
+{
+  "runId": "PYRAMID-RUN-20260917125345",
+  "timestamp": "2026-09-17T12:53:45.933Z",
+  "standardReference": "IEC 62304:2006/Amd 1:2015 Class C | ISO 13485:2016 §7.3.6",
+  "specReference": "public/guides/MAGNIOM-Enterprise Verification, Testing CICD Specification v2.0.md (§33–§49)",
+  "overallPassed": true,
+  "totalDurationSec": "60.34",
+  "totalLayersEvaluated": 12,
+  "passedLayersCount": 12,
+  "layers": [
+    {
+      "level": 1,
+      "name": "Level 1: Static Architecture & Boundary Linting",
+      "specSection": "§34–§35",
+      "command": "npm run verify:boundaries && npm run verify:static-rules && npm run typecheck && npm run format:check",
+      "durationSec": "5.70",
+      "passed": true
+    },
+    {
+      "level": 2,
+      "name": "Level 2: Monorepo Package Unit Test Suites",
+      "specSection": "§36",
+      "command": "npm test",
+      "durationSec": "0.13",
+      "passed": true
+    },
+    {
+      "level": 3,
+      "name": "Level 3: Numerical Boundaries & Property Invariants (fast-check)",
+      "specSection": "§37–§38",
+      "command": "npm run verify:properties",
+      "durationSec": "1.51",
+      "passed": true
+    },
+    {
+      "level": 4,
+      "name": "Level 4: Metamorphic Relations & Domain/API Contracts",
+      "specSection": "§39–§41",
+      "command": "npx vitest run packages/target-engine/tests/v2/metamorphic-and-boundary.test.ts packages/domain/tests/ packages/target-engine/tests/v2/plugin-contracts.test.ts packages/domain/src/rls-isolation.test.ts packages/schemas/tests/ packages/target-engine/tests/v2/research-leakage.test.ts packages/target-engine/tests/v2/zalesky-algorithms.test.ts packages/target-engine/tests/v2/order-invariance.test.ts packages/target-engine/tests/v2/non-transitive-governance.test.ts packages/target-engine/tests/v2/zero-candidate-abstention.test.ts",
+      "durationSec": "1.89",
+      "passed": true
+    },
+    {
+      "level": 5,
+      "name": "Level 5: Database Zero-State & 11-Domain RLS Security Matrix",
+      "specSection": "§42, §45–§46",
+      "command": "npm run verify:db:from-zero",
+      "durationSec": "0.17",
+      "passed": true
+    },
+    {
+      "level": 6,
+      "name": "Level 6: Worker Queue Resilience & Service Contracts",
+      "specSection": "§47–§48",
+      "command": "npx vitest run services/workflow-worker/tests/worker.test.ts services/workflow-worker/tests/worker-permissions.test.ts services/workflow-worker/tests/functional-verification.test.ts services/workflow-worker/tests/structural-verification.test.ts",
+      "durationSec": "1.32",
+      "passed": true
+    },
+    {
+      "level": 7,
+      "name": "Level 7: Scientific Golden Test Matrix (72 Cases across 8 Modules)",
+      "specSection": "§50–§65, §119–§121",
+      "command": "npm run verify:scientific-impact",
+      "durationSec": "0.41",
+      "passed": true
+    },
+    {
+      "level": 8,
+      "name": "Level 8: Measurement Validation & Imaging QA Fallback Suite",
+      "specSection": "§66–§79",
+      "command": "npx vitest run packages/target-engine/tests/imaging-validation.test.ts packages/target-engine/tests/v2/laterality-release-blocking.test.ts packages/target-engine/tests/v2/measurement-exit-criteria.test.ts packages/modalities/ packages/measurement-core/ packages/measurement-testkit/ && npm run test:neurocompute -- --fast",
+      "durationSec": "44.25",
+      "passed": true
+    },
+    {
+      "level": 9,
+      "name": "Level 9: Security Analysis, CycloneDX 1.5 SBOM & Pentest Probes",
+      "specSection": "§99–§106",
+      "command": "npm run sbom:generate && npm run sbom:verify && npm run security:secrets && npm run security:probe",
+      "durationSec": "1.15",
+      "passed": true
+    },
+    {
+      "level": 10,
+      "name": "Level 10: Synthetic Workflow End-to-End Vertical Slice",
+      "specSection": "§82, §86",
+      "command": "npx vitest run services/workflow-worker/tests/synthetic-e2e.test.ts packages/target-engine/tests/synthetic-workflow.test.ts",
+      "durationSec": "1.39",
+      "passed": true
+    },
+    {
+      "level": 11,
+      "name": "Level 11: Human Factors, Clinician Anti-Bias Shell & Accessibility",
+      "specSection": "§86–§91",
+      "command": "npx vitest run packages/presentation/src/presentation.test.ts packages/presentation/tests/ apps/web/tests/",
+      "durationSec": "1.81",
+      "passed": true
+    },
+    {
+      "level": 12,
+      "name": "Level 12: Post-Deploy Scientific Smoke & Multi-Indication Recall Indexing",
+      "specSection": "§148–§155, §181–§190",
+      "command": "npm run postdeploy:smoke && npm run release:affected-cases",
+      "durationSec": "0.59",
+      "passed": true
+    }
+  ]
+}

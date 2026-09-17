@@ -51,7 +51,11 @@ describe('Target Engine Core Exit Criterion 7: Suppressed Candidate Reconstructa
           reliedOnMeasurementIds: [],
           reliedOnReliabilityIds: [],
           lineage: { lineageType: 'evidence_baseline' },
-          dataOrigin: 'patient_measured',
+          targetDefinitionOrigin: 'guideline',
+          inputDataOrigin: 'none',
+          patientPersonalizationStatus: 'fixed',
+          clinicalApprovalStatus: 'approved',
+          dataOrigin: 'normative',
           scientificMaturity: 'clinical_approved',
           clinicalPromotionStatus: 'approved',
           rawScientificFeatures: [

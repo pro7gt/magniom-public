@@ -20,7 +20,7 @@
   },
   "evidenceIds": ["src-mdd-004", "src-mdd-005"],
   "implementationStatus": "implemented",
-  "implementationHash": "55b7df2d61a8b1f38778439827d0f043c34a1edc3e84b0fb3f688cac70b5c9bc",
+  "implementationHash": "71cc81308b4b7f978593802722703bd6b34f46ecdfada9e82004fe55179c8581",
   "limitations": [
     "Functional connectivity is an indirect statistical association, not proof of direct neuroanatomical wiring.",
     "Requires minimum 15-20 minutes of usable resting-state fMRI (after motion censoring) for high intraindividual reproducibility (variation <= 2.2mm).",

@@ -1,8 +1,8 @@
 {
-  "recallQueryId": "RECALL-QUERY-1789644134640",
+  "recallQueryId": "RECALL-QUERY-1789649625922",
   "targetEntityId": "MAGNIOM-RELEASE-v2.0.0-20260903",
   "queryFilterType": "RELEASE_ID",
-  "generatedAt": "2026-09-17T11:22:14.640Z",
+  "generatedAt": "2026-09-17T12:53:45.922Z",
   "totalAffectedCases": 8,
   "signedDecisionsCount": 4,
   "affectedIndications": [

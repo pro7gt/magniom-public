@@ -17,6 +17,7 @@ import {
   MDDPlugin,
 } from '../../src/index.js';
 import { evaluateGateG14 } from '../../src/gates/v2/g14-research-leakage.js';
+import { TargetCandidateV2Schema } from '@magniom/schemas';
 
 describe('Target Engine Core Exit Criterion 4: Research Candidate Isolation', () => {
   const researchGenerator: CandidateGenerator = {
@@ -472,12 +473,15 @@ describe('Target Engine Core Exit Criterion 4: Research Candidate Isolation', ()
       targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
       proposedRole: 'primary',
       dataOrigin: 'patient_measured',
+      targetDefinitionOrigin: 'functional_connectivity',
+      inputDataOrigin: 'patient_measured',
+      patientPersonalizationStatus: 'individually_computed',
       scientificMaturity: 'clinical_approved',
       clinicalPromotionStatus: 'approved',
       targetGeometry: createCanonicalPointGeometry(-44, 40, 28, 'left', 'pipeline'),
       evidencePathIds: ['PATH-MDD-BA46'],
       clinicalObjectiveIds: ['00000000-0000-0000-0000-000000000040'],
-      reliedOnMeasurementIds: [],
+      reliedOnMeasurementIds: ['MEAS-01'],
       reliedOnReliabilityIds: [],
       rawScientificFeatures: [],
       generatorLimitations: [],
@@ -597,5 +601,240 @@ describe('Target Engine Core Exit Criterion 4: Research Candidate Isolation', ()
     expect(evalResult.reasonCodes).toContain(
       'TN-014:MIXED_MEASUREMENT_ORIGIN_PROHIBITED_IN_CLINICAL_MODE',
     );
+  });
+
+  it('Gate G14 rejects synthetic candidate attempting bypass via guideline tags (MAGNIOM Rev 04 Finding 2)', () => {
+    const context = createCanonicalResolvedContextV2({
+      request: { mode: 'clinical' } as any,
+    });
+
+    const adversarialCandidate: CandidateDraft = {
+      draftId: 'draft-adversarial-synthetic-guideline',
+      generatorId: 'GEN-MDD-EVIDENCE-001',
+      targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
+      proposedRole: 'evidence_anchor',
+      dataOrigin: 'synthetic', // Exploitative synthetic origin
+      targetDefinitionOrigin: 'guideline',
+      inputDataOrigin: 'none',
+      patientPersonalizationStatus: 'fixed',
+      clinicalApprovalStatus: 'approved',
+      scientificMaturity: 'clinical_approved',
+      clinicalPromotionStatus: 'approved',
+      targetGeometry: createCanonicalPointGeometry(-44, 40, 28, 'left', 'pipeline'),
+      evidencePathIds: ['PATH-MDD-BA46'],
+      clinicalObjectiveIds: ['00000000-0000-0000-0000-000000000040'],
+      reliedOnMeasurementIds: [],
+      reliedOnReliabilityIds: [],
+      rawScientificFeatures: [],
+      generatorLimitations: [],
+      nominationRationale: 'Synthetic demonstrator disguised as guideline anchor',
+      generatorTrace: { algorithmCode: 'CANONICAL_ANCHOR', algorithmVersion: '2.0.0' },
+    };
+
+    const evalResult = evaluateGateG14(adversarialCandidate, context);
+    expect(evalResult.result).toBe('fail');
+    expect(evalResult.reasonCodes).toContain(
+      'TN-014:SYNTHETIC_CANDIDATE_PROHIBITED_IN_CLINICAL_MODE',
+    );
+  });
+
+  it('Gate G14 rejects candidate with omitted provenance axes or missing measurements (MAGNIOM Rev 04 Finding 2)', () => {
+    const context = createCanonicalResolvedContextV2({
+      request: { mode: 'clinical' } as any,
+    });
+
+    const incompleteDraft: CandidateDraft = {
+      draftId: 'draft-incomplete-provenance',
+      generatorId: 'GEN-MDD-CONNECTOME-001',
+      targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
+      proposedRole: 'primary',
+      dataOrigin: 'patient_measured',
+      scientificMaturity: 'clinical_approved',
+      clinicalPromotionStatus: 'approved',
+      targetGeometry: createCanonicalPointGeometry(-44, 40, 28, 'left', 'pipeline'),
+      evidencePathIds: ['PATH-MDD-BA46'],
+      clinicalObjectiveIds: ['00000000-0000-0000-0000-000000000040'],
+      reliedOnMeasurementIds: [], // Empty measurements on patient_measured candidate
+      reliedOnReliabilityIds: [],
+      rawScientificFeatures: [],
+      generatorLimitations: [],
+      nominationRationale: 'Incomplete candidate missing axes and measurements',
+      generatorTrace: { algorithmCode: 'CANONICAL_ANCHOR', algorithmVersion: '2.0.0' },
+    };
+
+    const evalResult = evaluateGateG14(incompleteDraft, context);
+    expect(evalResult.result).toBe('fail');
+    expect(evalResult.reasonCodes).toContain('TN-014:INCOMPLETE_PROVENANCE_AXES_IN_CLINICAL_MODE');
+    expect(evalResult.reasonCodes).toContain(
+      'TN-014:INDIVIDUALLY_COMPUTED_TARGET_LACKS_MEASUREMENTS',
+    );
+  });
+
+  it('Gate G14 rejects self-asserted approval when evidence path is unregistered (MAGNIOM Rev 04 Finding 2)', () => {
+    const context = createCanonicalResolvedContextV2({
+      request: { mode: 'clinical' } as any,
+      permittedEvidencePaths: [], // No registered evidence paths
+    });
+
+    const selfAssertedDraft: CandidateDraft = {
+      draftId: 'draft-self-asserted-guideline',
+      generatorId: 'GEN-MDD-EVIDENCE-001',
+      targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
+      proposedRole: 'evidence_anchor',
+      targetDefinitionOrigin: 'guideline',
+      inputDataOrigin: 'none',
+      patientPersonalizationStatus: 'fixed',
+      clinicalApprovalStatus: 'approved',
+      dataOrigin: 'normative',
+      scientificMaturity: 'clinical_approved',
+      clinicalPromotionStatus: 'approved',
+      targetGeometry: createCanonicalPointGeometry(-44, 40, 28, 'left', 'pipeline'),
+      evidencePathIds: ['PATH-UNREGISTERED'],
+      clinicalObjectiveIds: ['00000000-0000-0000-0000-000000000040'],
+      reliedOnMeasurementIds: [],
+      reliedOnReliabilityIds: [],
+      rawScientificFeatures: [],
+      generatorLimitations: [],
+      nominationRationale: 'Self asserted guideline with unregistered evidence path',
+      generatorTrace: { algorithmCode: 'CANONICAL_ANCHOR', algorithmVersion: '2.0.0' },
+    };
+
+    const evalResult = evaluateGateG14(selfAssertedDraft, context);
+    expect(evalResult.result).toBe('fail');
+    expect(evalResult.reasonCodes).toContain(
+      'TN-012:UNREGISTERED_GUIDELINE_APPROVAL_IN_CLINICAL_MODE',
+    );
+  });
+
+  it('Gate G14 rejects derived measurement with only candidate-level lineage (MAGNIOM Rev 04 Finding 5)', () => {
+    const context = createCanonicalResolvedContextV2({
+      request: { mode: 'clinical' } as any,
+      measurementBundle: {
+        bundleId: 'bundle-derived-01',
+        patientId: 'patient-01',
+        createdAt: new Date().toISOString(),
+        dataOrigin: 'patient_measured',
+        measurements: [
+          {
+            measurementId: 'MEAS-DERIVED-NO-LINEAGE',
+            modality: 'resting_state_fmri',
+            status: 'qualified',
+            dataOrigin: 'derived_from_patient_measured',
+            // No acquisitionId or sourceMeasurementIds on measurement itself!
+          },
+        ],
+      } as any,
+    });
+
+    const draft: CandidateDraft = {
+      draftId: 'draft-derived-measurement-test',
+      generatorId: 'GEN-MDD-CONNECTOME-001',
+      targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
+      proposedRole: 'primary',
+      targetDefinitionOrigin: 'functional_connectivity',
+      inputDataOrigin: 'derived_from_patient_measured',
+      patientPersonalizationStatus: 'individually_computed',
+      dataOrigin: 'derived_from_patient_measured',
+      scientificMaturity: 'clinical_approved',
+      clinicalPromotionStatus: 'approved',
+      targetGeometry: createCanonicalPointGeometry(-44, 40, 28, 'left', 'pipeline'),
+      evidencePathIds: ['PATH-MDD-BA46'],
+      clinicalObjectiveIds: ['00000000-0000-0000-0000-000000000040'],
+      reliedOnMeasurementIds: ['MEAS-DERIVED-NO-LINEAGE'],
+      reliedOnReliabilityIds: [],
+      lineage: { lineageType: 'measurement_refinement' }, // Candidate marker cannot bypass measurement check
+      rawScientificFeatures: [],
+      generatorLimitations: [],
+      nominationRationale: 'Derived measurement lacking its own acquisition lineage',
+      generatorTrace: { algorithmCode: 'CANONICAL_ANCHOR', algorithmVersion: '2.0.0' },
+    };
+
+    const evalResult = evaluateGateG14(draft, context);
+    expect(evalResult.result).toBe('fail');
+    expect(evalResult.reasonCodes).toContain('TN-014:DERIVED_MEASUREMENT_WITHOUT_VERIFIED_LINEAGE');
+  });
+
+  it('Gate G14 rejects lesion context with failed registration or segmentation quality (MAGNIOM Rev 04 Finding 5)', () => {
+    const context = createCanonicalResolvedContextV2({
+      request: { mode: 'clinical' } as any,
+      lesionContexts: [
+        {
+          id: 'LESION-FAIL-01',
+          version: '2.0.0',
+          caseIndicationId: '00000000-0000-0000-0000-000000000001',
+          lesionType: 'ischemic_stroke',
+          lesionLaterality: 'left',
+          sourceImagingStudyIds: [],
+          corticalRegionsAffected: [],
+          subcorticalRegionsAffected: [],
+          structuralDistortion: 'low',
+          registrationQuality: 'fail', // Failed registration quality!
+          segmentationQuality: 'moderate',
+          efieldRelevance: 'none_known',
+          dataQuality: { state: 'unreviewed', issues: [] },
+          interpretation: 'Failed registration',
+          provenance: {
+            createdBy: 'test',
+            createdAt: '2026-09-02T12:00:00Z',
+            softwareVersion: '2.0',
+          },
+        },
+      ] as any,
+    });
+
+    const draft: CandidateDraft = {
+      draftId: 'draft-lesion-failed',
+      generatorId: 'GEN-MDD-CONNECTOME-001',
+      targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
+      proposedRole: 'primary',
+      targetDefinitionOrigin: 'functional_connectivity',
+      inputDataOrigin: 'patient_measured',
+      patientPersonalizationStatus: 'individually_computed',
+      dataOrigin: 'patient_measured',
+      scientificMaturity: 'clinical_approved',
+      clinicalPromotionStatus: 'approved',
+      targetGeometry: createCanonicalPointGeometry(-44, 40, 28, 'left', 'pipeline'),
+      evidencePathIds: ['PATH-MDD-BA46'],
+      clinicalObjectiveIds: ['00000000-0000-0000-0000-000000000040'],
+      reliedOnMeasurementIds: ['LESION-FAIL-01'], // Relies on failed lesion context
+      reliedOnReliabilityIds: [],
+      rawScientificFeatures: [],
+      generatorLimitations: [],
+      nominationRationale: 'Candidate relying on failed lesion context',
+      generatorTrace: { algorithmCode: 'CANONICAL_ANCHOR', algorithmVersion: '2.0.0' },
+    };
+
+    const evalResult = evaluateGateG14(draft, context);
+    expect(evalResult.result).toBe('fail');
+    expect(evalResult.reasonCodes).toContain('TN-014:LESION_CONTEXT_QUALITY_FAILED:LESION-FAIL-01');
+  });
+
+  it('Canonical Output Provenance Persistence (MAGNIOM Rev 04 Finding 3): TargetCandidateV2 preserves all provenance axes and targetingMethodId', () => {
+    const plugin = new MDDPlugin();
+    const context = createCanonicalResolvedContextV2({
+      request: { mode: 'clinical' } as any,
+    });
+
+    const result = runTargetEngineV2(context, plugin);
+    expect(result.allCandidates.length).toBeGreaterThan(0);
+
+    for (const candidate of result.allCandidates) {
+      // 1. Check all 7 provenance dimensions are populated
+      expect(candidate.dataOrigin).toBeDefined();
+      expect(candidate.scientificMaturity).toBeDefined();
+      expect(candidate.clinicalPromotionStatus).toBeDefined();
+      expect(candidate.targetDefinitionOrigin).toBeDefined();
+      expect(candidate.inputDataOrigin).toBeDefined();
+      expect(candidate.patientPersonalizationStatus).toBeDefined();
+      expect(candidate.clinicalApprovalStatus).toBeDefined();
+
+      // 2. Check targetingMethodId is preserved
+      expect(candidate.targetingMethodId).toBeDefined();
+      expect(typeof candidate.targetingMethodId).toBe('string');
+
+      // 3. Check schema validation passes cleanly
+      const parsed = TargetCandidateV2Schema.safeParse(candidate);
+      expect(parsed.success).toBe(true);
+    }
   });
 });

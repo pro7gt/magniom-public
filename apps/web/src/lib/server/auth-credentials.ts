@@ -7,6 +7,7 @@
 
 import { CANONICAL_CLINICAL_SESSION } from '../release-authority';
 import type { ClinicianAuthSession } from '../auth-store';
+import type { UserIdentityViewModel } from '@magniom/presentation';
 
 interface AttemptRecord {
   failedCount: number;
@@ -131,13 +132,31 @@ export function verifyClinicianCredentials(
   const effectiveSpecUser = configuredSpecUser || (isDevOrTest ? 'magniom_spec' : '');
   const effectiveSpecPassword = configuredSpecPassword || (isDevOrTest ? 'Specialist2026!' : '');
 
+  function timingSafePasswordCheck(input: string, expected: string): boolean {
+    if (!input || !expected) return false;
+    try {
+      const crypto = require('node:crypto');
+      const a = Buffer.from(input, 'utf-8');
+      const b = Buffer.from(expected, 'utf-8');
+      if (a.length !== b.length) {
+        crypto.timingSafeEqual(a, a);
+        return false;
+      }
+      return crypto.timingSafeEqual(a, b);
+    } catch {
+      return input === expected;
+    }
+  }
+
   const isPrimaryMatch =
-    effectiveUser !== '' && normalizedUser === effectiveUser && cleanPassword === effectivePassword;
+    effectiveUser !== '' &&
+    normalizedUser === effectiveUser &&
+    timingSafePasswordCheck(cleanPassword, effectivePassword);
 
   const isSpecMatch =
     effectiveSpecUser !== '' &&
     normalizedUser === effectiveSpecUser &&
-    cleanPassword === effectiveSpecPassword;
+    timingSafePasswordCheck(cleanPassword, effectiveSpecPassword);
 
   if (!isPrimaryMatch && !isSpecMatch) {
     const failInfo = recordLoginFailure(normalizedUser);
@@ -158,14 +177,28 @@ export function verifyClinicianCredentials(
 
   const timestamp = new Date().toISOString();
 
+  const userProfile: UserIdentityViewModel = isSpecMatch
+    ? {
+        id: 'usr-spec-002',
+        displayName: 'Specialist Clinician',
+        roleTitle: 'Consultant TMS Specialist',
+        hasSigningAuthority: true,
+        signingAuthorityLevel: 'Full Specialist Target Attestation (IEC 62304 / ISO 14971)',
+        organizationId: 'org-melb-tms',
+        organizationName: 'Melbourne TMS Centre',
+        siteName: 'Site 1 — Surrey Hills Clinic',
+        initials: 'SC',
+      }
+    : {
+        ...CANONICAL_CLINICAL_SESSION.user,
+      };
+
   const session: ClinicianAuthSession = {
     isAuthenticated: true,
     username: normalizedUser,
     loginTimestamp: timestamp,
     rememberMe: false,
-    user: {
-      ...CANONICAL_CLINICAL_SESSION.user,
-    },
+    user: userProfile,
     organization: {
       ...CANONICAL_CLINICAL_SESSION.organization,
     },
