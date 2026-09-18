@@ -20,34 +20,68 @@ export interface AuthGuardProps {
 export function AuthGuard({ children }: AuthGuardProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const [isAuthorised, setIsAuthorised] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isAuthorised, setIsAuthorised] = useState<boolean>(() => authStore.isAuthenticated());
+  const [isLoading, setIsLoading] = useState<boolean>(
+    () => !authStore.isAuthenticated() && !authStore.isReady(),
+  );
 
   useEffect(() => {
-    // 1. Initial active session verification
-    const activeSession = authStore.getAuthSession();
-    if (activeSession && activeSession.isAuthenticated) {
-      setIsAuthorised(true);
-      setIsLoading(false);
-    } else {
-      setIsAuthorised(false);
-      setIsLoading(false);
-      const targetRedirect =
-        pathname && pathname !== '/' ? `?redirect=${encodeURIComponent(pathname)}` : '';
-      router.push(`/login${targetRedirect}`);
+    let isMounted = true;
+
+    async function evaluateAuth() {
+      // 1. If active authenticated session is already available in authStore (e.g. from localStorage)
+      if (authStore.isAuthenticated()) {
+        if (isMounted) {
+          setIsAuthorised(true);
+          setIsLoading(false);
+        }
+        return;
+      }
+
+      // 2. If store has not completed initial server handshake, await it
+      if (!authStore.isReady()) {
+        if (isMounted) setIsLoading(true);
+        const refreshed = await authStore.refreshSessionFromServer();
+        if (!isMounted) return;
+
+        if (refreshed && refreshed.isAuthenticated) {
+          setIsAuthorised(true);
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      // 3. Store confirmed unauthenticated / revoked: redirect to login
+      if (isMounted) {
+        setIsAuthorised(false);
+        setIsLoading(false);
+        const targetRedirect =
+          pathname && pathname !== '/' ? `?redirect=${encodeURIComponent(pathname)}` : '';
+        router.replace(`/login${targetRedirect}`);
+      }
     }
 
-    // 2. Multi-tab and real-time session subscription (§141, §142)
+    evaluateAuth();
+
+    // 4. Multi-tab and real-time session subscription (§141, §142)
     const unsubscribe = authStore.subscribe(updatedSession => {
+      if (!isMounted) return;
       if (updatedSession && updatedSession.isAuthenticated) {
         setIsAuthorised(true);
+        setIsLoading(false);
       } else {
         setIsAuthorised(false);
-        router.push('/login');
+        setIsLoading(false);
+        const targetRedirect =
+          pathname && pathname !== '/' ? `?redirect=${encodeURIComponent(pathname)}` : '';
+        router.replace(`/login${targetRedirect}`);
       }
     });
 
-    return () => unsubscribe();
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
   }, [router, pathname]);
 
   // Loading or redirecting lock screen (prevents FOUC / patient PHI flash)

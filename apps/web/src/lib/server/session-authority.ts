@@ -84,14 +84,46 @@ export class TransactionalFileSessionAuthority implements ISessionAuthority {
     try {
       const path = require('node:path');
       const fs = require('node:fs');
-      const p =
-        process.env?.MAGNIOM_SESSION_STORE_PATH ??
-        path.join(process.cwd(), '.temp', 'session-registry-authority.json');
-      const dir = path.dirname(p);
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
+      
+      if (process.env?.MAGNIOM_SESSION_STORE_PATH) {
+        const p = process.env.MAGNIOM_SESSION_STORE_PATH;
+        const dir = path.dirname(p);
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true });
+        }
+        return p;
       }
-      return p;
+
+      // Detect monorepo root whether cwd is in apps/web, services, or root
+      const cwd = process.cwd();
+      let rootDir = cwd;
+      if (cwd.endsWith('/apps/web') || cwd.endsWith('\\apps\\web')) {
+        rootDir = path.resolve(cwd, '..', '..');
+      } else if (cwd.includes('/apps/') || cwd.includes('\\apps\\') || cwd.includes('/services/') || cwd.includes('\\services\\')) {
+        rootDir = path.resolve(cwd, '..', '..');
+      } else if (fs.existsSync(path.join(cwd, 'apps', 'web'))) {
+        rootDir = cwd;
+      }
+
+      const tempDir = path.join(rootDir, '.temp');
+      try {
+        if (!fs.existsSync(tempDir)) {
+          fs.mkdirSync(tempDir, { recursive: true });
+        }
+        return path.join(tempDir, 'session-registry-authority.json');
+      } catch {
+        // Fallback to system temp directory in read-only app containers / serverless runtimes
+        try {
+          const os = require('node:os');
+          const sysTemp = path.join(os.tmpdir(), 'magniom-sessions');
+          if (!fs.existsSync(sysTemp)) {
+            fs.mkdirSync(sysTemp, { recursive: true });
+          }
+          return path.join(sysTemp, 'session-registry-authority.json');
+        } catch {
+          return null;
+        }
+      }
     } catch {
       return null;
     }

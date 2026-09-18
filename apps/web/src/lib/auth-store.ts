@@ -41,7 +41,18 @@ class ClinicianAuthStore {
 
   constructor() {
     if (typeof window !== 'undefined') {
-      // Synchronize authoritatively with server on load via HttpOnly cookie
+      // 1. Synchronous instantaneous session recovery from localStorage cache
+      try {
+        const stored = localStorage.getItem(AUTH_STORAGE_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed && parsed.isAuthenticated) {
+            this.cachedSession = parsed;
+          }
+        }
+      } catch {}
+
+      // 2. Authoritatively synchronize with server on load via HttpOnly cookie
       this.refreshSessionFromServer().catch(() => {});
     }
   }
@@ -72,6 +83,9 @@ class ClinicianAuthStore {
             mode: data.mode,
           };
           this.cachedSession = session;
+          try {
+            localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session));
+          } catch {}
           this.isInitialized = true;
           this.notifyListeners();
           return session;
@@ -79,6 +93,9 @@ class ClinicianAuthStore {
           // Explicitly unauthenticated payload from server
           if (this.cachedSession) {
             this.cachedSession = null;
+            try {
+              localStorage.removeItem(AUTH_STORAGE_KEY);
+            } catch {}
             this.notifyListeners();
           }
         }
@@ -86,6 +103,9 @@ class ClinicianAuthStore {
         // Unauthenticated or expired/revoked
         if (this.cachedSession) {
           this.cachedSession = null;
+          try {
+            localStorage.removeItem(AUTH_STORAGE_KEY);
+          } catch {}
           this.notifyListeners();
         }
       }
@@ -93,6 +113,9 @@ class ClinicianAuthStore {
       // Server unreachable - fail closed (do NOT retain stale client cached session)
       if (this.cachedSession) {
         this.cachedSession = null;
+        try {
+          localStorage.removeItem(AUTH_STORAGE_KEY);
+        } catch {}
         this.notifyListeners();
       }
     }
@@ -128,6 +151,16 @@ class ClinicianAuthStore {
    */
   public setSessionForTesting(session: ClinicianAuthSession | null): void {
     this.cachedSession = session;
+    this.isInitialized = true;
+    if (typeof window !== 'undefined') {
+      try {
+        if (session) {
+          localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session));
+        } else {
+          localStorage.removeItem(AUTH_STORAGE_KEY);
+        }
+      } catch {}
+    }
     this.notifyListeners();
   }
 
@@ -156,6 +189,10 @@ class ClinicianAuthStore {
 
       if (res.ok && data.success && data.session) {
         this.cachedSession = data.session;
+        this.isInitialized = true;
+        try {
+          localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(data.session));
+        } catch {}
         this.notifyListeners();
         return { success: true, session: data.session };
       }
