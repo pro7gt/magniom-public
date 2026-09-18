@@ -1,13 +1,35 @@
 {
-  "runId": "CI-RUN-20260917140424",
-  "timestamp": "2026-09-17T14:04:24.222Z",
-  "gitCommit": "176d76fab061e404027387d2feac53709c441b43",
-  "gitBranch": "main",
+  "runId": "CI-RUN-20260918115718",
+  "timestamp": "2026-09-18T11:57:18.717Z",
   "governingSpec": "public/guides/MAGNIOM-Enterprise Verification, Testing CICD Specification v2.0.md",
   "allPassed": true,
-  "totalDurationSec": 82.5,
+  "releaseQualificationStatus": "QUALIFIED_RELEASE",
+  "totalDurationSec": 80.67,
   "stagesRequested": 11,
   "stagesPassed": 11,
+  "failedStagesCount": 0,
+  "skippedBuild": false,
+  "provenance": {
+    "commitSha": "a5b0dd8cbd3c80385a79818fe8f63d159151fc95",
+    "gitBranch": "main",
+    "isDirty": true,
+    "nodeVersion": "v24.21.0",
+    "npmVersion": "11.19.0",
+    "pythonVersion": "Python 3.14.4",
+    "typescriptVersion": "5.8.2",
+    "lockfileHash": "f11506ac3497be7b7e52e77a6239574d98593d7941050c2c3bf587d1bef5fb5f",
+    "systemArchitecture": "linux x64",
+    "runnerOs": "linux",
+    "runnerImage": "Local Workstation Host",
+    "ciWorkflow": "Local Developer Workstation",
+    "githubRunId": "N/A",
+    "githubRunUrl": "N/A",
+    "cacheProvenance": "Local Workstation (Active Workspace Cache)",
+    "coordinateDriftMm": 0,
+    "totalGoldenCasesEvaluated": 72,
+    "defectAndDriftDerivation": "Empirically verified from docs/verification/v2/scientific-impact-report.json across 72 clinical scenarios: observed spatial drift Δ = 0.000mm against frozen baselines (NORMATIVE_PATHWAY_MODEL/0.1.0, TARGET_OPTIMISATION/0.1.0, STRUCTURAL_CONNECTOME/0.1.0).",
+    "openDefectsCount": 0
+  },
   "stages": [
     {
       "stage": 0,
@@ -20,35 +42,35 @@
       "stage": 1,
       "name": "Stage 1 — Static Verification & Target Engine Rules",
       "command": "npm run verify:stage1",
-      "durationSec": 14.75,
+      "durationSec": 14.74,
       "passed": true
     },
     {
       "stage": 2,
       "name": "Stage 2 — Unit Tests & 375 SRS Requirements Traceability",
       "command": "npm run verify:stage2",
-      "durationSec": 8.96,
+      "durationSec": 9.5,
       "passed": true
     },
     {
       "stage": 3,
       "name": "Stage 3 — Property-Based Invariant Verification",
       "command": "npm run verify:stage3",
-      "durationSec": 1.68,
+      "durationSec": 1.59,
       "passed": true
     },
     {
       "stage": 4,
       "name": "Stage 4 — Database Zero-State Rebuild & 11-Domain RLS",
       "command": "npm run verify:stage4",
-      "durationSec": 0.25,
+      "durationSec": 0.24,
       "passed": true
     },
     {
       "stage": 5,
       "name": "Stage 5 — Multi-Indication 72 Golden Cases & Spatial Differentials",
       "command": "npm run verify:stage5",
-      "durationSec": 0.5,
+      "durationSec": 0.47,
       "passed": true
     },
     {
@@ -62,30 +84,30 @@
       "stage": 7,
       "name": "Stage 7 — Presentation & Workflow Worker Integration",
       "command": "npm run verify:stage7",
-      "durationSec": 1.97,
+      "durationSec": 2.83,
       "passed": true
     },
     {
       "stage": 8,
       "name": "Stage 8 — Security, SBOM, Secrets & Pentest Readiness",
       "command": "npm run verify:stage8",
-      "durationSec": 1.27,
+      "durationSec": 1.18,
       "passed": true
     },
     {
       "stage": 9,
       "name": "Stage 9 — Reproducible Monorepo Build & MagniomReleaseManifestV2",
       "command": "npm run verify:stage9",
-      "durationSec": 50.96,
+      "durationSec": 47.98,
       "passed": true
     },
     {
       "stage": 10,
       "name": "Stage 10 — Multi-Indication Smoke Test & Recall Indexing",
       "command": "npm run verify:stage10",
-      "durationSec": 0.65,
+      "durationSec": 0.61,
       "passed": true
     }
   ],
-  "sha256Digest": "007c60b81cb50ecff9ed50e7a77e6be91f62468d1b7317dd3f79f4a09f947f44"
+  "sha256Digest": "053e1437bcfef9452189c1473a5b6c302dbd20c967eaf96d88740b5a04868c44"
 }

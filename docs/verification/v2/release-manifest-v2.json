@@ -139,7 +139,7 @@
     }
   ],
   "sbom_digests": [
-    "8a27ead4df2b2a778f583714caf5c46f851f71efaaa84d4e575ad2d7b6c35b77"
+    "f74a3f4135a752dd901309b86ce8f09ec2a3826975bbeb164aed9280f6feeb7d"
   ],
   "test_evidence_digest": "e744613a299efa696370d5c675931ef5c0a7c9388040b35a9c4b045b92414de5",
   "signatures": [
@@ -166,5 +166,5 @@
   ],
   "generated_at": "2026-09-03T22:10:00.000Z",
   "status": "VERIFICATION_QUALIFIED",
-  "manifest_sha256": "a7fa74d7c8054cd055e5cc5f2c31bf0a695bcc3b3e561c51c245f9af00da1fbb"
+  "manifest_sha256": "bb03ccd9def587762eb42e1ebcba8d385dc325af0e9aaccc0698460c198a1607"
 }

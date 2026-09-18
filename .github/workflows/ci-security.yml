@@ -48,6 +48,7 @@ jobs:
         run: npm run security:backup-drill
 
       - name: Archive Security & SBOM Evidence
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: security-audit-evidence

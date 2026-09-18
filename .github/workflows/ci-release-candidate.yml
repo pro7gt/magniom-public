@@ -42,6 +42,7 @@ jobs:
         run: npx tsx scripts/release/affected-case-index.ts ALL
 
       - name: Archive RC Qualification Evidence Package (§130)
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: magniom-rc-qualification-package

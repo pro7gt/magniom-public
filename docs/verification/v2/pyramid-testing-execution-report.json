@@ -1,27 +1,37 @@
 {
-  "runId": "PYRAMID-RUN-20260917140043",
-  "timestamp": "2026-09-17T14:00:43.828Z",
+  "runId": "PYRAMID-RUN-20260918115838",
+  "timestamp": "2026-09-18T11:58:38.838Z",
   "standardReference": "IEC 62304:2006/Amd 1:2015 Class C | ISO 13485:2016 §7.3.6",
   "specReference": "public/guides/MAGNIOM-Enterprise Verification, Testing CICD Specification v2.0.md (§33–§49)",
   "overallPassed": true,
   "fullPyramidQualified": true,
   "releaseQualificationStatus": "QUALIFIED",
   "determinationNote": "QUALIFIED & CONFORMANT FOR MEDICAL DEVICE RELEASE",
-  "totalDurationSec": "72.43",
+  "totalDurationSec": "61.53",
   "totalLayersEvaluated": 12,
   "totalPyramidLayersRequired": 12,
   "passedLayersCount": 12,
+  "failedLayersCount": 0,
   "provenance": {
-    "commitSha": "176d76fab061e404027387d2feac53709c441b43",
+    "commitSha": "a5b0dd8cbd3c80385a79818fe8f63d159151fc95",
     "gitBranch": "main",
     "isDirty": true,
     "nodeVersion": "v24.21.0",
+    "npmVersion": "11.19.0",
     "pythonVersion": "Python 3.14.4",
+    "typescriptVersion": "5.8.2",
     "lockfileHash": "f11506ac3497be7b7e52e77a6239574d98593d7941050c2c3bf587d1bef5fb5f",
     "systemArchitecture": "linux x64",
+    "runnerOs": "linux",
+    "runnerImage": "Local Workstation Host",
     "ciWorkflow": "Local Developer Workstation",
+    "githubRunId": "N/A",
+    "githubRunUrl": "N/A",
     "cacheProvenance": "Local Workstation (Active Workspace Cache)",
-    "defectAndDriftDerivation": "Golden standard verification across 72 clinical scenarios with zero unreviewed coordinate drift (Δ = 0.000mm) against frozen clinical baselines (NORMATIVE_PATHWAY_MODEL/0.1.0, TARGET_OPTIMISATION/0.1.0, STRUCTURAL_CONNECTOME/0.1.0)."
+    "coordinateDriftMm": 0,
+    "totalGoldenCasesEvaluated": 72,
+    "defectAndDriftDerivation": "Empirically verified from docs/verification/v2/scientific-impact-report.json across 72 clinical scenarios: observed spatial drift Δ = 0.000mm against frozen baselines (NORMATIVE_PATHWAY_MODEL/0.1.0, TARGET_OPTIMISATION/0.1.0, STRUCTURAL_CONNECTOME/0.1.0).",
+    "openDefectsCount": 0
   },
   "layers": [
     {
@@ -29,7 +39,7 @@
       "name": "Level 1: Static Architecture & Boundary Linting",
       "specSection": "§34–§35",
       "command": "npm run verify:boundaries && npm run verify:static-rules && npm run typecheck && npm run format:check",
-      "durationSec": "9.95",
+      "durationSec": "5.72",
       "passed": true
     },
     {
@@ -37,7 +47,7 @@
       "name": "Level 2: Monorepo Package Unit Test Suites",
       "specSection": "§36",
       "command": "npm test",
-      "durationSec": "8.44",
+      "durationSec": "0.14",
       "passed": true
     },
     {
@@ -45,7 +55,7 @@
       "name": "Level 3: Numerical Boundaries & Property Invariants (fast-check)",
       "specSection": "§37–§38",
       "command": "npm run verify:properties",
-      "durationSec": "1.61",
+      "durationSec": "1.55",
       "passed": true
     },
     {
@@ -53,7 +63,7 @@
       "name": "Level 4: Metamorphic Relations & Domain/API Contracts",
       "specSection": "§39–§41",
       "command": "npx vitest run packages/target-engine/tests/v2/metamorphic-and-boundary.test.ts packages/domain/tests/ packages/target-engine/tests/v2/plugin-contracts.test.ts packages/domain/src/rls-isolation.test.ts packages/schemas/tests/ packages/target-engine/tests/v2/research-leakage.test.ts packages/target-engine/tests/v2/zalesky-algorithms.test.ts packages/target-engine/tests/v2/order-invariance.test.ts packages/target-engine/tests/v2/non-transitive-governance.test.ts packages/target-engine/tests/v2/zero-candidate-abstention.test.ts",
-      "durationSec": "1.89",
+      "durationSec": "1.96",
       "passed": true
     },
     {
@@ -69,7 +79,7 @@
       "name": "Level 6: Worker Queue Resilience & Service Contracts",
       "specSection": "§47–§48",
       "command": "npx vitest run services/workflow-worker/tests/worker.test.ts services/workflow-worker/tests/worker-permissions.test.ts services/workflow-worker/tests/functional-verification.test.ts services/workflow-worker/tests/structural-verification.test.ts",
-      "durationSec": "1.29",
+      "durationSec": "1.33",
       "passed": true
     },
     {
@@ -77,7 +87,7 @@
       "name": "Level 7: Scientific Golden Test Matrix (72 Cases across 8 Modules)",
       "specSection": "§50–§65, §119–§121",
       "command": "npm run verify:scientific-impact",
-      "durationSec": "0.42",
+      "durationSec": "0.41",
       "passed": true
     },
     {
@@ -85,7 +95,7 @@
       "name": "Level 8: Measurement Validation & Imaging QA Fallback Suite",
       "specSection": "§66–§79",
       "command": "npx vitest run packages/target-engine/tests/imaging-validation.test.ts packages/target-engine/tests/v2/laterality-release-blocking.test.ts packages/target-engine/tests/v2/measurement-exit-criteria.test.ts packages/modalities/ packages/measurement-core/ packages/measurement-testkit/ && npm run test:neurocompute -- --fast",
-      "durationSec": "43.60",
+      "durationSec": "44.40",
       "passed": true
     },
     {
@@ -93,7 +103,7 @@
       "name": "Level 9: Security Analysis, CycloneDX 1.5 SBOM & Pentest Probes",
       "specSection": "§99–§106",
       "command": "npm run sbom:generate && npm run sbom:verify && npm run security:secrets && npm run security:probe",
-      "durationSec": "1.17",
+      "durationSec": "1.09",
       "passed": true
     },
     {
@@ -101,7 +111,7 @@
       "name": "Level 10: Synthetic Workflow End-to-End Vertical Slice",
       "specSection": "§82, §86",
       "command": "npx vitest run services/workflow-worker/tests/synthetic-e2e.test.ts packages/target-engine/tests/synthetic-workflow.test.ts",
-      "durationSec": "1.46",
+      "durationSec": "1.42",
       "passed": true
     },
     {
@@ -109,7 +119,7 @@
       "name": "Level 11: Human Factors, Clinician Anti-Bias Shell & Accessibility",
       "specSection": "§86–§91",
       "command": "npx vitest run packages/presentation/src/presentation.test.ts packages/presentation/tests/ apps/web/tests/",
-      "durationSec": "1.90",
+      "durationSec": "2.82",
       "passed": true
     },
     {
@@ -117,8 +127,9 @@
       "name": "Level 12: Post-Deploy Scientific Smoke & Multi-Indication Recall Indexing",
       "specSection": "§148–§155, §181–§190",
       "command": "npm run postdeploy:smoke && npm run release:affected-cases",
-      "durationSec": "0.54",
+      "durationSec": "0.53",
       "passed": true
     }
-  ]
+  ],
+  "reportSha256Digest": "3c00a34b8ad50c069d0402759c4a9a63789cd882ecc7757379fdace52d756f05"
 }

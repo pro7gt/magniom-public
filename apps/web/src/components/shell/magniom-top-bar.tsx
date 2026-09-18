@@ -337,6 +337,8 @@ export function MagniomTopBar({
         <div className="user-menu-container" ref={userMenuRef}>
           <Button
             variant="ghost"
+            id="top-bar-user-menu-btn"
+            data-testid="top-bar-user-menu-btn"
             className="user-menu-button"
             onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
             aria-expanded={isUserMenuOpen}

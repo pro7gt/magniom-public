@@ -55,6 +55,7 @@ jobs:
         run: npm run verify:v2-baseline && npm run verify:exit-criteria
 
       - name: Archive Nightly Verification Artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: nightly-verification-evidence

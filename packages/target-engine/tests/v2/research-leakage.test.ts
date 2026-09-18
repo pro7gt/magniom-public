@@ -5,6 +5,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
+import fc from 'fast-check';
 import {
   runTargetEngineV2,
   createCanonicalResolvedContextV2,
@@ -950,5 +951,60 @@ describe('Target Engine Core Exit Criterion 4: Research Candidate Isolation', ()
     const evalResult = evaluateGateG14(noRefDraft, context);
     expect(evalResult.result).toBe('fail');
     expect(evalResult.reasonCodes).toContain('TN-012:MISSING_APPROVAL_REFERENCE_IN_CLINICAL_MODE');
+  });
+
+  it('Gate G14 Property Invariant: no randomized combination of self-asserted approval flags bypasses G14 for unregistered methods', () => {
+    const context = createCanonicalResolvedContextV2({
+      request: { mode: 'clinical' } as any,
+    });
+
+    fc.assert(
+      fc.property(
+        fc.constantFrom(
+          'UNREGISTERED_METHOD_1',
+          'ADVERSARIAL_ALGO_99',
+          'SPOOFED_CLINICAL_ALGO',
+          'UNKNOWN_CUSTOM_OPTIMIZER',
+        ),
+        fc.constantFrom('clinical_approved', 'clinical_candidate', 'validation', 'prototype'),
+        fc.constantFrom('approved', 'candidate_under_review', 'provisional_validation', 'blocked'),
+        fc.constantFrom('approved', 'blocked'),
+        fc.string({ minLength: 1, maxLength: 20 }),
+        (methodId, maturity, promotion, approval, ref) => {
+          const draft: CandidateDraft = {
+            draftId: `draft-fuzz-${methodId}`,
+            generatorId: 'GEN-MDD-EVIDENCE-001',
+            targetFamilyId: 'TF-MDD-LDLPFC-EST-001',
+            proposedRole: 'primary',
+            dataOrigin: 'patient_measured',
+            targetDefinitionOrigin: 'functional_connectivity',
+            inputDataOrigin: 'patient_measured',
+            patientPersonalizationStatus: 'individually_computed',
+            scientificMaturity: maturity as any,
+            clinicalPromotionStatus: promotion as any,
+            clinicalApprovalStatus: approval as any,
+            targetingMethodId: methodId,
+            approvalReference: ref,
+            targetGeometry: createCanonicalPointGeometry(-44, 40, 28, 'left', 'pipeline'),
+            evidencePathIds: ['PATH-MDD-BA46'],
+            clinicalObjectiveIds: ['00000000-0000-0000-0000-000000000040'],
+            reliedOnMeasurementIds: ['MEAS-01'],
+            reliedOnReliabilityIds: [],
+            rawScientificFeatures: [],
+            generatorLimitations: [],
+            nominationRationale: 'Fuzzing generator self-assertion bypass',
+            generatorTrace: { algorithmCode: methodId, algorithmVersion: '1.0.0' },
+          };
+
+          const evalResult = evaluateGateG14(draft, context);
+          // Gate G14 must ALWAYS fail when method is unregistered in the manifest registry
+          return (
+            evalResult.result === 'fail' &&
+            evalResult.reasonCodes.includes('TN-012:UNREGISTERED_TARGETING_METHOD_IN_CLINICAL_MODE')
+          );
+        },
+      ),
+      { numRuns: 100 },
+    );
   });
 });

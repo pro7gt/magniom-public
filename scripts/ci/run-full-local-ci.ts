@@ -20,6 +20,7 @@ import { execSync } from 'node:child_process';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
+import { collectProvenance, type ExecutionProvenance } from './run-pyramid-testing.js';
 
 export interface StageDefinition {
   stageNumber: number;
@@ -59,7 +60,7 @@ export const STAGES: readonly StageDefinition[] = [
     stageNumber: 4,
     name: 'Stage 4 — Database Zero-State Rebuild & 11-Domain RLS',
     command: 'npm run verify:stage4',
-    description: 'Audits sequential migrations (001–065) and default-deny RLS policies (§42, §45).',
+    description: 'Audits sequential migrations (001–066) and default-deny RLS policies (§42, §45).',
   },
   {
     stageNumber: 5,
@@ -142,44 +143,51 @@ export class LocalContinuousIntegrationRunner {
     }
   }
 
-  private writeExecutionReports(
+  public writeExecutionReports(
     stageResults: StageExecutionRecord[],
     totalDurationSec: string,
     allPassed: boolean,
-  ): void {
+    options: PipelineRunOptions = {},
+  ): { summaryData: Record<string, unknown>; reportSha256Digest: string } {
     const timestamp = new Date().toISOString();
     const runId = `CI-RUN-${timestamp.replace(/[-:T.Z]/g, '').slice(0, 14)}`;
 
-    let gitCommit = 'unknown';
-    let gitBranch = 'unknown';
-    try {
-      gitCommit = execSync('git rev-parse HEAD', {
-        cwd: this.repoRoot,
-        stdio: ['ignore', 'pipe', 'ignore'],
-      })
-        .toString()
-        .trim();
-      gitBranch = execSync('git rev-parse --abbrev-ref HEAD', {
-        cwd: this.repoRoot,
-        stdio: ['ignore', 'pipe', 'ignore'],
-      })
-        .toString()
-        .trim();
-    } catch {
-      // ignore
+    const failedCount = stageResults.filter(s => !s.passed).length;
+    const provenance = collectProvenance(this.repoRoot, failedCount);
+
+    const executedStageNumbers = new Set(stageResults.map(s => s.stage));
+    const allCoreStagesExecuted = STAGES.every(s => executedStageNumbers.has(s.stageNumber));
+    const skippedBuild = Boolean(options.skipBuild);
+
+    let releaseQualificationStatus:
+      'QUALIFIED_RELEASE' | 'PARTIAL_EVALUATION' | 'DISQUALIFIED_FAILURE';
+    let determinationText: string;
+
+    if (!allPassed || failedCount > 0) {
+      releaseQualificationStatus = 'DISQUALIFIED_FAILURE';
+      determinationText = 'NOT QUALIFIED FOR MEDICAL DEVICE RELEASE — VERIFICATION BLOCKED';
+    } else if (allCoreStagesExecuted && !skippedBuild) {
+      releaseQualificationStatus = 'QUALIFIED_RELEASE';
+      determinationText = 'QUALIFIED & CONFORMANT FOR MEDICAL DEVICE RELEASE';
+    } else {
+      releaseQualificationStatus = 'PARTIAL_EVALUATION';
+      determinationText =
+        'PARTIAL EVALUATION — DIAGNOSTIC EVIDENCE ONLY (NOT QUALIFIED FOR CANONICAL RELEASE)';
     }
 
     const payload = {
       runId,
       timestamp,
-      gitCommit,
-      gitBranch,
       governingSpec:
         'public/guides/MAGNIOM-Enterprise Verification, Testing CICD Specification v2.0.md',
-      allPassed,
+      allPassed: allPassed && failedCount === 0,
+      releaseQualificationStatus,
       totalDurationSec: parseFloat(totalDurationSec),
       stagesRequested: stageResults.length,
       stagesPassed: stageResults.filter(s => s.passed).length,
+      failedStagesCount: failedCount,
+      skippedBuild,
+      provenance,
       stages: stageResults.map(s => ({
         stage: s.stage === 98 ? 'pyramid' : s.stage === 99 ? 'neurocompute' : s.stage,
         name: s.name,
@@ -204,15 +212,44 @@ export class LocalContinuousIntegrationRunner {
       '',
       `**Run ID:** \`${runId}\`  `,
       `**Execution Date:** ${timestamp}  `,
-      `**Git Branch / Commit:** \`${gitBranch}\` / \`${gitCommit.slice(0, 10)}\`  `,
       `**Governing Specification:** \`public/guides/MAGNIOM-Enterprise Verification, Testing CICD Specification v2.0.md\`  `,
-      `**Overall Verdict:** ${allPassed ? '✅ **100% PASS — ALL STAGES VERIFIED**' : '❌ **FAIL — VERIFICATION BLOCKED**'}  `,
+      `**Overall Verdict:** ${
+        releaseQualificationStatus === 'QUALIFIED_RELEASE'
+          ? '✅ **100% PASS — ALL 11 STAGES QUALIFIED**'
+          : releaseQualificationStatus === 'PARTIAL_EVALUATION'
+            ? '⚠️ **PARTIAL EVALUATION (DIAGNOSTIC ONLY)**'
+            : '❌ **FAIL — VERIFICATION BLOCKED**'
+      }  `,
+      `**Qualification Status:** \`${releaseQualificationStatus}\`  `,
+      `**Final Determination:** **${determinationText}**  `,
       `**Total Execution Duration:** ${totalDurationSec}s  `,
       `**Cryptographic Seal (SHA-256):** \`${digest}\`  `,
       '',
       '---',
       '',
-      '## 1. Stage-by-Stage Verification Breakdown',
+      '## 1. Regulatory Audit & Toolchain Provenance (IEC 62304 / ISO 14971 / ISO 13485)',
+      '',
+      '| Provenance Attribute | Value |',
+      '| :--- | :--- |',
+      `| **Commit SHA** | \`${provenance.commitSha}\` ${provenance.isDirty ? '*(Repository contains uncommitted modifications)*' : '*(Clean)*'} |`,
+      `| **Git Branch** | \`${provenance.gitBranch}\` |`,
+      `| **Node.js Runtime** | \`${provenance.nodeVersion}\` |`,
+      `| **npm Toolchain** | \`${provenance.npmVersion}\` |`,
+      `| **TypeScript Toolchain** | \`${provenance.typescriptVersion}\` |`,
+      `| **Python Runtime** | \`${provenance.pythonVersion}\` |`,
+      `| **Lockfile SHA-256** | \`${provenance.lockfileHash !== 'N/A' ? provenance.lockfileHash.slice(0, 16) + '...' : 'N/A'}\` |`,
+      `| **System Architecture** | \`${provenance.systemArchitecture}\` |`,
+      `| **Runner OS / Image** | \`${provenance.runnerOs} / ${provenance.runnerImage}\` |`,
+      `| **CI Workflow Run** | \`${provenance.ciWorkflow}\` ${provenance.githubRunId !== 'N/A' ? `(Run ID: ${provenance.githubRunId})` : ''} |`,
+      `| **Workflow Run URL** | ${provenance.githubRunUrl !== 'N/A' ? `[${provenance.githubRunUrl}](${provenance.githubRunUrl})` : 'N/A (Local Run)'} |`,
+      `| **Cache Provenance** | \`${provenance.cacheProvenance}\` |`,
+      `| **Defect & Drift Derivation** | ${provenance.defectAndDriftDerivation} |`,
+      `| **Open Defects Observed** | \`${provenance.openDefectsCount}\` |`,
+      `| **Report SHA-256 Digest** | \`${digest}\` |`,
+      '',
+      '---',
+      '',
+      '## 2. Stage-by-Stage Verification Breakdown',
       '',
       '| Stage # | Stage Name | Verification Command | Duration | Status |',
       '| :---: | :--- | :--- | :---: | :---: |',
@@ -224,7 +261,7 @@ export class LocalContinuousIntegrationRunner {
       '',
       '---',
       '',
-      '## 2. Regulatory Compliance Summary (IEC 62304 / ISO 14971 / ISO 13485)',
+      '## 3. Regulatory Compliance Summary (IEC 62304 / ISO 14971 / ISO 13485)',
       '',
       `- **IEC 62304 Class C Safety Gates**: Release-blocking laterality invariants, deterministic AST constraints, and zero coordinate drift verified across all 8 indication modules.`,
       `- **Cybersecurity & Supply Chain (FDA / SBOM)**: CycloneDX 1.5 SBOM generated and verified, entropy secrets scanned with zero leaks, and pentest probes cleared.`,
@@ -236,19 +273,24 @@ export class LocalContinuousIntegrationRunner {
       '',
     ];
 
-    const mdPath = path.join(
-      this.repoRoot,
-      'docs/verification/v2/reports/pipeline-execution-report.md',
-    );
-    fs.mkdirSync(path.dirname(mdPath), { recursive: true });
-    fs.writeFileSync(mdPath, markdownLines.join('\n'), 'utf8');
+    const mdDests = [
+      path.join(this.repoRoot, 'docs/verification/v2/reports/pipeline-execution-report.md'),
+      path.join(this.repoRoot, 'docs/verification/reports/pipeline-execution-report.md'),
+    ];
+
+    for (const mdPath of mdDests) {
+      fs.mkdirSync(path.dirname(mdPath), { recursive: true });
+      fs.writeFileSync(mdPath, markdownLines.join('\n'), 'utf8');
+      console.log(
+        `📄 Formal Pipeline Execution Report saved to: ${path.relative(this.repoRoot, mdPath)}`,
+      );
+    }
 
     console.log(
       `📄 Formal Pipeline Execution JSON saved to: ${path.relative(this.repoRoot, jsonPath)}`,
     );
-    console.log(
-      `📄 Formal Pipeline Execution Report saved to: ${path.relative(this.repoRoot, mdPath)}`,
-    );
+
+    return { summaryData, reportSha256Digest: digest };
   }
 
   public runPipeline(options: PipelineRunOptions = {}): boolean {
@@ -333,7 +375,7 @@ export class LocalContinuousIntegrationRunner {
         });
         if (!options.noReport) {
           const totalDurationSec = ((Date.now() - totalStart) / 1000).toFixed(2);
-          this.writeExecutionReports(stageResults, totalDurationSec, false);
+          this.writeExecutionReports(stageResults, totalDurationSec, false, options);
         }
         return false;
       }
@@ -371,7 +413,7 @@ export class LocalContinuousIntegrationRunner {
         });
         if (!options.noReport) {
           const totalDurationSec = ((Date.now() - totalStart) / 1000).toFixed(2);
-          this.writeExecutionReports(stageResults, totalDurationSec, false);
+          this.writeExecutionReports(stageResults, totalDurationSec, false, options);
         }
         return false;
       }
@@ -414,7 +456,7 @@ export class LocalContinuousIntegrationRunner {
         });
         if (!options.noReport) {
           const totalDurationSec = ((Date.now() - totalStart) / 1000).toFixed(2);
-          this.writeExecutionReports(stageResults, totalDurationSec, false);
+          this.writeExecutionReports(stageResults, totalDurationSec, false, options);
         }
         return false;
       }
@@ -442,14 +484,14 @@ export class LocalContinuousIntegrationRunner {
     console.log('='.repeat(92) + '\n');
 
     if (!options.noReport) {
-      this.writeExecutionReports(stageResults, totalDurationSec, true);
+      this.writeExecutionReports(stageResults, totalDurationSec, true, options);
     }
 
     return true;
   }
 }
 
-function parseCliArgs(args: string[]): {
+export function parseCliArgs(args: string[]): {
   options: PipelineRunOptions;
   showList: boolean;
   showHelp: boolean;
@@ -478,23 +520,55 @@ function parseCliArgs(args: string[]): {
     } else if (arg === '--skip-build' || arg === '--fast-stages') {
       options.skipBuild = true;
     } else if (arg.startsWith('--stage=')) {
-      const val = arg.split('=')[1];
-      if (val.includes(',')) {
-        options.stages = val.split(',').map(s => parseInt(s.trim(), 10));
+      const raw = arg.split('=')[1] ?? '';
+      if (raw.includes(',')) {
+        const parts = raw.split(',').map(s => parseInt(s.trim(), 10));
+        if (parts.some(n => isNaN(n) || n < 0 || n > 10)) {
+          console.error(`❌ Invalid stage in '${raw}'. Valid stages are integers 0 through 10.`);
+          process.exit(1);
+        }
+        options.stages = parts;
       } else {
-        options.stage = parseInt(val, 10);
+        const n = parseInt(raw, 10);
+        if (isNaN(n) || n < 0 || n > 10) {
+          console.error(`❌ Invalid stage '${raw}'. Valid stages are integers 0 through 10.`);
+          process.exit(1);
+        }
+        options.stage = n;
       }
     } else if (arg === '--stage' && i + 1 < args.length) {
-      const val = args[++i];
-      if (val.includes(',')) {
-        options.stages = val.split(',').map(s => parseInt(s.trim(), 10));
+      const raw = args[++i] ?? '';
+      if (raw.includes(',')) {
+        const parts = raw.split(',').map(s => parseInt(s.trim(), 10));
+        if (parts.some(n => isNaN(n) || n < 0 || n > 10)) {
+          console.error(`❌ Invalid stage in '${raw}'. Valid stages are integers 0 through 10.`);
+          process.exit(1);
+        }
+        options.stages = parts;
       } else {
-        options.stage = parseInt(val, 10);
+        const n = parseInt(raw, 10);
+        if (isNaN(n) || n < 0 || n > 10) {
+          console.error(`❌ Invalid stage '${raw}'. Valid stages are integers 0 through 10.`);
+          process.exit(1);
+        }
+        options.stage = n;
       }
     } else if (arg.startsWith('--from-stage=')) {
-      options.fromStage = parseInt(arg.split('=')[1], 10);
+      const raw = arg.split('=')[1] ?? '';
+      const n = parseInt(raw, 10);
+      if (isNaN(n) || n < 0 || n > 10) {
+        console.error(`❌ Invalid from-stage '${raw}'. Valid stages are integers 0 through 10.`);
+        process.exit(1);
+      }
+      options.fromStage = n;
     } else if (arg === '--from-stage' && i + 1 < args.length) {
-      options.fromStage = parseInt(args[++i], 10);
+      const raw = args[++i] ?? '';
+      const n = parseInt(raw, 10);
+      if (isNaN(n) || n < 0 || n > 10) {
+        console.error(`❌ Invalid from-stage '${raw}'. Valid stages are integers 0 through 10.`);
+        process.exit(1);
+      }
+      options.fromStage = n;
     }
   }
 

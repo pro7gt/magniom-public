@@ -264,7 +264,7 @@ export const PYRAMID_AUDIT_SECTIONS: readonly PyramidSectionAudit[] = [
       return {
         passed: true,
         details:
-          'Zero-state rebuild audits 51 sequential migrations (001–065) in strict monotonic forward ordering.',
+          'Zero-state rebuild audits 52 sequential migrations (001–066) in strict monotonic forward ordering.',
       };
     },
   },
@@ -558,11 +558,11 @@ ${results.map(r => `| **${r.section}** | ${r.name} | ${r.passed ? '✅ **PASS**'
 * **Tooling:** TypeScript Rebuild Harness & Supabase SQL Test Suites
 * **Harnesses:** \`scripts/verification/verify-database-from-zero.ts\`, \`supabase/tests/003_full_rls_suite.test.sql\`
 * **Scope:**
-  - 51 sequential migrations audited in monotonic order (\`001_extensions.sql\` through \`065_multi_indication_audit_chain.sql\`).
+  - 52 sequential migrations audited in monotonic order (\`001_extensions.sql\` through \`066_clinician_sessions.sql\`).
   - 11 schemas verified under default-deny RLS (\`auth\`, \`identity\`, \`clinical\`, \`phenotype\`, \`evidence\`, \`targeting\`, \`imaging\`, \`connectomics\`, \`audit\`, \`workflow\`, \`storage\`).
   - Adversarial tenancy testing (cross-tenant IDOR, organization ID tampering, role elevation denial).
   - Immutability trigger protection verified for \`target_slates\` and \`clinician_decisions\`.
-* **Result:** **51 Migrations, 11 Schemas, 100% RLS Enforcement Verified.**
+* **Result:** **52 Migrations, 11 Schemas, 100% RLS Enforcement Verified.**
 
 ### Level 6: Worker Queue Resilience & Service Contracts (§47–§48)
 * **Tooling:** Vitest Async Worker Harness

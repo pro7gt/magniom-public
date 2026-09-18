@@ -13,6 +13,7 @@ export function sanitizeRedirectUrl(url: string | null | undefined): string {
   // Do not redirect back to /login
   if (trimmed.startsWith('/login')) return '/';
   // Do not redirect to static assets (images, icons, styles, scripts, fonts)
-  if (/\.(?:png|jpg|jpeg|gif|webp|svg|ico|woff|woff2|ttf|eot|css|js|json|map)$/i.test(trimmed)) return '/';
+  if (/\.(?:png|jpg|jpeg|gif|webp|svg|ico|woff|woff2|ttf|eot|css|js|json|map)$/i.test(trimmed))
+    return '/';
   return trimmed;
 }

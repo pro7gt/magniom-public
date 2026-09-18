@@ -212,4 +212,81 @@ describe('Formal Testing Pyramid Runner & Qualification Engine', () => {
       expect(threw, `Expected '${flag}' to exit with error code 1`).toBe(true);
     }
   });
+
+  it('PYR-TEST-07: generates immutable SHA-256 digest and records dynamic drift & defect metrics', () => {
+    const runner = new PyramidTestingRunner(TEST_REPO_ROOT);
+    const mockLayers: LayerExecutionRecord[] = PYRAMID_LAYERS.map(l => ({
+      level: l.level,
+      name: l.name,
+      specSection: l.specSection,
+      command: l.command,
+      durationSec: '0.80',
+      passed: true,
+    }));
+
+    runner.writeExecutionReports(mockLayers, '9.60', true);
+
+    const jsonPath = path.join(
+      TEST_REPO_ROOT,
+      'docs/verification/v2/pyramid-testing-execution-report.json',
+    );
+    const report = JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
+
+    expect(report.reportSha256Digest).toBeDefined();
+    expect(typeof report.reportSha256Digest).toBe('string');
+    expect(report.reportSha256Digest.length).toBe(64);
+    expect(report.provenance.npmVersion).toBeDefined();
+    expect(report.provenance.typescriptVersion).toBeDefined();
+    expect(report.provenance.systemArchitecture).toBeDefined();
+    expect(report.provenance.coordinateDriftMm).toBe(0);
+    expect(report.provenance.totalGoldenCasesEvaluated).toBe(72);
+    expect(report.provenance.openDefectsCount).toBe(0);
+  });
+
+  it('PYR-TEST-08: mid-run failure explicitly concludes NOT QUALIFIED and reports defect count', () => {
+    const runner = new PyramidTestingRunner(TEST_REPO_ROOT);
+    const mockFailedLayers: LayerExecutionRecord[] = [
+      {
+        level: 1,
+        name: 'Level 1: Static Architecture',
+        specSection: '§34–§35',
+        command: 'npm run verify:boundaries',
+        durationSec: '1.50',
+        passed: true,
+      },
+      {
+        level: 2,
+        name: 'Level 2: Unit Tests',
+        specSection: '§36',
+        command: 'npm test',
+        durationSec: '2.10',
+        passed: false,
+        error: 'Execution failed: unit tests broke',
+      },
+    ];
+
+    runner.writeExecutionReports(mockFailedLayers, '3.60', false);
+
+    const jsonPath = path.join(
+      TEST_REPO_ROOT,
+      'docs/verification/v2/pyramid-testing-execution-report.json',
+    );
+    const report = JSON.parse(fs.readFileSync(jsonPath, 'utf-8'));
+    expect(report.overallPassed).toBe(false);
+    expect(report.releaseQualificationStatus).toBe('DISQUALIFIED_FAILURE');
+    expect(report.failedLayersCount).toBe(1);
+    expect(report.provenance.openDefectsCount).toBe(1);
+
+    const mdPath = path.join(
+      TEST_REPO_ROOT,
+      'docs/verification/v2/reports/pyramid-testing-execution-report.md',
+    );
+    const mdContent = fs.readFileSync(mdPath, 'utf-8');
+    expect(mdContent).toContain('NOT QUALIFIED FOR MEDICAL DEVICE RELEASE');
+    expect(mdContent).toContain(
+      '**VERIFICATION FAILURE**: One or more testing pyramid layers failed verification (1 failure).',
+    );
+    expect(mdContent).toContain('**Open Defects Observed** | `1`');
+    expect(mdContent).not.toContain('QUALIFIED & CONFORMANT FOR MEDICAL DEVICE RELEASE');
+  });
 });

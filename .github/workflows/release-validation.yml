@@ -51,6 +51,7 @@ jobs:
         run: npm run sbom:generate && npm run sbom:verify
 
       - name: Archive Validation Build Evidence Package
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: validation-freeze-package-${{ github.event.inputs.studyId || 'freeze' }}

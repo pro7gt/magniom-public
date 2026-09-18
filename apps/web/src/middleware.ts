@@ -28,7 +28,12 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     pathname.startsWith('/_next/') ||
     /\.(?:png|jpg|jpeg|gif|webp|svg|ico|woff|woff2|ttf|eot|css|js|json|map)$/i.test(pathname);
 
-  if (pathname.startsWith('/login') || isPublicAuthRoute || pathname === '/api/health' || isStaticAsset) {
+  if (
+    pathname.startsWith('/login') ||
+    isPublicAuthRoute ||
+    pathname === '/api/health' ||
+    isStaticAsset
+  ) {
     return NextResponse.next();
   }
 

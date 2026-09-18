@@ -83,6 +83,7 @@ function LoginContent() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const [justAuthenticated, setJustAuthenticated] = useState(false);
   const [existingSession, setExistingSession] = useState<ClinicianAuthSession | null>(null);
 
   useEffect(() => {
@@ -102,6 +103,7 @@ function LoginContent() {
     e.preventDefault();
     setErrorMessage(null);
     setIsSubmitting(true);
+    setJustAuthenticated(true);
 
     try {
       const result = await authStore.authenticateClinicianAsync(username, password, {
@@ -115,11 +117,13 @@ function LoginContent() {
         window.location.replace(redirectTarget);
       } else {
         setIsSubmitting(false);
+        setJustAuthenticated(false);
         setErrorMessage(result.error || 'Authentication failed. Please check your credentials.');
         setPassword('');
       }
     } catch (err) {
       setIsSubmitting(false);
+      setJustAuthenticated(false);
       setErrorMessage(
         err instanceof Error
           ? err.message
@@ -132,6 +136,7 @@ function LoginContent() {
   const handleLogoutExisting = async () => {
     await authStore.logoutClinicianAsync();
     setExistingSession(null);
+    setJustAuthenticated(false);
     setUsername('');
     setPassword('');
     setErrorMessage(null);
@@ -162,7 +167,7 @@ function LoginContent() {
         </CardHeader>
 
         <CardContent>
-          {existingSession && !isRedirecting && !isSubmitting ? (
+          {existingSession && !justAuthenticated && !isRedirecting && !isSubmitting ? (
             /* Active Session Resume Card */
             <div className="login-active-session-prompt">
               <div className="alert alert-info mb-4" role="status">
@@ -180,6 +185,8 @@ function LoginContent() {
                 <Button
                   variant="primary"
                   size="lg"
+                  id="login-continue-session-btn"
+                  data-testid="login-continue-session-btn"
                   className="w-full flex items-center justify-center gap-2"
                   onClick={() => window.location.replace(redirectTarget)}
                 >
@@ -190,6 +197,8 @@ function LoginContent() {
                 <Button
                   variant="secondary"
                   size="sm"
+                  id="login-switch-account-btn"
+                  data-testid="login-switch-account-btn"
                   className="w-full"
                   onClick={handleLogoutExisting}
                 >
@@ -272,8 +281,13 @@ function LoginContent() {
                         type="button"
                         variant="ghost"
                         size="sm"
+                        id="login-password-toggle-btn"
+                        data-testid="login-password-toggle-btn"
                         className="login-password-toggle"
-                        onClick={() => setShowPassword(!showPassword)}
+                        onMouseDown={e => e.preventDefault()}
+                        onClick={() => setShowPassword(prev => !prev)}
+                        aria-controls="login-password"
+                        aria-pressed={showPassword}
                         aria-label={showPassword ? 'Hide password' : 'Show password'}
                         title={showPassword ? 'Hide password' : 'Show password'}
                       >

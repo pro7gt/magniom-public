@@ -51,6 +51,7 @@ jobs:
         run: npm run release:manifest-v2
 
       - name: Archive Merge Evidence Bundle
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: merge-evidence-bundle

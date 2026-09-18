@@ -49,6 +49,7 @@ jobs:
         run: npx vitest run packages/target-engine/tests/v2/metamorphic-and-boundary.test.ts
 
       - name: Archive Golden Matrix & Spatial Differential Artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: golden-matrix-differential-report

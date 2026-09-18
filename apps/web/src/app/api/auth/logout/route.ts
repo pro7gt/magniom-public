@@ -5,7 +5,7 @@ import {
   verifySessionTokenWithClaims,
   hashJtiForAudit,
 } from '../../../../lib/security/session-crypto';
-import { revokeSession } from '../../../../lib/server/session-registry';
+import { revokeSession, revokeUserSessions } from '../../../../lib/server/session-registry';
 
 export const runtime = 'nodejs';
 
@@ -13,24 +13,39 @@ export const runtime = 'nodejs';
  * Magniom Authoritative Server-Side Clinician Sign-Out API
  * Conforms to MAG-SEC-001 and 21 CFR Part 11 session termination.
  * Server-side revokes token jti and purges HttpOnly session cookie.
+ * Supports optional { allDevices: true } to terminate all active sessions for the user.
  */
 export async function POST(request: NextRequest): Promise<NextResponse> {
   const sessionCookie = request.cookies.get(AUTH_COOKIE_NAME);
   let sessionAuditId = 'anonymous-logout';
+  let allDevices = false;
+
+  try {
+    const body = await request.json().catch(() => ({}));
+    if (body && typeof body === 'object' && body.allDevices) {
+      allDevices = true;
+    }
+  } catch {}
 
   if (sessionCookie?.value) {
     const verification = await verifySessionTokenWithClaims(sessionCookie.value, undefined, {
       checkRevocation: false,
     });
     if (verification.claims?.jti) {
-      revokeSession(verification.claims.jti, 'CLINICIAN_LOGOUT');
+      if (allDevices && verification.claims.sub) {
+        revokeUserSessions(verification.claims.sub, 'CLINICIAN_LOGOUT_ALL_DEVICES');
+      } else {
+        revokeSession(verification.claims.jti, 'CLINICIAN_LOGOUT');
+      }
       sessionAuditId = hashJtiForAudit(verification.claims.jti);
     }
   }
 
   emitAuditEvent('CLINICIAN_LOGGED_OUT', {
     sessionId: sessionAuditId,
-    message: 'Clinician signed out via server API.',
+    message: allDevices
+      ? 'Clinician signed out of all active workstation sessions.'
+      : 'Clinician signed out via server API.',
   });
 
   const forwardedProto = request.headers.get('x-forwarded-proto');

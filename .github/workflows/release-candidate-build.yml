@@ -59,6 +59,7 @@ jobs:
         run: npm run verify:exit-criteria
 
       - name: Archive Release Qualification Package
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: magniom-release-qualification-package

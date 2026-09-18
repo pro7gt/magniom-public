@@ -5736,36 +5736,67 @@ html[data-theme-transitioning] canvas {
   margin-bottom: var(--space-5);
 }
 
+/* Suppress duplicate browser-native password reveal/clear adornments */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear,
+input[type="password"]::-webkit-credentials-auto-fill-button {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
 .login-input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
 .login-input-wrapper .form-input {
   width: 100%;
-  padding-right: 2.5rem;
+  padding-right: 2.75rem;
 }
 
-.login-password-toggle {
+.login-password-toggle,
+.login-password-toggle.btn,
+.login-password-toggle.btn-ghost {
   position: absolute;
   right: var(--space-2);
   top: 50%;
-  transform: translateY(-50%);
-  background: transparent;
-  border: none;
+  transform: translateY(-50%) !important;
+  background: transparent !important;
+  border: none !important;
   color: var(--text-muted);
   cursor: pointer;
-  padding: var(--space-1);
-  display: flex;
+  padding: 0;
+  width: 2rem;
+  height: 2rem;
+  min-height: 2rem;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-xs);
-  transition: color var(--transition-base);
+  transition: color var(--transition-base), background-color var(--transition-base);
+  z-index: 5;
+  box-shadow: none !important;
 }
 
-.login-password-toggle:hover {
+.login-password-toggle:hover,
+.login-password-toggle.btn:hover {
   color: var(--text-primary);
+  background-color: var(--accent-subtle) !important;
+}
+
+.login-password-toggle:active,
+.login-password-toggle.btn:active,
+.login-password-toggle:focus,
+.login-password-toggle.btn:focus {
+  transform: translateY(-50%) !important;
+  color: var(--text-primary);
+  box-shadow: none !important;
+  outline: none;
 }
 
 .login-universal-hint {

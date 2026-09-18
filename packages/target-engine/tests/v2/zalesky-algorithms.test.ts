@@ -7,6 +7,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
+import fc from 'fast-check';
 import {
   computeCashZaleskyTarget,
   evaluateCashZaleskyReliability,
@@ -539,6 +540,48 @@ describe('Seguin & Zalesky Polysynaptic Pathway Routing (Nat Neurosci 2026)', ()
 
       expect(score.dominantPathway).toEqual([0, 1, 2, 3, 4]);
       expect(score.dominantRouteType).toBe('fronto_thalamic_4_hop_early_cross');
+    });
+
+    it('findShortestPath Invariant (fast-check): returned path always satisfies hops <= hopLimit and connectivity bounds', () => {
+      fc.assert(
+        fc.property(
+          fc.integer({ min: 3, max: 8 }),
+          fc.integer({ min: 1, max: 6 }),
+          (nodeCount, hopLimit) => {
+            // Build a random symmetric cost matrix
+            const costs: number[][] = Array.from({ length: nodeCount }, () =>
+              Array(nodeCount).fill(Infinity),
+            );
+            for (let i = 0; i < nodeCount; i++) {
+              costs[i]![i] = 0;
+              for (let j = i + 1; j < nodeCount; j++) {
+                // Randomly connect nodes with edge costs in [0.1, 5.0]
+                const cost = 0.1 + ((i * 3 + j * 7) % 50) / 10.0;
+                costs[i]![j] = cost;
+                costs[j]![i] = cost;
+              }
+            }
+
+            const source = 0;
+            const target = nodeCount - 1;
+            const result = findShortestPath(costs, source, target, hopLimit);
+
+            if (result.path.length > 0) {
+              return (
+                result.hops <= hopLimit &&
+                result.path.length === result.hops + 1 &&
+                result.path[0] === source &&
+                result.path[result.path.length - 1] === target &&
+                Number.isFinite(result.totalCost) &&
+                result.totalCost > 0
+              );
+            } else {
+              return result.hops === 0 && result.totalCost === Infinity;
+            }
+          },
+        ),
+        { numRuns: 100 },
+      );
     });
   });
 });

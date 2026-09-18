@@ -75,6 +75,12 @@ class ClinicianAuthStore {
           this.isInitialized = true;
           this.notifyListeners();
           return session;
+        } else {
+          // Explicitly unauthenticated payload from server
+          if (this.cachedSession) {
+            this.cachedSession = null;
+            this.notifyListeners();
+          }
         }
       } else {
         // Unauthenticated or expired/revoked
@@ -226,7 +232,7 @@ class ClinicianAuthStore {
   /**
    * Asynchronously signs out clinician, awaiting authoritative server revocation before proceeding.
    */
-  public async logoutClinicianAsync(): Promise<void> {
+  public async logoutClinicianAsync(options?: { allDevices?: boolean }): Promise<void> {
     const priorSession = this.cachedSession;
     this.cachedSession = null;
 
@@ -240,7 +246,12 @@ class ClinicianAuthStore {
       } catch {}
 
       try {
-        await fetch('/api/auth/logout', { method: 'POST', keepalive: true });
+        await fetch('/api/auth/logout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ allDevices: options?.allDevices }),
+          keepalive: true,
+        });
       } catch {}
     }
 
